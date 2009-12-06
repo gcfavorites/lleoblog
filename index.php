@@ -8,6 +8,7 @@ if($admin) { // включить сообщения об ошибках
 	ini_set('error_reporting', E_ALL);
 }
 
+
 include $include_sys."_msq.php";
 $_SCRIPT=array(); $_SCRIPT_ADD=array();
 $_STYLE=array(); $_STYLE_ADD=array();
