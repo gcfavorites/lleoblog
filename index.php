@@ -16,15 +16,6 @@ $_SCRIPT=array(); $_SCRIPT_ADD=array();
 $_STYLE=array(); $_STYLE_ADD=array();
 mystart();
 
-// die( $filehost."<pre>".file_get_contents($filehost."config.php"));
-// if(!$admin) die("admin error");
-/*
-if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
-if(!$admin) redirect($wwwhost."login/"); // посторонних - нахуй
-blogpage();
-// $_PAGE = array('design'=>file_get_contents($GLOBALS['host_design']."dnevnik.html"),
-*/
-
 $hashpage=rand(0,1000000); $hashpage=substr(broident($hashpage.$hashinput),0,6).'-'.$hashpage;
 
 function blogpage() { global $_PAGE,$wwwhost,$login,$podzamok;
