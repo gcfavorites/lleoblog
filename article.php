@@ -390,7 +390,7 @@ $_PAGE["body"] .= '<div id="Body">'.$article["Body"].'</div>';
 
 if($admin) $_PAGE["calendar"] = "<p><input TYPE=\"BUTTON\" VALUE=\"EDITOR\" onClick=\"window.location.href='".$wwwhost."editor/?Date=".$article["Date"]."' \"><p>".$_PAGE["calendar"];
 
-if($article['Access'] == "admin") $header .= "<p><img src=".$www_design."e/podzamok.gif>
+if($article['Access'] == "admin") $_PAGE["header"] .= "<p><img src=".$www_design."e/podzamok.gif>
 <img src=".$www_design."e/podzamok.gif>\n<img src=".$www_design."e/podzamok.gif>
 <img src=".$www_design."e/podzamok.gif>\n<img src=".$www_design."e/podzamok.gif>";
 
