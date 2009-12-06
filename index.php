@@ -9,6 +9,10 @@ if($admin) { // включить сообщения об ошибках
 }
 
 
+
+
+
+
 include $include_sys."_msq.php";
 $_SCRIPT=array(); $_SCRIPT_ADD=array();
 $_STYLE=array(); $_STYLE_ADD=array();
