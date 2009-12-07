@@ -1,46 +1,18 @@
 <?php
 /*
+        fotoxp module for lleo blog engine
+        http://johny.eehome.ru/blog/2009/12/05-Picture.html
+        
+        Aleksandr Lavrentyev (c) 2009 johny@eehome.ru ICQ 103322
+        
+        based on
+        
 	XPPubWiz.php
 		http://www.strehle.de/tim/xppubwiz/
-
-	Sample PHP backend for the Microsoft Windows XP Publishing Wizard
-
-	This standalone PHP script provides a complete backend for the Microsoft Windows XP Publishing Wizard,
-	a nice tool for file uploads to any HTTP server providing such a backend.
-
-	Requirements:
-	- Any web server running PHP 4.1 or greater (with session support)
-	- Clients running Microsoft Windows XP
-
-	Getting started:
-	- Copy this script anwhere on your web server.
-	- Change the strings in the "General configuration" section below (optional).
-	- Change the user account and directory information below (recommended).
-	- Point your web browser to the URL you copied this script to, and add this querystring:
-		?step=reg
-	- A file download (xppubwiz.reg) will start.
-	- Save the file on your harddisk and double-click it to register your server with the Publishing Wizard.
-	- In the Windows Explorer, select some files and click "Publish [...] on the web" in the Windows XP task pane.
-	- After confirming your file selection, your server will show up in the list of services. Go ...
 
 	Authors:
 		Tim Strehle <tim@digicol.de>
 		Andr� Basse <andre@digicol.de>
-
-	Version: 1.0b
-
-	CVS Version: $Id: xppubwiz.php,v 1.8 2003/05/30 09:31:13 tim Exp $
-
-	$Log: xppubwiz.php,v $
-
-	Revision 1.8  2003/05/30 09:31:13  tim
-	Fixed non-escaped backslashes in JavaScript manifest variable:
-	Christian Walczyk found out that file names beginning with "u" or "x" produced
-	a JavaScript error (because \u and \x mean something special).
-
-	Revision 1.7  2003/03/14 08:40:06  tim
-	Bug fixes for register_globals = off and magic_quotes_gpc = on.
-	
 
 	Based on + inspired by the Gallery (http://gallery.menalto.com/) XP Publishing Wizard implementation,
 	written by
@@ -67,7 +39,6 @@
 require ('../config.php');
 include "../include_sys/_autorize.php";
 include "../include_sys/_msq.php";
-error_reporting(-1);
 // General configuration
 
 $protocol = 'http';
