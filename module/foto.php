@@ -15,8 +15,6 @@ include_once $GLOBALS['include_sys']."_foto.php"; // фотовывод
 $s = "<center><div id='foton0'></div><script>mkload(0);</script>";
 
 $sql = ms("SELECT `name`,`id`,`type`,`text` FROM `".$db_site."` WHERE `type`='photo' ORDER BY `datetime` DESC",'_a',0);
-//$sql = ms("SELECT `name`,`id`,`type`,`text` FROM `".$db_site."` ORDER BY `name` LIMIT ".$skip.",".$npage1,'_a',0);
-//die("SELECT `name`,`id`,`type`,`text` FROM `".$db_site."` ORDER BY `name` LIMIT ".$skip.",".$npage1);
 
 $s.="<div id='polefoto'>";
 foreach($sql as $n=>$p) $s.=print_foto($p);

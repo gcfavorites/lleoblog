@@ -1,6 +1,6 @@
 <?php // Авторизация пользователей
-
 if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+if(isset($_GET['version'])) die("lleoblog 2.0"); // показать версию
 // if(!$admin) redirect($wwwhost."login/"); // посторонних - нахуй
 // blogpage();
 // $_PAGE = array('design'=>file_get_contents($GLOBALS['host_design']."dnevnik.html"),
@@ -57,7 +57,6 @@ $test_basa=array(
   `DateUpdate` int(10) unsigned NOT NULL default '0',
   `view_counter` int(10) unsigned NOT NULL default '0',
   `last_view_ip` varchar(15) NOT NULL default '',
-  `include` varchar(40) NOT NULL default '',
   `num` int(10) unsigned NOT NULL auto_increment,
   `Prev` varchar(64) NOT NULL default '' COMMENT 'предыдущая заметка',
   `Next` varchar(64) NOT NULL default '' COMMENT 'следующая заметка',

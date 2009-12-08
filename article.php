@@ -18,30 +18,21 @@ if(!isset($article)) {
 	}
 }
 
+include_once $include_sys."_antibot.php"; // антибота подгружаем
+include_once $include_sys."_onetext.php"; // обработка заметки
+
 $_PAGE["title"] .= $Date." ".($article['Header']!=''?$article['Header']:'');
 
-$s=$article['Body']; // обработка кавычек
-	$s=preg_replace_callback("/(>[^<]+<)/si","kawa",$s);
-	$s=preg_replace("/([\s>]+)\-([\s<]+)/si","$1".chr(151)."$2",$s); // длинное тире
-
-if($IS_USER0!='') $s=str_replace('%user%',$IS_USER0,$s);
-else if($lju!='') $s=str_replace('%user%',$lju,$s);
-else {
-	$s=str_replace(', %user%,','',$s);
-	$s=str_replace(' (%user%)','',$s);
-	$s=str_replace('%user%','',$s);
-	}
-$article['Body']=$s;
-
-
-include_once $include_sys."_antibot.php"; // антибота подгружаем
-
-
-list($article["Year"], $article["Mon"], $article["Day"]) = explode("/", $article['Date'],3);
-$article["Day"]=substr($article["Day"],0,2); // отсечь лишнее
+list($article["Year"], $article["Mon"], $article["Day"]) = explode("/", $article['Date'],3); $article["Day"]=substr($article["Day"],0,2);
 
 if(intval($article["Year"].$article["Mon"].$article["Day"]))
 $article["DateTime"] = mktime(1, 1, 1, $article["Mon"], $article["Day"], $article["Year"]);
+
+$_PAGE["header"] = zamok($article['Access']).$article["Day"]." ".$months_rod[intval($article["Mon"])]." ".$article["Year"]."<div id=Header>".$article["Header"]."</div>";
+
+$_PAGE["calendar"] = ($article["Prev"].$article["Next"]!=''?getCalendar($article["Year"], $article["Mon"], $article["Day"]):'');
+if($admin) $_PAGE["calendar"] = "<p><input TYPE=\"BUTTON\" VALUE=\"EDITOR\" onClick=\"window.location.href='".$wwwhost."editor/?Date=".$article["Date"]."' \"><p>".$_PAGE["calendar"];
+
 //---------------------------------------------
 
 	if($IS_USER) $opoznan=($IS_NAME?lladdru($IS_NAME):lladdru($IS_USER0));
@@ -53,8 +44,8 @@ $article["DateTime"] = mktime(1, 1, 1, $article["Mon"], $article["Day"], $articl
 function lladdru($l) { global $IS_IMG; return "<b><img src='$IS_IMG' border=0><font color=black>$l</font></b>"; }
 
 // информация поисковика
-if($_SERVER["HTTP_REFERER"]!='' && !strstr($_SERVER["HTTP_REFERER"],$GLOBALS["httpsite"]) ) {
 
+if($_SERVER["HTTP_REFERER"]!='' && !strstr($_SERVER["HTTP_REFERER"],$GLOBALS["httpsite"]) ) {
 //include_once $include_sys."_poiskovik.php";
 //include_once $include_sys."_linksearch.php";
 
@@ -94,11 +85,10 @@ $preword .= " Это личный дневник на домашней страничке одного простого парня из 
 
 }
 
-if($_GET['search']!='') $preword .= "<p>Страница отображается с поиском и подсветкой слов \"<span class=search>".htmlspecialchars($_GET['search'])."</span>\"
+if($_GET['search']!='') $preword .= "<p>Страница отображается с подсветкой слов \"<span class=search>".htmlspecialchars($_GET['search'])."</span>\"
 <br>Чтобы отобразить страницу в её нормальном режиме, <a href='/".$web_path.$Date.".html'>жмите сюда</a>";
 
-$preword = "<p><font color=red size=1>".$preword."</font>";
-
+$preword = "<div class=preword>".$preword."</div>";
 
 
 //===================================
@@ -155,8 +145,8 @@ $comans==''; if($_GET['id']==$sc) {
 
 	if($_GET['com']=='link') { $comans='<p><font color=red size=3>';
 
-$prichina=urldecode($_GET['prichina']); if($prichina!='') $comans.=$prichina;
-else $comans.='<b>ОШИБКА: Ваш комментарий скрыт антирекламным роботом!</b>
+	$prichina=urldecode($_GET['prichina']); if($prichina!='') $comans.=$prichina;
+	else $comans.='<b>ОШИБКА: Ваш комментарий скрыт антирекламным роботом!</b>
 
 <p>В смысле, он уже записан (дублировать его не надо!), но пока скрыт - виден только вам и мне. Почему? Потому что в нем, похоже,
 содержались ссылки. Теперь его судьба зависит от того, что это были за ссылки. Он никогда не будет опубликован, если нарушено
@@ -181,6 +171,7 @@ $comans.='</font>';
 
 }
 
+// блять, надо чтоб число комментариев сидело в самой заметке, это ж ебануться их считать всякий раз!
 $idzan = intval(ms("SELECT COUNT(*) FROM `dnevnik_comments` WHERE `DateID`='".e($article["num"])."'"
 .($podzamok||$admin?'':" AND (`metka`='open' OR `login`='".e($login)."' OR `speckod`='".e($sc)."')"), '_l',$ttl));
 
@@ -189,10 +180,6 @@ if($_POST["action"]=="add_commentary" && $comments_form) { include_once $include
 
 //========================================================================================
 
-// Посчитать юзера
-mysql_query("UPDATE `dnevnik_zapisi` SET view_counter=view_counter+1, last_view_ip='".mysql_escape_string($_SERVER["REMOTE_ADDR"])."' WHERE `Date`='".$article["Date"]."' AND last_view_ip!='".mysql_escape_string($_SERVER["REMOTE_ADDR"])."'");
-
-
 $_PAGE["prevlink"] = ($article["Prev"]!=''?$httphost.$article["Prev"].".html":$mypage);
 $_PAGE["nextlink"] = ($article["Next"]!=''?$httphost.$article["Next"].".html":$mypage);
 
@@ -200,15 +187,9 @@ $_PAGE["prevnext"] = mk_prevnest(
 	($article["Prev"]!=''?"<a href=".$wwwhost.$article["Prev"].".html>&lt;&lt; предыдущая заметка</a>":''),
 	($article["Next"]!=''?"<a href=".$wwwhost.$article["Next"].".html>следующая заметка &gt;&gt;</a>":'')
 );
-/*
-"<div class='navig'>"
-.($article["Prev"]!=''?"<div class='pre_post'><a href=".$wwwhost.$article["Prev"].".html>&lt;&lt; предыдущая заметка</a></div>":'')
-.($article["Next"]!=''?"<div class='next_post'><a href=".$wwwhost.$article["Next"].".html>следующая заметка &gt;&gt;</a></div>":'')
-."</div>";
-*/
 
-$_PAGE["calendar"] = ($article["Prev"].$article["Next"]!=''?getCalendar($article["Year"], $article["Mon"], $article["Day"]):'');
-$_PAGE["header"] = $article["Day"]." ".$months_rod[intval($article["Mon"])]." ".$article["Year"]."<div id=Header>".$article["Header"]."</div>";
+
+
 $_PAGE["counter"] = $article["view_counter"]+1;
 
 
@@ -315,7 +296,6 @@ function load_stat(data) { zabil('stat', \"<center>загрузка статистики...</cente
 }");
 
 
-// $Data=$article["Date"]; 
 include_once $include_sys."text_scripts.php"; // включить библиотеку
 
 $_PAGE["coments"] = "<div id='stat' class=br><a href=\"javascript:load_stat('".$article["Date"]."');\">статистика</a></div>".$coments;
@@ -343,61 +323,19 @@ function(responseJS, responseText) { if (responseJS.status) {
 	}},true);}
 var s = document.URL.split('#c'); if(s[1]) load_comments('normal');\n");
 
-
 $_PAGE["coments"] .= "
 <center><br><input TYPE='BUTTON' VALUE=' читать комментарии".$dopload." (".($podzamok?"всего":"открытых")." ".$idzan." шт) ' onClick=\"load_comments('".$article['comments_order']."'); \">
 </center>
 </div>
-
 "; //<p><font size=1><a href=\"javascript:load_comments('allrating'); \">читать комментарии по рейтингу</a></font>
 }
 
 }
 
 
-
-if($lju) { $ljkto=$lju; $ljif=', '.$lju; } else { $ljkto="yourname"; $ljif=''; }
-$article["Body"] = str_replace('$lju',$ljkto,$article["Body"]);
-$article["Body"] = str_replace('$lj',$ljif,$article["Body"]);
-
-// модули записей
-if($article["include"] != "") include("include/".$article["include"]);
-
-$article["Body"]=modules($article["Body"]); // процедуры site
-
-if($_GET['search']) $article['Body']=search_podsveti_body($article['Body']);
-
-if($_GET['mode']=='mudoslov') {
-        $ara=explode("\n",file_get_contents('mudoslov.txt'));
-        foreach($ara as $m) { $m=trim($m); if($m!='') {
-			$_GET['search']=$m;
-			$article['Body']=search_podsveti_body($article['Body']);
-			}}
-//} elseif($_GET['mode']=='hash') { include_once $include_sys."_hashdata2.php"; $article['Body'] = hashflash($article['Body']);
-
-} elseif( $login!='corwin' && !$podzamok && !$admin && $_GET['mode']!='h' ) { // hashdata для чужих
-	$article['Body'] = str_replace(array('&nbsp;','&copy;','$mdash;','&laquo','&raquo;'),array(chr(160),chr(169),chr(151),chr(171),chr(187)),$article['Body']);
-	//include_once $include_sys."_hashdata2.php"; $pa=hashinit();
-	// $article['Body'] = hashdata($article['Body'],$pa);
-}
+$_PAGE["body"] .= '<div id="Body">'.onetext($article["Body"]).'</div>';
 
 
-//include "include/main.php"; // скрипты lleo
-
-
-$_PAGE["body"] .= '<div id="Body">'.$article["Body"].'</div>';
-
-
-if($admin) $_PAGE["calendar"] = "<p><input TYPE=\"BUTTON\" VALUE=\"EDITOR\" onClick=\"window.location.href='".$wwwhost."editor/?Date=".$article["Date"]."' \"><p>".$_PAGE["calendar"];
-
-if($article['Access'] == "admin") $_PAGE["header"] .= "<p><img src=".$www_design."e/podzamok.gif>
-<img src=".$www_design."e/podzamok.gif>\n<img src=".$www_design."e/podzamok.gif>
-<img src=".$www_design."e/podzamok.gif>\n<img src=".$www_design."e/podzamok.gif>";
-
-elseif($article['Access'] == "podzamok") {
-if($article["include"]=="nikonov.php") $_PAGE["header"] = "<img src=".$www_design."e/podzamok.gif> ".$_PAGE["header"]."<p><font color=red><p>это готовая, но закрытая пока статья для &laquo;Солидарности&raquo; или Никонова,<br>остальным она откроется позже с переадресацией на тот сайт</font>";
-else $_PAGE["header"] = "<img src=".$www_design."e/podzamok.gif> ".$_PAGE["header"]."<p><font color=red><p>&lt; эта заметка только для своих &gt;</font>";
-}
 
 function search_podsveti_body($a) {
         $a=preg_replace_callback("/>([^<]+)</si","search_p_body",'>'.$a.'<');

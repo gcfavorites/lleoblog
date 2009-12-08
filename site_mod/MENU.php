@@ -1,5 +1,4 @@
 <?php // Выпадающее меню
-if(!isset($GLOBALS['admin_name'])) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 
 function MENU($e) { $a=explode("\n",$e);
 

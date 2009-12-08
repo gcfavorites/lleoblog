@@ -65,10 +65,10 @@ function msq($s) { global $msqe;
 }
 
 
-function ms($query,$mode='_a',$ttl=0) {	$s = false;
+function ms($query,$mode='_a',$ttl=0) {	$s = false; $magic='@';
 
-	if($ttl < 0) { cache_rm($mode.'#'.$query); return true; } // סבנמסטעü ך‎ר
-	elseif ($ttl > 0) {  $result=cache_get($mode."|".$query); if(false!==$result) { $GLOBALS['ms_ttl']='cache'; return $result; } }
+	if($ttl < 0) { cache_rm($mode.$magic.$query); return true; } // סבנמסטעü ך‎ר
+	elseif ($ttl > 0) {  $result=cache_get($mode.$magic.$query); if(false!==$result) { $GLOBALS['ms_ttl']='cache'; return $result; } }
 
 	$GLOBALS['ms_ttl']='new';
 	$sql = @msq($query);
@@ -80,7 +80,7 @@ function ms($query,$mode='_a',$ttl=0) {	$s = false;
 	elseif ($mode == '_l') { if(mysql_num_rows($sql)>=1) $s = mysql_result($sql,0,0); else $s=false; }
 	else { $s=array(); while($p=mysql_fetch_assoc($sql)) $s[$p[$mode]]=$p; }
 
-	if($ttl > 0) { cache_set($mode."|".$query, $s, $ttl); }
+	if($ttl > 0) { cache_set($mode.$magic.$query, $s, $ttl); }
 
 	return $s;
 }

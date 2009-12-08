@@ -6,15 +6,33 @@ if($admin) { // включить сообщения об ошибках
 	ini_set("display_errors","1");
 	ini_set("display_startup_errors","1");
 	ini_set('error_reporting', E_ALL);
+	// error_reporting(E_ALL);
+	// error_reporting = E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR
+	// error_reporting = E_ALL & ~E_USER_ERROR & ~E_USER_WARNING & ~E_USER_NOTICE
 }
-
 
 include $include_sys."_msq.php";
 $_SCRIPT=array(); $_SCRIPT_ADD=array();
 $_STYLE=array(); $_STYLE_ADD=array();
 mystart();
 
+// die( $filehost."<pre>".file_get_contents($filehost."config.php"));
+// if(!$admin) die("admin error");
+/*
+if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+if(!$admin) redirect($wwwhost."login/"); // посторонних - нахуй
+blogpage();
+// $_PAGE = array('design'=>file_get_contents($GLOBALS['host_design']."dnevnik.html"),
+*/
+
 $hashpage=rand(0,1000000); $hashpage=substr(broident($hashpage.$hashinput),0,6).'-'.$hashpage;
+
+function zamok($d) {
+	if($d=='all') return '';
+	$z = "<img src=".$GLOBALS['www_design']."e/podzamok.gif>&nbsp;";
+	if($d=='podzamok') return $z;
+	return $z.$z;
+}
 
 function blogpage() { global $_PAGE,$wwwhost,$login,$podzamok;
 
@@ -99,8 +117,8 @@ if (preg_match("/^".$pwwwhost."(\d\d\d\d)\/(\d\d)\/?$/", $path, $m)) {
 	}
 
 // ===== подключение внешних модулей из директории /module/* ====
-$mod_name=substr($path,strlen($wwwhost));
-if(preg_match("/[^0-9a-z_\-\.]+/si",$mod_name)) idie("Error 404: wrong name \"<b>".htmlspecialchars($mod_name)."</b>\"");
+$mod_name=substr($path,strlen($wwwhost)); $mod_name=str_replace('..','.',$mod_name);
+if(preg_match("/[^0-9a-z_\-\.\/]+/si",$mod_name)) idie("Error 404: wrong name \"<b>".htmlspecialchars($mod_name)."</b>\"");
 
 // сначала в базе сайта
 $text=ms("SELECT `text` FROM `site` ".WHERE("`name`='".e($mod_name)."' AND `type`='page'"),"_l",$ttl);
@@ -231,7 +249,7 @@ function modules($s) { $s_old=''; $stop=100; while($s!=$s_old && --$stop) {
 
 function module($t) { $s=$t[1]; // подцепить модули
 
-        if(strstr($s,':')) { // подсключаемый модуль
+        if(strstr($s,':')) { // подключаемый модуль
                 list($mod,$arg)=explode(':',$s,2); $mod=c($mod);
 
                 if(!function_exists($mod)) {

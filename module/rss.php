@@ -2,10 +2,25 @@
 
 if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 
+include_once $include_sys."_onetext.php"; // обработка заметки
+
+
+
+
+$subst1=array("{foto_www_preview}");
+$subst2=array($foto_www_preview);
+
+
+
+
+
+
+
+
+
+
 //$RSSZ_skip = 10;
 //$RSSZ_mode = 1;
-
-$zamok="<img src=".$www_design."e/podzamok.gif>&nbsp;";
 
 header("Content-Type: text/xml; charset=".$wwwcharset);
 
@@ -36,13 +51,14 @@ $lastupdate=0; foreach($pp as $p) {
 	$lastupdate = max($lastupdate,$p["DateUpdate"]);
 	$link=$httphost.$p["Date"].".html"; // полная ссылка на статью
 
-	$p['Body']=RSS_zaban($p['Body']); // обработать забаненных
-
-	if($RSSZ_mode==1) $p['Body']=RSSZ_mode1($p['Body']); // если в настройках указано не давать полный RSS
+		$Body=RSS_zaban($p['Body']); // обработать забаненных
+		$Body=onetext($Body); // обработать текст заметки как положено
+		if($RSSZ_mode==1) $Body=RSSZ_mode1($Body); // если в настройках указано не давать полный RSS
+		$Body=zamok($p['Access']).$Body; // добавить картинки подзамков
+		$Body=str_replace($subst1,$subst2,$Body);
 
 	$Header=$p["Date"].($p["Header"]?" - ".$p["Header"]:"");
 
-	$Body=($p['Access']=='podzamok'?$zamok:'').($p['Access']=='admin'?$zamok.$zamok.$zamok.$zamok.$zamok:'').$p['Body'];
 
 $s .= "\n<item>
 	<guid isPermaLink='true'>".$link."</guid>

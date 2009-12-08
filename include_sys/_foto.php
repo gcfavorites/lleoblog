@@ -46,4 +46,12 @@ function getWinH(){ return document.compatMode=='CSS1Compat' && !window.opera?do
 // dier($GLOBALS['_PAGE']);
 // exit;
 
+
+/*
+        function zabil(id,text) { document.getElementById(id).innerHTML = text; }
+        function vzyal(id) { return document.getElementById(id).innerHTML; }
+        function zakryl(id) { document.getElementById(id).style.display='none'; }
+        function otkryl(id) { document.getElementById(id).style.display='block'; }
+*/
+
 ?>

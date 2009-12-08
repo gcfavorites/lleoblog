@@ -190,6 +190,6 @@ function file_get($f) {	//$n=$GLOBALS['fileget_tmp'].md5($f).".dat";
 	$x=file_get_contents($f); file_put_contents($n,$x); return $x;
 }
 
-function dier($a) { die('<pre>'.nl2br(htmlspecialchars(print_r($a)))); } // отладочная процедурка
+function dier($a) { die('<pre>'.htmlspecialchars(print_r($a,1))); } // отладочная процедурка
 
 ?>

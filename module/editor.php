@@ -45,7 +45,6 @@ if($_POST["action"] == "Save") {
 			'Comment_write'=>e($_POST["Comment_write"]),
 			'Comment_screen'=>e($_POST["Comment_screen"]),
 			'comments_order'=>e($_POST["comments_order"]),
-			'include'=>e($_POST["include"]),
 			'DateUpdate'=>time()
 		),'Date');
 //	prosris(); // устаканить `dnevnik_zapisi`
@@ -110,16 +109,10 @@ Data: <input type='text' name='Date' class='t' value='".($Date!=''?htmlspecialch
 
 SCRIPT_ADD($www_design."pins.js"); // подгрузить pins
 
-// выяснить о модулях
-$inc=glob($filehost."include/*.php");
-$ainc=array(); $ainc['']='- нет -'; foreach($inc as $l) { $l=preg_replace("/^.*?\/([^\/]+\.php)$/si","$1",$l); $ainc[$l]=$l; }
-
 print "<div class=r>Заметка: ".selecto('Access',$_POST['Access'],array(
 					'admin'=>"никому",
 					'podzamok'=>"подзамок",
 					'all'=>"всем") )."
-
-/include/".selecto('include',$_POST['include'],$ainc)."
 
 <br>Комментарии показывать: ".selecto('Comment_view',$_POST['Comment_view'],array(
                                         'timeload'=>"поначалу",

@@ -1,5 +1,4 @@
 <?php // Отсылка формы письмом
-if(!isset($GLOBALS['admin_name'])) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 
 function MAILTO($e) { $s=explode(':',$e);
 	$from_name=c($s[1]);

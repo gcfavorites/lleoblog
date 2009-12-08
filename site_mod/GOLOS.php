@@ -1,9 +1,8 @@
 <?php // СКРИПТ ГОЛОСОВАНИЯ v.2
-
 /*
 Вот такой код вставляется в дневник:
 
-{golosovalka ИМЯ_ВАШЕГО_ГОЛОСОВАНИЯ
+{_ GOLOS: ИМЯ_ВАШЕГО_ГОЛОСОВАНИЯ:
 
 1. Как вы думаете, что это?
 -- Это голосование
@@ -18,41 +17,45 @@
 3. Нравится ли вам движок дневника?
 -- По-моему пора закругляться: для теста достаточно и двух пунктов
 -- Я шутник и член партии "Шаловливая Россия"
-}
 
+_}
 */
 
-$db_golosa='golosovanie2_golosa';
-$db_result='golosovanie2_result';
+// обратились к этому скрипту напрямую при посте?
 
-// вот такая проверка на Пост
+$GLOBALS['GOLOS_db_golosa']='golosovanie2_golosa';
+$GLOBALS['GOLOS_db_result']='golosovanie2_result';
+
 if(isset($_POST['golos_return'])) {
-		include_once "../config.php";
-		include_once $include_sys."_autorize.php";
+		include "../config.php";
+		include $include_sys."_autorize.php";
 		include $include_sys."_msq.php";
-		include_once $include_sys."_antibot.php";
+		include $include_sys."_antibot.php";
 		die(post_code());
 	}
 
-$vopr=golos_chit($article["Body"]); // $gol_name - автоматически;
+//include_once $include_sys."_antibot.php"; // должен быть загружен!
 
-$golosoval=msq_exist($db_golosa,"WHERE name='".e($gol_name)."' AND (sc='".e($sc)."' OR ipipx='".e($IP.' '.$_SERVER['HTTP_X_FORWARDED_FOR'])."')");
+function GOLOS($e) { global $GOLOS_db_golosa,$GOLOS_db_result, $sc,$IP,$admin,$www_design,$wwwhost,$mypage,$antibot_C;
 
-//if($admin) $golosoval=true;
+	list($gol_name,$vopr)=explode(':',$e,2); $gol_name=c($gol_name); $vopr=golos_chit($vopr);
 
-// взять результаты
-if($golosoval) {
-	$s=ms("SELECT text,n FROM $db_result WHERE name='".e($gol_name)."'",'_1',0);
-	$go=unserialize($s['text']); $nn=$s['n'];
+	$golosoval=msq_exist($GOLOS_db_golosa,"WHERE name='".e($gol_name)."' AND (sc='".e($sc)."' OR ipipx='".e($IP.' '.$_SERVER['HTTP_X_FORWARDED_FOR'])."')");
+
+//	if($admin) $golosoval=false;
+
+	// взять результаты
+	if($golosoval) {
+		$s=ms("SELECT text,n FROM ".$GOLOS_db_result." WHERE name='".e($gol_name)."'",'_1',0);
+		$go=unserialize($s['text']); $nn=$s['n'];
 	}
 
-
-$s=''; if($admin) $s.=nl2br(golos_recalculate($gol_name)).'<p>';
+	$s=''; if($admin) $s.=nl2br(golos_recalculate($gol_name)).'<p>';
 
 	$k=($nn?(640/$nn):0); // вычислилить коэффициент array_sum($go[$n])
 	$kp=($nn?(100/$nn):0);
 
-$n=0; foreach($vopr as $vop=>$var) { $n++;
+	$n=0; foreach($vopr as $vop=>$var) { $n++;
 
 	$s.="\n<p><b>$vop</b><br><ul>";
 
@@ -76,16 +79,14 @@ $n=0; foreach($vopr as $vop=>$var) { $n++;
 	$s="<center><table width=90% cellspacing=20><td align=left>".$s."</td></table></center>";
 
 
-
-
 	if($golosoval) { // если голосовал
 
 		$s = "<p>Проголосовали <b>$nn</b> человек:".$s."<p><center><b>спасибо, что проголосовали!</b></center>";
 	} else { // если НЕ голосовал
 
-include_once $include_sys."_antibot.php";
+
 $s = "
-<form name='golos_".$gol_name."' method=post action='".$wwwhost."include/golosovalka2.php'>
+<form name='golos_".$gol_name."' method=post action='".$wwwhost."site_mod/GOLOS.php'>
 <input type=hidden name=hash value='".antibot_make()."'>
 <input type=hidden name=golos_name value='".$gol_name."'>
 <input type=hidden name=golos_return value='".$mypage."'>
@@ -102,7 +103,11 @@ $s = "
 
 }
 
-$article['Body'] = preg_replace("/\{golosovalka[^\}]*\}/si",$s,$article['Body']);
+
+//$article['Body'] = preg_replace("/\{golosovalka[^\}]*\}/si",$s,$article['Body']);
+return $s;
+}
+
 
 //=======================================================================================
 //=======================================================================================
@@ -140,26 +145,29 @@ function post_code() {
 //=======================================================================================
 
 
-function golos_update($name,$gol) { global $db_golosa,$sc,$IP;
+function golos_update($name,$gol) { global $GOLOS_db_golosa,$sc,$IP;
   $ara=array(
 	'name'=>e($name), 'sc'=>e($sc),
 	'ipipx'=>e($IP.' '.$_SERVER['HTTP_X_FORWARDED_FOR']),
 	'value'=>e(serialize($gol))
 	);
-  if(!msq_exist($db_golosa,"WHERE `name`='".$ara['name']."' AND (`sc`='".$ara['sc']."' OR `ipipx`='".$ara['ipipx']."')")) {
-	msq_add($db_golosa,$ara); return true; } else return false;
+  if(!msq_exist($GOLOS_db_golosa,"WHERE `name`='".$ara['name']."' AND (`sc`='".$ara['sc']."' OR `ipipx`='".$ara['ipipx']."')")) {
+	msq_add($GOLOS_db_golosa,$ara); return true; } else return false;
 }
 
-function golos_calculate($name,$gol) { global $db_result;
-	$g=ms("SELECT `n`,`text` FROM `$db_result` WHERE `name`='".e($name)."'","_1",0); if($g===false) $g=array();
+function golos_calculate($name,$gol) { global $GOLOS_db_result;
+	$g=ms("SELECT `n`,`text` FROM `$GOLOS_db_result` WHERE `name`='".e($name)."'","_1",0); if($g===false) $g=array();
 	$n=$g['n'];
 	$go=unserialize($g['text']); if($go===false) $go=array();
 	foreach($gol as $i=>$j) $go[$i][$j]++; // добавить голос нынешний
-	msq_add_update($db_result,array( 'name'=>e($name),'n'=>e(++$n),'text'=>e(serialize($go)) ),'name');
+	msq_add_update($GOLOS_db_result,array( 'name'=>e($name),'n'=>e(++$n),'text'=>e(serialize($go)) ),'name');
 }
 
 
-function golos_recalculate($name) { global $db_golosa,$db_result;
+
+
+
+function golos_recalculate($name) { global $GOLOS_db_golosa,$GOLOS_db_result;
 
 	$limit=1000;
 	$start=0;
@@ -170,7 +178,7 @@ function golos_recalculate($name) { global $db_golosa,$db_result;
 	$mes='';
 
 	$ct=0; while($ct++<100) {
-		$pp=ms("SELECT `value` FROM `$db_golosa` WHERE `name`='".e($name)."' LIMIT $start,$limit","_a",0);
+		$pp=ms("SELECT `value` FROM `".$GOLOS_db_golosa."` WHERE `name`='".e($name)."' LIMIT $start,$limit","_a",0);
 		if(!sizeof($pp)) { break; }
 		$start+=$limit;
 		foreach($pp as $p) {
@@ -182,8 +190,8 @@ function golos_recalculate($name) { global $db_golosa,$db_result;
 
 
 
-	$go0=unserialize(ms("SELECT `text` FROM `$db_result` WHERE `name`='".e($name)."'",'_l',0));
-	$summ0=ms("SELECT `n` FROM `$db_result` WHERE `name`='".e($name)."'",'_l',0);
+	$go0=unserialize(ms("SELECT `text` FROM `$GOLOS_db_result` WHERE `name`='".e($name)."'",'_l',0));
+	$summ0=ms("SELECT `n` FROM `$GOLOS_db_result` WHERE `name`='".e($name)."'",'_l',0);
 
 	$mmes='';
 
@@ -198,9 +206,9 @@ function golos_recalculate($name) { global $db_golosa,$db_result;
 
 	if($mmes=='') $mes .= '<font color=green>Пересчет: ВСЕ СОШЛОСЬ</font>'; else {
 	$mes.=$mmes;
-	if($GLOBALS['IS_EDITOR']) {
+	if($GLOBALS['admin']) {
 	$mes .= '<p><font color=red>UPDATE! '.
-	msq_add_update($db_result,array( 'name'=>e($name),'n'=>e($summ),'text'=>e(serialize($go)) ),'name')
+	msq_add_update($GOLOS_db_result,array( 'name'=>e($name),'n'=>e($summ),'text'=>e(serialize($go)) ),'name')
 	.'</font>';
 	}
 
@@ -211,10 +219,8 @@ function golos_recalculate($name) { global $db_golosa,$db_result;
 }
 
 
-function golos_chit($text) { // распознать голосовалку
-	preg_match("/\{golosovalka\s+([^\s]+)([^\}]+)\}/si",$text,$m);
-	$GLOBALS['gol_name']=trim($m[1]);
-	preg_match_all("/#+\n*([^#]+)/si","#".str_replace("\n\n","#",$m[2]),$km);
+function golos_chit($s) { // распознать голосовалку
+	preg_match_all("/#+\n*([^#]+)/si","#".str_replace("\n\n","#",$s),$km);
 	$vopr=array(); foreach($km[1] as $k=>$mm) {
 		$z=trim( preg_replace("/^([^\n]+)\n.*$/si","$1",$mm) );
 		preg_match_all("/\n+[\s\-]+([^\n]+)/si",trim($mm),$vv);

@@ -1,5 +1,4 @@
 <?php // Отображение всего фотоальбома или избранных
-if(!isset($GLOBALS['admin_name'])) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 
 include_once $GLOBALS['include_sys']."_foto.php"; // фотовывод
 

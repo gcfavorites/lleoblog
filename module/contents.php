@@ -99,7 +99,8 @@ exit;
 
 
 function pr_comments($sq) { global $s; die($s.pr_comments_($sq)); }
-function pr_zapisi($sq,$more) { global $s; die($s.pr_zapisi_($sq).($more?"<p><a href=?mode=more>показать больше &gt;&gt;</a>":'')); }
+function pr_zapisi($sq,$more=false) { global $s; die($s.pr_zapisi_($sq).($more && $GLOBALS["colnewcom"]>$GLOBALS["SIZEDEFAULT"]
+?"<p><a href=?mode=more>показать больше &gt;&gt;</a>":'')); }
 
 function pr_zapisi_comments($sqz,$sqc) {
 	$s=pr_zapisi_($sqz).pr_comments_($sqc);
@@ -138,7 +139,7 @@ function mudos($like,$or) {
 }
 
 //=========================================================================================================
-function pr_zapisi_($sq) { global $ttl,$wwwhost,$www_design,$numos;
+function pr_zapisi_($sq) { global $ttl,$wwwhost,$www_design,$numos,$podz_img,$colnewcom;
 	$s=''; $year=0;
 	$sql=ms($sq,"_a",$ttl); $s.=$msqe;
 	$colnewcom=sizeof($sql); if(!$colnewcom) return $s;
@@ -154,14 +155,13 @@ function pr_zapisi_($sq) { global $ttl,$wwwhost,$www_design,$numos;
 			if($numos) $detail=" ".$numos++.". "; else $detail='';
 			$z=$detail."<a href='".$wwwhost."$Y/$M/$D.html".($_GET['search']?"?search=".$_GET['search']:'')."'>$M-$D (".$p["view_counter"].") ".$head."</a>";
 
-			if($p['Access']=='podzamok') $z="<img src='".$www_design."e/podzamok.gif'>&nbsp;<b>".$z."</b>";
-			elseif($p['Access']=='admin') $z="<img src='".$www_design."e/podzamok.gif'>&nbsp;<s><b>".$z."</b></s>";
+			if($p['Access']=='podzamok') $z=$podz_img."&nbsp;<b>".$z."</b>";
+			elseif($p['Access']=='admin') $z=$podz_img."&nbsp;<s><b>".$z."</b></s>";
 			$s.="\t<li>".$z."</li>\n";
 
 		} else {
 			$z=$detail."<a href='".$wwwhost.$Date.($_GET['search']?"?search=".$_GET['search']:'')."'>".$Date." (".$p["view_counter"].") ".$head."</a>";
-			if($p['Access']=='podzamok') $z="<img src='".$www_design."e/podzamok.gif'>&nbsp;<b>".$z."</b>";
-			elseif($p['Access']=='admin') $z="<img src='".$www_design."e/podzamok.gif'>&nbsp;<s><b>".$z."</b></s>";
+			$z = zamok($p['Access']).$z;
 			$s.="<br>".$z;
 		}
 	}
@@ -173,7 +173,7 @@ function pr_zapisi_($sq) { global $ttl,$wwwhost,$www_design,$numos;
 
 
 //=========================================================================================================
-function pr_zapisi_rating($sq) { global $ttl,$web_path,$www_design;
+function pr_zapisi_rating($sq) { global $ttl,$web_path,$www_design,$podz_img;
 	$s='';
 	$sql=ms($sq,"_a",$ttl); $s.=$msqe;
 	$s.="<h2>«аписей ".sizeof($sql)." (сортировка по счетчику посещений)</h2>";
@@ -183,8 +183,7 @@ function pr_zapisi_rating($sq) { global $ttl,$web_path,$www_design;
         	list($Y,$M,$D)=explode("/", $p["Date"]);
 		$head=($p["Header"]?" - ".htmlspecialchars($p["Header"]):"");
 	        $z = "<b>".$p['view_counter']."</b> - <a href='/".$web_path."$Y/$M/$D.html".($_GET['search']?"?search=".$_GET['search']:'')."'>".$p['Date'].$head."</a>";
-		if($p['Access']=='podzamok') $z="<img src='".$www_design."e/podzamok.gif'>&nbsp;<b>".$z."</b>";
-		elseif($p['Access']=='admin') $z="<img src='".$www_design."e/podzamok.gif'>&nbsp;<s><b>".$z."</b></s>";
+		$z = zamok($p['Access']).$z;
 		$s.="\t<li>".$z."</li>\n";
 		}
 	$s.="</ol>\n";
