@@ -1,16 +1,28 @@
-<?php // Отображение всего фотоальбома или избранных
+<?php // Показать спрятанное под катом
+
+if(!isset($GLOBALS['admin'])) die('<pre>'.htmlspecialchars(file_get_contents($_SERVER['SCRIPT_FILENAME'])).'</pre>');
 
 function cut($e) {
 
-	$e=str_replace(array("\\","'","\n","\r"),array("\\\\","\\'","\\n",""),$e);
+	$tag="[показать&nbsp;спрятанное]";
+	$tag0="[...]";
+	$l=(strstr($e,"\n")||strstr($e,'<')?1:0);
 
-	SCRIPTS("cut","function cut(e,s) {
-	if(e.className=='') { e.className='cut'; e.innerHTML='[показать&nbsp;спрятанное]'; } else { e.className=''; e.innerHTML=s;}
-	return false; }");
+	$e=str_replace(array("\\","'",'"',"\n","\r"),array("\\\\","\\'",'\\"',"\\n",""),$e);
 
-	STYLES(".cut { text-align: center; cursor: pointer; color: blue; text_decoration: underline; }");
+	SCRIPTS("cut","function cut(e,s,l) {
+		if(e.className=='cuts') { e.className='cut'; e.innerHTML=(l?'$tag':'$tag0'); }
+		else { e.className='cuts'; e.innerHTML=s; }
+	return false; }"); // к скриптам
 
-	return '<div class=cut onclick="cut(this,\''.$e.'\');">[показать&nbsp;спрятанное]</div>';
+	STYLES("cutstyle","
+.cut,.cut0 { cursor: pointer; color: blue; text_decoration: underline; }
+.cut { text-align: center;}
+.cuts { border: 1px dashed #ccc; }
+"); // к стилям
+
+	if($l) return "<div class=cut onclick=\"cut(this,'$e',$l)\">$tag</div>";
+	return "<span class=cut0 onclick=\"cut(this,'$e',$l)\">$tag0</span>";
 
 }
 

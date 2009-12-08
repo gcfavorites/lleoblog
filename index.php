@@ -250,6 +250,9 @@ function modules($s) { $s_old=''; $stop=100; while($s!=$s_old && --$stop) {
 function module($t) { $s=$t[1]; // подцепить модули
 
         if(strstr($s,':')) { // подключаемый модуль
+
+		$s=str_replace(array('{#_','_#}'),array('{_','_}'),$s); // разэкранировать аргументы
+
                 list($mod,$arg)=explode(':',$s,2); $mod=c($mod);
 
                 if(!function_exists($mod)) {
