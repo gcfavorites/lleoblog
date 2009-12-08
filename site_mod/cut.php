@@ -16,9 +16,9 @@ function cut($e) {
 	return false; }"); // к скриптам
 
 	STYLES("cutstyle","
-.cut,.cut0 { cursor: pointer; color: blue; text_decoration: underline; }
+.cut,.cut0 { cursor: pointer; color: blue; } .cut:hover,.cut0:hover { text-decoration: underline; }
 .cut { text-align: center;}
-.cuts { border: 1px dashed #ccc; }
+.cuts { border: 1px dashed #ccc; cursor: pointer; }
 "); // к стилям
 
 	if($l) return "<div class=cut onclick=\"cut(this,'$e',$l)\">$tag</div>";
