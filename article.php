@@ -333,33 +333,6 @@ $_PAGE["coments"] .= "
 }
 
 
-$_PAGE["body"] .= '<div id="Body">'.onetext($article["Body"]).'</div>';
-
-
-
-function search_podsveti_body($a) {
-        $a=preg_replace_callback("/>([^<]+)</si","search_p_body",'>'.$a.'<');
-        $a=ltrim($a,'>'); $a=rtrim($a,'<');
-        return $a;
-} function search_p_body($r) { return '>'.str_ireplace2_body($_GET['search'],"<span class=search>","</span>",$r[1]).'<'; }
-
-
-function str_ireplace2_body($search,$rep1,$rep2,$s){ $c=chr(1); $nashlo=array(); $x=strlen($search);
-        $SEARCH=strtolower2_body($search);
-        $S=strtolower2_body($s);
-        while (($i=strpos($S,$SEARCH))!==false){
-                $nashlo[]=substr($s,$i,$x);
-                $s=substr_replace($s,$c,$i,$x);
-                $S=substr_replace($S,$c,$i,$x);
-        } foreach($nashlo as $l) $s=substr_replace($s,$rep1.$l.$rep2,strpos($s,$c),1);
-        return $s;
-}
-
-function strtolower2_body($s){
-	$s=strtr($s,'ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÛÜÚÝÞß','àáâãäå¸æçèéêëìíîïðñòóôõö÷øùûüúýþÿ'); // ðóññêèå â ñòðî÷íûå
-	$s=strtr($s,'àâñåíêìîðòõó','abcehkmoptxy'); // ðóññêèå êàêèå ïîõîæè - â ëàòèíñêèå
-	$s=strtolower($s); // ëàòèíñêèå â ñòðî÷íûå
-	return $s;
-}
+$_PAGE["body"] .= '<div id="Body">'.onetext($article["Body"],$article["num"]).'</div>';
 
 ?>
