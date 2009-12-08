@@ -4,20 +4,8 @@ if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - на
 
 include_once $include_sys."_onetext.php"; // обработка заметки
 
-
-
-
 $subst1=array("{foto_www_preview}");
 $subst2=array($foto_www_preview);
-
-
-
-
-
-
-
-
-
 
 //$RSSZ_skip = 10;
 //$RSSZ_mode = 1;
@@ -26,7 +14,7 @@ header("Content-Type: text/xml; charset=".$wwwcharset);
 
 $skip=intval($_GET['skip']);
 
-$pp = ms("SELECT `Date`,`Body`,`Header`,`DateUpdate`,`Access` FROM `dnevnik_zapisi` ".WHERE(
+$pp = ms("SELECT `Date`,`Body`,`Header`,`DateUpdate`,`Access`,`num` FROM `dnevnik_zapisi` ".WHERE(
 "`Date` LIKE '____/__/%'"
 )." ORDER BY `Date` DESC LIMIT ".$skip.",".$RSSZ_skip,"_a",$ttl);
 
@@ -52,7 +40,7 @@ $lastupdate=0; foreach($pp as $p) {
 	$link=$httphost.$p["Date"].".html"; // полная ссылка на статью
 
 		$Body=RSS_zaban($p['Body']); // обработать забаненных
-		$Body=onetext($Body); // обработать текст заметки как положено
+		$Body=onetext($Body,$p["num"]); // обработать текст заметки как положено
 		if($RSSZ_mode==1) $Body=RSSZ_mode1($Body); // если в настройках указано не давать полный RSS
 		$Body=zamok($p['Access']).$Body; // добавить картинки подзамков
 		$Body=str_replace($subst1,$subst2,$Body);
@@ -100,7 +88,7 @@ function RSS_zaban($s) { global $admin; 	// если это забаненные мудаки, воры и р
 	if(	$_SERVER["REMOTE_ADDR"]=='78.46.74.53' // http://feedex.net/view/lleo.aha.ru/dnevnik/rss.xml
 		|| strstr($_SERVER["HTTP_USER_AGENT"],'eedjack') // BRO='Feedjack 0.9.10 - http://www.feedjack.org/'
 		// || $_SERVER["REMOTE_ADDR"]=='79.165.191.215' // Feed43.com? http://feeds.feedburner.com/lleo ?
-		|| strstr($_SERVER["HTTP_USER_AGENT"],'Wget/') // а нехуй вгетом качать!
+//		|| strstr($_SERVER["HTTP_USER_AGENT"],'Wget/') // а нехуй вгетом качать!
 		|| $_SERVER["REMOTE_ADDR"]=='140.113.88.218' || strstr($_SERVER["HTTP_USER_AGENT"],'Yahoo Pipes')
 	) return "Для вас полный текст заметки <a href=".mkna("читатель RSS!",
 "вы настолько обленились, что вам лень ткнуть в ссылку и вы пытаетесь читать RSS пиратскими способами.",
