@@ -30,10 +30,15 @@ if($_POST["action"] == "Move") {
 // Форма правки заметок
 if($_POST["action"] == "Save") {
 			// предварительная полезная обработка
+
 			$s=$_POST["Body"];
+			$s=str_replace("\r",'',$s); // вот это сразу, потому что ненавижу
+
+		if($_POST["autokaw"]!="no") { // если разрешено обработать кавычки и тире
 			$s=preg_replace_callback("/(>[^<]+<)/si","kawa",$s);
 			$s=preg_replace("/([\s>]+)\-([\s<]+)/si","$1".chr(151)."$2",$s); // длинное тире
-			$s=str_replace("\r",'',$s);
+		}
+
 //	getCalendar_clear($_POST["Date"]); // сбросить кэш календаря
 	msq_add_update('dnevnik_zapisi',array(
 			'Date'=>e($_POST["Date"]),
@@ -45,6 +50,9 @@ if($_POST["action"] == "Save") {
 			'Comment_write'=>e($_POST["Comment_write"]),
 			'Comment_screen'=>e($_POST["Comment_screen"]),
 			'comments_order'=>e($_POST["comments_order"]),
+			'autoformat'=>e($_POST["autoformat"]),
+			'autokaw'=>($_POST["autokaw"]=='no'?'no':'auto'),
+			//count_comments_open
 			'DateUpdate'=>time()
 		),'Date');
 //	prosris(); // устаканить `dnevnik_zapisi`
@@ -113,6 +121,15 @@ print "<div class=r>Заметка: ".selecto('Access',$_POST['Access'],array(
 					'admin'=>"никому",
 					'podzamok'=>"подзамок",
 					'all'=>"всем") )."
+
+
+автоформат строк: ".selecto('autoformat',$_POST['autoformat'],array(
+					'p'=>"p/br",
+					'no'=>"нет",
+					'pd'=>"class=pd") )."
+
+не менять кавычки: <input type=checkbox name=autokaw value='no'".($_POST["autokaw"]=='no'?"checked":"").">
+
 
 <br>Комментарии показывать: ".selecto('Comment_view',$_POST['Comment_view'],array(
                                         'timeload'=>"поначалу",

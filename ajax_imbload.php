@@ -13,7 +13,7 @@ if($p===false) otprav("Error 404");
 
 $_RESULT["Admin"] = $admin_name;
 $_RESULT["Header"] = zamok($p["Access"]).$p["Header"];
-$_RESULT["Body"] = obr_link(onetext($p["Body"]));
+$_RESULT["Body"] = obr_link(onetext($p));
 $_RESULT["status"] = true;
 exit;
 

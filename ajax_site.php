@@ -27,7 +27,7 @@ function saveit() { global $db_site,$id; // $_REQUEST; // ?
 if($a == "new") { edit_form(0,$_REQUEST['name'],$_REQUEST['text'],$_REQUEST['type'],$_REQUEST['Access']); } // новая
 
 if($a == "send_edit") { // сохранить изменения и закрыть
-//	$_RESULT["reload"]=true;
+	$_RESULT["reload"]=true;
 	saveit();
 	$a="close";
 }
@@ -55,7 +55,7 @@ otprav("<li><table><tr valign=center>
 <td><img src=".$GLOBALS['foto_www_preview'].$p['text']."></td>
 <td><a href=\"javascript:l('".$id."')\">".(strlen($name)?$name:"&lt;...&gt;")."</a></td>
 </tr></table></li>");
-//$_RESULT["reload"]=false;
+$_RESULT["reload"]=false;
 
 	}
 
