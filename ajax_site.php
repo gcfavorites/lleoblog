@@ -27,8 +27,8 @@ function saveit() { global $db_site,$id; // $_REQUEST; // ?
 if($a == "new") { edit_form(0,$_REQUEST['name'],$_REQUEST['text'],$_REQUEST['type'],$_REQUEST['Access']); } // новая
 
 if($a == "send_edit") { // сохранить изменения и закрыть
+//	$_RESULT["reload"]=true;
 	saveit();
-	$_RESULT["reload"]=true;
 	$a="close";
 }
 
@@ -43,9 +43,22 @@ if($a == "view") {
 }
 
 if($a == "close") {
-	if($id)	{ $name=ms("SELECT `name` FROM `".$db_site."` WHERE `id`='".$id."'","_l",0); }
+	if($id)	{ $p=ms("SELECT * FROM `".$db_site."` WHERE `id`='".$id."'","_1",0); $name=$p['name']; }
 	else { $name="создать новую"; }
-	otprav("<li><a href=\"javascript:l('".$id."')\">".htmlspecialchars($name)."</a></li>");
+
+	if($p['type']!='photo') {
+otprav("<li><a href=\"javascript:l('".$id."')\">".htmlspecialchars($name)."</a>
+&nbsp;(<a href=".$GLOBALS['wwwhost'].htmlspecialchars($name)." target=_blank>open</a>)</li>");
+	} else {
+
+otprav("<li><table><tr valign=center>
+<td><img src=".$GLOBALS['foto_www_preview'].$p['text']."></td>
+<td><a href=\"javascript:l('".$id."')\">".(strlen($name)?$name:"&lt;...&gt;")."</a></td>
+</tr></table></li>");
+//$_RESULT["reload"]=false;
+
+	}
+
 }
 
 if($a == "delete") { msq_del($db_site,array('id'=>$id)); otprav(""); }
@@ -72,8 +85,9 @@ $jsvalue=",document.getElementById('".$id_name."').value,"
 
 otprav("<li><a href=\"javascript:ajax_site('close',".$id.")\">закрыть</a>
 <p><center>
-<table><tr><td>
-<input id='".$id_name."' type=text class='t' size=32 value='".htmlspecialchars($name)."'>
+<table><tr>
+".($type!='photo'?'':"<td><img src=".$GLOBALS['foto_www_preview'].$text."></td>")."
+<td><input id='".$id_name."' type=text class='t' size=32 value='".htmlspecialchars($name)."'>
 ".selecto($id_type,htmlspecialchars($type),array(
 	'page'=>"page: загружаемая страница",
 	'design'=>"design: элемент дизайна",

@@ -1,5 +1,7 @@
 <?php
 
+include $include_sys."_onecomment.php";
+
 if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 blogpage();
 

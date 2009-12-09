@@ -18,11 +18,14 @@ $pp = ms("SELECT `Date`,`Body`,`Header`,`DateUpdate`,`Access`,`num` FROM `dnevni
 "`Date` LIKE '____/__/%'"
 )." ORDER BY `Date` DESC LIMIT ".$skip.",".$RSSZ_skip,"_a",$ttl);
 
-$s.="<?xml version='1.0' encoding='".$wwwcharset."'?>
+$s1="<?xml version='1.0' encoding='".$wwwcharset."'?>
 <rss version='2.0' xmlns:ya='http://blogs.yandex.ru/yarss/' xmlns:wfw='http://wellformedweb.org/CommentAPI/'>
 
 <channel>
   <title>Леонид Каганов: второй блог - о веб-разработке</title>
+  <lastBuildDate>";
+
+$s="</lastBuildDate>
   <link>".$httphost."</link>
   <description>Блог lleo о разработке блогодвижка</description>
   <generator>LLeoBlog 1.0</generator>
@@ -63,7 +66,7 @@ $s .= "\n</channel>\n\n</rss>\n";
 
 check_if_modified($lastupdate,"$lastupdate"); // время последней модификации (оно же как ETag)
 
-die($s);
+die($s1.date("r",$lastupdate).$s);
 
 //=========================================================================================================
 

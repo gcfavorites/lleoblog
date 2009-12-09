@@ -255,10 +255,8 @@ foreach($test_basa as $table=>$a) { $b='';
 		}
 	}
 
-	$a=ms("SELECT COUNT(*) FROM `".$table."`","_l",0);
-
-	if($a===false) $a=$b.($admin?"<font color=red>создать: </font> &nbsp; <input type='submit' name='create' value='".$table."'>":"залогиньс€ чтобы создать");
-	else $a="<font color=green>элементов: </font>".$a;
+	if(!msq_table($table)) $a=$b.($admin?"<font color=red>создать: </font> &nbsp; <input type='submit' name='create' value='".$table."'>":"залогиньс€ чтобы создать");
+	else { $a=ms("SELECT COUNT(*) FROM `".$table."`","_l",0); $a="<font color=green>элементов: </font>".$a; }
 
 	$s .= "<tr>
 		<td><b>".$table."</b></td>
@@ -267,11 +265,57 @@ foreach($test_basa as $table=>$a) { $b='';
 
 }
 
+
 $s.="</table></center></form>";
 
-$s.="<p>";
+$s.="<center><p><div id=soobshi><input type=button value='ѕохвастатьс€ успешной установкой' onclick=\"document.getElementById('soobshi').innerHTML = '<img src=http://lleo.aha.ru/blog/stat?link={httphost}>';\"></div></center>";
+
+$s.="<p><center>
+<form name=create method=POST action=".$mypage.">
+";
+
+
+
+// $upgrade=glob($host_module."upgrade/*.php");
+
+list($UGET)=explode(" ",$_POST['upgrade'].$_GET['upgrade'],2);
+
+foreach($upgrade as $l) { $U=preg_replace("/^.*?\/([^\/\.]+)\.php$/si","$1",$l);
+	$s.="<h2>$U</h2><p>";
+	$UPGR=($UGET==$U?1:0);
+	include_once $l;
+}
+
 
 // $_PAGE['body'] = $s;
-print $s;
+print $s."</form></center>";
+
+function upgr_warning($l,$mes) {
+	print "<br><b>$l</b>: $mes";
+
+	$GLOBALS['s'].="<table border=1 cellspacing=0 cellpadding=10><tr valign=center><td>$mes</td>
+<td><input type='submit' name='upgrade' value='$l исправить?'></td></tr></table>";
+
+}
+
+function msq_pole($tb,$pole) {
+        $pp=ms("SHOW COLUMNS FROM `$tb`","_a",0); if(sizeof($pp)) foreach($pp as $p) if($p['Field']==$pole) return true;
+        return false;
+}
+
+function msq_table($pole) {
+        $ppp=ms("SHOW TABLES","_a",0); if(sizeof($ppp)) foreach($ppp as $pp) if(sizeof($pp)) foreach($pp as $p) if($p==$pole) return true;
+        return false;
+}
+
+
+
+
+function upgrade_redirect($l) {
+	print "<p><font color=magenta>„ерез 5 секунд будет автоматическа€ переадресаци€...</font>
+<noscript><meta http-equiv=refresh content=\"5;url='".$GLOBALS['mypage']."?upgrade=$l%20refresh'></noscript>";
+}
+
+
 
 ?>

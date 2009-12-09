@@ -42,7 +42,7 @@ document.onmouseup = function(e) { if(!e) e = window.event;
 		opecha_id=testSelection.id; helper_pos_get(e);
 
 		// if(helperItem.style.display!='block') {
-		if(admin) { helper_go(); return; }
+		if(admin) { return helper_go(); }
 		if(helper_napomni) { helper_napomni--; salert("Нашли печатку? Нажмите Ctrl+Enter",1000); }
 		// }
 	}
@@ -75,11 +75,11 @@ function helper_go() { if(opecha_id==0 || opecha=='' || opecha_id==undefined) re
 	if(body.length <1024) { /* opecha=brp2nl(body); */ }
 	if(opecha.length>1024) { /* salert('Много текста. Выделите поменьше.',2000); */ return; }
 	var opecha_html = stripp(nl2brp(opecha));
-	var n=scount(body,opecha_html);
-if(n>1) { salert('Cтрок "'+opecha+'" в блоке "'+opecha_id+'" содержится '+n+'!<br>Попробуйте выделить более длинный кусок.',3000); return; }
-if(n<1) { salert('Ошибка: возможно, попался абзац?<br>Попробуйте выделить словосочетание без абзаца.',3000); return; }
+	var n=scount(body.replace(/onclick=\"cut\(this,\'.*?\',\d\)\">/gi,"") ,opecha_html);
+if(n>1) { return salert('Строк "'+opecha+'" в блоке "'+opecha_id+'" содержится '+n+'!<br>Попробуйте выделить более длинный кусок.',3000); }
+if(n<1) { return salert('Ошибка: возможно, попался абзац?<br>Попробуйте выделить словосочетание без абзаца.',3000); }
 	opecha_id_go=opecha_id;
-	stextarea(opecha,opecha_id);
+	return stextarea(opecha,opecha_id);
 }
 
 function helper_pos_get(e) { // Позиция курсора мыши
@@ -115,9 +115,10 @@ function salert(l,t) {
 	helperItem.style.display = 'block';
 //	document.getElementById('sert').focus();
 	setTimeout("sclose()", t);
+	return false;
 }
 
-function sclose() { document.getElementById('helper_body').innerHTML=''; helperItem.style.display = 'none'; }
+function sclose() { document.getElementById('helper_body').innerHTML=''; helperItem.style.display = 'none'; return false;}
 
 function stextarea(opecha,id) {
 	document.getElementById('helper_body').innerHTML='\
@@ -135,6 +136,7 @@ function stextarea(opecha,id) {
 	helper_pos_set(); // установить окно куда надо
 	helperItem.style.display = 'block';
 	document.getElementById('message').focus();
+	return false;
 }
 
 

@@ -14,7 +14,9 @@ $s="<?xml version='1.0' encoding='".$wwwcharset."'?>
 <channel>
 	<link>".$httphost."</link>
 	<generator>LLeoBlog 1.0:comments</generator>
-	<ya:more>".$MYPAGE."?skip=".($skip+$RSSC_skip)."</ya:more>
+"; //  <lastBuildDate></lastBuildDate>
+
+$s.="	<ya:more>".$MYPAGE."?skip=".($skip+$RSSC_skip)."</ya:more>
 	<category>ya:comments</category>
 ";
 
@@ -52,5 +54,7 @@ $s .= "\n<item>
 $s .= "\n</channel>\n\n</rss>\n";
 
 die($s);
+// die($s1.date("r",$lastupdate).$s);
+
 
 ?>
