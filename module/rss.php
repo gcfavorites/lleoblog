@@ -42,8 +42,8 @@ $lastupdate=0; foreach($pp as $p) {
 	$lastupdate = max($lastupdate,$p["DateUpdate"]);
 	$link=$httphost.$p["Date"].".html"; // полная ссылка на статью
 
-		$Body=RSS_zaban($p['Body']); // обработать забаненных
-		$Body=onetext($Body,$p["num"]); // обработать текст заметки как положено
+		$p['Body']=RSS_zaban($p['Body']); // обработать забаненных
+		$Body=onetext($p); // обработать текст заметки как положено
 		if($RSSZ_mode==1) $Body=RSSZ_mode1($Body); // если в настройках указано не давать полный RSS
 		$Body=zamok($p['Access']).$Body; // добавить картинки подзамков
 		$Body=str_replace($subst1,$subst2,$Body);

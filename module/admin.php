@@ -276,7 +276,7 @@ $s.="<p><center>
 
 
 
-// $upgrade=glob($host_module."upgrade/*.php");
+$upgrade=glob($host_module."upgrade/*.php");
 
 list($UGET)=explode(" ",$_POST['upgrade'].$_GET['upgrade'],2);
 
@@ -309,13 +309,31 @@ function msq_table($pole) {
 }
 
 
-
-
 function upgrade_redirect($l) {
 	print "<p><font color=magenta>Через 5 секунд будет автоматическая переадресация...</font>
 <noscript><meta http-equiv=refresh content=\"5;url='".$GLOBALS['mypage']."?upgrade=$l%20refresh'></noscript>";
 }
 
+
+// добавить поле в базу
+function msq_add_pole($table,$pole,$znachenie,$text) { global $U,$UPGR;
+        if(!msq_pole($table,$pole)) if($UPGR) {
+                msq("ALTER TABLE `".$table."` ADD `".$pole."` ".$znachenie." NOT NULL");
+                print "<p><b>$U</b>:<font color=magenta>в `$table` добавлено поле `$pole` ($text)</font> ".$msqe;
+        } else {
+                upgr_warning($U,"Необходимо добавить поле `$pole` в таблицу `$table` ($text)");
+        }
+}
+
+// удалить поле из базы
+function msq_del_pole($table,$pole,$text) { global $U,$UPGR;
+        if(msq_pole($table,$pole)) if($UPGR) {
+                msq("ALTER TABLE `".$table."` DROP `".$pole."`");
+                print "<p><b>$U</b>:<font color=magenta> из `$table` удалено поле `$pole` ($text)</font> ".$msqe;
+        } else {
+                upgr_warning($U,"Необходимо удалить поле `$pole` из таблицы `$table` ($text)");
+        }
+}
 
 
 ?>

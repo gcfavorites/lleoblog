@@ -1,9 +1,11 @@
 <?php // Отображение статьи с каментами - дата передана в $Date
 
-function onetext($s) { global $wwwhost,$IP;
+function onetext($p) { global $wwwhost,$IP;
+
+	$s=$p["Body"];
 
 	// Посчитать юзера
-	mysql_query("UPDATE `dnevnik_zapisi` SET view_counter=view_counter+1, last_view_ip='".e($IP)."' WHERE `num`='".$article["num"]."' AND last_view_ip!='".e($IP)."'");
+	mysql_query("UPDATE `dnevnik_zapisi` SET view_counter=view_counter+1, last_view_ip='".e($IP)."' WHERE `num`='".e($p['num'])."' AND last_view_ip!='".e($IP)."'");
 
 	$s=modules($s); // процедуры site
 
@@ -26,7 +28,37 @@ if($_GET['mode']=='mudoslov') {
 }
 */
 
-	return $s;
+// произвести автоформатирование
+if($p['autoformat']=='no') return $s;
+return str_replace(array("\n\n","\n"),($p['autoformat']=='p'?array("<p>","<br>"):array("<p class=pd>","<p class=d>")),"\n\n".$s);
+
+}
+
+
+
+function search_podsveti_body($a) {
+        $a=preg_replace_callback("/>([^<]+)</si","search_p_body",'>'.$a.'<');
+        $a=ltrim($a,'>'); $a=rtrim($a,'<');
+        return $a;
+} function search_p_body($r) { return '>'.str_ireplace2_body($_GET['search'],"<span class=search>","</span>",$r[1]).'<'; }
+
+
+function str_ireplace2_body($search,$rep1,$rep2,$s){ $c=chr(1); $nashlo=array(); $x=strlen($search);
+        $SEARCH=strtolower2_body($search);
+        $S=strtolower2_body($s);
+        while (($i=strpos($S,$SEARCH))!==false){
+                $nashlo[]=substr($s,$i,$x);
+                $s=substr_replace($s,$c,$i,$x);
+                $S=substr_replace($S,$c,$i,$x);
+        } foreach($nashlo as $l) $s=substr_replace($s,$rep1.$l.$rep2,strpos($s,$c),1);
+        return $s;
+}
+
+function strtolower2_body($s){
+        $s=strtr($s,'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЫЬЪЭЮЯ','абвгдеёжзийклмнопрстуфхцчшщыьъэюя'); // русские в строчные
+        $s=strtr($s,'авсенкмортху','abcehkmoptxy'); // русские какие похожи - в латинские
+        $s=strtolower($s); // латинские в строчные
+        return $s;
 }
 
 ?>
