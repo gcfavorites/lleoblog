@@ -1,5 +1,10 @@
 <?php // Показать спрятанное под катом
 
+// МАЛО ЛИ КАКОЕ ГОВНО НАМ ПОНАДОБИТСЯ?
+include_once $GLOBALS['include_sys']."_foto.php"; // фотовывод
+
+
+
 function IMBLOAD($e) {
 
 	if(!preg_match("/^(.*?\/)(\d\d\d\d\/\d\d\/\d\d.*).html$/si",$e,$m)) return 'Error: IMBLOAD NOT FOUND "'.$e.'"';
@@ -24,7 +29,7 @@ $s=str_replace("\n","","
 
 	SCRIPTS('IMBLOAD',"
 
-function imbload(e,Date) {
+function imbload(id,Date) { e=document.getElementById(id);
 	e.innerHTML = '<center>...идет загрузка...</center>';
 
 JsHttpRequest.query('".$m[1]."ajax_imbload.php',
@@ -36,7 +41,14 @@ function(responseJS, responseText) { if(responseJS.status) {
 
 ");
 
-	return "<div onclick=\"imbload(this,'".$m[2]."')\"><center><font color=blue>нажми для загрузки</font></center></div>";
+$id='imbload_'.intval($GLOBALS['imbload_n']++);
+
+return "<div id=$id><script>imbload('$id','".$m[2]."');</script></div>";
+
+// блять, вот так будет лучше ;)
+
+// onclick=\"imbload(this,'".$m[2]."')\"
+//<center><font color=blue>нажми для загрузки</font></center>
 
 }
 
