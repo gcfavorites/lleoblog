@@ -30,8 +30,8 @@ $msqe=''; // сюда пишем ошибки
 ms_connect(); // соединиться с базой - эта процедура в _autorize.php
 
 function e($s) { return mysql_real_escape_string($s); }
-function msq_exist($tb,$u) { return msqn(msq("SELECT * FROM `$tb` $u")); }
-function msqn($sql) { return mysql_num_rows($sql); }
+function msq_exist($tb,$u) { return ms("SELECT COUNT(*) FROM `$tb` $u","_l",0); }
+//function msqn($sql) { return mysql_num_rows($sql); }
 
 function msq_add($tb,$ara) {
         $a=$b=''; foreach($ara as $n=>$m) { $a.="`$n`,"; $b.="'$m',"; } $a=trim($a,','); $b=trim($b,',');
@@ -65,7 +65,7 @@ function msq($s) { global $msqe;
 }
 
 
-function ms($query,$mode='_a',$ttl=0) {	$s = false; $magic='@';
+function ms($query,$mode='_a',$ttl=666) { $s = false; $magic='@'; if($ttl==666) $ttl=$GLOBALS['ttl'];
 
 	if($ttl < 0) { cache_rm($mode.$magic.$query); return true; } // сбросить кэш
 	elseif ($ttl > 0) {  $result=cache_get($mode.$magic.$query); if(false!==$result) { $GLOBALS['ms_ttl']='cache'; return $result; } }

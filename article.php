@@ -333,6 +333,6 @@ $_PAGE["coments"] .= "
 }
 
 
-$_PAGE["body"] .= '<div id="Body">'.onetext($article["Body"],$article["num"]).'</div>';
+$_PAGE["body"] .= '<div id="Body">'.onetext($article).'</div>';
 
 ?>

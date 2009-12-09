@@ -1,4 +1,4 @@
-<?
+<?php
 
 $start_tag = array('',"<span class=p1>","<span class=p2>");
 $end_tag = array('',"</span>","</span>");

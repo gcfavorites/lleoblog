@@ -1,4 +1,4 @@
-<?
+<?php
 function sendmail ($from_name, $from_adr, $to_name, $to_adr, $subj, $text) {
 
 $to = "=?windows-1251?B?".base64_encode($to_name)."?= <".$to_adr.">";
