@@ -1,4 +1,4 @@
-<?
+<?php
 include_once $include_sys."_obracom.php";
 //include_once $include_sys."_geoip_all.php";
 

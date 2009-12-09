@@ -1,4 +1,4 @@
-<?
+<?php
 //-- авторизация админа
 $admin = (broident($admin_hash.$koldunstvo)==$_COOKIE["adm"] ? 1:0 );
 $login = false;

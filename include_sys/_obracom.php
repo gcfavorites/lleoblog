@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 $commentary=nl2br(htmlspecialchars($commentary));
