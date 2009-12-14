@@ -30,7 +30,11 @@ if($_GET['mode']=='mudoslov') {
 
 // произвести автоформатирование
 if($p['autoformat']=='no') return $s;
-return str_replace(array("\n\n","\n"),($p['autoformat']=='p'?array("<p>","<br>"):array("<p class=pd>","<p class=d>")),"\n\n".$s);
+return str_replace(array("\n\n","\n"),($p['autoformat']=='p'?array("<p>","<br>"):array("<p class=pd>","<p class=d>")),"\n\n"
+
+.str_replace("\n ","\n<p class=z>",$s)
+
+);
 
 }
 

@@ -147,18 +147,16 @@ function pr_zapisi_($sq) { global $ttl,$wwwhost,$www_design,$numos,$podz_img,$co
 	$colnewcom=sizeof($sql); if(!$colnewcom) return $s;
 	$s.="<h2>Заметок найдено: ".$colnewcom."</h2>";
 	$s.="<ul>\n";
-
+// dier($sql);
 	foreach($sql as $p) {
 			$Date=$p["Date"];
 			$head=($p["Header"]?" - ".htmlspecialchars($p["Header"]):"");
 
-		if(preg_match("/^(\d\d\d\d)\/(\d\d)\/(\d\d)/si",$Date,$m)) { $Y=$m[1]; $M=$m[2]; $D=$m[3];
+		if(preg_match("/^(\d\d\d\d)\/(\d\d)\/(\d\d.*)$/si",$Date,$m)) { $Y=$m[1]; $M=$m[2]; $D=$m[3];
 			if($Y!=$year) { if($year) $s.="</ul>\n"; $s .= "<h2>".$Y." год</h2>\n<ul>\n"; $year = $Y; }
 			if($numos) $detail=" ".$numos++.". "; else $detail='';
 			$z=$detail."<a href='".$wwwhost."$Y/$M/$D.html".($_GET['search']?"?search=".$_GET['search']:'')."'>$M-$D (".$p["view_counter"].") ".$head."</a>";
-
-			if($p['Access']=='podzamok') $z=$podz_img."&nbsp;<b>".$z."</b>";
-			elseif($p['Access']=='admin') $z=$podz_img."&nbsp;<s><b>".$z."</b></s>";
+			$z = zamok($p['Access']).$z;
 			$s.="\t<li>".$z."</li>\n";
 
 		} else {
@@ -196,7 +194,6 @@ function pr_zapisi_rating($sq) { global $ttl,$web_path,$www_design,$podz_img;
 //=========================================================================================================
 function pr_comments_($sq) { global $ttl,$wwwhost;
 	$s='';
-	include_once("_onecomment.php");
 	$sql=ms($sq,"_a",$ttl); $s.=$msqe;
 	$colnewcom=sizeof($sql); if(!$colnewcom) return $s;
 	$s.='<h2>Комментариев найдено: '.$colnewcom."</h2>";

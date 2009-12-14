@@ -10,7 +10,7 @@ $subst2=array($foto_www_preview);
 //$RSSZ_skip = 10;
 //$RSSZ_mode = 1;
 
-header("Content-Type: text/xml; charset=".$wwwcharset);
+header("Content-Type: text/xml; charset='".$wwwcharset."'");
 
 $skip=intval($_GET['skip']);
 
@@ -62,7 +62,8 @@ $s .= "\n<item>
 </item>\n";
 }
 
-$s .= "\n</channel>\n\n</rss>\n";
+$s .= "\n</channel></rss>";
+
 
 check_if_modified($lastupdate,"$lastupdate"); // время последней модификации (оно же как ETag)
 

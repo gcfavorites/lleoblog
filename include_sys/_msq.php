@@ -1,6 +1,6 @@
 <?php
 
-$ttl=($admin?0:10);
+$ttl=($admin?0:60);
 
 /*
 ÏÎËÅÇÍÛÅ ÏÐÈÌÅÐÛ
@@ -65,13 +65,22 @@ function msq($s) { global $msqe;
 }
 
 
+
+
+function tos($e) { return str_replace(array("\\","'",'"',"\n","\r"),array("\\\\","\\'",'\\"',"\\n",""),$e); }
+
 function ms($query,$mode='_a',$ttl=666) { $s = false; $magic='@'; if($ttl==666) $ttl=$GLOBALS['ttl'];
 
 	if($ttl < 0) { cache_rm($mode.$magic.$query); return true; } // ñáðîñèòü êýø
-	elseif ($ttl > 0) {  $result=cache_get($mode.$magic.$query); if(false!==$result) { $GLOBALS['ms_ttl']='cache'; return $result; } }
+	elseif ($ttl > 0) {  $result=cache_get($mode.$magic.$query); if(false!==$result) {
+		$GLOBALS["_PAGE"]["msq"].="<img src=".$GLOBALS['www_design']."yes.gif onmouseover=\"msqq('".tos($query)."')\"> ";
+		$GLOBALS['ms_ttl']='cache';
+		return $result; }
+	}
 
-	$GLOBALS['ms_ttl']='new';
-	$sql = @msq($query);
+		$GLOBALS["_PAGE"]["msq"].="<img src=".$GLOBALS['www_design']."no.gif onmouseover=\"msqq('".tos($query)."')\"> ";
+		$GLOBALS['ms_ttl']='new';
+		$sql = @msq($query);
 
 	if($sql === false) { print "SQL error: ".mysql_error(); return false; }
 

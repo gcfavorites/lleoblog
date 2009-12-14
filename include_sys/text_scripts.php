@@ -23,7 +23,8 @@ var dnevnik_data='".$Date."';
 var ctrloff=".($_COOKIE['ctrloff']=='off'?1:0).";
 
 function comment(text,id,i,action) {
-// document.getElementById(id).innerHTML = \"<center>жди, идет загрузка...</center>\";
+document.getElementById(id).innerHTML = '<img src={www_design}img/ajax.gif align=right>'+document.getElementById(id).innerHTML;
+// \"<center>жди, идет загрузка...</center>\";
 JsHttpRequest.query('".$wwwhost."ajax_comments.php',
 { action: action, i: i, id: id, text: text },
 function(responseJS, responseText) { if(responseJS.status) {

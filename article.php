@@ -91,6 +91,17 @@ if($_GET['search']!='') $preword .= "<p>Страница отображается с подсветкой слов 
 $preword = "<div class=preword>".$preword."</div>";
 
 
+
+//11*86400 1000000
+
+$pp=ms("SELECT `link`,`text`,`datetime` FROM `rekomenda` WHERE `datetime`>(NOW()- INTERVAL 1 DAY) ORDER BY `datetime` DESC","_a");
+if(sizeof($pp)) {
+	$coments.="<p><div style='font-size: 13px;'><b>Страницы, которые мне понравились за последние дни, рекомендую:</b>";
+	foreach($pp as $p) { $coments.="<div>".$p['datetime'].": <a href=".$p['link'].">".$p["text"]."</a></div>"; }
+	$coments.="</div>";
+}
+
+
 //===================================
 // как быть с комментариями?
 $premesage="";
