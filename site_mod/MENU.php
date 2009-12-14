@@ -58,10 +58,7 @@ foreach($a as $l) { $l=c($l); if($l!='') {
 
 	$o.=$dodo; unset($m[$pos--]);
 	foreach($m as $pos=>$l) $o.=MENU_pro($pos+1)."</ul>".MENU_pro($pos)."</li>";
-	return "\n\n<!-- выпадающее меню -->
-<center><table cellspacing=0 cellpadding=0 border=0><td>
-<ul id='nav'>".$o."\n</ul></td></table></center>
-<!-- /выпадающее меню -->\n\n";
+	return "<!-- выпадающее меню --><center><table cellspacing=0 cellpadding=0 border=0><td><ul id='nav'>".$o."</ul></td></table></center><!-- /выпадающее меню -->";
 }
 
 function MENU_pro($l) { return '';
