@@ -4,7 +4,6 @@ blogpage();
 
 if(!isset($article)) { 
 	$article=ms("SELECT * FROM `dnevnik_zapisi` ".WHERE("`Date`='".$Date."'"),"_1",$ttl);
-
 	if($article===false) {
 		list($Y,$m,$d)=explode('/',$Date);
 
