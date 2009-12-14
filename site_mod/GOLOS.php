@@ -46,7 +46,7 @@ function GOLOS($e) { global $GOLOS_db_golosa,$GOLOS_db_result, $sc,$IP,$admin,$w
 
 	// взять результаты
 	if($golosoval) {
-		$s=ms("SELECT text,n FROM ".$GOLOS_db_result." WHERE name='".e($gol_name)."'",'_1',0);
+		$s=ms("SELECT `text`,`n` FROM ".$GOLOS_db_result." WHERE name='".e($gol_name)."'",'_1');
 		$go=unserialize($s['text']); $nn=$s['n'];
 	}
 
@@ -63,7 +63,7 @@ function GOLOS($e) { global $GOLOS_db_golosa,$GOLOS_db_result, $sc,$IP,$admin,$w
 
 			if($golosoval) { // если голосовал
 				$x=$go[$n][$i+1];
-				$s .= "$va<br><img src=".$www_design."/e/gol.gif width=".floor($k*$x)." height=14>
+				$s .= "$va<br><img src=".$www_design."e/gol.gif width=".floor($k*$x)." height=14>
 <span class=br><b>".floor($kp*$x)."%</b> (".intval($x).")</span><p>";
 			} else { // если не голосовал
 				$gr = "grad_".$n."-".($i+1);
@@ -189,9 +189,8 @@ function golos_recalculate($name) { global $GOLOS_db_golosa,$GOLOS_db_result;
 	}
 
 
-
-	$go0=unserialize(ms("SELECT `text` FROM `$GOLOS_db_result` WHERE `name`='".e($name)."'",'_l',0));
-	$summ0=ms("SELECT `n` FROM `$GOLOS_db_result` WHERE `name`='".e($name)."'",'_l',0);
+	$p=ms("SELECT `n`,`text` FROM `$GOLOS_db_result` WHERE `name`='".e($name)."'",'_1',0);
+	$go0=unserialize($p['text']); $summ0=$p['n'];
 
 	$mmes='';
 

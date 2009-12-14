@@ -28,7 +28,9 @@ function module($t) { $s=$t[1]; // подцепить модули
                         $modfile=$GLOBALS['site_mod'].$mod.".php";
                         if(!file_exists($modfile)) idie("Module error: ".htmlspecialchars($modfile));
                         include_once($modfile);
-                        if(!function_exists($mod)) idie("Нет такой функции: ".htmlspecialchars($mod));
+                        if(!function_exists($mod)) idie("Нет такой функции: ".htmlspecialchars($mod)
+.($GLOBALS['admin']&&isset($GLOBALS['Date'])?"<p><a href=".$GLOBALS['httphost']."editor/?Date=".$GLOBALS['Date'].">редактировать</a>":'')
+);
                 }
                 return call_user_func($mod,c($arg));
         }
