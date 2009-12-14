@@ -2,8 +2,8 @@ RewriteEngine On
 RewriteBase /blog/
 
 #php_value session.use_trans_sid off
-#php_value magic_quotes_gpc Off
-#php_value magic_quotes_runtime Off
+php_value magic_quotes_gpc Off
+php_value magic_quotes_runtime Off
 
 AddDefaultCharset windows-1251
 
