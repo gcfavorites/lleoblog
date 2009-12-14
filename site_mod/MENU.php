@@ -46,7 +46,7 @@ function MENU($e) { $a=explode("\n",$e);
 
 foreach($a as $l) { $l=c($l); if($l!='') {
 	$l1=ltrim($l,"-".chr(151)); $n=strlen($l)-strlen($l1);
-	list($l1,$link)=explode('|',$l1); $l1=c($l1);
+	list($l1,$link)=explode('|',$l1); $l1=c($l1); $link=c($link);
 		if($n==$pos) { $do=$dodo; }
 		elseif($n<$pos) { $do=$dodo; for($i=$pos-$n;$i>0;$i--) { unset($m[$pos--]); $do.=MENU_pro($pos+1)."</ul>".MENU_pro($pos)."</li>"; }}
 		else { $do=''; for($i=$n-$pos;$i>0;$i--) { $m[++$pos]=translite($l1last); $do.=MENU_pro($pos)."<ul>"; } }
