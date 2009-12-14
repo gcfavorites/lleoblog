@@ -1,5 +1,8 @@
 <?php // Выпадающее меню
 
+if(!isset($GLOBALS['admin_name'])) { die(highlight_file(__FILE__,1)); }
+
+
 
 /********************************************************************/
 $GLOBALS['calfrus']=array(
@@ -60,6 +63,9 @@ foreach($a as $l) { $l=c($l); if($l!='') {
 <ul id='nav'>".$o."\n</ul></td></table></center>
 <!-- /выпадающее меню -->\n\n";
 }
-function MENU_pro($l) { return "\n".str_repeat("\t",$l); }
+
+function MENU_pro($l) { return '';
+// return "\n".str_repeat("\t",$l); 
+}
 
 ?>
