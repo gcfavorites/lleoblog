@@ -23,6 +23,7 @@ _}
 
 // обратились к этому скрипту напрямую при посте?
 
+
 $GLOBALS['GOLOS_db_golosa']='golosovanie2_golosa';
 $GLOBALS['GOLOS_db_result']='golosovanie2_result';
 
@@ -34,7 +35,7 @@ if(isset($_POST['golos_return'])) {
 		die(post_code());
 	}
 
-//include_once $include_sys."_antibot.php"; // должен быть загружен!
+
 
 function GOLOS($e) { global $GOLOS_db_golosa,$GOLOS_db_result, $sc,$IP,$admin,$www_design,$wwwhost,$mypage,$antibot_C;
 
@@ -84,6 +85,7 @@ function GOLOS($e) { global $GOLOS_db_golosa,$GOLOS_db_result, $sc,$IP,$admin,$w
 		$s = "<p>Проголосовали <b>$nn</b> человек:".$s."<p><center><b>спасибо, что проголосовали!</b></center>";
 	} else { // если НЕ голосовал
 
+include_once $GLOBALS['include_sys']."_antibot.php";
 
 $s = "
 <form name='golos_".$gol_name."' method=post action='".$wwwhost."site_mod/GOLOS.php'>
