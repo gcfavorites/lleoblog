@@ -1,6 +1,6 @@
 <?php // Если пришел комментарий
 
-foreach($_POST as $k=>$v) $_POST[$k]=trim($v,"\t\n\r\v ");
+foreach($_POST as $k=>$v) $_POST[$k]=trim($v,"\t\n\r ");
 
 	if($IS_USER) $_POST["Name"] = $IS_USER;
 	if($_POST["Name"] == "") $CommentaryErrors[] = "Не указано имя. Зачем мне комментарии от анонимов?";
