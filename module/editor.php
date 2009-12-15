@@ -62,7 +62,7 @@ if($_POST["action"] == "Save") {
 
 elseif($_POST["action"] == "Delete") {
 	// getCalendar_clear($_POST["Date"]); // сбросить кэш календаря
-	$num=ms("SELECT `num` FROM `dnevnik_zapisi` WHERE `Date`=`".e($_POST["Date"])."' LIMIT 1","_l",0);
+	$num=ms("SELECT `num` FROM `dnevnik_zapisi` WHERE `Date`='".e($_POST["Date"])."' LIMIT 1","_l",0);
 	if($num!==false) {
 		msq_del('dnevnik_zapisi', array('num'=>e($num)) ); // удалить заметку
 		reset_prevnext_del($_POST["Date"]); // поправить ссылки PrevNext на соседних
