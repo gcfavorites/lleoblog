@@ -17,7 +17,7 @@ if($PEST['action']==$action) { $admin_upgrade=true;
 $p=ms("SELECT `num`,`Date` FROM `dnevnik_zapisi` WHERE `DateDatetime`=0 AND `Date` LIKE '____/__/__%' ORDER BY `Date` LIMIT ".$Nskip,"_a",0);
 if($p!==false && sizeof($p)) {
 
-	$s .= admin_rereload($action,$Nskip,200);
+	$s .= admin_rereload($action,$Nskip);
 
 	foreach($p as $n=>$l) {
 		$t=getmaketime($l['Date']);
