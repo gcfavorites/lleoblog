@@ -181,11 +181,10 @@ function ms_connect() { if(isset($GLOBALS['ms_connected'])) return;
 	$GLOBALS['ms_connected']=true;
 }
 
-
+// /bhome/part1/01/lleo/www/bachilo/tmp/get/blogs.yandex.ru#search.xml#post#http#3A#2F#2Fbachilo.livejournal.com#2F280851.html#3C#2Fa#3E#3Cbr#3E#3Ca#href#3Dhttp#3A#2F#2Fblogs.yandex.ru#2Fsearch.xml#3Fpost#3Dhttp#253A#252F#252Fbachilo.livejournal.com#252F280851.html#26amp#3Bft#3Dcomments#3E#EA#EE#EC#EC#E5#ED#F2#E0#F0#E8#E5#E2#3A#9#ft#comments#rd#0#spcctx#doc#full#1#numdoc#100#p#0.dat
 function file_get($f) {	//$n=$GLOBALS['fileget_tmp'].md5($f).".dat";
-	$n=$GLOBALS['fileget_tmp'].preg_replace("/[^0-9a-zA-Z_\-\.\~]+/si","#", str_replace("http://","",$f) ).".dat";
-//	print "<p>file_get: ".$n;
-//	return $n;
+	$n=preg_replace("/[^0-9a-zA-Z_\-\.\~]+/si","#", str_replace("http://","",$f) );
+	if(strlen($n)<200) $n=$GLOBALS['fileget_tmp'].$n.".dat"; else $n=$n=$GLOBALS['fileget_tmp'].md5($n).".dat";
 	if(file_exists($n)) return file_get_contents($n);
 	$x=file_get_contents($f); file_put_contents($n,$x); return $x;
 }
