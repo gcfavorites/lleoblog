@@ -65,7 +65,20 @@ function msq($s) { global $msqe;
 }
 
 
+function msq_pole($tb,$pole) { // проверить, существует ли такое поле в таблице $tb
+        $pp=ms("SHOW COLUMNS FROM `$tb`","_a",0); if($pp!==false) foreach($pp as $p) if($p['Field']==$pole) return true;
+        return false;
+}
 
+function msq_table($pole) { // проверить, существует ли такая таблица
+        $ppp=ms("SHOW TABLES","_a",0); if($ppp!==false) foreach($ppp as $pp) if(sizeof($pp)) foreach($pp as $p) if($p==$pole) return true;
+        return false;
+}
+
+function msq_index($tb,$pole) { // проверить, существует ли такой индекс
+        $pp=ms("SHOW INDEX FROM `$tb`","_a",0); if($pp!==false) foreach($pp as $p) if($p['Column_name']==$pole) return true;
+        return false;
+}
 
 function tos($e) { return str_replace(array("\\","'",'"',"\n","\r"),array("\\\\","\\'",'\\"',"\\n",""),$e); }
 

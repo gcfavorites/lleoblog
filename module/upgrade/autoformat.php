@@ -1,13 +1,35 @@
 <?
 
-msq_add_pole("dnevnik_zapisi","autoformat","enum('no','p','pd') default 'no'","возможность управл€ть автоформатированием заметок");
-msq_add_pole("dnevnik_zapisi","autokaw","enum('auto','no')","возможность отключить автообработку кавычеки тире");
+// $s .= msq_del_pole("dnevnik_zapisi","wwwwwww","это тестова€ хуйн€, € ее создал просто так");
+// $s .= msq_add_pole("dnevnik_zapisi","wwwwwww","enum('no','p','pd') default 'no'","это тестова€ хуйн€ ее нужно создать!");
 
-msq_add_pole("dnevnik_zapisi","count_comments_open","int(10) unsigned default '0'","число открытых комментариев у заметки - чтоб не лазить за ними по базе вс€кий раз");
+$s .= msq_add_pole("dnevnik_zapisi","autoformat","enum('no','p','pd') default 'no'","заработает автоформатирование заметок");
+$s .= msq_add_pole("dnevnik_zapisi","autokaw","enum('auto','no')","тогда можно будет отключать автообработку кавычек и тире");
+$s .= msq_add_pole("dnevnik_zapisi","count_comments_open","int(10) unsigned default '0'","это св€зано с оптимизацией движка");
+$s .= msq_del_pole("dnevnik_zapisi","include","поле include больше не нужно, мы перешли на систему модулей II поколени€");
 
-msq_del_pole("dnevnik_zapisi","include","поле include больше не нужно, мы перешли на систему модулей II поколени€");
+/*
+$action='go';
+$timesec=10;
+$id='tiktime';
 
-#msq_del_pole("dnevnik_zapisi","autoformat","возможность управл€ть автоформатированием заметок");
-#msq_del_pole("dnevnik_zapisi","autokaw","возможность отключить автообработку кавычек и тире");
+SCRIPTS("var tiktimen=".$timesec.";
+function tiktime(id) { document.getElementById(id).innerHTML = tiktimen--;
+setTimeout(\"tiktime('\" + id + \"')\", 1000);
+}");
+
+
+if($_GET['action']==$action) {
+	$GLOBALS['admin_upgrade']=true;
+	$s .= admin_kletka('action',"<font color=red>Ќичего не трогать! —траницы обновл€ютс€ сами:
+<span id='".$id."'><script>tiktime('".$id."')</script></span>! Ётап: <blink>$skip</blink></font>");
+	$path = $mypage."?skip=".($skip+1)."&action=".$action;
+	$s .= "<noscript><meta http-equiv=refresh content=\"".$timesec.";url=\"".$path."\"></noscript><script> setTimeout(\"location.replace('".$path."')\", ".($timesec*1000)."); </script>";
+} else {
+	$s .= admin_kletka('action',"нужно начать ремонт базы",'go');
+}
+
+*/
+
 
 ?>

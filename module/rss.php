@@ -14,7 +14,7 @@ header("Content-Type: text/xml; charset='".$wwwcharset."'");
 
 $skip=intval($_GET['skip']);
 
-$pp = ms("SELECT `Date`,`Body`,`Header`,`DateUpdate`,`Access`,`num` FROM `dnevnik_zapisi` ".WHERE("`Date` LIKE '____/__/%'")." ORDER BY `Date` DESC LIMIT ".$skip.",".$RSSZ_skip,"_a",$ttl);
+$pp = ms("SELECT `Date`,`Body`,`Header`,`DateUpdate`,`Access`,`num` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`!=0")." ORDER BY `Date` DESC LIMIT ".$skip.",".$RSSZ_skip,"_a",$ttl);
 
 $s1="<?xml version='1.0' encoding='".$wwwcharset."'?>
 <rss version='2.0' xmlns:ya='http://blogs.yandex.ru/yarss/' xmlns:wfw='http://wellformedweb.org/CommentAPI/'>

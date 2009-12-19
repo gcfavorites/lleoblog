@@ -1,0 +1,237 @@
+-- phpMyAdmin SQL Dump
+-- version 2.11.9.4
+-- http://www.phpmyadmin.net
+--
+-- Хост: mysql.baze.lleo.aha.ru:64256
+-- Время создания: Дек 19 2009 г., 14:10
+-- Версия сервера: 5.0.87
+-- Версия PHP: 5.1.6
+
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+
+--
+-- База данных: `lleoblog`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `dnevnik_comments`
+--
+
+CREATE TABLE IF NOT EXISTS `dnevnik_comments` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `idza` int(10) NOT NULL default '0',
+  `Date` varchar(128) NOT NULL,
+  `Name` varchar(128) NOT NULL default '',
+  `Address` varchar(128) NOT NULL default '',
+  `Commentary` text NOT NULL,
+  `Answer` text NOT NULL,
+  `Answer_user` varchar(64) NOT NULL,
+  `Answer_time` int(11) NOT NULL,
+  `ans_spamit` int(10) NOT NULL default '0',
+  `ans_rulit` int(10) NOT NULL default '0',
+  `ans_lastIPsc` varchar(20) NOT NULL,
+  `IP` varchar(15) NOT NULL,
+  `IPx` varchar(15) NOT NULL,
+  `DateTime` int(11) NOT NULL default '0',
+  `UserAgent` varchar(1024) NOT NULL,
+  `Guest_LJ` varchar(32) NOT NULL default '',
+  `Guest_Name` varchar(128) NOT NULL default '',
+  `speckod` varchar(32) NOT NULL default '',
+  `mudak` enum('yes','no') NOT NULL default 'no',
+  `metka` enum('open','screen') NOT NULL default 'open',
+  `spamit` int(10) NOT NULL default '0',
+  `rulit` int(10) NOT NULL default '0',
+  `rulit_lastIPsc` varchar(20) NOT NULL,
+  `rulit_master` enum('0','1') NOT NULL default '0',
+  `login` varchar(128) NOT NULL,
+  `whois_strana` varchar(128) NOT NULL,
+  `whois_gorod` varchar(128) NOT NULL,
+  `whois_basa` enum('whois','rus','world') NOT NULL default 'whois',
+  `DateID` int(10) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `Date` (`Date`),
+  KEY `DateTime` (`DateTime`),
+  KEY `login` (`login`),
+  KEY `speckod` (`speckod`),
+  KEY `DateID` (`DateID`),
+  KEY `metka` (`metka`),
+  KEY `rulit_master` (`rulit_master`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Комментарии посетителей' AUTO_INCREMENT=279 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `dnevnik_link`
+--
+
+CREATE TABLE IF NOT EXISTS `dnevnik_link` (
+  `n` bigint(20) NOT NULL auto_increment,
+  `mypage` varchar(256) NOT NULL,
+  `link` varchar(2048) NOT NULL,
+  `count` bigint(20) NOT NULL,
+  `last_ip` varchar(15) NOT NULL,
+  `last_ipn` int(10) unsigned NOT NULL,
+  `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`n`),
+  KEY `Date` (`mypage`),
+  KEY `last_ip` (`last_ip`),
+  KEY `last_ipn` (`last_ipn`),
+  KEY `last_ipn_3` (`last_ipn`),
+  KEY `last_ipn_4` (`last_ipn`),
+  KEY `last_ipn_5` (`last_ipn`),
+  KEY `last_ipn_6` (`last_ipn`),
+  KEY `last_ipn_7` (`last_ipn`),
+  KEY `last_ipn_8` (`last_ipn`),
+  KEY `last_ipn_9` (`last_ipn`),
+  KEY `last_ipn_10` (`last_ipn`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='ссылки на дневник' AUTO_INCREMENT=138443 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `dnevnik_zapisi`
+--
+
+CREATE TABLE IF NOT EXISTS `dnevnik_zapisi` (
+  `Date` varchar(128) NOT NULL,
+  `Header` varchar(255) NOT NULL default '',
+  `Body` text NOT NULL,
+  `Access` enum('all','podzamok','admin') NOT NULL,
+  `Comment` enum('enabled','disabled','allways_on','screen','normalscreen') NOT NULL default 'enabled',
+  `Comment_view` enum('on','off','rul','load','timeload') NOT NULL default 'timeload',
+  `Comment_write` enum('on','off','friends-only','login-only','timeoff','login-only-timeoff') NOT NULL default 'timeoff',
+  `Comment_screen` enum('open','screen','friends-open') NOT NULL default 'friends-open',
+  `comments_order` enum('normal','rating','allrating') NOT NULL default 'normal',
+  `DateUpdate` int(10) unsigned NOT NULL default '0',
+  `view_counter` int(10) unsigned NOT NULL default '0',
+  `last_view_ip` varchar(15) NOT NULL default '',
+  `Prev` varchar(64) NOT NULL default '' COMMENT 'предыдущая заметка',
+  `Next` varchar(64) NOT NULL default '' COMMENT 'следующая заметка',
+  `num` int(10) unsigned NOT NULL auto_increment,
+  `autokaw` enum('auto','no') NOT NULL,
+  `count_comments_open` int(10) unsigned NOT NULL default '0',
+  `autoformat` enum('no','p','pd') NOT NULL default 'no',
+  UNIQUE KEY `num` (`num`),
+  KEY `Date` (`Date`),
+  KEY `Access` (`Access`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Заметки блога' AUTO_INCREMENT=20 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `golosovanie2_golosa`
+--
+
+CREATE TABLE IF NOT EXISTS `golosovanie2_golosa` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(32) NOT NULL,
+  `time` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `sc` varchar(32) NOT NULL,
+  `ipipx` varchar(31) NOT NULL,
+  `value` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Голосования: результаты' AUTO_INCREMENT=204 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `golosovanie2_result`
+--
+
+CREATE TABLE IF NOT EXISTS `golosovanie2_result` (
+  `name` varchar(32) NOT NULL,
+  `n` bigint(20) NOT NULL,
+  `text` text NOT NULL,
+  PRIMARY KEY  (`name`)
+) ENGINE=MyISAM DEFAULT CHARSET=cp1251 COMMENT='Голосования: результаты';
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `login`
+--
+
+CREATE TABLE IF NOT EXISTS `login` (
+  `login` varchar(32) NOT NULL,
+  `sc` varchar(32) NOT NULL,
+  `timereg` datetime NOT NULL,
+  `timelast` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `realname` varchar(128) NOT NULL,
+  `mail` varchar(128) NOT NULL,
+  `site` varchar(128) NOT NULL,
+  `birth` date NOT NULL,
+  `admin` enum('user','podzamok','comblock','mudak') NOT NULL,
+  `podpiska` enum('dnevnik','lichnoe','sovet') NOT NULL,
+  `img` varchar(36) NOT NULL,
+  `password` varchar(32) NOT NULL,
+  `count` bigint(20) NOT NULL default '0',
+  `type` enum('login','openid') NOT NULL,
+  `comdate` datetime NOT NULL,
+  `comperdate` smallint(5) unsigned NOT NULL default '0',
+  `text` text NOT NULL,
+  PRIMARY KEY  (`login`)
+) ENGINE=MyISAM DEFAULT CHARSET=cp1251 COMMENT='Логины посетителей';
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `pravki`
+--
+
+CREATE TABLE IF NOT EXISTS `pravki` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `Date` varchar(255) NOT NULL,
+  `DateTime` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `sc` varchar(32) NOT NULL,
+  `login` varchar(128) NOT NULL,
+  `ipbro` varchar(255) NOT NULL,
+  `lju` varchar(128) NOT NULL,
+  `Name` varchar(255) NOT NULL,
+  `Mail` varchar(255) NOT NULL,
+  `text` text NOT NULL,
+  `textnew` text NOT NULL,
+  `stdprav` text NOT NULL,
+  `Answer` text NOT NULL,
+  `metka` enum('new','submit','discard') NOT NULL default 'new',
+  PRIMARY KEY  (`id`),
+  KEY `Date` (`Date`),
+  KEY `metka` (`metka`),
+  KEY `sc` (`sc`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Правки блога' AUTO_INCREMENT=1190 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `rekomenda`
+--
+
+CREATE TABLE IF NOT EXISTS `rekomenda` (
+  `n` bigint(20) NOT NULL auto_increment,
+  `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `link` varchar(2048) NOT NULL,
+  `text` text NOT NULL,
+  PRIMARY KEY  (`n`),
+  KEY `datetime` (`datetime`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Горящие ссылки дня' AUTO_INCREMENT=18 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `site`
+--
+
+CREATE TABLE IF NOT EXISTS `site` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `Access` enum('all','podzamok','admin') NOT NULL default 'admin' COMMENT 'Параметры доступа',
+  `name` varchar(1024) NOT NULL,
+  `type` enum('page','design','news','pageplain','photo') NOT NULL default 'page',
+  `text` text NOT NULL,
+  `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`),
+  KEY `name` (`name`),
+  KEY `type` (`type`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Контент сайта' AUTO_INCREMENT=168 ;
+
+-- --------------------------------------------------------

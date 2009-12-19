@@ -17,7 +17,7 @@ $LAST_skip = 3;
 
 $skip=intval($_GET['skip']);
 
-$pp = ms("SELECT `Date`,`Body`,`Header`,`DateUpdate`,`Access`,`num` FROM `dnevnik_zapisi` ".WHERE("`Date` LIKE '____/__/%'")." ORDER BY `Date` DESC LIMIT ".$skip.",".($LAST_skip+1),"_a");
+$pp = ms("SELECT `Date`,`Body`,`Header`,`DateUpdate`,`Access`,`num` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`!=0")." ORDER BY `Date` DESC LIMIT ".$skip.",".($LAST_skip+1),"_a");
 
 $next=$prev='';
 $n=sizeof($pp); if($n>$LAST_skip) { unset($pp[$n-1]);

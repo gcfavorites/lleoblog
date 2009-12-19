@@ -20,8 +20,6 @@ if($_POST["action"] == "Move") {
 	print "<p><font color=red><b>Ќевозможно перенести!<br>«аметка с датой <a href=".$wwwhost.htmlspecialchars($Date).".html>".htmlspecialchars($Date)."</a> уже существует!</b></font>";
    } else {
 	msq_update('dnevnik_zapisi',array( 'Date'=>e($Date),'DateUpdate'=>time() ),"WHERE `num`='".e($num)."'");
-	reset_prevnext_del($_POST["oldDate"]);
-	reset_prevnext_ins($Date);
 	print "<p><font color=green><b>ѕренесено успешно</b></font>";
    }
    $_POST["action"] = "Save";
@@ -56,7 +54,6 @@ if($_POST["action"] == "Save") {
 			'DateUpdate'=>time()
 		),'Date');
 //	prosris(); // устаканить `dnevnik_zapisi`
-	reset_prevnext_ins($_POST["Date"]); // перезаписать превнексты дл€ этой заметки, дл€ предыдущей и следующей
 	$Date=$_POST["Date"];
 }
 
@@ -65,7 +62,6 @@ elseif($_POST["action"] == "Delete") {
 	$num=ms("SELECT `num` FROM `dnevnik_zapisi` WHERE `Date`='".e($_POST["Date"])."' LIMIT 1","_l",0);
 	if($num!==false) {
 		msq_del('dnevnik_zapisi', array('num'=>e($num)) ); // удалить заметку
-		reset_prevnext_del($_POST["Date"]); // поправить ссылки PrevNext на соседних
 		msq_del('dnevnik_comments', array('DateID'=>e($num)) ); // удалить комментарии
 	}
 	//	prosris(); // устаканить `dnevnik_zapisi`
@@ -205,45 +201,4 @@ function prosris() {
 	ms("ALTER TABLE `dnevnik_zapisi` ADD num INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE, AUTO_INCREMENT = 1","_l",0);
 }
 */
-
-/*
-function reset_prevnext($Date) {
-	$a=reset_prevnext1($Date);
-	reset_prevnext1($a['Prev']['Date']);
-	reset_prevnext1($a['Next']['Date']);
-}
-
-function reset_prevnext1($Date) { $a=array();
-
-$a['Prev']=ms("SELECT `Date`,`num` FROM `dnevnik_zapisi` WHERE `Date`<'".e($Date)."' ORDER BY `Date` DESC LIMIT 1","_1",0);
-$a['Next']=ms("SELECT `Date`,`num` FROM `dnevnik_zapisi` WHERE `Date`>'".e($Date)."' ORDER BY `Date` LIMIT 1","_1",0);
-msq_update('dnevnik_zapisi',array( 'Prev'=>intval($a['Prev']['num']),'Next'=>intval($a['Next']['num']) ),"WHERE `Date`='".e($Date)."'");
-return $a;
-}
-*/
-
-
-function reset_prevnext_ins($Date) { $Date=e($Date);
-// исправить текущую
-$Prev=e(ms("SELECT `Date` FROM `dnevnik_zapisi` WHERE `Date`<'".$Date."' AND `Date` LIKE '____/__/%' ORDER BY `Date` DESC LIMIT 1","_l",0));
-$Next=e(ms("SELECT `Date` FROM `dnevnik_zapisi` WHERE `Date`>'".$Date."' AND `Date` LIKE '____/__/%' ORDER BY `Date` LIMIT 1","_l",0));
-msq_update('dnevnik_zapisi',array( 'Prev'=>$Prev,'Next'=>$Next ),"WHERE `Date`='".$Date."'");
-// исправить Next у предыдущей
-$l=e(ms("SELECT `Date` FROM `dnevnik_zapisi` WHERE `Date`>'".$Prev."' AND `Date` LIKE '____/__/%' ORDER BY `Date` LIMIT 1","_l",0));
-if($l!='') msq_update('dnevnik_zapisi',array( 'Next'=>$l ),"WHERE `Date`='".$Prev."'");
-// исправить Prev у следующей
-$l=e(ms("SELECT `Date` FROM `dnevnik_zapisi` WHERE `Date`<'".$Next."'  AND `Date` LIKE '____/__/%'ORDER BY `Date` DESC LIMIT 1","_l",0));
-if($l!='') msq_update('dnevnik_zapisi',array( 'Prev'=>$l ),"WHERE `Date`='".$Next."'");
-}
-
-
-function reset_prevnext_del($Date) { $Date=e($Date);
-// вз€ть соседние
-$Prev=e(ms("SELECT `Date` FROM `dnevnik_zapisi` WHERE `Date`<'".$Date."' AND `Date` LIKE '____/__/%' ORDER BY `Date` DESC LIMIT 1","_l",0));
-$Next=e(ms("SELECT `Date` FROM `dnevnik_zapisi` WHERE `Date`>'".$Date."' AND `Date` LIKE '____/__/%' ORDER BY `Date` LIMIT 1","_l",0));
-// исправить Next у предыдущей и Prev у следующей
-if($Prev!='') msq_update('dnevnik_zapisi',array( 'Next'=>$Next ),"WHERE `Date`='".$Prev."'");
-if($Next!='') msq_update('dnevnik_zapisi',array( 'Prev'=>$Prev ),"WHERE `Date`='".$Next."'");
-}
-
 ?>
