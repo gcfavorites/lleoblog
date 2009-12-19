@@ -15,6 +15,9 @@ $_PAGE = array('design'=>file_get_contents($GLOBALS['host_design']."plain.html")
 'signature'=>$signature
 );
 
+if(!isset($admin_ljuser)) idie("Ошибка: не указано имя пользователя livejournal!
+<br>Добавьте в свой config.sys эту строчку, пример: <b>\$admin_ljuser=\"lleo\";</b>");
+
 $numdoc=100;
 $all=array();
 $into=(isset($_GET['into'])?intval($_GET['into']):0);
