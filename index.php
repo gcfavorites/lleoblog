@@ -35,6 +35,26 @@ function zamok($d) {
 	return $z.$z;
 }
 
+
+
+
+function DESIGN($template,$title) {
+
+if($template=='plain') $GLOBALS['_PAGE'] = array('design'=>file_get_contents($GLOBALS['host_design']."plain.html"),
+'header'=>$title,
+'title'=>$title,
+
+'www_design'=>$www_design,
+'admin_name'=>$admin_name,
+'httphost'=>$httphost,
+'wwwhost'=>$wwwhost,
+'wwwcharset'=>$wwwcharset,
+'signature'=>$signature
+);
+
+}
+
+
 function blogpage() { global $_PAGE,$wwwhost,$login,$podzamok;
 
 	STYLE_ADD($GLOBALS['httpsite'].$GLOBALS['www_design']."styles.css");
@@ -92,7 +112,6 @@ if(preg_match("/^".$pwwwhost."(\d\d\d\d\/\d\d\/\d\d.*)\.html/si", $path, $m)) { 
 // заметка месяца
 if(preg_match("/^".$pwwwhost."(\d\d\d\d\/\d\d)$/si", $path, $m)) { $Date = $m[1]; include("article.php"); exit; } // Заметка
 
-
 // Корень => Последняя заметка ???
 if($path."/" == $wwwhost) {
  	// Yandex заебал индексировать титул блога! Он же меняется все время! Блять, для кого robots.txt был написан?!
@@ -101,9 +120,13 @@ if($path."/" == $wwwhost) {
  	redirect('http://lleo.aha.ru/na/?WWFuZGV4JSDy+yDt6PXz-yDt5SD36PLg5fj8IHJvYm90cy50eHQg6CDr5efl+Pwg6vPk4CDt5SDt4OTuLiDfIOTr-yDq7uPuIHJvYm90cy50eHQg7+jx4Os-JSDv8OXq8OD54Okg6O3k5erx6PDu4uDy-CDy6PLz6yDv5fDl4OTw5fHg9ujoIPLl7CDq7u3y5e3y7uwsIOru8u7w++kg7+4g7OXx8vMg7+Xw5eDk8OXx4Pbo6C4gx+Dl4eDrLCBZYW5kZXgsIPfl8fLt7uUg8evu4u4h');
  	}
 
-	$last=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`Date` LIKE '____/__/%'")." ORDER BY `Date` DESC LIMIT 1","_l",$ttl);
+	$last=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`!=0")." ORDER BY `Date` DESC LIMIT 1","_l",$ttl);
 
-	if($last=='') die("<p>Ошибка: нет последней записи! ".$o);
+	if($last=='') {
+		if(!msq_table('site') and !msq_table('dnevnik_zapisi')) redirect($wwwhost."admin"); // в админку, если по первому разу
+		redirect($wwwhost."editor"); // в редактор, если записей нет
+		// idie("<p>Нет последней записи! ".$o);
+		}
 	redirect($wwwhost.$last.".html"); // на последнюю
 	}
 
@@ -121,22 +144,21 @@ if (preg_match("/^".$pwwwhost."(\d\d\d\d)\/(\d\d)\/?$/", $path, $m)) {
 $mod_name=substr($path,strlen($wwwhost)); $mod_name=str_replace('..','.',$mod_name);
 if(preg_match("/[^0-9a-z_\-\.\/]+/si",$mod_name)) idie("Error 404: wrong name \"<b>".htmlspecialchars($mod_name)."</b>\"");
 
-// сначала в базе сайта
+// сперва ищем в модулях
+$mod=$host_module.$mod_name.".php"; if(file_exists($mod)) { include($mod); exit; }
+
+// затем в базе site
 $text=ms("SELECT `text` FROM `site` ".WHERE("`name`='".e($mod_name)."' AND `type`='page'"),"_l",$ttl);
 if($text!='') { $name=$mod_name; include("site.php"); exit; }
 
 // затем в базе дневника
 $article=ms("SELECT * FROM `dnevnik_zapisi` WHERE `Date`='".e($mod_name)."'","_1",$ttl);
-if($article!=false) { $Date=$mod_name; include("article.php"); exit; }
-// elseif($n>1) { idie("System Error: \"<b>".htmlspecialchars($mod_name)."</b>\" = ".$n); }
+if($article!==false) { $Date=$mod_name; include("article.php"); exit; }
 
-$mod=$host_module.$mod_name.".php"; if(file_exists($mod)) { include($mod); exit; }
-
-idie("Error 404: Module not found \"<b>".htmlspecialchars($mod_name)."</b>\"
-
-".($admin?"<p><a href='".$wwwhost."adminsite/?a=create&name=".urlencode($mod_name)."'>Создать эту страницу в базе `".$db_site."`?</a>":"")."
-
-");
+// если совсем ничего не нашлось
+idie("Error 404: Module not found \"<b>".htmlspecialchars($mod_name)."</b>\""
+.($admin?"<p><a href='".$wwwhost."adminsite/?a=create&name=".urlencode($mod_name)."'>Создать эту страницу в базе `".$db_site."`?</a>":"")
+);
 
 /*
 if($path == $wwwhost."rss.xml") { $_PAGE["template"]=false; include($host_module."rss.php"); exit; } // RSS-канал
@@ -173,13 +195,15 @@ function getCalendar($year, $mon, $day = false) { global $admin, $wwwhost, $mont
 	$now = date("Y/m/d"); // сегодняшняя дата
 
 	// выбрать существующие заметки месяца
-	$sql = ms("SELECT `Date`,`Access`,`Prev`,`Next` FROM `dnevnik_zapisi` ".WHERE("`Date` LIKE '".$year."/".$mon."/__%'")." ORDER BY `Date`","_a",$ttl);
+$sql = ms("SELECT `Date`,`Access` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`>='".$m."' AND `DateDatetime`<'".($m+$end*86400)."'")." ORDER BY `DateDatetime`","_a",$ttl);
+
+
 	$a=array(); foreach($sql as $p) $a[$p['Date']]=$p['Access'];
 
-	$Prev=$sql[0]['Prev']; if($Prev!='') $Prev="<a href='".$wwwhost.$Prev.".html'>&lt;&lt;</a>";
-	elseif($admin) $Prev="<a href='".$wwwhost.date("Y/m",$m-60*60*24)."'>&lt;&lt;</a>";
-	$Next=$sql[sizeof($sql)-1]['Next']; if($Next!='') $Next="<a href='".$wwwhost.$Next.".html'>&gt;&gt;</a>";
-	elseif($admin) $Next="<a href='".$wwwhost.date("Y/m",$m+$end*60*60*24)."'>&gt;&gt;</a>";
+//	$Prev=$sql[0]['Prev']; if($Prev!='') $Prev="<a href='".$wwwhost.$Prev.".html'>&lt;&lt;</a>";
+//	elseif($admin) $Prev="<a href='".$wwwhost.date("Y/m",$m-60*60*24)."'>&lt;&lt;</a>";
+//	$Next=$sql[sizeof($sql)-1]['Next']; if($Next!='') $Next="<a href='".$wwwhost.$Next.".html'>&gt;&gt;</a>";
+//	elseif($admin) $Next="<a href='".$wwwhost.date("Y/m",$m+$end*60*60*24)."'>&gt;&gt;</a>";
 	
 $s .= "<table border=0 cellspacing=0 cellpadding=1>
 <tr><td class=cld_top>".$Prev."</td><td colspan=5 align=center class=cld_top>".$months[intval($mon)]." ".intval($year)."</td><td align=right class=cld_top>".$Next."</td></tr>

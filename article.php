@@ -3,19 +3,23 @@
 blogpage();
 
 if(!isset($article)) { 
-	$article=ms("SELECT * FROM `dnevnik_zapisi` ".WHERE("`Date`='".$Date."'"),"_1",$ttl);
+	$article=ms("SELECT * FROM `dnevnik_zapisi` ".WHERE("`Date`='".e($Date)."'"),"_1");
+
 	if($article===false) {
 		list($Y,$m,$d)=explode('/',$Date);
 
 		$_PAGE["title"] .= "такой заметки нет";
 		$_PAGE["calendar"] = getCalendar($Y,$m);
-		$Date2=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`Next`='' AND `Date` LIKE '____/__/%'")." LIMIT 1","_l",$ttl);
+		$Date2=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE()." ORDER BY `DateDatetime` LIMIT 1","_l",$ttl);
 		$_PAGE["header"] = "<font color=red>ОШИБКА:</font> такой заметки нет";
 		die("Заметка, датированная числом ".$Date." не существует. Скорее всего ее никогда не было. Может, она удалена или закрыта.
 Ничем помочь не могу. Последняя заметка дневника находится <a href='".$wwwhost.$Date2.".html'>здесь</a>.
 Все доступные заметки этого месяца:<p><center>".$_PAGE["calendar"]."</center>");
 	}
 }
+
+$article['Prev']=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`<'".e($article['DateDatetime'])."' AND `DateDatetime`!=0")." ORDER BY `DateDatetime` DESC LIMIT 1","_l");
+$article['Next']=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`>'".e($article['DateDatetime'])."' AND `DateDatetime`!=0")." ORDER BY `DateDatetime` LIMIT 1","_l");
 
 include_once $include_sys."_antibot.php"; // антибота подгружаем
 include_once $include_sys."_onetext.php"; // обработка заметки
@@ -28,6 +32,15 @@ if(intval($article["Year"].$article["Mon"].$article["Day"]))
 $article["DateTime"] = mktime(1, 1, 1, $article["Mon"], $article["Day"], $article["Year"]);
 
 $_PAGE["header"] = zamok($article['Access']).$article["Day"]." ".$months_rod[intval($article["Mon"])]." ".$article["Year"]."<div id=Header>".$article["Header"]."</div>";
+
+// --------- поищем еще заметки за это число ------------
+$pp=ms("SELECT `Date`,`Header` FROM `dnevnik_zapisi` ".WHERE("`DateDate`='".$article['DateDate']."' AND `Date`!='".e($article['Date'])."'"),"_a");
+if($pp!==false && sizeof($pp)) {
+	$_PAGE["header"].= "<p><div style='text-align: left; border: 2px dashed #ccc;'><i>Другие записи за это число:</i>";
+	foreach($pp as $p) $_PAGE["header"].="<br><a href='".$wwwhost.$p['Date']."'>".$p['Date'].($p['Header']!=''?" - ".$p['Header']:'')."</a>";
+	$_PAGE["header"].= "</div>";
+}
+
 
 $_PAGE["calendar"] = ($article["Prev"].$article["Next"]!=''?getCalendar($article["Year"], $article["Mon"], $article["Day"]):'');
 if($admin) $_PAGE["calendar"] = "<p><input TYPE=\"BUTTON\" VALUE=\"EDITOR\" onClick=\"window.location.href='".$wwwhost."editor/?Date=".$article["Date"]."' \"><p>".$_PAGE["calendar"];

@@ -172,9 +172,10 @@ function ms_connect() { if(isset($GLOBALS['ms_connected'])) return;
 <br>\$msq_login = '".$GLOBALS['msq_login']."';
 <br>\$msq_pass = [...]
 </ul>");
-   mysql_select_db($GLOBALS['msq_basa']) or idie("<p>Соединение с MySQL работает, но нет базы <b>".$GLOBALS['msq_basa']."</b>.
-<br>Создайте ее или используйте свою, отредактировав config.php:
-<ul><p>\$msq_basa = '".$GLOBALS['msq_basa']."';</ul>");
+   mysql_select_db($GLOBALS['msq_basa']) or idie("<p>Хорошие новости! Во-первых, движок поднялся. Что уже чудо. Во-вторых, что еще
+чудеснее, обнаружен MySQL и с ним установлено успешное соединение!
+Теперь плохая новость: отсутствует база&nbsp;<b>`".$GLOBALS['msq_basa']."`</b>. Это не проблема, подойдет любая другая, лишь бы движку
+было где создать свои таблицы. Если есть какая-то база, ее имя надо вписать в config.php, где сейчас: <b>\$msq_basa = '".$GLOBALS['msq_basa']."';</b>");
 
    mysql_query("SET NAMES ".$GLOBALS['msq_charset']);
    mysql_query("SET @@local.character_set_client=".$GLOBALS['msq_charset']);
