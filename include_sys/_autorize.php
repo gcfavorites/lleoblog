@@ -153,6 +153,9 @@ function kawa($p) { $s=$p[1];
 }
 
 function set_cookie($Name,$Value='',$MaxAge=0,$Path='',$Domain='',$Secure=false,$HTTPOnly=false) {
+
+if($GLOBALS['cookie_method_old']) { setcookie($Name, $Value, $MaxAge, $Path, $Domain, 0); return; }
+
 header('Set-Cookie: ' . rawurlencode($Name) . '=' . rawurlencode($Value)
 .(empty($MaxAge) ? '' : '; Max-Age=' . $MaxAge)
 .(empty($Path)   ? '' : '; path=' . $Path)

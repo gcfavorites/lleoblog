@@ -169,6 +169,7 @@ $test_basa=array(
   KEY `sc` (`sc`)
 )"),
 
+
 'rekomenda' => array("Горящие ссылки дня","(
   `n` bigint(20) NOT NULL auto_increment,
   `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
@@ -177,6 +178,7 @@ $test_basa=array(
   PRIMARY KEY  (`n`),
   KEY `datetime` (`datetime`)
 )"),
+
 
 'site' => array("Контент сайта","(
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -235,7 +237,6 @@ $s.="<p>В файле config.conf переменная \$admin_hash пустая или задана неверно. П
 			if(md5($_POST["login"].$koldunstvo) == $admin_hash) { // пароль верный?
 				$admin=true;
 				set_cookie("adm", broident($admin_hash.$koldunstvo), time()+86400*365, "/", "lleo.aha.ru", 0, true);
-				//setcookie("adm", broident($admin_hash.$koldunstvo), time()+86400*365, "/", "lleo.aha.ru", 0);
 				$s .= "<p><center><font color=green>Залогинились!</font> &nbsp; ".$f_logout."</center>";
 			} else { // пароль неверный?
 				logi("login.log","\n".date("Y/m/d h:i:s").": (".$lju." ".$sc." ".$IP." ".$BRO.")"); sleep(5);
