@@ -236,7 +236,7 @@ $s.="<p>В файле config.conf переменная \$admin_hash пустая или задана неверно. П
 		if(isset($_POST["login"])) { // пытается логиниться?
 			if(md5($_POST["login"].$koldunstvo) == $admin_hash) { // пароль верный?
 				$admin=true;
-				set_cookie("adm", broident($admin_hash.$koldunstvo), time()+86400*365, "/", "lleo.aha.ru", 0, true);
+				set_cookie("adm", broident($admin_hash.$koldunstvo), time()+86400*365, "/", "", 0, true);
 				$s .= "<p><center><font color=green>Залогинились!</font> &nbsp; ".$f_logout."</center>";
 			} else { // пароль неверный?
 				logi("login.log","\n".date("Y/m/d h:i:s").": (".$lju." ".$sc." ".$IP." ".$BRO.")"); sleep(5);
