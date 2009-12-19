@@ -10,7 +10,47 @@ $commentary=trim($commentary,"\n");
 
 // die("1");
 
+
+function link_lj_var($t) {
+	$t1=str_ireplace('&quot;','"',$t[1]);
+	$t2=str_ireplace('&quot;','"',$t[2]);
+	$t1=trim($t1,"'\"\n ");
+	$t2=str_ireplace('&lt;wbr&gt;&lt;/wbr&gt;','',trim($t2,"'\"\n "));
+	if($t2==$t1) return $t1;
+//	idie($t2." ".$t1);
+	return $t2." (".$t1.")";
+}
+
 function AddBB($var) {
+
+
+	$var=preg_replace_callback("/&lt;a href=(.*?)&gt;(.*?)&lt;\/a&gt;/si","link_lj_var",$var);
+
+//              $text=
+//<a href="http://www.handhelds.org/moin/moin.cgi/GeneratingSyntheticX11Events">
+//http://www.handhelds.org/moin/moin.c<wbr></wbr>gi/GeneratingSyntheticX11Events</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	$var = str_replace('&quot;','"', $var);
 
@@ -71,15 +111,18 @@ function AddBB($var) {
 
 
 function hyperlink($s) { 
-return preg_replace_callback("/([\s>\(\:])(([a-zA-Z]+:\/\/|(www\.))([a-z][a-z0-9_\.\-]*[a-z]{2,6})([a-zA-Z0-9!#\$%&\(\)\*\+,\-\.\/:;=\?\@\[\]\\^_`\{\}\|~]*[a-zA-Z0-9\/]))([\s<,:\.\)\!\?])/i","url_present", $s); }
+//return preg_replace_callback("/([\s>\(\:])(([a-zA-Z]+:\/\/|(www\.))([a-z][a-z0-9_\.\-]*[a-z]{2,6})([a-zA-Z0-9!#\$%&\(\)\*\+,\-\.\/:;=\?\@\[\]\\^_`\{\}\|~]*[a-zA-Z0-9\/]))([\s<,:\.\)\!\?])/i","url_present", $s); }
+return preg_replace_callback("/([\s>\(\:])(([a-zA-Z]+:\/\/|(www\.))([a-z][a-z0-9_\.\-]*[a-z]{2,6})([a-zA-Z0-9!#\$\%\&\(\)\*\+,\-\.\/:;=\?\@\[\]\\^_`\{\}\|~]*[a-zA-Z0-9\/\.\&\%\;\=]))([\s<,:\.\%\&\;\)\!\?\=0-9a-z])/i","url_present", $s); }
+
 
 function url_present($p) {
-
-
-
 	if($p[3]=='www.') $p[2]='http://'.$p[2];
-	if(eregi("(\.jpg|\.gif|\.jpeg|\.png)",$p[6])) $s='<img src="'.$p[2].'">';
-	else $s='<noindex><a href="'.$p[2].'" rel="nofollow">'.reduceurl($p[3].$p[5].$p[6],60).'</a></noindex>';
+	$l=$p[6];
+	if(stristr($l,'.jpg') or stristr($l,'.gif') or stristr($l,'.jpeg') or stristr($l,'.png') 
+or stristr($p[0],'http://pix2.blogs.yandex.net/getavatar')
+)
+		$s='<img src="'.$p[2].'"'.(strstr($l,'&amp;prefix=normal')?' align=left hspace=10':'').'>';
+	else $s='<noindex><a href="'.$p[2].'" rel="nofollow">'.reduceurl($p[3].$p[5].$l,60).'</a></noindex>';
 	return $p[1].$s.$p[7];
 }
 
