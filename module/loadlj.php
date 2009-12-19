@@ -138,7 +138,7 @@ if(sizeof($arsyandex)) foreach($arsyandex as $lyandex) {
 	$ara=get_one_ya_c($lyandex,$Date,$num,$url);
 	$unic=$ara['Name']."#".$ara['DateTime'];
 	if(isset($all[$unic]) and $ara['Name']==$all[$unic]['Name'] and $ara['Commentary']==$all[$unic]['Commentary'] ) {
-		print "<hr><font color=red>Нашелся полный дубль коментария $unic, не вносим в базу!</font>"; exit;
+		print "<hr><font color=red>Нашелся полный дубль коментария $unic, не вносим в базу!</font>"; // <p><pre>".print_r($ara,1)."</pre><hr>Было:<p><pre>".print_r($all[$unic],1)."</pre>"; exit;
 		} else {
 			if(isset($all[$unic])) {
 				// print "<hr>Нашелся дубль $unic:<p><pre>".print_r($ara,1)."</pre><hr>Было:<p><pre>".print_r($all[$unic],1)."</pre>";
