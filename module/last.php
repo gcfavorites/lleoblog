@@ -24,7 +24,7 @@ $n=sizeof($pp); if($n>$LAST_skip) { unset($pp[$n-1]);
 	$next="<td align=right><a href=".$mypage."?skip=".($skip+$LAST_skip).">старые ".$LAST_skip."&nbsp;&gt;&gt;</a></td>";
 }
 
-$n=$skip-$LAST_skip; if($n>0) {
+$n=$skip-$LAST_skip; if($n>=0) {
 	$prev="<td align=left><a href=".$mypage."?skip=".$n.">&lt;&lt;&nbsp;новые ".$LAST_skip."</a></td>";
 }
 
