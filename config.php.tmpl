@@ -30,6 +30,12 @@ $signature = "&copy; ".$admin_name."&nbsp;&nbsp;<a href='mailto:".$admin_mail."'
 	$hashlogin = "этокатастрофаЎеф"; // допаролька логона сайта - если помен€ть, отвал€тс€ все залогиненные юзеры
 
 
+        // $cookie_method_old = true; // включить, чтобы была стара€ система кук
+        if(stristr($_SERVER["HTTP_USER_AGENT"],'Nokia') or stristr($_SERVER["HTTP_USER_AGENT"],'Konqueror') ) $cookie_method_old=true;
+
+        // $admin_ljuser="lleo"; // стертый аккаут LJ дл€ восстановлени€ через яндекс модулем loadlj
+
+
 # memcache - по умолчанию отключен, удалите ¬ќќЅў≈ эту строчку, если он у вас установлен
 $memcache = false;
 
