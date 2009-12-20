@@ -3,7 +3,7 @@ if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - на
 if(isset($_GET['version'])) die("lleoblog 2.0"); // показать версию
 // if(!$admin) redirect($wwwhost."login/"); // посторонних - нахуй
 
-DESIGN('plain',"СТРАНИЦА АДМИНА");
+DESIGN('plain',"<a href=$mypage>СТРАНИЦА АДМИНА</a>");
 
 $PEST=array_merge($_GET,$_POST);
 

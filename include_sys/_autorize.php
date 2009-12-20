@@ -16,9 +16,10 @@ if ( (preg_match("/\Ahttp\:\/\/(.+?)\.livejournal\.com\/friends/", $_SERVER["HTT
 { $lju=preg_replace("/[^0-9a-z\_\-]/si","",$m[1]); set_cookie("lju", base64_encode($lju), time()+86400*365, "/", "", 0, true); }
 // ======================= Определение ЖЖ-истов =========================================
 
-$IP = $_SERVER["REMOTE_ADDR"];
+$IP = $_SERVER["REMOTE_ADDR"]; $m=explode('.',$IP,4); $IPNUM = $m[0]*1677216+$m[1]*65536+$m[2]*256+$m[3];
 $BRO = $_SERVER["HTTP_USER_AGENT"];
 $MYPAGE=$_SERVER["REQUEST_URI"];
+
 list($mypage) = explode('?',$MYPAGE.'?');
 
 $IPsc=mysql_escape_string($IP.'-'.substr($GLOBALS['sc'],0,4));

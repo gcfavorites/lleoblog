@@ -135,21 +135,25 @@ if ($admin && $a == "open") { // открыть комментарий (и записать время открытия 
 	update_one('metka',$_REQUEST["action"]); // сделать видимым
 }
 //##################################################################
+
 if($a == "load_stat" || $a == "delmusor" ) {
-	include $include_sys."_maybelink.php";
 	$blockblock='';
 
 if($admin && $a == "delmusor") { 
-	$blockblock.='<p>удаляем: '.$_REQUEST["type"].$_REQUEST["n"]."<p>";
-	$basaname=($_REQUEST["type"]=='l'?'dnevnik_link':'dnevnik_search');
-	$p=ms("SELECT * FROM `".$basaname."` WHERE `n`='".e($_REQUEST["n"])."'","_1",0); print $msqe;
-	$blockblock .= "(".$p['n'].": <b>".htmlspecialchars($p['search'])."</b><br>".((strlen($p['link'])>80)?(substr(htmlspecialchars($p['link']),0,80)):(htmlspecialchars($p['link']))).")<p>";
+
+//$_RESULT["stat"] = "<a href='javascript:close_stat();'>закрыть</a><p>".$blockblock."#".$_REQUEST["data"]."#"; $_RESULT["status"] = true; exit;
+//	$blockblock.='<p>удаляем: '.$_REQUEST["type"].$_REQUEST["n"]."<p>";
+//	$basaname=;
+//	$p=ms("SELECT * FROM `".$basaname."` WHERE `n`='".e($_REQUEST["n"])."'","_1",0); // print $msqe;
+//	$blockblock .= "(".$p['n'].": <b>".htmlspecialchars($p['search'])."</b><br>".((strlen($p['link'])>80)?(substr(htmlspecialchars($p['link']),0,80)):(htmlspecialchars($p['link']))).")<p>";
 	// и удалить
-        msq_del($basaname, array('n'=>e($_REQUEST["n"])) ); print $msqe;
+        msq_del(($_REQUEST["type"]=='l'?'dnevnik_link':'dnevnik_search'), array('n'=>e($_REQUEST["n"])) );
+	// print $msqe;
 }
 
+
 $bloksearch='';
-$sql=ms("SELECT `search`,`poiskovik`,`count`,`n` FROM `dnevnik_search` WHERE `Date`='".e($_REQUEST["data"])."' ORDER BY `count` DESC","_a",0); print $msqe;
+$sql=ms("SELECT `search`,`poiskovik`,`count`,`n` FROM `dnevnik_search` WHERE `mypage`='".e($_REQUEST["data"])."' ORDER BY `count` DESC","_a",0); print $msqe;
 $nstatsearch=sizeof($sql);
 
 foreach($sql as $p) {
@@ -160,7 +164,7 @@ foreach($sql as $p) {
 
 $bloklink='';
 $nlimit=max(20,$nstatsearch);
-$sql=ms("SELECT `link`,`count`,`n` FROM `dnevnik_link` WHERE `Date`='".e($_REQUEST["data"])."' ORDER BY `count` DESC LIMIT ".$nlimit,"_a",0); print $msqe;
+$sql=ms("SELECT `link`,`count`,`n` FROM `dnevnik_link` WHERE `mypage`='".e($_REQUEST["data"])."' ORDER BY `count` DESC LIMIT ".$nlimit,"_a",0); print $msqe;
 $nstatlink=sizeof($sql);
 
 foreach($sql as $p) {
@@ -181,5 +185,17 @@ else $blockblock .= " - пока отсутствует</span></td></tr>";
 $_RESULT["stat"] = "<a href='javascript:close_stat();'>закрыть</a><p>".$blockblock;
 $_RESULT["status"] = true;
 }
+
+
+
+
+
+function maybelink($e) {
+        $s=urldecode($e); if($s!=$e) $s=htmlspecialchars($s);
+        if( ( strlen($s)/((int)substr_count($s,'Р')+0.1) ) < 11 ) return(iconv("utf-8",$GLOBALS['wwwcharset']."//IGNORE",$s));
+        else return(trim($s));
+}
+
+
 
 ?>
