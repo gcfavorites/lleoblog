@@ -62,33 +62,7 @@ CREATE TABLE IF NOT EXISTS `dnevnik_comments` (
 
 -- --------------------------------------------------------
 
---
--- Структура таблицы `dnevnik_link`
---
 
-CREATE TABLE IF NOT EXISTS `dnevnik_link` (
-  `n` bigint(20) NOT NULL auto_increment,
-  `mypage` varchar(256) NOT NULL,
-  `link` varchar(2048) NOT NULL,
-  `count` bigint(20) NOT NULL,
-  `last_ip` varchar(15) NOT NULL,
-  `last_ipn` int(10) unsigned NOT NULL,
-  `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
-  PRIMARY KEY  (`n`),
-  KEY `Date` (`mypage`),
-  KEY `last_ip` (`last_ip`),
-  KEY `last_ipn` (`last_ipn`),
-  KEY `last_ipn_3` (`last_ipn`),
-  KEY `last_ipn_4` (`last_ipn`),
-  KEY `last_ipn_5` (`last_ipn`),
-  KEY `last_ipn_6` (`last_ipn`),
-  KEY `last_ipn_7` (`last_ipn`),
-  KEY `last_ipn_8` (`last_ipn`),
-  KEY `last_ipn_9` (`last_ipn`),
-  KEY `last_ipn_10` (`last_ipn`)
-) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='ссылки на дневник' AUTO_INCREMENT=138443 ;
-
--- --------------------------------------------------------
 
 --
 -- Структура таблицы `dnevnik_zapisi`
@@ -233,5 +207,43 @@ CREATE TABLE IF NOT EXISTS `site` (
   KEY `name` (`name`),
   KEY `type` (`type`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Контент сайта' AUTO_INCREMENT=168 ;
+
+-- --------------------------------------------------------
+
+
+--
+-- Структура таблицы `dnevnik_search`
+--
+
+CREATE TABLE IF NOT EXISTS `dnevnik_search` (
+  `n` bigint(20) NOT NULL auto_increment,
+  `mypage` varchar(256) NOT NULL,
+  `poiskovik` varchar(32) NOT NULL,
+  `link` varchar(2048) NOT NULL,
+  `search` varchar(2048) NOT NULL,
+  `count` bigint(20) NOT NULL,
+  `last_ipn` int(10) unsigned NOT NULL,
+  `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`n`),
+  KEY `mypage` (`mypage`),
+  KEY `last_ipn` (`last_ipn`),
+  KEY `link` (`link`(1000))
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='поисковые заходы' AUTO_INCREMENT=97708 ;
+
+--
+-- Структура таблицы `dnevnik_link`
+--
+
+CREATE TABLE IF NOT EXISTS `dnevnik_link` (
+  `n` bigint(20) NOT NULL auto_increment,
+  `mypage` varchar(256) NOT NULL,
+  `link` varchar(2048) NOT NULL,
+  `count` bigint(20) NOT NULL,
+  `last_ipn` int(10) unsigned NOT NULL,
+  `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`n`),
+  KEY `mypage` (`mypage`),
+  KEY `last_ipn` (`last_ipn`),
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='ссылки на дневник' AUTO_INCREMENT=138443 ;
 
 -- --------------------------------------------------------

@@ -66,11 +66,13 @@ function lladdru($l) { global $IS_IMG; return "<b><img src='$IS_IMG' border=0><f
 
 // информация поисковика
 
-if($_SERVER["HTTP_REFERER"]!='' && !strstr($_SERVER["HTTP_REFERER"],$GLOBALS["httpsite"]) ) {
-//include_once $include_sys."_poiskovik.php";
-//include_once $include_sys."_linksearch.php";
+$REF=$_SERVER["HTTP_REFERER"];
+if($REF!='' && substr($REF,0,strlen($httpsite))!=$httpsite) {
 
-if ($u[0]!="") {
+	include_once $include_sys."_refferer.php";
+	$u=refferer($REF);
+
+if($u[0]!="") {
 
 $preword = ($opoznan?"Какая встреча, ".$opoznan."!<p>":"")."Ищешь через ".htmlspecialchars($u[1])." всякую ерунду типа
 \"<b><u>".htmlspecialchars($u[0])."</u></b>\"? Вот уж дурацкое занятие, скажу тебе прямо. Впрочем, дело твое.
@@ -85,9 +87,7 @@ if (ereg("качать", $s[0])) $preword .= "<p>Теперь насчет \"качать\". Здесь - дом
 мой интернет не позволяет рассылать файлы. И где я чего качал сто лет назад - тоже не помню, извините. Поищите
 в интернете, поспрашивайте в форумах любителей, уверен, у вас получится.";
 
-} elseif ( ($_SERVER["HTTP_REFERER"]!="") && !(
-strstr($_SERVER["HTTP_REFERER"],$GLOBALS["httpsite"]) ||
-strstr($_SERVER["HTTP_REFERER"],"livejournal.com") )) {
+} elseif ( !( strstr($REF,$GLOBALS["httpsite"]) || strstr($REF,"livejournal.com") )) {
 
 //	$fromlink=maybelink(urldecode($_SERVER["HTTP_REFERER"]));
 
@@ -102,7 +102,6 @@ $preword .= " Это личный дневник на домашней страничке одного простого парня из 
 настораживает. Самовольно читая мой дневник, вы должны понимать, что мои заметки не обязаны вас развлекать,
 а мои взгляды не обязаны соответствовать вашим. И тогда мы будем друзьями. Спасибо за понимание.";
 }
-
 
 }
 
@@ -313,24 +312,29 @@ class=t id='Commentary' name=Commentary cols=60 rows=7>".htmlspecialchars($_POST
 $nstatlink = '?'; // mysql_num_rows(mysql_query("SELECT `n` FROM `dnevnik_link` WHERE `Date`='".mysql_escape_string($article["Date"])."'"));
 $nstatsearch = '?'; //mysql_num_rows(mysql_query("SELECT `n` FROM `dnevnik_search` WHERE `Date`='".mysql_escape_string($article["Date"])."'"));
 
+
+$ajaxgif='<center><img src={www_design}img/ajax.gif align=right></center>';
+
+
 SCRIPTS("
-	function zabil(id,text) { document.getElementById(id).innerHTML = text; }
-	function vzyal(id) { return document.getElementById(id).innerHTML; }
-	function zakryl(id) { document.getElementById(id).style.display='none'; }
-	function otkryl(id) { document.getElementById(id).style.display='block'; }
+function close_stat() { zabil('stat',\"<a href=javascript:load_stat('".$mypage."');>статистика</a>\"); }
 
-function close_stat() { zabil('stat',\"<a href=javascript:load_stat('".$article["Date"]."');>статистика</a>\"); }
-
-function load_stat(data) { zabil('stat', \"<center>загрузка статистики...</center>\");
+function load_stat(data) { zabil('stat', '$ajaxgif');
 	JsHttpRequest.query('".$wwwhost."ajax_comments.php', { action: 'load_stat', data: data },
-	function(responseJS, responseText) { if (responseJS.status) {
-	zabil('stat',responseJS.stat); }},true);
-}");
+	function(responseJS, responseText) { if (responseJS.status) { zabil('stat',responseJS.stat); }},true); }
+
+".($admin?"
+
+function delmusor(data,type,n) { zabil('stat', '$ajaxgif');
+	JsHttpRequest.query('".$wwwhost."ajax_comments.php', { action: 'delmusor', data: data, type: type, n: n },
+	function(responseJS, responseText) { if (responseJS.status) { zabil('stat',responseJS.stat); }},true);}
+
+":""));
 
 
 include_once $include_sys."text_scripts.php"; // включить библиотеку
 
-$_PAGE["coments"] = "<div id='stat' class=br><a href=\"javascript:load_stat('".$article["Date"]."');\">статистика</a></div>".$coments;
+$_PAGE["coments"] = "<div id='stat' class=br><a href=\"javascript:load_stat('".$mypage."');\">статистика</a></div>".$coments;
 
 // --- А ТЕПЕРЬ САМА ПРОСТЫНЯ КАМЕНТОВ ---
 

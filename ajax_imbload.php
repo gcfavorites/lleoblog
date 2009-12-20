@@ -10,7 +10,6 @@ if($_GET['mode']=='oembed') {
 	send_oembed($p);
 }
 
-
 if($_GET['mode']=='xml') {
 	$p=get_zametka($_GET['date']); if($p===false) idie("Error 404");
 	send_xml($p);
@@ -47,7 +46,7 @@ function send_ajax($p) { $GLOBALS['_RESULT']=array(
 }
 
 function send_oembed($p) {
-	header("Content-Type: text/plain; charset='".$GLOBALS['wwwcharset']."'");
+	header("Content-Type: application/json; charset='".$GLOBALS['wwwcharset']."'");
 	die('{"provider_name": "lleoblog",'
 	.'"provider_url": "'.s($GLOBALS["httphost"]).'",'
 	.'"author_name": "'.s($p["Admin"]).'",'
