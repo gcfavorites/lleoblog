@@ -40,9 +40,8 @@ if($_COOKIE['pas']==broident($_COOKIE['log'].$hashlogin)) {
 }
 
 // какие заметки доступны?
-if($admin) $access=""; elseif($podzamok) $access="`Access` IN ('all','podzamok')"; else $access="`Access`='all'";
+$access=($admin?"":($podzamok?"`Access` IN ('all','podzamok')":"`Access`='all'"));
 function WHERE($s='') { global $access; if($s.$access=='') return ''; if($s=='' || $access=='') return "WHERE ".$s.$access; return "WHERE ".$s." AND ".$access; }
-
 
 // ==============================================================================
 // ==============================================================================
