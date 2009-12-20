@@ -55,7 +55,7 @@ if($template=='plain') $GLOBALS['_PAGE'] = array('design'=>file_get_contents($GL
 }
 
 
-function blogpage() { global $_PAGE,$wwwhost,$login,$podzamok;
+function blogpage($title='') { global $_PAGE,$wwwhost,$login,$podzamok;
 
 	STYLE_ADD($GLOBALS['httpsite'].$GLOBALS['www_design']."styles.css");
 
@@ -69,6 +69,7 @@ $_PAGE = array('design'=>file_get_contents($GLOBALS['host_design']."dnevnik.html
 'coments'=>'',
 'javascript'=>'',
 'ajaxscript'=>'',
+'oembed'=>'',
 
 'prevlink'=>$wwwhost,
 'nextlink'=>$wwwhost,
@@ -84,7 +85,11 @@ $_PAGE = array('design'=>file_get_contents($GLOBALS['host_design']."dnevnik.html
 
 'hashpage'=>$GLOBALS['hashpage'],
 'foto_www_preview'=>$GLOBALS['foto_www_preview'],
-'foto_res_small'=>$GLOBALS['foto_res_small']
+'foto_res_small'=>$GLOBALS['foto_res_small'],
+
+'header'=>$title,
+'title'=>$title
+
 
 );
 
@@ -253,6 +258,16 @@ function mk_prevnest($prev,$next) { // акхрэ хдхре бяе мюуси!!! ме онксвюеряъ с 
 $prev=($prev==''?'&nbsp;':"<font size=1>".$prev."</font>");
 $next=($next==''?'&nbsp;':"<font size=1>".$next."</font>");
 return "<center><table width=98% cellspacing=0 cellpadding=0><tr valign=top><td width=50%>$prev</td><td width=50% align=right>$next</td></tr></table></center>";
+}
+
+function getmaketime($d) {
+        if(!preg_match("/^(\d\d\d\d)\/(\d\d)\/(\d\d)(.*?)$/s",$d,$m)) return array(0,0);
+        $d=$m[1]."-".$m[2]."-".$m[3];
+        $t0=strtotime($d);
+        if(preg_match("/^[\-_\s]*(\d\d)-(\d\d)/s",$m[4],$t)) $d .= " ".$t[1].":".$t[2];
+        $t=strtotime($d);
+        while(msq_exist('dnevnik_zapisi',"WHERE `DateDatetime`='$t'")) $t++;
+        return array($t0,$t);
 }
 
 ?>

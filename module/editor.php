@@ -1,10 +1,7 @@
 <?php // редактор заметок
-
 if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 if(!$admin) redirect($wwwhost."login/"); // посторонних - нахуй
-blogpage();
-
-$_PAGE["header"]=$_PAGE["title"]="Редактор заметок";
+blogpage("Редактор заметок");
 
 $Date = ( isset($_GET["Date"]) ? htmlspecialchars($_GET["Date"]) : (
 isset($_POST["Date"]) ? htmlspecialchars($_POST["Date"]) : (
@@ -38,6 +35,7 @@ if($_POST["action"] == "Save") {
 			$s=preg_replace("/([\s>]+)\-([\s<]+)/si","$1".chr(151)."$2",$s); // длинное тире
 		}
 
+
 	$t=getmaketime($_POST["Date"]);
 
 //	getCalendar_clear($_POST["Date"]); // сбросить кэш календаря
@@ -53,7 +51,8 @@ if($_POST["action"] == "Save") {
 			'comments_order'=>e($_POST["comments_order"]),
 			'autoformat'=>e($_POST["autoformat"]),
 			'autokaw'=>($_POST["autokaw"]=='no'?'no':'auto'),
-			'DateDate'=>$t[0],'DateDatetime'=>$t[1],
+			'DateDate'=>$t[0],
+			'DateDatetime'=>$t[1],
 			//count_comments_open
 			'DateUpdate'=>time()
 		),'Date');
@@ -205,15 +204,5 @@ function prosris() {
 	ms("ALTER TABLE `dnevnik_zapisi` ADD num INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE, AUTO_INCREMENT = 1","_l",0);
 }
 */
-
-function getmaketime($d) {
-        preg_match("/^(\d\d\d\d)\/(\d\d)\/(\d\d)(.*?)$/s",$d,$m);
-        $d=$m[1]."-".$m[2]."-".$m[3];
-        $t0=strtotime($d);
-        if(preg_match("/^[\-_\s]*(\d\d)-(\d\d)/s",$m[4],$t)) $d .= " ".$t[1].":".$t[2];
-        $t=strtotime($d);
-        while(msq_exist('dnevnik_zapisi',"WHERE `DateDatetime`='$t'")) $t++;
-        return array($t0,$t);
-}
 
 ?>
