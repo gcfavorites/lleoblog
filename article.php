@@ -20,6 +20,7 @@ if(!isset($article)) {
 
 $article['Prev']=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`<'".e($article['DateDatetime'])."' AND `DateDatetime`!=0")." ORDER BY `DateDatetime` DESC LIMIT 1","_l");
 $article['Next']=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`>'".e($article['DateDatetime'])."' AND `DateDatetime`!=0")." ORDER BY `DateDatetime` LIMIT 1","_l");
+// $article['url']=$httphost.$Date.($article['DateDate']?".html":'');
 
 include_once $include_sys."_antibot.php"; // антибота подгружаем
 include_once $include_sys."_onetext.php"; // обработка заметки
@@ -42,6 +43,12 @@ if($pp!==false && sizeof($pp)) {
 	$_PAGE["header"].= "</div>";
 }
 }
+
+
+$_PAGE["oembed"] .= '
+<link rel="alternate" type="application/json+oembed" href="'.$httphost."ajax_imbload.php?mode=oembed&date=".urlencode($Date).'" />
+<link rel="alternate" type="application/xml+oembed" href="'.$httphost."ajax_imbload.php?mode=xml&date=".urlencode($Date).'" />
+';
 
 
 $_PAGE["calendar"] = ($article["Prev"].$article["Next"]!=''?getCalendar($article["Year"], $article["Mon"], $article["Day"]):'');

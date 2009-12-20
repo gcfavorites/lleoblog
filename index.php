@@ -239,7 +239,7 @@ function ljaddru($lju) { if(!$lju) return '';
 return "<img src=http://stat.livejournal.com/img/userinfo.gif style=\"vertical-align: center;\"><a href=".ljaddr($lju).">".$lju."</a>";
 }
 
-function urldata($d) { return $GLOBALS['wwwhost'].htmlspecialchars($d).(strstr($d,'/')?".html":''); }
+function urldata($d) { return $GLOBALS['wwwhost'].htmlspecialchars($d).(substr($d,4,1).substr($d,7,1)=='//'?".html":''); }
 
 function mk_prevnest($prev,$next) { // акхрэ хдхре бяе мюуси!!! ме онксвюеряъ с лемъ я бюьхлх инаюммшлх CSS!!! цнперэ хл б юдс!!!
 $prev=($prev==''?'&nbsp;':"<font size=1>".$prev."</font>");
