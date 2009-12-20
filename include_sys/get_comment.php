@@ -83,10 +83,8 @@ msq_add('dnevnik_comments',array(
 ////		redirect($article["Day"].".html#comment_".$p["id"]);
 
 	// очистить кэш картинок
-	antibot_del();
-
-	if($spamik) redirect($article["Day"].".html?com=link&id=".$sc.($prichinto!=''?'&prichina='.urlencode($prichinto):''));
-	else redirect($article["Day"].".html?com=ok&id=".$sc);
+	if($spamik) redirect($mypage."?com=link&id=".$sc.($prichinto!=''?'&prichina='.urlencode($prichinto):''));
+	else redirect($mypage."?com=ok&id=".$sc);
 	}
 
 ?>

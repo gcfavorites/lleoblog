@@ -34,11 +34,13 @@ $article["DateTime"] = mktime(1, 1, 1, $article["Mon"], $article["Day"], $articl
 $_PAGE["header"] = zamok($article['Access']).$article["Day"]." ".$months_rod[intval($article["Mon"])]." ".$article["Year"]."<div id=Header>".$article["Header"]."</div>";
 
 // --------- поищем еще заметки за это число ------------
+if($article['DateDate']) {
 $pp=ms("SELECT `Date`,`Header` FROM `dnevnik_zapisi` ".WHERE("`DateDate`='".$article['DateDate']."' AND `Date`!='".e($article['Date'])."'"),"_a");
 if($pp!==false && sizeof($pp)) {
 	$_PAGE["header"].= "<p><div style='text-align: left; border: 2px dashed #ccc;'><i>Другие записи за это число:</i>";
 	foreach($pp as $p) $_PAGE["header"].="<br><a href='".$wwwhost.$p['Date']."'>".$p['Date'].($p['Header']!=''?" - ".$p['Header']:'')."</a>";
 	$_PAGE["header"].= "</div>";
+}
 }
 
 
