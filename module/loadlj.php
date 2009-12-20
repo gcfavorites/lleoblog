@@ -86,6 +86,8 @@ function get_one_ya($lyandex) { $r=array(); // качать записи
 	$link=govnolink($m[1]);
 	$head=govnolink($m[2]);str_ireplace(array('<wbr />','<wbr/>','<wbr>','</wbr>'),'',$link);
 
+        $t=getmaketime($Dname);
+
 	return array(
 'Date'=>e($Dname),
 'Header'=>e($head),
@@ -97,9 +99,24 @@ function get_one_ya($lyandex) { $r=array(); // качать записи
 'Comment_screen'=>'open',
 'comments_order'=>'normal',
 'autoformat'=>'no',
-'autokaw'=>'no');
+'autokaw'=>'no',
+'DateDate'=>$t[0],
+'DateDatetime'=>$t[1]
+);
 
 }
+
+
+function getmaketime($d) {
+        preg_match("/^(\d\d\d\d)\/(\d\d)\/(\d\d)(.*?)$/s",$d,$m);
+        $d=$m[1]."-".$m[2]."-".$m[3];
+        $t0=strtotime($d);
+        if(preg_match("/^[\-_\s]*(\d\d)-(\d\d)/s",$m[4],$t)) $d .= " ".$t[1].":".$t[2];
+        $t=strtotime($d);
+        while(msq_exist('dnevnik_zapisi',"WHERE `DateDatetime`='$t'")) $t++;
+        return array($t0,$t);
+}
+
 
 //================================================================================================================
 //================================================================================================================
