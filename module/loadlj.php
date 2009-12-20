@@ -100,6 +100,7 @@ function get_one_ya($lyandex) { $r=array(); // качать записи
 'comments_order'=>'normal',
 'autoformat'=>'no',
 'autokaw'=>'no',
+'DateUpdate'=>time(),
 'DateDate'=>$t[0],
 'DateDatetime'=>$t[1]
 );
