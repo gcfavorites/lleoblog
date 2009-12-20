@@ -83,7 +83,7 @@ function msq_index($tb,$pole) { // проверить, существует ли такой индекс
 
 function tos($e) { return str_replace(array("\\","'",'"',"\n","\r"),array("\\\\","\\'",'\\"',"\\n",""),$e); }
 
-function ms($query,$mode='_a',$ttl=666) { $s = false; $magic='@'; if($ttl==666) $ttl=$GLOBALS['ttl'];
+function ms($query,$mode='_a',$ttl=666) { $s = false; $magic='@'.$GLOBALS['blogdir']; if($ttl==666) $ttl=$GLOBALS['ttl'];
 
 	if($ttl < 0) { cache_rm($mode.$magic.$query); return true; } // сбросить кэш
 	elseif ($ttl > 0) {  $result=cache_get($mode.$magic.$query); if(false!==$result) {
