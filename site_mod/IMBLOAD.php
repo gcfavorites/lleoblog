@@ -13,9 +13,7 @@ function IMBLOAD($e) {
 
 
 $s=str_replace("\n","","
-
 <div style=\"border: 3px dashed red; margin: 20px; padding: 20px;\">
-
 <img src=".$m[1]."design/userpick.jpg align=left hspace=10>
 <a href=".$m[1].">'+responseJS.Admin+'</a>
 <p><a href=".$e."><b>".$m[2]." - '+responseJS.Header+'</b></a>
@@ -28,17 +26,8 @@ $s=str_replace("\n","","
 	SCRIPT_ADD($www_design."JsHttpRequest.js"); // подгрузить аякс
 
 	SCRIPTS('IMBLOAD',"
-
-function imbload(id,Date) { e=document.getElementById(id);
-	e.innerHTML = '<center>...идет загрузка...</center>';
-
-JsHttpRequest.query('".$m[1]."ajax_imbload.php',
-{ Date: '".$m[2]."' },
-function(responseJS, responseText) { if(responseJS.status) {
-	e.innerHTML = '".$s."';
-}},true);
-}
-
+function imbload(id,Date) { e=document.getElementById(id); e.innerHTML = '<center>...идет загрузка...</center>';
+JsHttpRequest.query('".$m[1]."ajax_imbload.php', { Date: '".$m[2]."' }, function(responseJS, responseText) { if(responseJS.status) { e.innerHTML = '".$s."'; }},true); }
 ");
 
 $id='imbload_'.intval($GLOBALS['imbload_n']++);

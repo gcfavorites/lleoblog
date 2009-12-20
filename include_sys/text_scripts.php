@@ -22,14 +22,15 @@ var www_design='".$www_design."';
 var dnevnik_data='".$Date."';
 var ctrloff=".($_COOKIE['ctrloff']=='off'?1:0).";
 
+function zabil(id,text) { document.getElementById(id).innerHTML = text; }
+function vzyal(id) { return document.getElementById(id).innerHTML; }
+function zakryl(id) { document.getElementById(id).style.display='none'; }
+function otkryl(id) { document.getElementById(id).style.display='block'; }
+
 function comment(text,id,i,action) {
-document.getElementById(id).innerHTML = '<img src={www_design}img/ajax.gif align=right>'+document.getElementById(id).innerHTML;
-// \"<center>жди, идет загрузка...</center>\";
-JsHttpRequest.query('".$wwwhost."ajax_comments.php',
-{ action: action, i: i, id: id, text: text },
-function(responseJS, responseText) { if(responseJS.status) {
-document.getElementById(id).innerHTML = responseJS.otvet;
-}},true);
+	// zabil(id,'<img src={www_design}img/ajax.gif align=right>'+vzyal(id));
+	JsHttpRequest.query('".$wwwhost."ajax_comments.php',{ action: action, i: i, id: id, text: text },
+	function(responseJS, responseText) { if(responseJS.status) { zabil(id,responseJS.otvet); }},true);
 }
 
 function del_comment(id)	{ if(confirm('Точно удалить?')) comment('',id,0,'del'); }
