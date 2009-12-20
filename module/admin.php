@@ -3,7 +3,7 @@ if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - на
 if(isset($_GET['version'])) die("lleoblog 2.0"); // показать версию
 // if(!$admin) redirect($wwwhost."login/"); // посторонних - нахуй
 
-DESIGN('plain',"<a href='$mypage'>СТРАНИЦА АДМИНА</a>");
+DESIGN('plain',"СТРАНИЦА АДМИНА");
 
 $PEST=array_merge($_GET,$_POST);
 
@@ -53,10 +53,14 @@ function admin_rereload($action,$Nskip,$timesec=2) { global $skip,$mypage;
         return admin_kletka("action","<font color=red>
 Ничего не трогать! Страницы обновляются сами: <span id='tiktime'><script>tiktime('tiktime')</script></span>!
 Обрабатываем $N после <blink>$skip</blink></font>
-<noscript><meta http-equiv=refresh content=\"".$timesec.";url=\"".$path."\"></noscript>
-<script> setTimeout(\"location.replace('".$path."')\", ".($timesec*1000)."); </script>
-<p>");
+".admin_redirect($path,$timesec)."<p>");
 }
+
+function admin_redirect($path,$timesec) { return "<noscript><meta http-equiv=refresh content=\"".$timesec.";url=\"".$path."\"></noscript>
+<script> setTimeout(\"location.replace('".$path."')\", ".($timesec*1000)."); </script>"; }
+
+
+
 
 
 
