@@ -28,28 +28,19 @@ blogpage();
 
 $hashpage=rand(0,1000000); $hashpage=substr(broident($hashpage.$hashinput),0,6).'-'.$hashpage;
 
-function zamok($d) {
-	if($d=='all') return '';
-	$z = "<img src=".$GLOBALS['www_design']."e/podzamok.gif>&nbsp;";
-	if($d=='podzamok') return $z;
-	return $z.$z;
-}
-
-
-
 
 function DESIGN($template,$title) {
 
 if($template=='plain') $GLOBALS['_PAGE'] = array('design'=>file_get_contents($GLOBALS['host_design']."plain.html"),
 'header'=>$title,
-'title'=>$title,
+'title'=>strip_tags($title),
 
-'www_design'=>$www_design,
-'admin_name'=>$admin_name,
-'httphost'=>$httphost,
-'wwwhost'=>$wwwhost,
-'wwwcharset'=>$wwwcharset,
-'signature'=>$signature
+'www_design'=>$GLOBALS['www_design'],
+'admin_name'=>$GLOBALS['admin_name'],
+'httphost'=>$GLOBALS['httphost'],
+'wwwhost'=>$GLOBALS['wwwhost'],
+'wwwcharset'=>$GLOBALS['wwwcharset'],
+'signature'=>$GLOBALS['signature']
 );
 
 }
@@ -88,7 +79,7 @@ $_PAGE = array('design'=>file_get_contents($GLOBALS['host_design']."dnevnik.html
 'foto_res_small'=>$GLOBALS['foto_res_small'],
 
 'header'=>$title,
-'title'=>$title
+'title'=>strip_tags($title)
 
 
 );
@@ -104,10 +95,6 @@ $pwwwhost=str_replace('/','\/',$wwwhost);
 
 $months = explode(" ", " €нварь февраль март апрель май июнь июль август сент€брь окт€брь но€брь декабрь");
 $months_rod = explode(" ", " €нвар€ феврал€ марта апрел€ ма€ июн€ июл€ августа сент€бр€ окт€бр€ но€бр€ декабр€");
-
-// какие заметки доступны?
-if($admin) $access=""; elseif($podzamok) $access="`Access` IN ('all','podzamok')"; else $access="`Access`='all'";
-function WHERE($s='') { global $access;	if($s.$access=='') return ''; if($s=='' || $access=='') return "WHERE ".$s.$access; return "WHERE ".$s." AND ".$access; }
 
 // ============== начали вы€сн€ть, какой модуль подцепить ==============
 
