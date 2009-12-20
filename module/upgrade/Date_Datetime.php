@@ -1,10 +1,10 @@
 <?
 
-$s .= msq_del_pole("dnevnik_zapisi","DateDatetime","удалить");
+//$s .= msq_del_pole("dnevnik_zapisi","DateDatetime","не трогайте!");
 $s .= msq_add_pole("dnevnik_zapisi","DateDatetime","int(11) NOT NULL default '0'","для точного позиционирования по дням");
 $s .= msq_add_index("dnevnik_zapisi","DateDatetime","(`DateDatetime`)","индекс нужен");
 
-$s .= msq_del_pole("dnevnik_zapisi","DateDate","удалить");
+//$s .= msq_del_pole("dnevnik_zapisi","DateDate","удалить");
 $s .= msq_add_pole("dnevnik_zapisi","DateDate","int(11) NOT NULL default '0'","для точного позиционирования по дням");
 $s .= msq_add_index("dnevnik_zapisi","DateDate","(`DateDate`)","индекс нужен");
 
@@ -17,7 +17,7 @@ if($PEST['action']==$action) { $admin_upgrade=true;
 $p=ms("SELECT `num`,`Date` FROM `dnevnik_zapisi` WHERE `DateDatetime`=0 AND `Date` LIKE '____/__/__%' ORDER BY `Date` LIMIT ".$Nskip,"_a",0);
 if($p!==false && sizeof($p)) {
 
-	$s .= admin_rereload($action,$Nskip);
+	$s .= admin_rereload($action,$Nskip,200);
 
 	foreach($p as $n=>$l) {
 		$t=getmaketime($l['Date']);
