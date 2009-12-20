@@ -195,15 +195,16 @@ function getCalendar($year, $mon, $day = false) { global $admin, $wwwhost, $mont
 	$now = date("Y/m/d"); // сегодн€шн€€ дата
 
 	// выбрать существующие заметки мес€ца
-$sql = ms("SELECT `Date`,`Access` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`>='".$m."' AND `DateDatetime`<'".($m+$end*86400)."'")." ORDER BY `DateDatetime`","_a",$ttl);
+$sql = ms("SELECT `DateDate`,`Date`,`Access` FROM `dnevnik_zapisi` ".WHERE("`DateDate`>='".$m."' AND `DateDate`<'".($m+($end-1)*86400)."'")." ORDER BY `DateDate`","_a",$ttl);
 
+	$a=array(); foreach($sql as $p) { $i=intval(substr($p['Date'],8,2)); $a[$i]=array($p['Access'],$p['Date'],++$a[$i][2]); }
 
-	$a=array(); foreach($sql as $p) $a[$p['Date']]=$p['Access'];
+//dier($a);
 
-//	$Prev=$sql[0]['Prev']; if($Prev!='') $Prev="<a href='".$wwwhost.$Prev.".html'>&lt;&lt;</a>";
-//	elseif($admin) $Prev="<a href='".$wwwhost.date("Y/m",$m-60*60*24)."'>&lt;&lt;</a>";
-//	$Next=$sql[sizeof($sql)-1]['Next']; if($Next!='') $Next="<a href='".$wwwhost.$Next.".html'>&gt;&gt;</a>";
-//	elseif($admin) $Next="<a href='".$wwwhost.date("Y/m",$m+$end*60*60*24)."'>&gt;&gt;</a>";
+	$Prev=$sql[0]['Prev']; if($Prev!='') $Prev="<a href='".$wwwhost.$Prev.".html'>&lt;&lt;</a>";
+	elseif($admin) $Prev="<a href='".$wwwhost.date("Y/m",$m-60*60*24)."'>&lt;&lt;</a>";
+	$Next=$sql[sizeof($sql)-1]['Next']; if($Next!='') $Next="<a href='".$wwwhost.$Next.".html'>&gt;&gt;</a>";
+	elseif($admin) $Next="<a href='".$wwwhost.date("Y/m",$m+$end*60*60*24)."'>&gt;&gt;</a>";
 	
 $s .= "<table border=0 cellspacing=0 cellpadding=1>
 <tr><td class=cld_top>".$Prev."</td><td colspan=5 align=center class=cld_top>".$months[intval($mon)]." ".intval($year)."</td><td align=right class=cld_top>".$Next."</td></tr>
@@ -224,11 +225,12 @@ $s .= "<table border=0 cellspacing=0 cellpadding=1>
 		$d=sprintf("%04d/%02d/%02d",$year,$mon,$i);
 		$style=($d==$now?" style='background-color: #FFFFa0; border: red solid 1px;'":'');
 		$di=$i;
-		if(!($x=$a[$d])) { if($admin) $di="<a class=cld_ed href='".$wwwhost."editor/?Date=".urlencode($d)."'>".$i."</a>";
+		if(!($x=$a[$i][0])) { if($admin) $di="<a class=cld_ed href='".$wwwhost."editor/?Date=".urlencode($d)."'>".$i."</a>";
 		} else {
 			if($x=='podzamok') $di="<s>".$di."</s>";
-			elseif($x=='admin') $di="<s><b>".$di."</b></s>";
-			$di="<a href='".$wwwhost.$d.".html'>".$di."</a>";
+			elseif($x=='admin') $di="<s><i>".$di."</i></s>";
+			if($a[$i][2]>1) $di="<b>$di</b>";
+			$di="<a href='".$wwwhost.$a[$i][1].".html'>".$di."</a>";
 		}
 		$s .= "<td class=".($k>4?"cld_red":"cld").$style.">".$di."</td>";
 		if($k==6) $s .= "</tr>"; if(++$k>6) $k=0;
