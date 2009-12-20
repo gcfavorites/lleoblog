@@ -38,6 +38,19 @@ if($_COOKIE['pas']==broident($_COOKIE['log'].$hashlogin)) {
    $IS=get_IS($login); // foreach($IS as $n=>$l) ${"IS_$n"}=$l;
 }
 
+// какие заметки доступны?
+if($admin) $access=""; elseif($podzamok) $access="`Access` IN ('all','podzamok')"; else $access="`Access`='all'";
+function WHERE($s='') { global $access; if($s.$access=='') return ''; if($s=='' || $access=='') return "WHERE ".$s.$access; return "WHERE ".$s." AND ".$access; }
+
+
+// ==============================================================================
+// ==============================================================================
+// ==============================================================================
+// ==============================================================================
+// ==============================================================================
+// ==============================================================================
+// ==============================================================================
+// ==============================================================================
 
 function get_IS($log) { global $blog_name;
 	$log=preg_replace("/^www\./",'',$log);
@@ -154,7 +167,7 @@ function kawa($p) { $s=$p[1];
 
 function set_cookie($Name,$Value='',$MaxAge=0,$Path='',$Domain='',$Secure=false,$HTTPOnly=false) {
 
-if($GLOBALS['cookie_method_old']) { setcookie($Name, $Value, $MaxAge, $Path, $Domain, 0); return; }
+if(isset($GLOBALS['cookie_method_old'])) { setcookie($Name, $Value, $MaxAge, $Path, $Domain, 0); return; }
 
 header('Set-Cookie: ' . rawurlencode($Name) . '=' . rawurlencode($Value)
 .(empty($MaxAge) ? '' : '; Max-Age=' . $MaxAge)
@@ -194,5 +207,13 @@ function file_get($f) {	//$n=$GLOBALS['fileget_tmp'].md5($f).".dat";
 }
 
 function dier($a) { die('<pre>'.htmlspecialchars(print_r($a,1))); } // отладочная процедурка
+
+
+function zamok($d) {
+        if($d=='all') return '';
+        $z = "<img src=".$GLOBALS['www_design']."e/podzamok.gif>&nbsp;";
+        if($d=='podzamok') return $z;
+        return $z.$z;
+}
 
 ?>
