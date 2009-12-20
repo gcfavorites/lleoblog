@@ -174,7 +174,7 @@ foreach($sql as $p) {
 }
 
 $blockblock .= "<center><table style='border-collapse: collapse; border: 1px solid red; margin: 2pt;' border=1>
-<tr><td colspan=2 align=center><span class=br>статистика заходов на эту страницу (ведется с 24/02/2008)</i>";
+<tr><td colspan=2 align=center><span class=br>статистика заходов на эту страницу</i>"; // (ведется с 24/02/2008)
 
 if($bloklink.$bloksearch!='') $blockblock .= "</span></td></tr><tr valign=top>
 <td width=50%><div class=br><center><i>заходы по неожиданным ссылкам (топ ".$nlimit." из ".$nstatlink."):</i></center>".$bloklink."</div></td>
