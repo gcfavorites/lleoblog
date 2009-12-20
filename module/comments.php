@@ -190,9 +190,9 @@ function makeGET($ar) { $r=''; $m=$_GET;
 }
 
 function print_header($data) {
-	$p=ms("SELECT `Header`,`view_counter` FROM `dnevnik_zapisi` WHERE `Date`='".e($data)."' LIMIT 1",'_1');
+	$p=ms("SELECT `DateDate`,`Header`,`view_counter` FROM `dnevnik_zapisi` WHERE `Date`='".e($data)."' LIMIT 1",'_1');
 	$x=$p['Header']; if($x=='') $x='(&nbsp;)';
-	return "<p><b><a href=".$GLOBALS['wwwhost'].$data.".html>".$data." - ".$x."</a></b> (счетчик: ".$p['view_counter'].")";
+	return "<p><b><a href=".$GLOBALS['wwwhost'].$data.($p['DateDate']?".html":'').">".$data." - ".$x."</a></b> (счетчик: ".$p['view_counter'].")";
 }
 
 function print1($p) { global $admin;
