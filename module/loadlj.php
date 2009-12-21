@@ -76,7 +76,7 @@ function admin_redirect($path,$timesec) {
 SCRIPTS("var tiktimen=".$timesec.";
 function tiktime(id) { document.getElementById(id).innerHTML = tiktimen--; setTimeout(\"tiktime('\" + id + \"')\", 1000); }");
 
-return "<p><font color=orange>Ничего руками не трогать! Идет работа! До перезагрузки осталось <span id='tiktime'><script>tiktime('tiktime')</script></span></font>!
+return "<p><font color=orange><b>Ничего руками не трогать! Идет работа! До перезагрузки осталось <span id='tiktime'><script>tiktime('tiktime')</script></span>!</b></font>
 <noscript><meta http-equiv=refresh content=\"".$timesec.";url=\"".$path."\"></noscript>
 <script> setTimeout(\"location.replace('".$path."')\", ".($timesec*1000)."); </script></p>".$GLOBALS['prostynka']; }
 
@@ -233,10 +233,11 @@ function get_one_ya_c($lyandex,$Date,$num,$url) {
 
 	$text=(isset($img)?$img." ":'').($head!=''?"<b>$head</b>\n\n":'').$text;
 
-$GLOBALS['prostynka'].= "<p><table border=1><tr>
-<td><img src='$img'><br><a href='$autor_link'>$autor</a></td>
+$GLOBALS['prostynka'].= "<p><table style='border: 1px dashed #ccc;'
+width=100% border=0><tr valign=top>
+<td align=center width=100><img src='$img'><p class=br><a href='$autor_link'>$autor</a></td>
 <td><b>$head</b> $datet
-<p>$text
+<p>".htmlspecialchars($text)."
 <p class=br><a href='$comlink'>$comlink</a>
 </td></tr></table>";
 

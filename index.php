@@ -145,10 +145,10 @@ if($text!='') { $name=$mod_name; include("site.php"); exit; }
 
 // затем в базе дневника
 $article=ms("SELECT * FROM `dnevnik_zapisi` WHERE `Date`='".e($mod_name)."'","_1",$ttl);
-if($article!==false) { $Date=$mod_name; include("article.php"); exit; }
+if($article!==false && $article!=='') { $Date=$mod_name; include("article.php"); exit; }
 
 // если совсем ничего не нашлось
-idie("Error 404: Module not found \"<b>".htmlspecialchars($mod_name)."</b>\""
+idie("Error 404: Page not found <b>".$httphost.htmlspecialchars($mod_name)."</b>"
 .($admin?"<p><a href='".$wwwhost."adminsite/?a=create&name=".urlencode($mod_name)."'>Создать эту страницу в базе `".$db_site."`?</a>":"")
 );
 
