@@ -43,7 +43,7 @@ document.onmouseup = function(e) { if(!e) e = window.event;
 
 		// if(helperItem.style.display!='block') {
 		if(admin) { return helper_go(); }
-		if(helper_napomni) { helper_napomni--; salert("Нашли печатку? Нажмите Ctrl+Enter",1000); }
+		if(helper_napomni) { helper_napomni--; salert("Нашли опечатку? Нажмите Ctrl+Enter",1000); }
 		// }
 	}
 }
