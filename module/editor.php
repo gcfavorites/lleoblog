@@ -73,14 +73,20 @@ elseif($_POST["action"] == "Delete") {
 }
 
 
-
 if($Date) $_POST=ms("SELECT * FROM `dnevnik_zapisi` WHERE `Date`='".e($Date)."'","_1",0);
 else $_POST=ms("SELECT * FROM `dnevnik_zapisi` ORDER BY `Date` DESC LIMIT 1","_1",0);
 
 $urldata=urldata(htmlspecialchars($_POST["Date"]));
 
+SCRIPTS("
+var valiDatemessage = 2; function valiDate(id) {	var s=document.getElementById(id).value;
+if( s.replace(/[0-9a-z_\-\.\/\~]/gi,'').length !=0 ) {
+if( --valiDatemessage > 0 ) alert('Этот адрес посетители будут открывать браузером,\\nпоэтому здесь допустимы только символы:\\n\\n0-9 a-z _ - . / ~');
+document.getElementById(id).value=s.replace(/[^0-9a-z_\-\.\/\~]/gi,'');	}
+}");
+
 print "<form action='".$wwwhost."editor/' name='formedit' method='POST'>
-Data: <input type='text' name='Date' class='t' value='".($Date!=''?htmlspecialchars($Date):date("Y/m/d"))."' maxlength=128 size=12>
+Data: <input type='text' id='Date' name='Date' class='t' onkeyup=\"valiDate('Date')\" value='".($Date!=''?htmlspecialchars($Date):date("Y/m/d"))."' maxlength=128 size=12>
 <input type='hidden' name='oldDate' value='".htmlspecialchars($Date)."'>
 <input type='submit' name='action' value='Move'>
 &nbsp;&nbsp;&nbsp;&nbsp;[<a href='".$urldata."'>открыть эту заметку $urldata</a>]
