@@ -81,16 +81,19 @@ CREATE TABLE IF NOT EXISTS `dnevnik_zapisi` (
   `DateUpdate` int(10) unsigned NOT NULL default '0',
   `view_counter` int(10) unsigned NOT NULL default '0',
   `last_view_ip` varchar(15) NOT NULL default '',
-  `Prev` varchar(64) NOT NULL default '' COMMENT 'предыдущая заметка',
-  `Next` varchar(64) NOT NULL default '' COMMENT 'следующая заметка',
   `num` int(10) unsigned NOT NULL auto_increment,
   `autokaw` enum('auto','no') NOT NULL,
   `count_comments_open` int(10) unsigned NOT NULL default '0',
   `autoformat` enum('no','p','pd') NOT NULL default 'no',
+  `DateDatetime` int(11) NOT NULL default '0',
+  `DateDate` int(11) NOT NULL default '0',
   UNIQUE KEY `num` (`num`),
   KEY `Date` (`Date`),
-  KEY `Access` (`Access`)
-) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Заметки блога' AUTO_INCREMENT=20 ;
+  KEY `Access` (`Access`),
+  KEY `DateDatetime` (`DateDatetime`),
+  KEY `DateDate` (`DateDate`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Заметки блога' AUTO_INCREMENT=25 ;
+
 
 -- --------------------------------------------------------
 
@@ -243,7 +246,7 @@ CREATE TABLE IF NOT EXISTS `dnevnik_link` (
   `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
   PRIMARY KEY  (`n`),
   KEY `mypage` (`mypage`),
-  KEY `last_ipn` (`last_ipn`),
+  KEY `last_ipn` (`last_ipn`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='ссылки на дневник' AUTO_INCREMENT=138443 ;
 
 -- --------------------------------------------------------

@@ -31,6 +31,6 @@ if($p!==false && sizeof($p)) {
 
 } else 	$s .= admin_redirect($mypage,0);
 //==========================================================================================	
-} else { $s .= admin_kletka('action',"оптимизация даты",$action); }
+} else { $s .= admin_kletka('action',"оптимизация даты (в случае необходимости или после работы loadlj)",$action); }
 
 ?>
