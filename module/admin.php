@@ -132,9 +132,11 @@ function admin_tables() { global $filehost,$admin,$mypage;
 	$s=preg_replace("/\n{2,}/si","\001",trim($s)); $a=explode("\001",$s); // разобрать
 	foreach($a as $l) {
 		$l=c($l); if(!preg_match("/CREATE TABLE[^\n\`\(]+\`([^\`]+)\`/si",$l,$m)) continue; $table=$m[1];
-		if($admin && $GLOBALS['PEST'][$table]=='create' && !msq_table($table)) { msq($l); $o .= admin_kletka($table,"<font color=green>создана</font>"); }
+		if($admin && $GLOBALS['PEST'][$table]=='create' && !msq_table($table)) { msq($l); 
+$o .= $GLOBALS['msqe'];
+$o .= admin_kletka($table,"<font color=green>создана</font>"); }
 		else if(msq_table($table)) $o .= admin_kletka($table,"элементов ".ms("SELECT COUNT(*) FROM `$table`","_l"));
-		else $o .=  admin_kletka($table,"<font color=red>отсутствует!</font>",'create');
+		else { $o .=  admin_kletka($table,"<font color=red>отсутствует!</font>",'create'); $GLOBALS['admin_upgrade']=1; }
 	}
 	return $o;
 }

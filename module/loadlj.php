@@ -1,22 +1,10 @@
 <?php if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 if(!$admin) redirect($wwwhost."login/"); // посторонних - нахуй
 
-//$admin_ljuser='lleo';
-
-$_PAGE = array('design'=>file_get_contents($GLOBALS['host_design']."plain.html"),
-'header'=>"lleo.lj - КАЧАЛКА КЭША ЯНДЕКСА",
-'title'=>"lleo.lj - КАЧАЛКА КЭША ЯНДЕКСА",
-
-'www_design'=>$www_design,
-'admin_name'=>$admin_name,
-'httphost'=>$httphost,
-'wwwhost'=>$wwwhost,
-'wwwcharset'=>$wwwcharset,
-'signature'=>$signature
-);
-
 if(!isset($admin_ljuser)) idie("Ошибка: не указано имя пользователя livejournal!
 <br>Добавьте в свой config.sys эту строчку, пример: <b>\$admin_ljuser=\"lleo\";</b>");
+
+DESIGN('plain',"Качаем журнал $admin_ljuser из кэша Яндекса");
 
 $numdoc=100;
 $all=array();
@@ -34,6 +22,9 @@ print "<p><b>Качаем записи: этап #$into</b>
 // exit;
 
 $url="http://blogs.yandex.ru/search.xml?rd=0&spcctx=doc&ft=blog&server=livejournal.com&author=".$admin_ljuser."&numdoc=".$numdoc."&full=1&p=".($into++);
+
+print " <a href='$url'>url</a> ";
+
 $syandex=uw(file_get($url));
 $syandex=preg_replace("/<div class=\"b-item Ppb-c-ItemMore SearchStatistics-item\"[^>]+>.*?/si","-\001-",$syandex);
 $arsyandex=explode("-\001-",$syandex); unset($arsyandex[0]);
@@ -62,7 +53,9 @@ $n=''; foreach($all as $a=>$b) $n.=" ".$a; $n=md5($n);
 
 
 
-if(sizeof($arsyandex)==$numdoc and $n!=$_GET['lastmd5']) { $path="$mypage?into=$into&lastmd5=".$n; } else { $path="$mypage?mode=comments"; }
+if( sizeof($arsyandex)!=0 and $n!=$_GET['lastmd5']) { $path="$mypage?into=$into&lastmd5=".$n; } else { 
+// exit;
+$path="$mypage?mode=comments"; }
 
 die("<p><a href='$path'>$path</a> stop=$stop all=".sizeof($all)."
 <noscript><meta http-equiv=refresh content=\"5;url=\"".$path."\"></noscript>
@@ -159,7 +152,7 @@ if(sizeof($arsyandex)) foreach($arsyandex as $lyandex) {
 }
 
 $n=''; if(sizeof($all)) { foreach($all as $a=>$b) $n.=" ".$a; $n=md5($n); }
-if(sizeof($arsyandex)==$numdoc and $n!=$_GET['lastmd5']) { $path="$mypage?mode=comments&ppp=".(++$ppp)."&into=$into&lastmd5=".$n; }
+if(sizeof($arsyandex)!=0 and $n!=$_GET['lastmd5']) { $path="$mypage?mode=comments&ppp=".(++$ppp)."&into=$into&lastmd5=".$n; }
 else { $path="$mypage?mode=comments&into=".(++$into); }
 
 die("<p>$path, вытянули комментариев: ".sizeof($all)."

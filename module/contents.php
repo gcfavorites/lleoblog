@@ -101,7 +101,7 @@ exit;
 
 
 function pr_comments($sq) { global $s; die($s.pr_comments_($sq)); }
-function pr_zapisi($sq,$more=false) { global $s; die($s.pr_zapisi_($sq).($more && $GLOBALS["colnewcom"]>$GLOBALS["SIZEDEFAULT"]
+function pr_zapisi($sq,$more=false) { global $s; die($s.pr_zapisi_($sq).($more && $GLOBALS["colnewcom"]>=$GLOBALS["SIZEDEFAULT"]
 ?"<p><a href=?mode=more>показать больше &gt;&gt;</a>":'')); }
 
 function pr_zapisi_comments($sqz,$sqc) {
