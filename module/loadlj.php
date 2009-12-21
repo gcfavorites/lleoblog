@@ -10,22 +10,17 @@ $numdoc=100;
 $all=array();
 $into=(isset($_GET['into'])?intval($_GET['into']):0);
 
-
 if($_GET['mode']=='comments') get_ya_comments();
 
-print "<p><b>Качаем записи: этап #$into</b>
-<p>Ничего не надо трогать! Работа продолжится через 2 секунды - страница сама перезагрузится!
-<p>";
-
-//$p=ms("SELECT `Date`,`Body`,`num` FROM `dnevnik_zapisi` LIMIT ".$into.",1","_1"); if($p===false) die("<p><br>Работа закончена!");
-// ms("SELECT COUNT(*) FROM `dnevnik_comments` WHERE `Date`='".e($Date)."'", '_l',0)+1),
-// exit;
+$prostynka='';
 
 $url="http://blogs.yandex.ru/search.xml?rd=0&spcctx=doc&ft=blog&server=livejournal.com&author=".$admin_ljuser."&numdoc=".$numdoc."&full=1&p=".($into++);
 
-print " <a href='$url'>url</a> ";
+$GLOBALS['prostynka'].="<p>Качаем <a href='$url'>тексты записей из Яндекса</a>";
 
-$syandex=uw(file_get($url));
+$syandex=uw(ufile_get($url));
+
+
 $syandex=preg_replace("/<div class=\"b-item Ppb-c-ItemMore SearchStatistics-item\"[^>]+>.*?/si","-\001-",$syandex);
 $arsyandex=explode("-\001-",$syandex); unset($arsyandex[0]);
 
@@ -33,36 +28,57 @@ foreach($arsyandex as $lyandex) { $ara=get_one_ya($lyandex);
 	$Date=$ara['Date'];
 
 	if(isset($all[$Date]) and $ara['Header']==$all[$Date]['Header'] and $ara['Body']==$all[$Date]['Body'] ) {
-		print "<br><font color=red>дубль $Date - не вносим в базу!</font>";
+		$GLOBALS['prostynka'].="<br><font color=red>дубль $Date - не вносим в базу!</font>";
 	} else {
 		if(isset($all[$Date])) {
-			print "<br>дубль $Date:<p><pre>".print_r($ara,1)."</pre><hr>Было:<p><pre>".print_r($all[$Date],1)."</pre>";
+			$GLOBALS['prostynka'].="<br>дубль $Date:<p><pre>".print_r($ara,1)."</pre><hr>Было:<p><pre>".print_r($all[$Date],1)."</pre>";
 			$i=0; while(isset($all[ $Date."_".(++$i) ])){} $Date=$Date."_".$i;
 			$ara['Date']=$Date;
 		}
 	$all[$Date]=$ara;
 	msq_add_update('dnevnik_zapisi',$ara,'Date');
 
-	print "<br>".$GLOBALS['cached'].(sizeof($all)).". <font color=green>".$ara['Date']."</font>".($ara['Header']!=''?" - ".$ara['Header']:"");
+	$GLOBALS['prostynka'].="<br>".$GLOBALS['cached'].(sizeof($all)).". <font color=green>".$ara['Date']."</font>".($ara['Header']!=''?" - ".$ara['Header']:"");
 
 	}
-	
 }
 
 $n=''; foreach($all as $a=>$b) $n.=" ".$a; $n=md5($n);
 
+// остановиться если
+if( sizeof($arsyandex)==0 // ничего в этот раз не прочлось
+or $n==$_GET['lastmd5'] // ничего нового не легло в базу по сравнению с прошлыми разом
+or !strstr($syandex,'<a id="next_page" href="') // Яндекс не показал поле "следующая страница"
+) {
+
+die("<p>С заметками закончили! Теперь будем качать комментарии.".admin_redirect("$mypage?mode=comments",10) );
+
+} else {
+
+die("<p><b>Качаем тексты записей, этап <a href='$path'>$into</a></b> (скачано ".sizeof($all).")".admin_redirect("$mypage?into=$into&lastmd5=".$n,3) );
+
+}
 
 
-if( sizeof($arsyandex)!=0 and $n!=$_GET['lastmd5']) { $path="$mypage?into=$into&lastmd5=".$n; } else { 
-// exit;
-$path="$mypage?mode=comments"; }
+function ufile_get($url) { global $mypage;
+	$s=file_get($url); if(strstr($s,'</body></html>')) return $s;
 
-die("<p><a href='$path'>$path</a> stop=$stop all=".sizeof($all)."
-<noscript><meta http-equiv=refresh content=\"5;url=\"".$path."\"></noscript>
-<script> setTimeout(\"location.replace('".$path."')\", 2000);  </script>");
+	file_get($url,0);
+	$e=intval($_GET['etage']++);
+	die("<p><font color=red>Сбой!"
+.($e?" И уже в $e раз!<br>Скачалось ровно ".strlen($s)." знаков. Контрольная сумма: ".md5($s):'')
+."<br>Попробуем повторить!</font>".admin_redirect($mypage.add_get(),5) );
+}
 
 
+function admin_redirect($path,$timesec) {
 
+SCRIPTS("var tiktimen=".$timesec.";
+function tiktime(id) { document.getElementById(id).innerHTML = tiktimen--; setTimeout(\"tiktime('\" + id + \"')\", 1000); }");
+
+return "<p><font color=orange>Ничего руками не трогать! Идет работа! До перезагрузки осталось <span id='tiktime'><script>tiktime('tiktime')</script></span></font>!
+<noscript><meta http-equiv=refresh content=\"".$timesec.";url=\"".$path."\"></noscript>
+<script> setTimeout(\"location.replace('".$path."')\", ".($timesec*1000)."); </script></p>".$GLOBALS['prostynka']; }
 
 
 function get_one_ya($lyandex) { $r=array(); // качать записи
@@ -111,27 +127,25 @@ function get_one_ya($lyandex) { $r=array(); // качать записи
 
 function get_ya_comments() { global $into,$numdoc,$mypage;
 
-	$ppp=(isset($_GET['ppp'])?intval($_GET['ppp']):0);
+	$ppp=(isset($_GET['ppp'])?intval($_GET['ppp']):0); // into - номер заметки (по одной), ppp - номер страницы с комментариями
 
 	$p=ms("SELECT `Header`,`Date`,`Body`,`num` FROM `dnevnik_zapisi` LIMIT ".$into.",1","_1"); if($p===false) die("<p><br>Работа закончена!");
 
-	print "<p>Ничего руками не трогай! Работа продолжается каждые 2 секунды - страницы сами перезагружаются!";
+	// $GLOBALS['prostynka'].="<p>Ничего руками не трогай! Работа продолжается каждые 2 секунды - страницы сами перезагружаются!";
 
 	$Body=$p['Body']; $num=$p['num']; $Date=$p['Date']; $Header=$p['Header'];
 
 	$nnn=ms("SELECT COUNT(*) FROM `dnevnik_zapisi`", '_l',2);
 
-	print "<p><a href='".$GLOBALS['wwwhost']."$Date'>$Date".($Header!=''?' - '.$Header:'')."</a>
-<br><b>$into/$nnn: заметка #$num, шаг #$ppp</b><p>";
 
 	if(!preg_match("/<hr><a href=[^>]+>(.*?)<\/a>$/si",$Body,$m)) die("Неправильный формат записи! <p>".$Body);
 	$link=govnolink($m[1]);
 
 	$url="http://blogs.yandex.ru/search.xml?post=".urlencode($link)."&ft=comments&rd=0&spcctx=doc&full=1&numdoc=".$numdoc."&p=".$ppp;
 
-	print "<p>Качаем <a href='$url'>комментарии к этой заметке из Яндекса</a>";
+	$GLOBALS['prostynka'].="<p>Качаем <a href='$url'>комментарии к этой заметке из Яндекса</a>";
 
-	$syandex=uw(file_get($url));
+	$syandex=uw(ufile_get($url));
 
 	$syandex=preg_replace("/<div class=\"b-item Ppb-c-ItemMore SearchStatistics-item\"[^>]+>.*?/si","-\001-",$syandex);
 	$arsyandex=explode("-\001-",$syandex); unset($arsyandex[0]);
@@ -140,10 +154,10 @@ if(sizeof($arsyandex)) foreach($arsyandex as $lyandex) {
 	$ara=get_one_ya_c($lyandex,$Date,$num,$url);
 	$unic=$ara['Name']."#".$ara['DateTime'];
 	if(isset($all[$unic]) and $ara['Name']==$all[$unic]['Name'] and $ara['Commentary']==$all[$unic]['Commentary'] ) {
-		print "<hr><font color=red>Нашелся полный дубль коментария $unic, не вносим в базу!</font>"; // <p><pre>".print_r($ara,1)."</pre><hr>Было:<p><pre>".print_r($all[$unic],1)."</pre>"; exit;
+		$GLOBALS['prostynka'].= "<hr><font color=red>Нашелся полный дубль коментария $unic, не вносим в базу!</font>"; // <p><pre>".print_r($ara,1)."</pre><hr>Было:<p><pre>".print_r($all[$unic],1)."</pre>"; exit;
 		} else {
 			if(isset($all[$unic])) {
-				// print "<hr>Нашелся дубль $unic:<p><pre>".print_r($ara,1)."</pre><hr>Было:<p><pre>".print_r($all[$unic],1)."</pre>";
+				// $GLOBALS['prostynka'].= "<hr>Нашелся дубль $unic:<p><pre>".print_r($ara,1)."</pre><hr>Было:<p><pre>".print_r($all[$unic],1)."</pre>";
 				$i=0; while(isset($all[ $unic."_".(++$i) ])){} $unic=$unic."_".$i;
 			}
 		$all[$unic]=$ara;
@@ -152,14 +166,23 @@ if(sizeof($arsyandex)) foreach($arsyandex as $lyandex) {
 }
 
 $n=''; if(sizeof($all)) { foreach($all as $a=>$b) $n.=" ".$a; $n=md5($n); }
-if(sizeof($arsyandex)!=0 and $n!=$_GET['lastmd5']) { $path="$mypage?mode=comments&ppp=".(++$ppp)."&into=$into&lastmd5=".$n; }
-else { $path="$mypage?mode=comments&into=".(++$into); }
 
-die("<p>$path, вытянули комментариев: ".sizeof($all)."
-<noscript><meta http-equiv=refresh content=\"5;url=\"".$path."\"></noscript>
-<script> setTimeout(\"location.replace('".$path."')\", 2000);  </script>");
+print "<p>Заметка <b>$into из $nnn</b>: <a href='".$GLOBALS['wwwhost']."$Date'>$Date".($Header!=''?' - '.$Header:'')."</a>
+<br>".($ppp?"Обрабатываем страницу комментариев $ppp<br>":'');
+
+// остановиться если
+if( sizeof($arsyandex)==0 // ничего в этот раз не прочлось
+or $n==$_GET['lastmd5'] // ничего нового не легло в базу по сравнению с прошлыми разом
+or !strstr($syandex,'<a id="next_page" href="') // Яндекс не показал поле "следующая страница"
+) {
+die("Комментариев: ".sizeof($all).", переходим к следующей заметке.".admin_redirect("$mypage?mode=comments&into=".(++$into),2));
+} else {
+die("Комментариев: ".sizeof($all).", но это не все, есть еще страница комментариев номер ".($ppp+1).", продолжаем."
+.admin_redirect("$mypage?mode=comments&ppp=".(++$ppp)."&into=$into&lastmd5=".$n,2));
 }
 
+
+}
 
 function bredie($s,$lyandex,$url) { global $mypage;
 	file_get($url,0);
@@ -210,7 +233,7 @@ function get_one_ya_c($lyandex,$Date,$num,$url) {
 
 	$text=(isset($img)?$img." ":'').($head!=''?"<b>$head</b>\n\n":'').$text;
 
-print "<p><table border=1><tr>
+$GLOBALS['prostynka'].= "<p><table border=1><tr>
 <td><img src='$img'><br><a href='$autor_link'>$autor</a></td>
 <td><b>$head</b> $datet
 <p>$text
