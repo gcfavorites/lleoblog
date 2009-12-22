@@ -1,7 +1,10 @@
 <?php
 
-if(!$admin) $ttl=60; else { $MYPAGE_MD5 = md5($MYPAGE); $ttl=($MYPAGE_MD5==$_COOKIE['MYPAGE']?0:60); 
-set_cookie("MYPAGE", $MYPAGE_MD5, time(), "/", "", 0, true); }
+if(!$admin) { $ttl=60; } else {
+	$MYPAGE_MD5 = md5($MYPAGE);
+	$ttl=(isset($_COOKIE['MYPAGE']) and $MYPAGE_MD5==$_COOKIE['MYPAGE']?0:60); 
+	set_cookie('MYPAGE', $MYPAGE_MD5, time(), "/", "", 0, true);
+}
 
 /*
 ÏÎËÅÇÍÛÅ ÏÐÈÌÅÐÛ
