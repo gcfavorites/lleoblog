@@ -39,12 +39,12 @@ if($admin) {
 
 	if(!$memcache) $er[]='memcache сдох...'; else $ok[]='memcache работает.';
 
-	if(!is_file('cron.log')) $ok[]="cron бы вам настроить, батенька...";
-	else {
-		$mt=time()-filemtime('cron.log'); 
-		if($mt > 15*60) $er[]="cron последний раз запускался ".floor($mt/60)." минут назад";
+
+	$mt=(is_file($cronfile)?(time()-filemtime($cronfile)):9999999);
+		if($mt > 60*60) $er[]="cron последний раз запускался ".floor($mt/60)." минут назад!
+настрой crontab или <a href='".$httphost."cron.php'>запусти вручную</a>";
 		else $ok[]="cron последний раз запускался ".floor($mt/60)." минут назад";
-	}
+
 
 	$ok[]="Список <a href=".$wwwhost."logon/?list>друзей</a>";
 	$ok[]="Читать <a href=".$wwwhost."pravki/>правки</a>";

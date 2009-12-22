@@ -1,0 +1,34 @@
+<?
+
+
+// =============================== cron =========================================
+$name='cron'; $$name='RUN_NOW';
+
+global $cronfile;
+if($PEST[$name]==$$name) {
+		$admin_upgrade=true; include_once("cron.php"); 
+		$s .= admin_kletka($name,"<font color=green><i>результат запуска:</i></font>".$cronrez,$$name);
+} else {
+	$mt=(is_file($cronfile)?(time()-filemtime($cronfile)):9999999);
+	if($mt > 60*60) { $s .= admin_kletka($name,"<font color=red>cron последний раз запускался ".floor($mt/60)." минут назад!
+Настрой crontab или запусти вручную!</font>",$$name); }
+	else $s .= admin_kletka($name,"последний раз запускался ".floor($mt/60)." минут назад",$$name);
+}
+// =============================== memcache =========================================
+
+$s .= admin_kletka('memcache',($GLOBALS['memcache']?"<font color=green>работает</font>":"не установлен"));
+
+// =============================== antibot =========================================
+$name='antibot'; $$name='Clean_OLD';
+
+if($PEST[$name]==$$name) {
+		include_once $GLOBALS['include_sys']."_antibot.php";
+		$cronrez = antibot_del();
+		$s .= admin_kletka($name,"<font color=green>$cronrez</font>",$$name);
+} else {
+        $a=glob($GLOBALS['antibot_file']."*.jpg"); $abot=sizeof($a); unset($a); // сколько антиботовых картинок?
+        if($abot>5000) $s .= admin_kletka($name,"<font color=red>картинок в кэше накопилось критическое число: $abot!</font>",$$name);
+	else $s .= admin_kletka($name,"всего картинок в кэше $abot",$$name);
+}
+
+?>

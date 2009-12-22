@@ -198,7 +198,7 @@ function ms_connect() { if(isset($GLOBALS['ms_connected'])) return;
 	$GLOBALS['ms_connected']=true;
 }
 
-function file_get($f,$c=true) {	//$n=$GLOBALS['fileget_tmp'].md5($f).".dat"
+function file_get($f,$c=true) {	if(!$GLOBALS['cache_get']) return file_get_contents($f);
 	$n=preg_replace("/[^0-9a-zA-Z_\-\.\~]+/si","#", str_replace("http://","",$f) );
 	if(strlen($n)<200) $n=$GLOBALS['fileget_tmp'].$n.".dat"; else $n=$n=$GLOBALS['fileget_tmp'].md5($n).".dat";
 	if(file_exists($n)) { if(!$c) return unlink($n); return file_get_contents($n); }
