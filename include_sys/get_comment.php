@@ -82,7 +82,9 @@ msq_add('dnevnik_comments',array(
 //		commentMail(mysql_insert_id(),$spamik);
 ////		redirect($article["Day"].".html#comment_".$p["id"]);
 
-	// очистить кэш картинок
+	// если не включен cron - выполнить его именно в этот момент
+	if(!is_file($cronfile)) include_once("cron.php");
+
 	if($spamik) redirect($mypage."?com=link&id=".$sc.($prichinto!=''?'&prichina='.urlencode($prichinto):''));
 	else redirect($mypage."?com=ok&id=".$sc);
 	}

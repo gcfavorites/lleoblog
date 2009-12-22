@@ -77,7 +77,7 @@ return "<img src='".$GLOBALS['antibot_www'].$GLOBALS['antibot_hash'].".jpg' widt
 function antibot_del() { $old = time()-$GLOBALS['antibot_deltime']; $deleted = 0;
 	$p=glob($GLOBALS['antibot_file']."*.jpg");
 	foreach($p as $f) if(filemtime($f)<$old) { unlink($f); $deleted++; }
-	return "<p>удалено: ".$deleted;
+	return "Антиботовые картинки, удалено: ".$deleted;
 }
 
 ?>
