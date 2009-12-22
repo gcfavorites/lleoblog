@@ -16,7 +16,7 @@ if($PEST[$name]==$$name) {
 }
 // =============================== memcache =========================================
 
-$s .= admin_kletka('memcache',($GLOBALS['memcache']?"<font color=green>работает</font>":"не установлен"));
+$s .= admin_kletka('memcache',($GLOBALS['memcache']?"работает":"не установлен"));
 
 // =============================== antibot =========================================
 $name='antibot'; $$name='Clean_OLD';
@@ -30,5 +30,13 @@ if($PEST[$name]==$$name) {
         if($abot>5000) $s .= admin_kletka($name,"<font color=red>картинок в кэше накопилось критическое число: $abot!</font>",$$name);
 	else $s .= admin_kletka($name,"всего картинок в кэше $abot",$$name);
 }
+
+
+// =============================== get_cache =========================================
+$name='get_cache'; $$name='Clean_cache';
+$a=glob($GLOBALS['fileget_tmp']."*"); $abot=sizeof($a); // сколько файлов в кэше?
+if($PEST[$name]==$$name) { foreach($a as $l) unlink($l); }
+if($abot) $s .= admin_kletka($name,"файлов в кэше: $abot",$$name);
+unset($a);
 
 ?>
