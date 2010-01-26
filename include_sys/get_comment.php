@@ -1,6 +1,6 @@
 <?php // Если пришел комментарий
 
-foreach($_POST as $k=>$v) $_POST[$k]=trim($v,"\t\n\r ");
+foreach($_POST as $k=>$v) { $_POST[$k]=trim(str_replace("\r","",$v),"\t\n "); }
 
 	if($IS_USER) $_POST["Name"] = $IS_USER;
 	if($_POST["Name"] == "") $CommentaryErrors[] = "Не указано имя. Зачем мне комментарии от анонимов?";
@@ -83,7 +83,7 @@ msq_add('dnevnik_comments',array(
 ////		redirect($article["Day"].".html#comment_".$p["id"]);
 
 	// если не включен cron - выполнить его именно в этот момент
-	if(!is_file($cronfile)) include_once("cron.php");
+	if(!is_file($cronfile) or (time()-filemtime($cronfile)) > 60*60 ) include_once("cron.php");
 
 	if($spamik) redirect($mypage."?com=link&id=".$sc.($prichinto!=''?'&prichina='.urlencode($prichinto):''));
 	else redirect($mypage."?com=ok&id=".$sc);

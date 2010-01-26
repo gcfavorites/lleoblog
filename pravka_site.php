@@ -31,13 +31,15 @@ if(strstr($ur[1].$ur[2],'..')) die("<p><b>Error 404</b><p>No way for scriptkids"
 
 if(($s=file_get_contents($serv.$path.$ur[1].'/'.$ur[2]))===false || $s=='') die("Error 404<p>Not found: /$path".$ur[1].'/'.$ur[2]);
 
-$count=counter($name); 
+$count=counter($name);
+/* // совсем устаревший кусок для совсем старых скриптов Зенона
 	if($count==1) { $countfile=preg_replace("/(.+?)\/([^\/]+)$/i","$1/.$2.count",$serv.$path.$ur[1].'/'.$ur[2]);
 		if(file_exists($countfile)) {
 			$c=file($countfile); $count=rtrim($c[0]); counter_set($name,$count);
-			file_put_contents($countfile.'.0',$count);
+			file_put_contents($countfile.'.0',$count); chmod($countfile.'.0',0666);
 		}
 	}
+*/
 
 function shtml_include($p) { global $serv,$path,$ur;
 if(($i=file_get_contents($serv.$path.$ur[1].'/'.$p[1]))===false || $i=='') $i="<p>Not found: /$path".$ur[1].'/'.$p[1];

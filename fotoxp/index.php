@@ -38,7 +38,7 @@
 
 require ('../config.php');
 include "../include_sys/_autorize.php";
-include "../include_sys/_msq.php";
+//include "../include_sys/_msq.php";
 // General configuration
 
 $protocol = 'http';

@@ -1,6 +1,6 @@
 <?php // Авторизация пользователей
 if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
-if(isset($_GET['version'])) die("lleoblog 2.0"); // показать версию
+if(isset($_GET['version'])) die("lleoblog 2.0\n".$admin_name ); // показать версию и владельца
 // if(!$admin) redirect($wwwhost."login/"); // посторонних - нахуй
 
 DESIGN('plain',"<a href=$mypage>СТРАНИЦА АДМИНА</a>");
@@ -111,6 +111,26 @@ function msq_del_index($table,$pole,$text) {
 			return admin_kletka($name,"<font color=green>из `$table` удален индекс `$pole`</font>".$GLOBALS['msqe']);
         	} else { return admin_kletka($name,"пришло время удалить из `$table` индекс `$pole`; ".$text,$kom); }
 	} // else { return admin_kletka($name," апгрейд не требуется"); }
+}
+
+/*
+// создать таблицу
+function msq_add_table($table,$znachenie,$text) { $kom='Add TABLE';
+	if(!msq_table($table)) { if($GLOBALS['PEST'][$table]==$kom) {
+			msq("ALTER TABLE `".$table."` ADD INDEX `".$pole."` ".$znachenie);
+			return admin_kletka($table,"<font color=green>в `$table` добавлен индекс `$pole`</font>".$GLOBALS['msqe']);
+		} else { return admin_kletka($table,"требуется добавить в `$table` индекс `$pole`; ".$text,$kom); }
+	}
+}
+*/
+
+// удалить таблицу
+function msq_del_table($table,$text) { $kom='Delete TABLE';
+        if(msq_table($table)) {	if($GLOBALS['PEST'][$table]==$kom) {
+                	msq("DROP TABLE `".$table."`");
+			return admin_kletka($table,"<font color=green>удалена таблица `$table`</font>".$GLOBALS['msqe']);
+        	} else { return admin_kletka($table,"пришло время удалить таблицу `$table`; ".$text,$kom); }
+	}
 }
 
 

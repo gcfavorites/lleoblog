@@ -11,7 +11,7 @@ $namescr=$_SERVER['PHP_SELF']; // '/arhive/edit.php';
 
 include "config.php";
 include $include_sys."_autorize.php";
-include $include_sys."_msq.php";
+//include $include_sys."_msq.php";
 // mystart();
 
 include $include_sys."_one_pravka.php");

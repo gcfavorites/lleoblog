@@ -19,20 +19,29 @@ function module($t) { $s=$t[1]; // подцепить модули
 
         if(strstr($s,':')) { // подключаемый модуль
 
-		$s=str_replace(array('{#_','_#}'),array('{_','_}'),$s); // разэкранировать аргументы
+//		$s=str_replace(array('{#_','_#}'),array('{_','_}'),$s); // разэкранировать аргументы
 
                 list($mod,$arg)=explode(':',$s,2); $mod=c($mod);
 
                 if(!function_exists($mod)) {
                         $mod=str_replace('..','',$mod); // так просто
+
                         $modfile=$GLOBALS['site_mod'].$mod.".php";
-                        if(!file_exists($modfile)) idie("Module error: ".htmlspecialchars($modfile));
-                        include_once($modfile);
-                        if(!function_exists($mod)) idie("Нет такой функции: ".htmlspecialchars($mod)
+                        $modfile2=$GLOBALS['site_module'].$mod.".php";
+
+                        if(file_exists($modfile)) include_once($modfile);
+                        elseif(file_exists($modfile2)) include_once($modfile2);
+			else idie("Module error: ".h($modfile));
+		
+//                        if(!file_exists($modfile)) idie("Module error: ".htmlspecialchars($modfile));
+//                        include_once($modfile);
+
+
+                        if(!function_exists($mod)) idie("Нет такой функции: ".h($mod)
 .($GLOBALS['admin']&&isset($GLOBALS['Date'])?"<p><a href=".$GLOBALS['httphost']."editor/?Date=".$GLOBALS['Date'].">редактировать</a>":'')
 );
                 }
-                return call_user_func($mod,c($arg));
+                return call_user_func($mod,modules(str_replace(array('{=','=}'),array('{_','_}'),c($arg))));
         }
 
         // иначе - просто вынуть из базы

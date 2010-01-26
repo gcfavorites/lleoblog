@@ -1,4 +1,7 @@
 <?php 
+
+$ajax=1;
+
 /** 
  * JsHttpRequest: PHP backend for JavaScript DHTML loader. 
  * (C) 2005 Dmitry Koterov, http://forum.dklab.ru/users/DmitryKoterov/ 

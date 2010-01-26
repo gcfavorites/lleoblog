@@ -15,6 +15,8 @@ $_PAGE['hashpage']=$hashpage;
 
 STYLE_ADD($GLOBALS['httpsite'].$GLOBALS['www_design']."pravka.css");
 
+SCRIPTS_mine();
+
 include_once $include_sys."_one_pravka.php"; // процедура вывода окошка с одной правкой
 include_once $include_sys."text_scripts.php"; // включить библиотеку
 
@@ -34,10 +36,8 @@ function pc(id) { pravka(id,'edit_c'); }
 function px(id) { // if(confirm('Точно удалить?'))
 	pravka(id,'del'); }
 
-function pravka(id,volya,answer) { JsHttpRequest.query('".$wwwhost."ajax_pravka.php', { action: volya, id: id, answer: answer,
-hash: '".$hashpage."'
-},
-        function(responseJS, responseText) { if(responseJS.status) { document.getElementById(id).innerHTML = responseJS.otvet; } },true);
+function pravka(id,volya,answer) {
+	ajax('ajax_pravka.php',{ action:volya,id:id,answer:answer,hash:'".$hashpage."'},\"zabil('\"+id+\"',responseJS.otvet)\");
 }
 ");
 

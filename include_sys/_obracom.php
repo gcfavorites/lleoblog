@@ -112,7 +112,7 @@ function AddBB($var) {
 
 function hyperlink($s) { 
 //return preg_replace_callback("/([\s>\(\:])(([a-zA-Z]+:\/\/|(www\.))([a-z][a-z0-9_\.\-]*[a-z]{2,6})([a-zA-Z0-9!#\$%&\(\)\*\+,\-\.\/:;=\?\@\[\]\\^_`\{\}\|~]*[a-zA-Z0-9\/]))([\s<,:\.\)\!\?])/i","url_present", $s); }
-return preg_replace_callback("/([\s>\(\:])(([a-zA-Z]+:\/\/|(www\.))([a-z][a-z0-9_\.\-]*[a-z]{2,6})([a-zA-Z0-9!#\$\%\&\(\)\*\+,\-\.\/:;=\?\@\[\]\\^_`\{\}\|~]*[a-zA-Z0-9\/\.\&\%\;\=]))([\s<,:\.\%\&\;\)\!\?\=0-9a-z])/i","url_present", $s); }
+return preg_replace_callback("/([\s>\(\:])(([a-zA-Z]+:\/\/|(www\.))([a-z][a-z0-9_\.\-]*[a-z]{2,6})([a-zA-Z0-9\!\#\$\%\&\(\)\*\+\,\-\.\/\:\;\=\?\@\[\]\\\^\_\`\{\}\|\~]*[a-zA-Z0-9\/]))([\s<,:\.\;\)\!\?\=])/s","url_present", $s); }
 
 
 function url_present($p) {

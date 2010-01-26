@@ -1,5 +1,5 @@
 <?php // Заэкранировать html
 
-function neh($e) { return htmlspecialchars($e); }
+function neh($e) { return h($e); }
 
 ?>

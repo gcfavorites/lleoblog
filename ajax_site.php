@@ -2,11 +2,11 @@
 include "config.php";
 include $include_sys."_autorize.php";
 if(!$admin) die('Error autorize');
-include $include_sys."_msq.php";
+// include $include_sys."_msq.php";
 // include $include_sys."_onecomment.php";
 require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpRequest("windows-1251");
 
-function otprav($s) { global $_RESULT,$msqe; $_RESULT["otvet"] = $msqe.$s; $_RESULT["status"] = true; exit(); }
+function otprav2($s) { global $_RESULT,$msqe; $_RESULT["otvet"] = $msqe.$s; $_RESULT["status"] = true; exit(); }
 
 $a=$_REQUEST["action"];
 $id=intval($_REQUEST["id"]);
@@ -47,11 +47,11 @@ if($a == "close") {
 	else { $name="создать новую"; }
 
 	if($p['type']!='photo') {
-otprav("<li><a href=\"javascript:l('".$id."')\">".htmlspecialchars($name)."</a>
+otprav2("<li><a href=\"javascript:l('".$id."')\">".htmlspecialchars($name)."</a>
 &nbsp;(<a href=".$GLOBALS['wwwhost'].htmlspecialchars($name)." target=_blank>open</a>)</li>");
 	} else {
 
-otprav("<li><table><tr valign=center>
+otprav2("<li><table><tr valign=center>
 <td><img src=".$GLOBALS['foto_www_preview'].$p['text']."></td>
 <td><a href=\"javascript:l('".$id."')\">".(strlen($name)?$name:"&lt;...&gt;")."</a></td>
 </tr></table></li>");
@@ -61,7 +61,7 @@ $_RESULT["reload"]=false;
 
 }
 
-if($a == "delete") { msq_del($db_site,array('id'=>$id)); otprav(""); }
+if($a == "delete") { msq_del($db_site,array('id'=>$id)); otprav2(""); }
 
 exit;
 
@@ -83,7 +83,7 @@ $jsvalue=",document.getElementById('".$id_name."').value,"
 ."document.getElementById('".$id_type."').value,"
 ."document.getElementById('".$id_access."').value)";
 
-otprav("<li><a href=\"javascript:ajax_site('close',".$id.")\">закрыть</a>
+otprav2("<li><a href=\"javascript:ajax_site('close',".$id.")\">закрыть</a>
 <p><center>
 <table><tr>
 ".($type!='photo'?'':"<td><img src=".$GLOBALS['foto_www_preview'].$text."></td>")."
@@ -158,7 +158,7 @@ function update_one($name,$data) { global $msqe,$BRO;
 	}
 
 	msq_update("dnevnik_comments",$ara,"WHERE `id`='".e($_REQUEST["id"])."'");
-     	if($msqe!='') otprav($msqe);
+     	if($msqe!='') otprav2($msqe);
 	otprav_add('normal',0);
 }
 
@@ -213,13 +213,13 @@ $dop = "
 
 $s .= "<div class=ct>".$dop."</div>";
 }
-	otprav($s);
+	otprav2($s);
 }
 
 //##################################################################
 
 
-//	global $msqe; msq_del("dnevnik_comments",array("id"=>intval($_REQUEST["id"]))); otprav($msqe);
+//	global $msqe; msq_del("dnevnik_comments",array("id"=>intval($_REQUEST["id"]))); otprav2($msqe);
 	
 
 } // удалить id
@@ -246,7 +246,7 @@ if ( $a == 'rulit'  // камент плюс!
 	|| $a == 'ans_spamit' // lleo минус!
 	) vbazurul($a,'ans_lastIPsc'); // запомнить последнего голосовавшего (увы, пока вот так бесхитростно)
 
-if ($admin && $a == "del") { global $msqe; msq_del("dnevnik_comments",array("id"=>intval($_REQUEST["id"]))); otprav($msqe); } // удалить id
+if ($admin && $a == "del") { global $msqe; msq_del("dnevnik_comments",array("id"=>intval($_REQUEST["id"]))); otprav2($msqe); } // удалить id
 //if ($admin && $a == "ed_rul") otprav_add('textarea','rulit'); // редактировать плюсы
 //if ($admin && $a == "ed_spam") otprav_add('textarea','spamit'); // редактировать минусы
 if ($admin && $a == "rulm_on") update_one('rulit_master','1'); // установить признак "комментарий особо ценен"

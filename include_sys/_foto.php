@@ -1,6 +1,7 @@
 <?php
 
-$GLOBALS['_PAGE']['body'].="<a onclick='hide_foto()'><div class='bar1' onmouseover=\"this.className='bar2'\" onmouseout=\"this.className='bar1'\" id='winfoto'></div></a>";
+$GLOBALS['_PAGE']['body'].="<a onclick='hide_foto()'><div class='bar1'
+onmouseover=\"this.className='bar2'\" onmouseout=\"this.className='bar1'\" id='winfoto'></div></a>";
 
 STYLES("Всплывающее окно фотки","
 
@@ -12,10 +13,9 @@ STYLES("Всплывающее окно фотки","
 .ok { cursor: pointer; text-align: right; float: left; }
 .ok:after { content: url(\"{www_design}e/cancel1.png\"); }
 
-.bar1, .bar2 { position: absolute; z-index:9998; padding: 2px; visibility: hidden; background-color: #F0F0F0 }
-
 .fotoc { margin: 0px 8px 8px 8px; }
 
+.bar1, .bar2 { position: absolute; z-index:9996; padding: 2px; visibility: hidden; background-color: #F0F0F0 }
 .bar1 { border: 1px solid #ccc; }
 .bar2 { border: 1px solid blue; }
 ");
@@ -26,15 +26,13 @@ SCRIPTS("Всплывающая фотка","
 var imgy=".$GLOBALS['foto_res_small'].";
 var imgx=(800/600)*imgy;
 
-function foto(e) { d = document.body; o = document.getElementById('winfoto');
+function foto(e) { o=idd('winfoto');
     o.style.top = (getWinH()-imgy)/2+getScrollW()+'px';
     o.style.left = (getWinW()-imgx)/2+getScrollH()+'px';
     o.style.visibility = 'visible';
-    o.innerHTML = \"<div class=ok title='Ок' onclick='hide_foto()'></div><img class=fotoc src='\"+e+\"'>\";
+    o.innerHTML = \"<div class=ok title='Ок' onclick=\\\"zakryl('winfoto')\\\"></div><img class=fotoc src='\"+e+\"'>\";
     return false;
 }
-
-function hide_foto() { document.getElementById('winfoto').style.visibility='hidden'; }
 ");
 
 SCRIPTS("getWH","

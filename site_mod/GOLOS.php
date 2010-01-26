@@ -30,7 +30,7 @@ $GLOBALS['GOLOS_db_result']='golosovanie2_result';
 if(isset($_POST['golos_return'])) {
 		include "../config.php";
 		include $include_sys."_autorize.php";
-		include $include_sys."_msq.php";
+//		include $include_sys."_msq.php";
 		include $include_sys."_antibot.php";
 		die(post_code());
 	}

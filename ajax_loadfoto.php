@@ -1,7 +1,7 @@
 <?php
 include "config.php";
 include $include_sys."_autorize.php"; if(!$admin) die('Error autorize');
-include $include_sys."_msq.php";
+// include $include_sys."_msq.php";
 //require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpRequest("windows-1251");
 
 // if(move_uploaded_file($FILE["tmp_name"],$ffile)) { // print "успешно закачан!";

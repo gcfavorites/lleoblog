@@ -1,6 +1,6 @@
 <?php // Показать спрятанное под катом
 
-if(!isset($GLOBALS['admin'])) die('<pre>'.htmlspecialchars(file_get_contents($_SERVER['SCRIPT_FILENAME'])).'</pre>');
+if(!isset($GLOBALS['admin_name'])) die(highlight_file(__FILE__,1));
 
 function cut($e) {
 
@@ -8,7 +8,7 @@ function cut($e) {
 	$tag0="[...]";
 	$l=(strstr($e,"\n")||strstr($e,'<')?1:0);
 
-	$e=str_replace(array("\\","'",'"',"\n","\r"),array("\\\\","\\'",'\\"',"\\n",""),$e);
+       	$e=str_replace(array("&","\\","'",'"',"\n","\r"),array("&amp;","\\\\","\\'",'\\"',"\\n",""),$e);
 
 	SCRIPTS("cut","function cut(e,s,l) {
 		if(e.className=='cuts') { e.className='cut'; e.innerHTML=(l?'$tag':'$tag0'); }

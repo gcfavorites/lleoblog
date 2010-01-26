@@ -6,39 +6,38 @@
 	$admin_hash="";
 
 # хостинг
-	$httpsite = "http://lleo.aha.ru";
-	$blogdir = "blog/";
+	$httpsite = ""; // "http://lleo.aha.ru";
+	$blogdir = ""; // "blog/";
 
 # параметры mysql
-	$msq_host = "localhost";
-	$msq_login = "lleo";
-	$msq_pass = "f56DfY8e3";
-	$msq_basa = "lleo";
+	$msq_host = ""; // "localhost";
+	$msq_login = ""; // "lleo";
+	$msq_pass = ""; // "fRdВtn23jNM1";
+	$msq_basa = ""; // "lleoblog";
 	$msq_charset = "cp1251";
 
 # имя блога
-	$admin_name = "Леонид Каганов";
-	$admin_mail = "lleo@aha.ru";
-	$blog_name = "lleo.aha.ru";
-	$admin_site = "lleo.aha.ru"; // для формы поиска по яндексу - сюда можно записать не сайт, а блог
+	$admin_name = ""; // "Леонид Каганов";
+	$admin_mail = ""; // "lleo@aha.ru";
+	$blog_name = ""; // "lleo.aha.ru";
+	$admin_site = ""; // "lleo.aha.ru"; // для формы поиска по яндексу - сюда можно записать не сайт, а блог
+
+	$admin_ljuser=""; // "eu_shestakov";
+
+	// $rootpage = 'index.html'; // страница, которая открывается в корне (если не определена - откроется последняя заметка блога)
 
 $signature = "&copy; ".$admin_name."&nbsp;&nbsp;<a href='mailto:".$admin_mail."'>".$admin_mail."</a>";
 
 # строка для хэширования пароля (любая, от балды)
-	$koldunstvo = "мыпи сали мыпи сали наши пальчики устали";
-	$hashinput = "пока мы не знаем закона природы, он существуя и действуя"; // строка для вывода хэшиков каждой страницы
-	$hashlogin = "этокатастрофаШеф"; // допаролька логона сайта - если поменять, отвалятся все залогиненные юзеры
+	$koldunstvo = ""; // "у опушки продала лиса волнушки";
+	$hashinput = ""; // "всякая дурь всякая дурь"; // строка для вывода хэшиков каждой страницы
+	$hashlogin = ""; // "прамамамамама"; // допаролька - залогиненные юзеры
 
+	// $cookie_method_old = true; // включить, чтобы была старая система кук
+	// if(stristr($_SERVER["HTTP_USER_AGENT"],'Nokia') or stristr($_SERVER["HTTP_USER_AGENT"],'konquer') ) $cookie_method_old=true;
 
-        // $cookie_method_old = true; // включить, чтобы была старая система кук
-        if(stristr($_SERVER["HTTP_USER_AGENT"],'Nokia') or stristr($_SERVER["HTTP_USER_AGENT"],'Konqueror') ) $cookie_method_old=true;
-
-        // $admin_ljuser="lleo"; // стертый аккаут LJ для восстановления через Яндекс модулем loadlj
-
-
-# memcache - по умолчанию отключен, удалите ВООБЩЕ эту строчку, если он у вас установлен
-$memcache = false;
-
+# Если memcache не установлен, оставьте false (отключен), иначе все повиснет! Если установлен - включите параметры соединения:
+$memcache = false; // $memcache = new Memcache; $memcache->connect('localhost', 11211) or $memcache=false;
 
 # настройки RSS блога
 $RSSZ_skip = 10; // сколько выдавать за раз в RSS записей
@@ -58,7 +57,7 @@ $cookie_site = ""; // на каком домене оставлять куки
 # параметры нежелательные для изменения
 $host_log = $filehost."log/"; // сюда будут писаться логи
 $cronfile = $host_log."cron.flag"; // индикатор крона
-// $cache_get = true; // включить файловое кэширование (включается разработчиком только для отладки!)
+$cache_get = true; // включить файловое кэширование (включается разработчиком только для отладки!)
 $wwwcharset = "windows-1251"; // кодировка страниц блога
 $syscharset = "koi8-r"; // кодировка файловой системы сервера
 $include_sys = $filehost."include_sys/"; // директория, где лежат системные модули
@@ -68,6 +67,11 @@ $www_design = $wwwhost."design/"; // директория, где лежит дизайн
 $host_module = $filehost."module/"; // директория, где лежат модули
 $www_ico = $wwwhost."design/ico/"; // директория, где лежат иконки
 
+$www_css = $wwwhost."css/"; // директория, где лежат CSS
+$file_css = $filehost."css/"; // директория, где лежат CSS
+$www_js = $wwwhost."js/"; // директория, где лежат JS
+$www_ajax = $wwwhost."ajax/"; // директория, где лежит AJAX
+$file_template = $filehost."template/"; // директория, где лежат CSS
 
 ############ правки ###########################################################################
 $db_pravka='pravki'; // имя таблицы MySQL, куда складывать правки.
@@ -78,9 +82,10 @@ $pravki_npage=50; // сколько показывать правок на каждой странице при листании а
 $db_login="login"; // имя базы логинов
 #########################################################################################
 
+# настройки блога
+$maxcommlevel=10; // уровень, после которого комментарии скрываются под подзагрузку
 $enter_comentary_days = 7; // число дней, когда заметка устарела
 $N_maxkomm = 20000; // когда отключать возможность комментировать
-
 
 ############ антибот ###########################################################################
 $antibot_pic = $include_sys."antibot_pic/";        // Путь до папки с картинками
@@ -93,10 +98,10 @@ $antibot_H = 20;
 $antibot_add2hash = $_SERVER["REMOTE_ADDR"].$hashinput;    // Прилепена для хэша
 $antibot_deltime = 60*60; // удалять старые картинки через 1 час
 
-
 ### сайт-менеджер ##############################################################################
 $db_site = "site";
 $site_mod = $filehost."site_mod/"; // директория, где лежат подключаемые модули сборки сайта
+$site_module = $filehost."site_module/"; // директория, где лежат подключаемые модули сборки сайта
 
 ### удобства и отладка #########################################################################
 $fileget_tmp = $hosttmp."get/";
@@ -105,13 +110,10 @@ $fileget_tmp = $hosttmp."get/";
 # база логинов
 $db_login = "login";
 
-
-
 ### загрузка фоток #########################################################################
 // $foto_orig  оригинальные закачки не сохраняем - только обработанные фотки (small)
 $foto_small="photo/";  // сюда будут писаться обработанные закачанные фотки
 $foto_preview="photo/pre/"; // сюда будут писаться превьюшки закачанных фоток
-
 
 $foto_file_small=$filehost.$foto_small;
 $foto_www_small=$wwwhost.$foto_small;
@@ -123,6 +125,8 @@ $foto_www_preview=$wwwhost.$foto_preview;
 $foto_res_preview=100;
 $foto_qality_preview=70;
 
-$foto_ttf=$host_design."ttf/MTCORSVA.TTF";
-$foto_logo=chr(169)." ".chr(171)."Блог Леонида Каганова http://lleo.aha.ru/blog/".chr(187); // автоматическая подпись фоток
+$foto_ttf=$host_design."ttf/PTC55F.ttf";
+$foto_logo=chr(169)." ".chr(171).$admin_name." ".$httpsite.chr(187); // автоматическая подпись фоток
 /* chr(160) nbsp chr(169) copy chr(151) mdash chr(171) chr(187) ltgt */
+
+?>
