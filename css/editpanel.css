@@ -1,0 +1,8 @@
+.canceledit,.fmedit,.fmn,.fmcopy,.fmmdash,.fmltgt { cursor: pointer; }
+.canceledit:after { content: url("{www_design}e/cancel1.png"); }
+.fmedit:after { content: url("{www_design}e/edit.gif"); }
+.fmn:after { content: url("{www_design}e/n.gif"); }
+.fmcopy:after { content: url("{www_design}e/copy.gif"); }
+.fmmdash:after { content: url("{www_design}e/mdash.gif"); }
+.fmltgt:after { content: url("{www_design}e/ltgt.gif"); }
+

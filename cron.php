@@ -22,7 +22,7 @@ include_once $include_sys."_antibot.php";
 $cronrez .= "<br>".antibot_del();
 
 // ====== установим флаг крона ========
-file_put_contents($cronfile,$cronrez);
+file_put_contents($cronfile,$cronrez); chmod($cronfile,0666);
 
 
 if($cronprint and !$admin_upgrade) die("<html><body>".$cronrez0.$cronrez."</body></html>");
@@ -44,10 +44,10 @@ curl_setopt($ch,CURLOPT_USERAGENT,'ROBOT from http://lleo.aha.ru/dnevnik/ - test
 	curl_setopt($ch,CURLOPT_FRESH_CONNECT,1); // don't use a cached version of the url
 curl_setopt($ch,CURLOPT_TIMEOUT,5); //«адает масимальное врем€ выполнени€ операции в секундах.
 
-if(!($ans=curl_exec($ch))) { $s.="<h1>error - not found!</h1>"; file_put_contents($flag,prichinar(1,$name)); }
-elseif( strstr($ans,'.php</b> on line') ) { $s.="<h1>error - PHP error!</h1>"; file_put_contents($flag,prichinar(2,$name)); }
-elseif( strstr($ans,'mysql_query(): ') ) { $s.="<h1>error - MySQL error!</h1>"; file_put_contents($flag,prichinar(3,$name)); }
-elseif( strstr($ans,'gninx') ) { $s.="<h1>error - gnix error!</h1>"; file_put_contents($flag,prichinar(4,$name)); }
+if(!($ans=curl_exec($ch))) { $s.="<h1>error - not found!</h1>"; file_put_contents($flag,prichinar(1,$name)); chmod($flag,0666); }
+elseif( strstr($ans,'.php</b> on line') ) { $s.="<h1>error - PHP error!</h1>"; file_put_contents($flag,prichinar(2,$name)); chmod($flag,0666); }
+elseif( strstr($ans,'mysql_query(): ') ) { $s.="<h1>error - MySQL error!</h1>"; file_put_contents($flag,prichinar(3,$name)); chmod($flag,0666); }
+elseif( strstr($ans,'gninx') ) { $s.="<h1>error - gnix error!</h1>"; file_put_contents($flag,prichinar(4,$name)); chmod($flag,0666); }
 else unlink($flag);
 
 $s.="<p>

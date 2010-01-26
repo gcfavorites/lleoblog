@@ -1,10 +1,10 @@
 <?php // редактор заметок
-if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+if(!isset($admin_name)) idie("Error 404"); // неправильно запрошенный скрипт - нахуй
 if(!$admin) redirect($wwwhost."login/"); // посторонних - нахуй
 blogpage("Редактор заметок");
 
-$Date = ( isset($_GET["Date"]) ? htmlspecialchars($_GET["Date"]) : (
-isset($_POST["Date"]) ? htmlspecialchars($_POST["Date"]) : (
+$Date = ( isset($_GET["Date"]) ? h($_GET["Date"]) : (
+isset($_POST["Date"]) ? h($_POST["Date"]) : (
 ms("SELECT `Date` FROM `dnevnik_zapisi` ORDER BY `Date` DESC LIMIT 1","_l",0)
 )));
 
@@ -14,7 +14,7 @@ if($article["Prev"].$article["Next"]!='') { list($y,$m)=explode("-",$Date,2); $_
 if($_POST["action"] == "Move") {
 	$num=ms("SELECT `num` FROM `dnevnik_zapisi` WHERE `Date`='".e($Date)."' LIMIT 1","_l",0);
    if($num!==false) {
-	print "<p><font color=red><b>Невозможно перенести!<br>Заметка с датой <a href=".$wwwhost.htmlspecialchars($Date).".html>".htmlspecialchars($Date)."</a> уже существует!</b></font>";
+	print "<p><font color=red><b>Невозможно перенести!<br>Заметка с датой <a href=".$wwwhost.h($Date).".html>".h($Date)."</a> уже существует!</b></font>";
    } else {
 	$t=getmaketime($Date);
 	msq_update('dnevnik_zapisi',array( 'Date'=>e($Date),'DateUpdate'=>time(), 'DateDate'=>$t[0],'DateDatetime'=>$t[1] ),"WHERE `num`='".e($num)."'");
@@ -42,6 +42,7 @@ if($_POST["action"] == "Save") {
 	msq_add_update('dnevnik_zapisi',array(
 			'Date'=>e($_POST["Date"]),
 			'Header'=>e($_POST["Header"]),
+			'template'=>e($_POST["template"]),
 			'Body'=>e($s),
 			'Access'=>e($_POST["Access"]),
 //			'Comment'=>e($_POST["Comment"]),
@@ -65,7 +66,7 @@ elseif($_POST["action"] == "Delete") {
 	$num=ms("SELECT `num` FROM `dnevnik_zapisi` WHERE `Date`='".e($_POST["Date"])."' LIMIT 1","_l",0);
 	if($num!==false) {
 		msq_del('dnevnik_zapisi', array('num'=>e($num)) ); // удалить заметку
-		msq_del('dnevnik_comments', array('DateID'=>e($num)) ); // удалить комментарии
+		msq_del('dnevnik_comm', array('DateID'=>e($num)) ); // удалить комментарии
 	}
 	//	prosris(); // устаканить `dnevnik_zapisi`
 	// а теперь найти последнюю из предыдущих оставшихся
@@ -76,7 +77,8 @@ elseif($_POST["action"] == "Delete") {
 if($Date) $_POST=ms("SELECT * FROM `dnevnik_zapisi` WHERE `Date`='".e($Date)."'","_1",0);
 else $_POST=ms("SELECT * FROM `dnevnik_zapisi` ORDER BY `Date` DESC LIMIT 1","_1",0);
 
-$urldata=urldata(htmlspecialchars($_POST["Date"]));
+
+$urldata=urldata(h($_POST["Date"]));
 
 SCRIPTS("
 var valiDatemessage = 2; function valiDate(id) {	var s=document.getElementById(id).value;
@@ -148,6 +150,13 @@ Text ".strlen($_POST['Body'])." букв:
 
 ";
 
+
+
+
+// выяснить о модулях
+$inc=glob($filehost."template/*.html");
+$ainc=array(); $ainc['']='- нет -'; foreach($inc as $l) { $l=preg_replace("/^.*?\/([^\/]+)\.html$/si","$1",$l); $ainc[$l]=$l; }
+
 STYLES("
 .knop { border: 1px solid white; }
 .knop:hover { border: 1px solid black; }
@@ -193,6 +202,9 @@ print "<div class=r>Заметка: ".selecto('Access',$_POST['Access'],array(
 					'normal'=>"нет",
 					'allrating'=>"сборная",
 					'rating'=>"тупая") )."
+
+
+<br>шаблон дизайна: ".selecto('template',$_POST['template'],$ainc)."
 
 <br>
 <input type=submit name='action' value='Save'> &nbsp;  &nbsp;  &nbsp;

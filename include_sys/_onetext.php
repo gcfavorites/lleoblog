@@ -1,11 +1,12 @@
 <?php // Отображение статьи с каментами - дата передана в $Date
 
-function onetext($p) { global $wwwhost,$IP;
+function onetext($p) { global $wwwhost,$IP,$unic;
 
 	$s=$p["Body"];
 
 	// Посчитать юзера
 	mysql_query("UPDATE `dnevnik_zapisi` SET view_counter=view_counter+1, last_view_ip='".e($IP)."' WHERE `num`='".e($p['num'])."' AND last_view_ip!='".e($IP)."'");
+	if(!$unic) msq_add("dnevnik_posetil",array('unic'=>$unic,'url'=>e($p['num'])));
 
 	$s=modules($s); // процедуры site
 

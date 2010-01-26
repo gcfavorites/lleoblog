@@ -21,7 +21,7 @@ $o.="\n<center>
 <div class=fotoa>
 <a href onclick='return foto(\"".$GLOBALS["foto_www_small"].$p['text']."\")'>
 <img src='{foto_www_preview}".$p['text']."' hspace=5 vspace=5>
-<div class=fotot>".htmlspecialchars($p['name'])."</div></a></div>
+<div class=fotot>".h($p['name'])."</div></a></div>
 </center>
 ";
 	}

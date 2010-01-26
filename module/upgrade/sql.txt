@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: mysql.baze.lleo.aha.ru:64256
--- Время создания: Дек 19 2009 г., 14:10
+-- Время создания: Янв 19 2010 г., 11:06
 -- Версия сервера: 5.0.87
 -- Версия PHP: 5.1.6
 
@@ -16,53 +16,96 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `dnevnik_comments`
+-- Структура таблицы `dnevnik_comm`
 --
 
-CREATE TABLE IF NOT EXISTS `dnevnik_comments` (
+CREATE TABLE IF NOT EXISTS `dnevnik_comm` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `idza` int(10) NOT NULL default '0',
-  `Date` varchar(128) NOT NULL,
-  `Name` varchar(128) NOT NULL default '',
-  `Address` varchar(128) NOT NULL default '',
-  `Commentary` text NOT NULL,
-  `Answer` text NOT NULL,
-  `Answer_user` varchar(64) NOT NULL,
-  `Answer_time` int(11) NOT NULL,
-  `ans_spamit` int(10) NOT NULL default '0',
-  `ans_rulit` int(10) NOT NULL default '0',
-  `ans_lastIPsc` varchar(20) NOT NULL,
-  `IP` varchar(15) NOT NULL,
-  `IPx` varchar(15) NOT NULL,
-  `DateTime` int(11) NOT NULL default '0',
-  `UserAgent` varchar(1024) NOT NULL,
-  `Guest_LJ` varchar(32) NOT NULL default '',
-  `Guest_Name` varchar(128) NOT NULL default '',
-  `speckod` varchar(32) NOT NULL default '',
-  `mudak` enum('yes','no') NOT NULL default 'no',
-  `metka` enum('open','screen') NOT NULL default 'open',
-  `spamit` int(10) NOT NULL default '0',
-  `rulit` int(10) NOT NULL default '0',
-  `rulit_lastIPsc` varchar(20) NOT NULL,
-  `rulit_master` enum('0','1') NOT NULL default '0',
-  `login` varchar(128) NOT NULL,
-  `whois_strana` varchar(128) NOT NULL,
-  `whois_gorod` varchar(128) NOT NULL,
-  `whois_basa` enum('whois','rus','world') NOT NULL default 'whois',
-  `DateID` int(10) NOT NULL,
+  `unic` int(10) unsigned NOT NULL COMMENT 'id автора',
+  `DateID` int(10) NOT NULL COMMENT 'К какой заметке относится',
+  `Name` varchar(128) NOT NULL COMMENT 'Автор',
+  `Mail` varchar(128) NOT NULL COMMENT 'email',
+  `Text` text NOT NULL COMMENT 'Текст комментария',
+  `Parent` int(10) unsigned NOT NULL default '0' COMMENT 'На что ответ',
+  `Time` int(11) unsigned NOT NULL default '0' COMMENT 'Время комментария',
+  `IPN` int(10) unsigned NOT NULL COMMENT 'IP в цифре',
+  `BRO` varchar(1024) NOT NULL COMMENT 'Браузер все-таки запишем?',
+  `whois` varchar(128) NOT NULL COMMENT 'Определялка страны',
+  `scr` enum('1','0') NOT NULL default '0' COMMENT 'Открытый, скрытый',
+  `rul` enum('1','0') NOT NULL default '0' COMMENT 'Особый',
+  `ans` enum('1','0') NOT NULL default '1' COMMENT 'Разрешено ли принимать комментарии к нему?',
+  `group` tinyint(3) unsigned NOT NULL COMMENT 'Группа для выделения разным цветом. 0 - все, 1 - админ, 2... ну, допустим, Topbot',
+  `golos_plu` int(10) unsigned NOT NULL default '0' COMMENT 'Голосование плюсики',
+  `golos_min` int(10) unsigned NOT NULL default '0' COMMENT 'Голосование минусики',
   PRIMARY KEY  (`id`),
-  KEY `Date` (`Date`),
-  KEY `DateTime` (`DateTime`),
-  KEY `login` (`login`),
-  KEY `speckod` (`speckod`),
   KEY `DateID` (`DateID`),
-  KEY `metka` (`metka`),
-  KEY `rulit_master` (`rulit_master`)
-) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Комментарии посетителей' AUTO_INCREMENT=279 ;
+  KEY `poset` (`unic`,`scr`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Комментарии посетителей' AUTO_INCREMENT=1784 ;
 
 -- --------------------------------------------------------
 
+-- Структура таблицы `dnevnik_link`
+--
 
+CREATE TABLE IF NOT EXISTS `dnevnik_link` (
+  `n` bigint(20) NOT NULL auto_increment,
+  `link` varchar(2048) NOT NULL,
+  `count` bigint(20) NOT NULL,
+  `last_ipn` int(10) unsigned NOT NULL,
+  `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `DateID` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`n`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='ссылки на дневник' AUTO_INCREMENT=638 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `dnevnik_plusiki`
+--
+
+CREATE TABLE IF NOT EXISTS `dnevnik_plusiki` (
+  `unic` int(10) unsigned NOT NULL,
+  `commentID` int(10) unsigned NOT NULL,
+  `var` enum('plus','minus') NOT NULL,
+  PRIMARY KEY  (`unic`,`commentID`),
+  KEY `url` (`commentID`)
+) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `dnevnik_posetil`
+--
+
+CREATE TABLE IF NOT EXISTS `dnevnik_posetil` (
+  `unic` int(10) unsigned NOT NULL,
+  `url` int(10) unsigned NOT NULL,
+  `date` int(11) unsigned NOT NULL,
+  PRIMARY KEY  (`unic`,`url`),
+  KEY `url` (`url`)
+) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `dnevnik_search`
+--
+
+CREATE TABLE IF NOT EXISTS `dnevnik_search` (
+  `n` bigint(20) NOT NULL auto_increment,
+  `poiskovik` varchar(32) NOT NULL,
+  `link` varchar(2048) NOT NULL,
+  `search` varchar(2048) NOT NULL,
+  `count` bigint(20) NOT NULL,
+  `last_ipn` int(10) unsigned NOT NULL,
+  `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `DateID` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`n`),
+  KEY `last_ipn` (`last_ipn`),
+  KEY `link` (`link`(1000))
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='поисковые заходы' AUTO_INCREMENT=111 ;
+
+-- --------------------------------------------------------
 
 --
 -- Структура таблицы `dnevnik_zapisi`
@@ -87,72 +130,15 @@ CREATE TABLE IF NOT EXISTS `dnevnik_zapisi` (
   `autoformat` enum('no','p','pd') NOT NULL default 'no',
   `DateDatetime` int(11) NOT NULL default '0',
   `DateDate` int(11) NOT NULL default '0',
+  `template` varchar(32) NOT NULL default 'blog',
   UNIQUE KEY `num` (`num`),
   KEY `Date` (`Date`),
   KEY `Access` (`Access`),
   KEY `DateDatetime` (`DateDatetime`),
   KEY `DateDate` (`DateDate`)
-) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Заметки блога' AUTO_INCREMENT=25 ;
-
-
--- --------------------------------------------------------
-
---
--- Структура таблицы `golosovanie2_golosa`
---
-
-CREATE TABLE IF NOT EXISTS `golosovanie2_golosa` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(32) NOT NULL,
-  `time` timestamp NOT NULL default CURRENT_TIMESTAMP,
-  `sc` varchar(32) NOT NULL,
-  `ipipx` varchar(31) NOT NULL,
-  `value` text NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Голосования: результаты' AUTO_INCREMENT=204 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Заметки блога' AUTO_INCREMENT=53 ;
 
 -- --------------------------------------------------------
-
---
--- Структура таблицы `golosovanie2_result`
---
-
-CREATE TABLE IF NOT EXISTS `golosovanie2_result` (
-  `name` varchar(32) NOT NULL,
-  `n` bigint(20) NOT NULL,
-  `text` text NOT NULL,
-  PRIMARY KEY  (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=cp1251 COMMENT='Голосования: результаты';
-
--- --------------------------------------------------------
-
---
--- Структура таблицы `login`
---
-
-CREATE TABLE IF NOT EXISTS `login` (
-  `login` varchar(32) NOT NULL,
-  `sc` varchar(32) NOT NULL,
-  `timereg` datetime NOT NULL,
-  `timelast` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  `realname` varchar(128) NOT NULL,
-  `mail` varchar(128) NOT NULL,
-  `site` varchar(128) NOT NULL,
-  `birth` date NOT NULL,
-  `admin` enum('user','podzamok','comblock','mudak') NOT NULL,
-  `podpiska` enum('dnevnik','lichnoe','sovet') NOT NULL,
-  `img` varchar(36) NOT NULL,
-  `password` varchar(32) NOT NULL,
-  `count` bigint(20) NOT NULL default '0',
-  `type` enum('login','openid') NOT NULL,
-  `comdate` datetime NOT NULL,
-  `comperdate` smallint(5) unsigned NOT NULL default '0',
-  `text` text NOT NULL,
-  PRIMARY KEY  (`login`)
-) ENGINE=MyISAM DEFAULT CHARSET=cp1251 COMMENT='Логины посетителей';
-
--- --------------------------------------------------------
-
 --
 -- Структура таблицы `pravki`
 --
@@ -176,7 +162,7 @@ CREATE TABLE IF NOT EXISTS `pravki` (
   KEY `Date` (`Date`),
   KEY `metka` (`metka`),
   KEY `sc` (`sc`)
-) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Правки блога' AUTO_INCREMENT=1190 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Правки блога' AUTO_INCREMENT=1526 ;
 
 -- --------------------------------------------------------
 
@@ -191,7 +177,7 @@ CREATE TABLE IF NOT EXISTS `rekomenda` (
   `text` text NOT NULL,
   PRIMARY KEY  (`n`),
   KEY `datetime` (`datetime`)
-) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Горящие ссылки дня' AUTO_INCREMENT=18 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Горящие ссылки дня' AUTO_INCREMENT=41 ;
 
 -- --------------------------------------------------------
 
@@ -209,44 +195,41 @@ CREATE TABLE IF NOT EXISTS `site` (
   PRIMARY KEY  (`id`),
   KEY `name` (`name`),
   KEY `type` (`type`)
-) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Контент сайта' AUTO_INCREMENT=168 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Контент сайта' AUTO_INCREMENT=169 ;
+
+-- --------------------------------------------------------
+--
+-- Структура таблицы `unic`
+--
+
+CREATE TABLE IF NOT EXISTS `unic` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `login` varchar(32) NOT NULL,
+  `openid` varchar(64) NOT NULL COMMENT 'openid',
+  `obr` enum('realname','login','openid') NOT NULL default 'realname',
+  `lju` varchar(32) NOT NULL,
+  `password` varchar(32) NOT NULL,
+  `realname` varchar(128) NOT NULL,
+  `mail` varchar(64) NOT NULL,
+  `site` varchar(128) NOT NULL,
+  `birth` date NOT NULL,
+  `admin` enum('user','podzamok','admin','mudak') NOT NULL,
+  `ipn` int(10) unsigned NOT NULL,
+  `time_reg` int(11) NOT NULL default '0',
+  `timelast` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `capcha` enum('yes','no') NOT NULL default 'no',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Логины посетителей' AUTO_INCREMENT=7528 ;
 
 -- --------------------------------------------------------
 
-
 --
--- Структура таблицы `dnevnik_search`
---
-
-CREATE TABLE IF NOT EXISTS `dnevnik_search` (
-  `n` bigint(20) NOT NULL auto_increment,
-  `mypage` varchar(256) NOT NULL,
-  `poiskovik` varchar(32) NOT NULL,
-  `link` varchar(2048) NOT NULL,
-  `search` varchar(2048) NOT NULL,
-  `count` bigint(20) NOT NULL,
-  `last_ipn` int(10) unsigned NOT NULL,
-  `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
-  PRIMARY KEY  (`n`),
-  KEY `mypage` (`mypage`),
-  KEY `last_ipn` (`last_ipn`),
-  KEY `link` (`link`(1000))
-) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='поисковые заходы' AUTO_INCREMENT=97708 ;
-
---
--- Структура таблицы `dnevnik_link`
+-- Структура таблицы `unictemp`
 --
 
-CREATE TABLE IF NOT EXISTS `dnevnik_link` (
-  `n` bigint(20) NOT NULL auto_increment,
-  `mypage` varchar(256) NOT NULL,
-  `link` varchar(2048) NOT NULL,
-  `count` bigint(20) NOT NULL,
-  `last_ipn` int(10) unsigned NOT NULL,
-  `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
-  PRIMARY KEY  (`n`),
-  KEY `mypage` (`mypage`),
-  KEY `last_ipn` (`last_ipn`)
-) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='ссылки на дневник' AUTO_INCREMENT=138443 ;
-
--- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `unictemp` (
+  `unic` int(10) unsigned NOT NULL,
+  `text` text NOT NULL,
+  `timelast` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`unic`)
+) ENGINE=MyISAM DEFAULT CHARSET=cp1251 COMMENT='Временные данные пользователя';

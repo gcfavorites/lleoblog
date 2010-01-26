@@ -29,9 +29,30 @@ msq_add_update($db_,array('name'=>$name,'text'=>implode("\n",$o)),'name');
 msq_del($tb,$ara,$u='')
 */
 
-if(!isset($memcache)) cache_init();
+// if(!isset($memcache)) cache_init();
 $msqe=''; // сюда пишем ошибки
 ms_connect(); // соединиться с базой - эта процедура в _autorize.php
+
+function ms_connect() { if(isset($GLOBALS['ms_connected'])) return;
+
+   mysql_connect($GLOBALS['msq_host'], $GLOBALS['msq_login'], $GLOBALS['msq_pass']) or idie("<p>Ошибка соединения с MySQL!
+Исправьте в config.php строки:<ul> \$msq_host = '".$GLOBALS['msq_host']."';
+<br>\$msq_login = '".$GLOBALS['msq_login']."';
+<br>\$msq_pass = [...]
+</ul>");
+   mysql_select_db($GLOBALS['msq_basa']) or idie("<p>Хорошие новости! Во-первых, движок поднялся. Что уже чудо. Во-вторых, что еще
+чудеснее, обнаружен MySQL и с ним установлено успешное соединение!
+Теперь плохая новость: отсутствует база&nbsp;<b>`".$GLOBALS['msq_basa']."`</b>. Это не проблема, подойдет любая другая, лишь бы движку
+было где создать свои таблицы. Если есть какая-то база, ее имя надо вписать в config.php, где сейчас:
+<b>\$msq_basa = '".$GLOBALS['msq_basa']."';</b>");
+
+   mysql_query("SET NAMES ".$GLOBALS['msq_charset']);
+   mysql_query("SET @@local.character_set_client=".$GLOBALS['msq_charset']);
+   mysql_query("SET @@local.character_set_results=".$GLOBALS['msq_charset']);
+   mysql_query("SET @@local.character_set_connection=".$GLOBALS['msq_charset']);
+
+   $GLOBALS['ms_connected']=true;
+}
 
 function e($s) { return mysql_real_escape_string($s); }
 function msq_exist($tb,$u) { return ms("SELECT COUNT(*) FROM `$tb` $u","_l",0); }
@@ -84,18 +105,18 @@ function msq_index($tb,$pole) { // проверить, существует ли такой индекс
         return false;
 }
 
-function tos($e) { return str_replace(array("\\","'",'"',"\n","\r"),array("\\\\","\\'",'\\"',"\\n",""),$e); }
+//function tos($e) { return str_replace(array("\\","'",'"',"\n","\r"),array("\\\\","\\'",'\\"',"\\n",""),$e); }
 
 function ms($query,$mode='_a',$ttl=666) { $s = false; $magic='@'.$GLOBALS['blogdir']; if($ttl==666) $ttl=$GLOBALS['ttl'];
 
 	if($ttl < 0) { cache_rm($mode.$magic.$query); return true; } // сбросить кэш
 	elseif ($ttl > 0) {  $result=cache_get($mode.$magic.$query); if(false!==$result) {
-		$GLOBALS["_PAGE"]["msq"].="<img src=".$GLOBALS['www_design']."yes.gif onmouseover=\"msqq('".tos($query)."')\"> ";
+//		$GLOBALS["_PAGE"]["msq"].="<img src=".$GLOBALS['www_design']."yes.gif onmouseover=\"msqq('".tos($query)."')\"> ";
 		$GLOBALS['ms_ttl']='cache';
 		return $result; }
 	}
 
-		$GLOBALS["_PAGE"]["msq"].="<img src=".$GLOBALS['www_design']."no.gif onmouseover=\"msqq('".tos($query)."')\"> ";
+//		$GLOBALS["_PAGE"]["msq"].="<img src=".$GLOBALS['www_design']."no.gif onmouseover=\"msqq('".tos($query)."')\"> ";
 		$GLOBALS['ms_ttl']='new';
 		$sql = @msq($query);
 
@@ -111,7 +132,10 @@ function ms($query,$mode='_a',$ttl=666) { $s = false; $magic='@'.$GLOBALS['blogd
 	return $s;
 }
 
-function cache_init() { global $memcache; $memcache = new Memcache; $memcache->connect('localhost', 11211) or $memcache=false; }
+//function my_memcache_connect() {}
+
+// function cache_init() { global $memcache; $memcache = new Memcache; $memcache->connect('localhost', 11211) or $memcache=false; }
+
 function cache_set($k,$v,$e) { global $memcache; if(!$memcache) return false; return $memcache->set($k,$v,0,$e); }
 function cache_get($k) { global $memcache; if(!$memcache) return false; return $memcache->get($k); }
 function cache_rm($k) { global $memcache; if(!$memcache) return false; return $memcache->delete($k); }

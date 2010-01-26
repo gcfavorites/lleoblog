@@ -2,38 +2,41 @@
 
 include_once $include_sys."_sendmail.php";
 
-function mail_answer($id,$newans) { //------------------- коммент по емайл
+function mail_answer($id,$ara) { //------------------- коммент по емайл
 
-$p = mysql_fetch_assoc(mysql_query("SELECT r.Date,a.Header,r.Name,r.Address,r.IP,r.IPx,r.UserAgent,r.Guest_LJ,r.Guest_Name,
-r.Commentary,r.Answer FROM `dnevnik_zapisi` AS a, `dnevnik_comments` AS r WHERE r.Date=a.Date AND r.id='".intval($id)."'"));
+$p = ms("SELECT zapisi.`Header`, zapisi.`Date`, parent.* FROM `dnevnik_zapisi` AS zapisi, `dnevnik_comm` AS parent 
+WHERE zapisi.`num`='".$ara['DateID']."' AND parent.`id`='".intval($id)."'","_1",0);
 
-if(substr($p['Address'],0,7) == "mailto:"
-&& $newans !='' // новый ответ что-то содержит
-&& $p['Answer']=='' // а старого ответа (базу еще не обновлять!) не было
-) {
+if($ara['unic']==$p['unic'] or !mail_validate($p['Mail'])) return false;
 
-$maillink=$GLOBALS["httphost"].str_replace('-','/',$p["Date"]).".html";
-$mailmail=str_replace("mailto:","",$p["Address"]);
-$mailsubj = "ответ на комментарий за ".$p["Date"].($p["Header"]?" (".$p["Header"].")":"");
+$head=strtr($p['Date'],'/','-')." ".$p['Header'];
 
-$mailtext="<p>Это автоматическое письмо-ответ. Вы оставили комментарий в блоге, который ведет ".$GLOBALS["admin_name"].",
-указав для обратного ответа email: ".$mailmail.". Открыть заметку можно по ссылке: <a href=".$maillink.">".$maillink."</a>
+$c="<p>Пришел ответ на ваш комментарий в блоге, который ведет ".$GLOBALS["admin_name"].":
+<br><a href='".h(get_link($p['Date'])."#".$id)."'>".h($head)."</a>
 
-<p><i>Вы писали:</i>
-<table width=100% style='border-collapse: collapse; border: 1px solid red;' bgcolor=#fff0ff>
-<tr><td>Автор:</td><td>".$p['Name']."</td></tr>
-".($p['Guest_LJ']?"<tr><td><img src=http://stat.livejournal.com/img/userinfo.gif style=\"vertical-align: center;\"><a href=http://".$p['Guest_LJ'].".livejournal.com>".$p['Guest_LJ']."</a></td><td>".($p['Guest_Name']?" (".$p['Guest_Name'].")":"")."&nbsp;</td></tr>":"")."
-<tr><td>".$p['IP'].($p['IPx']?", ".$p['IPx']:"")."</td><td>".$p['UserAgent']."</td></tr>
-<tr bgcolor=#fffff0><td colspan=2>".$p['Commentary']."</td></tr></table>
+<p><div style='border: 1px dotted #ccc; background-color: #fff0ff'>"
+.date('Y-m-d H:i:s',$p['Time'])." ".h($p['Name']).":<p>".h($p['Text'])."</div>
 
-<p><i>".$GLOBALS["admin_name"]." отвечает:</i>
-<p><table width=100% style='border-collapse: collapse; border: 1px solid red;' bgcolor=#fffff0>
-<tr><td>".$newans."</td></tr></table>
-";
+<p><i>ответ:</i>
+<div style='border: 1px dotted #ccc; background-color: #FFFBDF; '>"
+.date('Y-m-d H:i:s',$ara['Time'])." ".h($ara['Name']).":<p>".h($ara['Text'])."</div>";
 
-sendmail($GLOBALS["admin_name"].": дневник",$GLOBALS["admin_mail"],$p['Name'],$mailmail,$mailsubj,$mailtext);
+$subj = h($ara['Name']." отвечает на странице ".$head);
 
-}
+sendmail(h($ara["Name"]),h($ara["Mail"]),h($p['Name']),h($p['Mail']),$subj,$c);
+
+//$c=njs($c);
+//$c="sendmail(".h($p["Name"]).",".h($p["Mail"]).",".h($ara['Name']).",".h($ara['Mail']).",".$subj.",".$c.");";
+//$c=njs(nl2br(print_r($p,1)));
+//otprav("helps('mailsend',\"<fieldset id='commentform'><legend>mailsend-test</legend><div class=br>".$c."</div></fieldset>\");");
+
+/*
+logi('mail_answer.txt',"
+".$GLOBALS["admin_name"]." ".$GLOBALS["admin_mail"]." - ".$p['Name']." ".$mailmail."
+".$mailsubj."
+".$mailtext);
+*/
+
 }
 
 ?>

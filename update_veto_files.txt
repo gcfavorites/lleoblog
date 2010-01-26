@@ -1,0 +1,17 @@
+tree
+tmp
+config.php
+log
+photo
+module/upgrade/no
+design/silkway
+design/ttf/ARIAL.TTF
+design/ttf/MTCORSVA.TTF 
+include_sys/antibot_pic/off
+re.php
+re.png
+design/ico/old
+module/yandextop.php
+module/yandextop_load.php
+module/comments.php
+2010

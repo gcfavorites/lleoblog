@@ -51,7 +51,12 @@ function antibot_make() { global $antibot_pic, $antibot_H, $antibot_W, $antibot_
 
 
 	if(!imagejpeg($im,$antibot_file.$antibot_hash.".jpg")) // сохраняем картинку
-	{ die("Ошибка! Не могу сохранить картинку в директорию \"".$antibot_file."\", проверьте, создана ли она, и установлены ли права записи?"); }
+	{
+	if(!is_dir($GLOBALS['hosttmp'])) { mkdir($GLOBALS['hosttmp']); chmod($GLOBALS['hosttmp'],0777); }
+	if(!is_dir($GLOBALS['antibot_file'])); { mkdir($GLOBALS['antibot_file']); chmod($GLOBALS['antibot_file'],0777); }
+	if(!imagejpeg($im,$antibot_file.$antibot_hash.".jpg")) // сохраняем картинку
+	idie("Ошибка! Не могу сохранить картинку в директорию \"".$antibot_file."\", проверьте, создана ли она, и установлены ли права записи?");
+	}
 
 	$GLOBALS['antibot_imW'] = ImageSX($im);
 	$GLOBALS['antibot_imH'] = ImageSY($im);
@@ -64,8 +69,8 @@ function antibot_check($code, $hash) {
 	$code = preg_replace("/[^0-9a-z]/si","",$code); // убрать посторонние символы, кроме цифр (и букв)
 	$hash2=md5($code.$GLOBALS['antibot_add2hash']);
 	$f = $GLOBALS['antibot_file'].$hash2.".jpg";
-	if($hash!=$hash2 || !is_file($f)) return false;
-	unlink($f); return true;
+	if($hash==$hash2 and is_file($f)) { unlink($f); return true; }
+	if(is_file($f)) unlink($f); return false;
 }
 
 /* получить красиво оформленый HTML тэг только что созданой картинки. <img src="URL" width=WIDTH height=HEIGHT border=0> */

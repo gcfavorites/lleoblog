@@ -1,26 +1,25 @@
 <?php
 
-function refferer($ref) { global $IPNUM,$mypage; $IPNUM=rand(0,1000000);
+function refferer($ref,$DateID) { global $IPNUM;
 
-	$u=poiskovik($ref);
+$u=poiskovik($ref);
 
-	if($u[0]!="") { // если поиск найден - дополнить базу `dnevnik_search`
+if($u[0]!="") { // если поиск найден - дополнить базу `dnevnik_search`
 
-		if(msq_exist("dnevnik_search","WHERE `mypage`='".e($mypage)."' AND `search`='".e($u[0])."'")) { // увеличить счетчик
-			msq_update("dnevnik_search",array("last_ipn"=>e($IPNUM)),"count=count+1 WHERE
-			`mypage`='".e($mypage)."' AND `search`='".e($u[0])."' AND last_ipn!='".e($IPNUM)."'");
-		} else { // вставить новый счетчик если не было
-			msq_add("dnevnik_search",array("mypage"=>e($mypage), "poiskovik"=>e($u[1]),"search"=>e($u[0]),
-			"link"=>e($ref), "count"=>1, "last_ipn"=>e($IPNUM) ) );
-		}
+	if(msq_exist("dnevnik_search","WHERE `DateID`=".$DateID." AND `search`='".e($u[0])."'")) { // увеличить счетчик
+		msq_update("dnevnik_search",array("last_ipn"=>$IPNUM,"`count`=`count`+1
+WHERE `DateID`='".$DateID."' AND `search`='".e($u[0])."' AND last_ipn!=".$IPNUM));
+	} else { // вставить новый счетчик если не было
+		msq_add("dnevnik_search",array("DateID"=>$DateID,"poiskovik"=>e($u[1]),"search"=>e($u[0]),"link"=>e($ref),
+"count"=>1, "last_ipn"=>$IPNUM) );
+	}
 
 	} elseif(!striplink($ref)) { // если не запрещенные - дополнить базу `dnevnik_link`
-		if(msq_exist("dnevnik_link","WHERE `mypage`='".e($mypage)."' AND `link`='".e($ref)."'")) { // увеличить счетчик
-			msq_update("dnevnik_link",array("last_ipn"=>e($IPNUM)),"count=count+1 WHERE `mypage`='".e($mypage)."'
-			AND `link`='".e($ref)."' AND last_ipn!='".e($IPNUM)."'");
+		if(msq_exist("dnevnik_link","WHERE `DateID`=".$DateID." AND `link`='".e($ref)."'")) { // увеличить счетчик
+			msq_update("dnevnik_link",array("last_ipn"=>$IPNUM,"`count`=`count`+1 WHERE `DateID`=".$DateID."
+			AND `link`='".e($ref)."' AND last_ipn!=".$IPNUM));
 		} else { // вставить новый счетчик
-			msq_add("dnevnik_link",array("mypage"=>e($mypage), "link"=>e($ref), "count"=>1, "last_ipn"=>e($IPNUM) ) );
-//		idie('add-reff'.$GLOBALS['msqe']);
+			msq_add("dnevnik_link",array("DateID"=>$DateID, "link"=>e($ref), "count"=>1, "last_ipn"=>$IPNUM ) );
 		}
 	}
 
@@ -30,6 +29,12 @@ return $u;
 function striplink($l) {
 
 /*
+
+http://www.google.ru/reader/view/?hl=ru&tab=wy
+http://www.google.ru/reader/view/
+http://www.google.com/reader/view/?tab=my
+http://www.google.com/reader/view/
+
 
 if( ( strstr($l,'.livejournal.com') && strstr($l,'/friends') ) // из френдленты
     || strstr($l,'yandex.ru/top/') // топы

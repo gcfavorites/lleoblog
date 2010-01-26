@@ -1,0 +1,29 @@
+<?php // спамоборона и фильтры
+
+// если не включен cron - выполнить его в момент приема комментария, просто как факт
+if(!is_file($GLOBALS['cronfile']) or (time()-filemtime($GLOBALS['cronfile'])) > 60*60 ) include_once("cron.php");
+
+// Мы получили новый коммент, он пока не записан. Его параметры: $name,$text,$mail, а также если $scr=1 - то он будет скрыт
+
+if(!$GLOBALS['admin']) { // для посетителей, но не для админа
+
+	// 1. нельзя подписываться хозяином блога!
+	if(strstr($name,$GLOBALS['admin_name'])) $name="Лошарик номер #".$GLOBALS['unic'];
+
+	// 2. если встретилась точка между двумя латинскими буквами - это 99% ссылка! а ссылка - это 90% спам!
+	$l=preg_replace("/p\.s/si",'',$text.$name); // есть лишь одно исключение: 'P.S.'
+	if(preg_match("/[a-z]\.[a-z]/si",$l) or strstr($l,'<')) $scr=1; // скрыть его!
+
+	// послал нахуй? пиздуй туда сам!
+	if(stristr($text,'lleo.aha.ru/na')) redirect('http://lleo.aha.ru/na/');
+
+
+if(stristr($text,'Бог')) idie("Слово 'Бог' нельзя упоминать всуе!"); // по крайней мере в момент тестирования скрипта
+
+if(stristr($text,'jquery')) idie("<table width=500><td>Я запрещаю упоминать в своем дневнике jQuery! Долой чемоданы! Шучу. Это всего лишь демонстрация работы фильтров, описанных в файле <a href='".$GLOBALS['wwwhost']."install.php?load=include_sys/spamoborona.php&mode=view'>include_sys/spamoborona.php</a>, вы можете изменить их для своего блога и написать любые другие.</td></table>");
+
+
+}
+
+
+?>

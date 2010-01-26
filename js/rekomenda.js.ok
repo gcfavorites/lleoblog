@@ -1,0 +1,91 @@
+
+function helps(id,s) { s=s+"<div onclick=\"clean('"+id+"')\" class='can' title='cancel'></div>"; if(!idd(id)) {
+ mkdiv(id,"<div class='corners'><div class='inner'><div class='content' id='"+id+"_body' align=left>"+s+"</div></div></div>",'popup');
+ posdiv(id,mouse_x,mouse_y);
+ } else zabil(id+'_body',s);
+}
+
+// координаты мыши
+var mouse_x=0, mouse_y=0;
+
+document.onmousemove = function(e){ if(!e) e=window.event;
+  if(e.pageX || e.pageY) { mouse_x=e.pageX; mouse_y=e.pageY; }
+  else if (e.clientX || e.clientY) {
+    mouse_x = e.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft) - document.documentElement.clientLeft;
+    mouse_y = e.clientY + (document.documentElement.scrollTop || document.body.scrollTop) - document.documentElement.clientTop;
+  }
+};
+
+function ajaxon(){ var id='ajaxgif'; mkdiv(id,"<img src='"+www_design+"img/ajax.gif'>",'popup'); posdiv(id,mouse_x,mouse_y); }
+function ajaxoff(){ clean('ajaxgif'); }
+
+function ajax(name,value,func) { ajaxon();
+	JsHttpRequest.query(www_ajax+name,value,function(responseJS,responseText){if(responseJS.status){ajaxoff();eval(func);}},true);
+}
+
+function majax(url,a) { ajax(url,a,'if(responseJS.modo) eval(responseJS.modo);'); }
+
+function loadScript(src){
+        var s=document.createElement('script'); s.setAttribute('type','text/javascript'); s.setAttribute('src',src);
+        var h=document.getElementsByTagName('head').item(0); h.insertBefore(s,h.firstChild);
+}
+
+function loadCSS(src){
+	var s=document.createElement('link'); s.type='text/css'; s.rel='stylesheet'; s.href=src; s.media='screen';
+	var h=document.getElementsByTagName('head')[0]; h.appendChild(s);
+}
+
+function clean(id) { if(idd(id)) { zakryl(id); setTimeout("var s=idd('"+id+"'); if(s) s.parentNode.removeChild(s);", 40); } }
+
+function mkdiv(id,cont,cls,paren){ if(idd(id)) { idd(id).innerHTML=cont; idd(id).className=cls; return; }
+        var div = document.createElement('DIV'); div.className = cls; div.id = id; div.innerHTML = cont; div.style.display='none';
+        if(paren==undefined) paren=document.body; paren.insertBefore(div, paren.lastChild);
+}
+
+function posdiv(id,x,y) { // позиционирование (с проверкой на вылет)
+        otkryl(id); var e=idd(id);
+
+	e.style.top=getWinH()/3+getScrollH()+'px';
+	e.style.left=getWinW()/3+getScrollW()+'px';
+
+alert(getScrollH());
+
+//	alert(getWinW() + ' - ' + e.clientWidth );
+
+//        var W=getWinW(); var H=getWinH();
+//        var w=e.clientWidth; var h=e.clientHeight;
+//        if(x<0) x=0; if(y<0) y=0;
+//        if(x+w>W) x=W-w; if(y+h>H) y=H-h;
+//        e.style.top=y+getScrollH()+'px'; e.style.left=x+getScrollW()+'px';
+
+
+}
+
+function idd(id) { return document.getElementById(id); }
+function zabil(id,text) { idd(id).innerHTML = text; }
+function vzyal(id) { return idd(id).innerHTML; }
+function zakryl(id) { idd(id).style.display='none'; }
+function otkryl(id) { idd(id).style.display='block'; }
+
+function getScrollW(){ return (document.documentElement.scrollTop || document.body.scrollTop); }
+function getScrollH(){ return (document.documentElement.scrollLeft || document.body.scrollLeft); }
+function getWinW(){ return document.compatMode=='CSS1Compat' && !window.opera?document.documentElement.clientWidth: document.body.clientWidth; }
+function getWinH(){ return document.compatMode=='CSS1Compat' && !window.opera?document.documentElement.clientHeight: document.body.clientHeight; }
+
+// alert('opa!');
+// void(0);
+
+
+var o=(document.selection)?document.selection.createRange().text:window.getSelection();
+
+loadCSS('http://lleo.aha.ru/blog/css/rekomenda.css');
+
+//setTimeout("helps('opecha','"+o+"')", 2000);
+helps('opecha',o);
+
+q=document.body;
+
+// q.innerHTML='<center><a href=http://lleo.aha.ru/re.htm><img src=http://lleo.aha.ru/blog/re.php?l='+encodeURIComponent(location)+'&t='+encodeURIComponent(''+o)+'></a></center>'+q.innerHTML;
+
+q.innerHTML='<center>#########'+o+'############</center>'+q.innerHTML;
+

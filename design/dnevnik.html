@@ -19,14 +19,15 @@
 <body class="twoCol">
 <div id="container">
 <div id="sidebar1"><center>
+
 <a href="/"><img src="{www_design}userpick.jpg" width=120 height=155 border=0></a><p class=r><b><a href={httphost}>{admin_name}</a></b>
+
+{unic}
+
 <p class=r><a href={wwwhost}contents>содержание</a>
 <p class=r><a href={wwwhost}lleoblog>ДВИЖОК БЛОГА</a>
-{logino}
 
-<p><FORM METHOD=get ACTION={httphost}contents/>
-<INPUT class=t TYPE="text" NAME="search" SIZE=6 VALUE="поиск" MAXLENGTH=160><INPUT TYPE=SUBMIT VALUE=">">
-</FORM>
+<p><FORM METHOD=get ACTION={httphost}contents/><INPUT class=t TYPE="text" NAME="search" SIZE=6 VALUE="" MAXLENGTH=160><INPUT TYPE=SUBMIT VALUE=">"></FORM>
 
 {calendar}
 
@@ -34,20 +35,9 @@
 
 <p><a href={wwwhost}rss><img src="{www_design}rss.gif" width=36 height=14 border=0 alt="RSS вход" title='Мой дневник поддерживает RSS'></a>
 
-<p><acronym title="Сайт поддерживает лебедевскую навигацию ctrl+стрелки"><img src={www_design}lebedev_nav.gif border=0></acronym>
-
-{linkoff}
-
-<p class=br><a href=/dnevnik/whatis_pravka>Заметили опечатку? Выделите фразу мышкой и нажмите Ctrl+Enter! Заранее благодарю.</a>
+{otherblogs}
 
 </div><div id="mainContent">
-
-
-
-
-
-<script> function msqq(e) { document.getElementById('ms').innerHTML=e; } </script>
-<!-- {msq} <span id=ms class=br></span> -->
 
 {prevnext}
 
@@ -65,7 +55,7 @@
 Navig -->{prevnext}<!--
 Comments --><div id="comments"><div class="item_com">{coments}</div></div></div><!--
 /mainContent -->
-<!-- верстку :( --><br class="clearfloat" />
+<!-- верстку :( --><br class=q />
 
 <div id='helper' class='popup' style='display:none;'><div class='corners'><div class='inner'><div class='content'>
 <div id='helper_body'><textarea id='message'></textarea></div>
