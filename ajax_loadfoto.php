@@ -71,7 +71,7 @@ function pic_podpis($img,$w,$h,$s,$fs=20,$font) {
 
 //	die("<p>font: ".$font." text:".$s);
 
-$s=iconv("cp1251","utf-8//IGNORE",$s);
+$s=wu($s);
 $rez=imagettfbbox($fs,0,$font,$s); $x=$w-$rez[4]-$fs/4; $y=$h-$rez[3]-$fs/4; // координаты текста
 // каким цветом $black/$white ?
 $c=(imagecolorat($img,$x,$y)>imagecolorallocate($img,127,127,127)?imagecolorallocate($img,0,0,0):imagecolorallocate($img,255,255,255));
