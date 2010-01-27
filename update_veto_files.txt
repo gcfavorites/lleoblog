@@ -3,6 +3,7 @@ tmp
 config.php
 log
 photo
+2010
 module/upgrade/no
 design/silkway
 design/ttf/ARIAL.TTF
@@ -14,4 +15,8 @@ design/ico/old
 module/yandextop.php
 module/yandextop_load.php
 module/comments.php
-2010
+module/upgrade/LLEO_comment.php
+module/upgrade/LLEO_link.php
+module/upgrade/LLEO_login.php
+module/upgrade/LLEO_search.php
+module/upgrade/LLEO_zapisi.php

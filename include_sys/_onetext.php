@@ -6,7 +6,7 @@ function onetext($p) { global $wwwhost,$IP,$unic;
 
 	// Посчитать юзера
 	mysql_query("UPDATE `dnevnik_zapisi` SET view_counter=view_counter+1, last_view_ip='".e($IP)."' WHERE `num`='".e($p['num'])."' AND last_view_ip!='".e($IP)."'");
-	if(!$unic) msq_add("dnevnik_posetil",array('unic'=>$unic,'url'=>e($p['num'])));
+	if($unic) msq_add("dnevnik_posetil",array('unic'=>$unic,'url'=>e($p['num'])));
 
 	$s=modules($s); // процедуры site
 
