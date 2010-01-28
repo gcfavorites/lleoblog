@@ -7,7 +7,7 @@ $s="";
 
 $s="<table cellpadding=10 border=0 cellspacing=0>$s</table>";
 
-	$Name=h($_POST['Name']); $Name=($Name!=''?$Name:'anonimouse');
+	$Name=h($_POST['Name']); $Name=($Name!=''?$Name:'anonymouse');
 	$Mail=$_POST['Mail'].$_POST['Tele_Mail']; $Mail=(strstr($Mail,'@')?h($Mail):'no_reply@silk-way.ru');
 
 

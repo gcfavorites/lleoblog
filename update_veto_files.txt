@@ -20,3 +20,4 @@ module/upgrade/LLEO_link.php
 module/upgrade/LLEO_login.php
 module/upgrade/LLEO_search.php
 module/upgrade/LLEO_zapisi.php
+design/userpick1.jpg

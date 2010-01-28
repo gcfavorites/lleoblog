@@ -112,7 +112,7 @@ $ara=array(
 	'Access'	=> e($_REQUEST['Access']),
 	'autoformat'	=> e($_REQUEST['autoformat']),
 	'autokaw'	=> e($_REQUEST['autokaw']),
-	'template'	=> e($_REQUEST['template']),
+	'template'	=> e(($_REQUEST['template']!=''?$_REQUEST['template']:'blog')),
 	'Comment_view'	=> e($_REQUEST['Comment_view']),
 	'Comment_write'	=> e($_REQUEST['Comment_write']),
 	'Comment_screen'=> e($_REQUEST['Comment_screen']),
@@ -253,7 +253,7 @@ if($a=='polesend') {
 
 	$name=$_REQUEST["name"];
 	$val=$_REQUEST["val"];
-	$_REQUEST["val"];
+	if($name=='template' and $val=='') $val='blog'; // поле по умолчанию
 
 	if($name=='' or $num==0) idie('Неверные данные!');
 	if($name=='autokaw') $val=($val=='true'?'auto':'no');
@@ -275,12 +275,15 @@ if($a=='polesend') {
 	otprav("");
 }
 
-//=================================== запросили форму ===================================================================
+//=================================== удаление заметки ===================================================================
 
 if($a=='delete') {
 	if($admin) {
-		ms("DELETE FROM `dnevnik_zapisi` WHERE `num`='$num'","_l",0);
-		ms("DELETE FROM `dnevnik_comm` WHERE `DateID`='$num'","_l",0); // удалить комментарии
+		msq("DELETE FROM `dnevnik_zapisi` WHERE `num`='$num'"); // удалить запись
+		msq("DELETE FROM `dnevnik_comm` WHERE `DateID`='$num'"); // удалить к ней все комментарии
+		msq("DELETE FROM `dnevnik_posetil` WHERE `url`='$num'"); // удалить статистику ее посетителей
+		msq("DELETE FROM `dnevnik_link` WHERE `DateID`='$num'"); // удалить статистику заходов по ссылкам
+		msq("DELETE FROM `dnevnik_search` WHERE `DateID`='$num'"); // удалить статистику заходов с поисковиков
 	}
 	redirect($httphost);
 }

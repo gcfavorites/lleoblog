@@ -6,7 +6,11 @@ function onetext($p) { global $wwwhost,$IP,$unic;
 
 	// Посчитать юзера
 	mysql_query("UPDATE `dnevnik_zapisi` SET view_counter=view_counter+1, last_view_ip='".e($IP)."' WHERE `num`='".e($p['num'])."' AND last_view_ip!='".e($IP)."'");
-	if($unic) msq_add("dnevnik_posetil",array('unic'=>$unic,'url'=>e($p['num'])));
+	if($unic) {
+		$msqe_old=$GLOBALS['msqe']; // запомним накопленные ошибки
+		msq_add("dnevnik_posetil",array('unic'=>$unic,'url'=>e($p['num']))); // если есть - не внесет, а даст ошибку, нам не важно
+		$GLOBALS['msqe']=$msqe_old; // восстановим ошибки (без учета последней)
+	}
 
 	$s=modules($s); // процедуры site
 
