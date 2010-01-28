@@ -123,7 +123,7 @@ function HEAD($e) { global $article;
 	return "<div class='header'>".zamok($article['Access']).$article["Day"]." ".$GLOBALS['months_rod'][intval($article["Mon"])]." ".$article["Year"]
 ."<div id=Header".(($GLOBALS['admin']
 
-)?" class=l onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\"":'').">".$article["Header"]."</div></div>";
+)?" class=l onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\"":'').">".($article["Header"]!=''?$article["Header"]:'(...)')."</div></div>";
 }
 
 ?>

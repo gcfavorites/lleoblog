@@ -2,7 +2,7 @@
 
 // if(!$GLOBALS['admin']) idie('переделываю, зайдите чуть позже');
 
-$GLOBALS['comment_tmpl']=file_get_contents($GLOBALS['file_template']."comment_tmpl.htm");
+$GLOBALS['comment_tmpl']=file_get_contents($GLOBALS['file_template'].(empty($template)?"comment_tmpl.htm":$template));
 
 $GLOBALS['browsers']=array('Linux'=>'Linux','Windows'=>'Windows','NokiaE90'=>'Nokia-E90','Mac OS X'=>'Mac','FreeBSD'=>'FreeBSD','Ubuntu'=>'Ubuntu','Debian'=>'Debian','Firefox'=>'Firefox','Opera'=>'Opera','Safari'=>'Safari','MSIE'=>'IE','Konqueror'=>'Konqueror','Chrome'=>'Chrome');
 
@@ -228,7 +228,8 @@ return $c;
 
 //==========================================================================
 
-function load_comments($num,$comments_order='normal') { global $admin,$podzamok,$unic,$load_comments_MS,$comc,$comindex,$s,$kstop;
+function load_comments($num,$comments_order='normal') {
+	global $admin,$podzamok,$unic,$load_comments_MS,$comc,$comindex,$s,$kstop;
 
 $plusp=$load_comments_MS;
 // if(!$podzamok&&!$admin) $plusp .= " AND (`scr`=1 OR `unic`='$unic')"; // только открытые или свои
@@ -239,7 +240,7 @@ FROM `dnevnik_comm` WHERE `DateID`='".e($num)."'".$plusp." ORDER BY `Time`","_a"
 
 if(!sizeof($sql)) return ppp_nocomment();
 
-return print_prostynka($sql,0);
+return print_prostynka($sql,0,0);
 
 }
 

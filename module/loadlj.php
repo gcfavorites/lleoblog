@@ -6,6 +6,19 @@ if(!isset($admin_ljuser)) idie("Ошибка: не указано имя пользователя livejournal!
 
 DESIGN('plain',"Качаем журнал $admin_ljuser из кэша Яндекса");
 
+if(!sizeof($_GET)) {
+
+if(!sizeof($_POST)) {
+	$r=rand(0,999); die("<form method=post action='$mypage'><input type=hidden name=chislo1 value='$r'>
+Что это? Это зашита от случайного срабатывания. Закачка ЖЖ - долгий и сложный процесс, который запускается лишь однажды.
+Как-то глупо было бы оставить этот модуль открытым, чтобы случайный запуск админа инициировал процесс впервые
+или повторно. Если вы уверены, что запускаете модуль сознательно, надо подтвердить свое волевое решение.
+Введите вот это случайное число: <b>$r</b> <input type=text size=4 name=chislo2 value=''>
+<input type=submit value='начать'></form>
+"); } else { if($_POST['chislo1'].$_POST['chislo2']=='' or $_POST['chislo1']!=$_POST['chislo2']) die('Ошибка, неправильно.'); }
+
+}
+
 $numdoc=100;
 $all=array();
 $into=(isset($_GET['into'])?intval($_GET['into']):0);
@@ -36,7 +49,7 @@ foreach($arsyandex as $lyandex) { $ara=get_one_ya($lyandex);
 			$ara['Date']=$Date;
 		}
 	$all[$Date]=$ara;
-	msq_add_update('dnevnik_zapisi',$ara,'Date');
+	msq_add_update('dnevnik_zapisi',$ara,"Date");
 
 	$GLOBALS['prostynka'].="<br>".$GLOBALS['cached'].(sizeof($all)).". <font color=green>".$ara['Date']."</font>".($ara['Header']!=''?" - ".$ara['Header']:"");
 
@@ -111,9 +124,9 @@ function get_one_ya($lyandex) { $r=array(); // качать записи
 'autokaw'=>'no',
 'DateUpdate'=>time(),
 'DateDate'=>$t[0],
-'DateDatetime'=>$t[1]
+'DateDatetime'=>$t[1],
+'template'=>'blog'
 );
-
 }
 
 //================================================================================================================
@@ -152,8 +165,8 @@ function get_ya_comments() { global $into,$numdoc,$mypage;
 
 if(sizeof($arsyandex)) foreach($arsyandex as $lyandex) {
 	$ara=get_one_ya_c($lyandex,$Date,$num,$url);
-	$unic=$ara['Name']."#".$ara['DateTime'];
-	if(isset($all[$unic]) and $ara['Name']==$all[$unic]['Name'] and $ara['Commentary']==$all[$unic]['Commentary'] ) {
+	$unic=$ara['Name']."#".$ara['Time'];
+	if(isset($all[$unic]) and $ara['Name']==$all[$unic]['Name'] and $ara['Text']==$all[$unic]['Text'] ) {
 		$GLOBALS['prostynka'].= "<hr><font color=red>Нашелся полный дубль коментария $unic, не вносим в базу!</font>"; // <p><pre>".print_r($ara,1)."</pre><hr>Было:<p><pre>".print_r($all[$unic],1)."</pre>"; exit;
 		} else {
 			if(isset($all[$unic])) {
@@ -161,7 +174,7 @@ if(sizeof($arsyandex)) foreach($arsyandex as $lyandex) {
 				$i=0; while(isset($all[ $unic."_".(++$i) ])){} $unic=$unic."_".$i;
 			}
 		$all[$unic]=$ara;
-		msq_add_update('dnevnik_comments',$ara,"Name DateTime"); // забить в базу
+		msq_add_update('dnevnik_comm',$ara,"Name Time"); // забить в базу
 		}
 }
 
@@ -231,29 +244,31 @@ function get_one_ya_c($lyandex,$Date,$num,$url) {
 
 	$head=str_ireplace(array('<p>','<br>','<br />','<br/>',"\r"),array("\n\n","\n","\n","\n",''),$head);
 
-	$text=(isset($img)?$img." ":'').($head!=''?"<b>$head</b>\n\n":'').$text;
+	$text=(isset($img)?$img." ":'').($head!=''?"<b>$head</b>\n\n":'').$text; // ."\n\n".$autor_link;
 
 $GLOBALS['prostynka'].= "<p><table style='border: 1px dashed #ccc;'
 width=100% border=0><tr valign=top>
 <td align=center width=100><img src='$img'><p class=br><a href='$autor_link'>$autor</a></td>
 <td><b>$head</b> $datet
-<p>".htmlspecialchars($text)."
+<p>".h($text)."
 <p class=br><a href='$comlink'>$comlink</a>
 </td></tr></table>";
 
 	return array(
-        'Date'=>e($Date),
+        'unic'=>0,
         'DateID'=>intval($num),
-        'idza'=>intval(ms("SELECT COUNT(*) FROM `dnevnik_comments` WHERE `Date`='".e($Date)."'", '_l',0)+1),
-	'whois_strana'=>e($headlink),
+        'Time'=>strtotime($datet),
+	'whois'=>e($autor_link."\001".$headlink),
         'Name'=>e($autor),
-        'Address'=>e($autor_link),
-        'Commentary'=>e($text),
-        'DateTime'=>strtotime($datet),
-        'Answer_time'=>0,
-        'Guest_LJ'=>e($autor),
-        'Guest_Name'=>e($autor_link),
-        'metka'=>'open');
+//        'Mail'=>e($autor_link),
+        'Text'=>e($text),
+	'Parent'=>0,
+	'scr'=>0,
+	'rul'=>0,
+	'ans'=>1,
+	'group'=>0
+);
+
 }
 
 ?>

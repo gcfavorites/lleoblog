@@ -57,7 +57,7 @@ if($GLOBALS['admin']) {
 
 //	include_once $include_sys."_antibot.php"; // антибота подгружаем
 
-$s .= "<b>Оставить комментарий:</b>
+$s .= "<div id='oldcomform'><b>Оставить комментарий:</b>
 <form method=post action='".$GLOBALS['wwwhost']."ajax/comment_loh_noJS.php'>
 <input type=hidden name=num value=".$article['num'].">
 <input type=hidden name=Date value=".$article['Date'].">
@@ -68,7 +68,7 @@ $s .= "<b>Оставить комментарий:</b>
 <textarea class=t onFocus='document.onkeydown='return true';' onBlur='document.onkeydown=NavigateThrough;' name='text' cols=60 rows=7>".h($_POST["text"])."</textarea>
 </td></tr>
 </table><br><input class=t type=submit value='Отправить'>
-</form>";
+</form></div><script>var s=document.getElementById('oldcomform').style.display='none'</script>";
 
 }
 
@@ -85,7 +85,8 @@ $idzan = intval(ms("SELECT COUNT(*) FROM `dnevnik_comm` WHERE `DateID`='".e($art
 if($idzan) { // если вообще есть комментарии
 
 if($comments_list) { // грузить простыню изначально
-	include_once $GLOBALS['include_sys']."_onecomm.php"; $pro = load_comments($article["num"],$article["comments_order"]);
+	$template=$e; include_once $GLOBALS['include_sys']."_onecomm.php";
+	$pro = load_comments($article["num"],$article["comments_order"]);
 } elseif($comments_knopka) // подгружать по кнопке
 	$pro = "<input TYPE='BUTTON' VALUE=' читать комментарии".$dopload." (".($podzamok?"всего":"открытых")." ".$idzan." шт) ' onClick=\"majax('comment.php',{a:'loadcomments',dat:".$article['num']."})\">";
 }

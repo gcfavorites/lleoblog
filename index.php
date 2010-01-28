@@ -55,6 +55,7 @@ function ARTICLE() { global $_PAGE,$article,$file_template,$wwwhost,$REF,$httpsi
 	        include_once $GLOBALS['include_sys']."_refferer.php"; $GLOBALS['linksearch']=refferer($REF,$article['num']);
 	}
 
+// if($article['template']=='') $article['template']='blog';
 $tmpl_name=$file_template.$article['template'].'.html';
 if(($design=file_get_contents($tmpl_name))===false) idie('Template not found: '.$tmpl_name);
 

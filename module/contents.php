@@ -38,7 +38,7 @@ $opt2=array(
 if($podzamok) {
 	$opt=array_merge($opt,array('invis'=>"подзамочные заметки",'nikonoverr'=>"ошибки верстки"));
 	$opt2=array_merge($opt2,array('namescr'=>"имена - скрытое"));
-	if($IS_EDITOR) $opt=array_merge($opt,array('invis_adm'=>"совсем скрытые заметки"));
+	if($admin) $opt=array_merge($opt,array('invis_adm'=>"совсем скрытые заметки"));
 }
 
 
@@ -51,7 +51,7 @@ $s="<FORM METHOD=get ACTION='".$wwwhost."contents/'>
 " onchange='for(var i=0;i<this.length;i++)if(this.options[i].selected){top.window.location=\"?mode=\"+this.options[i].value;break;}'")
 ."
 
-<p><i>Искать:</i> <INPUT class='t' TYPE='text' NAME='search' SIZE=30 VALUE='".htmlspecialchars($_GET['search'])."' MAXLENGTH=160> "
+<p><i>Искать:</i> <INPUT class='t' TYPE='text' NAME='search' SIZE=30 VALUE='".h($_GET['search'])."' MAXLENGTH=160> "
 .selecto('smode',$_GET['smode'],$opt2)."<INPUT TYPE=SUBMIT VALUE='ИСКАТЬ'>
 
 </form>
@@ -71,7 +71,7 @@ if($a=='hed') pr_zapisi("SELECT `Date`,`Header`,`view_counter`,`Access` FROM `dn
 if($a=='zam') pr_zapisi("SELECT `Date`,`Header`,`view_counter`,`Access` FROM `dnevnik_zapisi` ".WHERE("`Body` $se OR `Header` $se OR `Comment` $se".($admin?" OR `include` $se":''))." ORDER BY `Date` DESC");
 
 $WHERECOM1="SELECT * FROM `dnevnik_comm` WHERE (";
-$WHERECOM2=")".($podzamok?'':" AND `scr`=='0'")." ORDER BY `Time` DESC";
+$WHERECOM2=")".($podzamok?'':" AND `scr`='0'")." ORDER BY `Time` DESC";
 
 if($a=='com') pr_comments($WHERECOM1."`Text` $se OR `Name` $se".$WHERECOM2);
 // if($a=='ans') pr_comments($WHERECOM1."`Answer` $se".$WHERECOM2);
@@ -90,7 +90,7 @@ $g=$_GET['mode'];
   if($g=='rating') pr_zapisi_rating("SELECT `Date`,`Header`,`view_counter`,`Access` FROM `dnevnik_zapisi` ".WHERE()." ORDER BY `view_counter` DESC");
 
 if($podzamok) {
-  if($IS_EDITOR) if($g=='invis_adm') pr_zapisi("SELECT `Date`,`view_counter`,`Header`,`Access` FROM `dnevnik_zapisi` WHERE `Access`='admin' ORDER BY `Date` DESC");
+  if($admin) if($g=='invis_adm') pr_zapisi("SELECT `Date`,`view_counter`,`Header`,`Access` FROM `dnevnik_zapisi` WHERE `Access`='admin' ORDER BY `Date` DESC");
   if($g=='invis') pr_zapisi("SELECT `Date`,`view_counter`,`Header`,`Access` FROM `dnevnik_zapisi` WHERE `Access`='podzamok' ORDER BY `Date` DESC");
   if($g=='st_solidarnost') pr_zapisi("SELECT `Date`,`view_counter`,`Header`,`Access` FROM `dnevnik_zapisi` WHERE `include`='nikonov.php' AND `Body` LIKE '%{nikonov%' AND `Body` LIKE '%solidarnost.org%' ORDER BY `Date` DESC");
   if($g=='st_nikonov') pr_zapisi("SELECT `Date`,`view_counter`,`Header`,`Access` FROM `dnevnik_zapisi` WHERE `include`='nikonov.php' AND `Body` LIKE '%{nikonov%' AND `Body` LIKE '%razgovor.org%' ORDER BY `Date` DESC");

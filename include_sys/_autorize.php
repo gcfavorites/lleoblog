@@ -100,7 +100,7 @@ function get_ISi($is) {
 //			'ico'=>$GLOBALS['www_ico']."favicon.ico"
 	);
 	
-	$log=$is['openid']; if($log=='') return array('user'=>'anonimouse');
+	$log=$is['openid']; if($log=='') return array('user'=>'anonymouse');
 	if(preg_match("/^([^\/]+).*\/([^\/]+)$/",$log,$l)) { $user=$l[2]; $dom=$l[1]; $root=$dom; }
 	elseif (preg_match("/^([^\. ]+)\.(.*)$/",$log,$l)) { $user=$l[1]; $dom=$l[2]; $root=$log; }
 	//else die($is);
@@ -235,9 +235,9 @@ header('Set-Cookie: ' . rawurlencode($Name) . '=' . rawurlencode($Value)
 .(!$HTTPOnly     ? '' : '; HttpOnly'), false);
 }
 
-function file_get($f,$c=true) {	if(!$GLOBALS['cache_get']) return file_get_contents($f);
+function file_get($f,$c=true) {	if(!$GLOBALS['cache_get'] or !is_dir($GLOBALS['fileget_tmp'])) return file_get_contents($f);
 	$n=preg_replace("/[^0-9a-zA-Z_\-\.\~]+/si","#", str_replace("http://","",$f) );
-	if(strlen($n)<200) $n=$GLOBALS['fileget_tmp'].$n.".dat"; else $n=$n=$GLOBALS['fileget_tmp'].md5($n).".dat";
+	if(strlen($n)<100) $n=$GLOBALS['fileget_tmp'].$n.".dat"; else $n=$GLOBALS['fileget_tmp'].md5($n).".dat";
 	if(file_exists($n)) { if(!$c) return unlink($n); return file_get_contents($n); }
 	$x=file_get_contents($f); file_put_contents($n,$x); chmod($n,0666); return $x;
 }
