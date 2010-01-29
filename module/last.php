@@ -40,7 +40,7 @@ $lastupdate=0; foreach($pp as $p) {
 		$Body=zamok($p['Access']).$Body; // добавить картинки подзамков
 	$Header=$p["Header"];
 
-$idzan = intval(ms("SELECT COUNT(*) FROM `dnevnik_comments` WHERE `Date`='".e($p["Date"])."'"
+$idzan = intval(ms("SELECT COUNT(*) FROM `dnevnik_comm` WHERE `DateID`='".e($p["num"])."'"
 .($podzamok||$admin?'':" AND (`metka`='open' OR `login`='".e($login)."' OR `speckod`='".e($sc)."')"), '_l',$ttl)); //количество комментариев
 
 $s .= "<div>

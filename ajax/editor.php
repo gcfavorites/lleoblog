@@ -161,6 +161,8 @@ $s.="<br>
 "class=r id='".$idhelp."_Comment_write' name")."
 открывать: ".selecto('Comment_screen',$p['Comment_screen'],array('open'=>"всех",'friens-open'=>"друзей",'screen'=>"скрывать"),
 "class=r id='".$idhelp."_Comment_screen' name")."
+тип: ".selecto('Comment_tree',$p['Comment_tree'],array('1'=>"форум",'0'=>"гостевая"),
+"class=r onchange='ch_edit_pole(this,$num)' name")."
 
 <br><input type=submit value='Save' onclick=\"edit_savenew()\">";
 
@@ -219,6 +221,8 @@ if(strstr(file_get_contents($filehost."template/".$p['template'].".html"),'{_COM
 принимать: ".selecto('Comment_write',$p['Comment_write'],array('timeoff'=>"поначалу",'on'=>"вечно от всех",'off'=>"нет",'friends-only'=>"вечно от друзей",'login-only'=>"вечно от логинов",'login-only-timeoff'=>"поначалу от логинов"),
 "class=r onchange='ch_edit_pole(this,$num)' name")."
 открывать: ".selecto('Comment_screen',$p['Comment_screen'],array('open'=>"всех",'friens-open'=>"друзей",'screen'=>"скрывать"),
+"class=r onchange='ch_edit_pole(this,$num)' name")."
+тип: ".selecto('Comment_tree',$p['Comment_tree'],array('1'=>"форум",'0'=>"гостевая"),
 "class=r onchange='ch_edit_pole(this,$num)' name")."
 
 <br><input type=submit value='Save' onclick=\"edit_polesend('Body',idd('".$idhelp."_textarea').value,".$num.")\">";

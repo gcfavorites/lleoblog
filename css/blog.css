@@ -47,6 +47,9 @@ padding: 20px 0; border-left: green 2px solid; border-collapse:collapse; }
 .knop { border: 1px solid #ccc; margin-left: 1px;}
 .knop:hover { border: 1px solid black; }
 
+.noa {color:black; text-decoration: none; }
+.noa:hover {color:#ccc;}
+
 /* комментарии */
 
 
@@ -85,6 +88,11 @@ overflow: auto; padding: 0 0 0 5px; margin-top: 5px; }
 .ks0:before {content:'скрыть'}
 .ks1:before {content:'раскрыть'}  /* скрыть-раскрыть */
 .ka:before {content:'ответить'} /* ответить */
+
+.cscr,.cdel { max-width: 20%; border: 1px dotted #bbb; padding: 0 0 0 5px; margin-top: 5px; }
+
+.cscr {font-size:8px; font-weight: bold; background-color: #AAFAFA; }
+.cscr:before {content:'* комментарий скрыт'}
 
 .cdel {font-size:8px; font-weight: bold; }
 .cdel:before {content:'* комментарий удален'}

@@ -66,6 +66,7 @@ border: 1px dotted #bbb; overflow: auto; padding: 0 0 0 5px; margin-top: 5px; }
 .ks1:before {content:'раскрыть'}
 .ka:before {content:'ответить'}
 
+
 .cdel {font-size:8px; font-weight: bold; }
 .cdel:before {content:'* комментарий удален'}
 
@@ -75,16 +76,16 @@ border: 1px dotted #bbb; overflow: auto; padding: 0 0 0 5px; margin-top: 5px; }
 ");
 */
 
-function comment_one($p,$mojno_comm,$level=false) { $lev=$level*$GLOBALS['comment_otstup'];
+function comment_one($p,$nediv=0) {
 
-	if($p['Time']==0 && $level!==false) // удаленный комментарий
-		return "<div id=".$p['id']." name=".$p['id']." class='cdel' style='margin-left:".$lev."px'></div>";
+	if($p['Time']==0 && $nediv) // удаленный комментарий
+		return "<div id=".$p['id']." name=".$p['id']." class='cdel' style='margin-left:{comment_otstup}px'></div>";
 
-	$c=comment_prep($p,$mojno_comm,$level); // подготовить данные
+	$c=comment_prep($p); // подготовить данные
 
 	$tmpl=$GLOBALS['comment_tmpl'];
 
-if($level!==false) $tmpl="<div id={id} name={id} class={commclass} style='margin-left:".$lev."px'>".$tmpl."</div>";
+if(!$nediv) $tmpl="<div id={id} name={id} class={commclass} style='margin-left:{comment_otstup}px'>".$tmpl."</div>";
 
 	foreach($c as $n=>$l) $tmpl=str_replace('{'.$n.'}',$l,$tmpl);
 	return str_replace("\n",'',$tmpl);
@@ -148,29 +149,9 @@ $commentary=$x.$commentary;
 }
 */
 
-
-
-// 3 значени€: false - нельз€ вообще 'root' - можно в корне 'tree' - можно везде
-function mojno_comment($p) { global $IS,$pozdamok,$N_maxkomm,$enter_comentary_days;
-	if($p['Comment']=='disabled') return false; // если запрещены вообще
-	if($p['Comment_tree']=='0') return 0; // если запрещено отвечать на комменты
-
-	// ѕревышение количества посещений или слишком стара€ заметка
-	$t=($p["view_counter"] < $N_maxkomm or $p["DateTime"] > time()-86400*$enter_comentary_days ?1:0);
-
-	switch($p["Comment_write"]) {
-		case 'off': return false;
-		case 'on': return 1;
-		case 'friends-only': return ($podzamok?1:false);
-		case 'login-only': return (($IS['login']!='' or $IS['password']!='')?1:false);
-		case 'timeoff': return ($t?1:false);
-		return (($t and ($IS['login']!='' or $IS['password']!=''))?1:false);
-	}
-}
-
 function commclass($p) { if($p['scr']==1) return 'c0'; else return 'c'.($p['group']+1); }
 
-function comment_prep($p,$mojno_comm,$level) { global $admin,$unic,$podzamok,$geoip_color; 
+function comment_prep($p) { global $admin,$unic,$podzamok,$geoip_color; 
 	$c=array();
 
 	$c['id']=$p['id'];
@@ -197,10 +178,8 @@ function comment_prep($p,$mojno_comm,$level) { global $admin,$unic,$podzamok,$ge
 
 
 // ---- кнопки ----
-	$c['kn']=''; // "'$mojno_comm'";
 
-	if($admin or $mojno_comm=="1") $c['kn'] .= "<div class=ka onclick='ka(this)'></div>"; // ответить
-
+	$c['kn'] .= "<div class=ka onclick='ka(this)'></div>"; // ответить
 //	$c['kn'] .= "<div class=kus onclick='kus(".$p['unic'].")'></div>"; // показать личную карточку автора
 
 if($admin or ($unic==$p['unic'] and time()-$p['Time'] < 15*60)) $c['kn'] .= "<div class=ked onclick='ked(this)'></div>"; // редактировать комментарий
@@ -246,55 +225,65 @@ if($admin) {
 return $c;
 }
 
-//====================================================================
-function comment_cachename($num) { return $GLOBALS['blogdir'].'-comment-'.$num; }
-//function clean_commentcache($num) { cache_rm(comment_cachename($num)); }
 
 //==========================================================================
-function load_comments($art) { global $comc,$comindex,$kstop,$podzamok,$comment_otstup,$comment_pokazscr;
 
-	$num=$art['num'];
+function load_comments($num,$comments_order='normal') {
+	global $admin,$podzamok,$unic,$load_comments_MS,$comc,$comindex,$s,$kstop;
 
-$cachename=comment_cachename($num); $mas=cache_get($cachename); // есть ли в кэше?
-if($mas===false) { // ------------ если нет в кэше, то прочесть ------------
-	$sql=ms("SELECT `id`,`unic`,`group`,`Name`,`Text`,`Parent`,`Time`,`whois`,`rul`,`ans`,`golos_plu`,`golos_min`,`scr`,`Mail`,`DateID`
-	FROM `dnevnik_comm` WHERE `DateID`='".e($num)."' ORDER BY `Time`","_a",0);
-	if(!sizeof($sql)) return ppp_nocomment();
+$plusp=$load_comments_MS;
+// if(!$podzamok&&!$admin) $plusp .= " AND (`scr`=1 OR `unic`='$unic')"; // только открытые или свои
+if($_GET['mastercom']=='yes') $plusp .= " AND `rul`='1'"; // только с особой отметкой
 
-	$kstop=10000; $comc=array(); $comindex=array();
+$sql=ms("SELECT `id`,`unic`,`group`,`Name`,`Text`,`Parent`,`Time`,`whois`,`rul`,`ans`,`golos_plu`,`golos_min`,`scr`,`Mail`,`DateID`
+FROM `dnevnik_comm` WHERE `DateID`='".e($num)."'".$plusp." ORDER BY `Time`","_a",0);
+
+if(!sizeof($sql)) return ppp_nocomment();
+
+return print_prostynka($sql,0,0);
+
+}
+
+
+//====================================================================
+
+
+function print_prostynka($sql,$id,$l=0) { global $comc,$comindex,$kstop; $kstop=10000;
+	$comc=array(); $comindex=array();
 	foreach($sql as $p) {
-		$comc[$p['id']]=$p;
+		$comc[$p['id']]=comment_one($p);
 		if($p['rul']==1) $comindex[$p['Parent']][$p['id']]='rul';
 		elseif($p['scr']==0) $comindex[$p['Parent']][$p['id']]='open';
 		else $comindex[$p['Parent']][$p['id']]=$p['unic'];
 	}
-	$mas=vseprint_comm(0,0,0); // запихнуть в массив всю простыню комментов комменты
-	// добавить потер€нные комменты
-	if(sizeof($comc)) { $s.='<hr>'; foreach($comc as $id2=>$p) $mas[]=array('p'=>$p,'value'=>1,'id'=>$id2,'level'=>0); }
-	cache_set($cachename,$mas,$GLOBALS['ttl_longsite']); $s=''; // запомнить в кэш
-} else { $s="<img src=".$GLOBALS['www_design']."e3/ledgreen.png>"; }
 
+	$s=vseprint_comm($id,0,$l);
 
-$mojno_comm=mojno_comment($art); // установить, на какие комменты можно отвечать
-
-// а вот теперь, откуда бы ни был массив $mas, из кэша или собранный вживую, выдать комменты
-foreach($mas as $m) { if($podzamok or !$m['value'] or $m['value']==$GLOBALS['unic']) // открыт ли?
-	$s.=comment_one($m['p'],$mojno_comm,$m['level']);
-	elseif($comment_pokazscr) $s.="<div class=cscr style='margin-left:".($m['level']*$comment_otstup)."px'></div>";
-}
-
+	// а теперь потер€нные комменты
+	if(sizeof($comc)) { $s.='<hr>'; foreach($comc as $c) $s.=str_replace("{comment_otstup}",'0',$c); }
 return $s;
 }
 
 //====================================================================
-function vseprint_comm($id,$level,$l) { global $maxcommlevel,$comc,$comindex,$kstop; if(!isset($comindex[$id])) return array();
-	$mas=array(); $level++; if(! $kstop--) idie('err kstop'.$id.h(print_r($mas,1)));
+
+function vseprint_comm($id,$level,$l) { global $maxcommlevel,$podzamok,$comc,$comindex,$kstop; if(!isset($comindex[$id])) return;
+	$s='';
+	$level++; if(! $kstop--) idie('err kstop'.$id.$s);
+
 	foreach($comindex[$id] as $id2=>$value) { if(!$value) continue;
-		$mas[]=array('p'=>$comc[$id2],'value'=>( ($value=='open' or $value=='rul')?0:$value ),'id'=>$id2,'level'=>$level);
-		$mas=array_merge($mas,vseprint_comm($id2,$level,$l));
+
+		if($podzamok or $value=='open' or $value=='rul' or $value==$GLOBALS['unic']) {
+
+			if($level < $maxcommlevel or $value=='rul') { // выдать коммент
+				$s.=str_replace("{comment_otstup}",($level*25),$comc[$id2]);
+			} elseif($level == $maxcommlevel) { // выдать раскладушку
+				$s.="<div id='o$id' class='opc' onclick='opc(this)' style='margin-left:".($level*25)."px'></div>";
+			}
+			$s.=vseprint_comm($id2,$level,$l);
+		}
 		unset($comc[$id2]); // в любом случае удалить коммент из массива
 	}
-	return $mas;
+	return $s;
 }
 //====================================================================
 
@@ -315,6 +304,7 @@ function str_ireplace2($search,$rep1,$rep2,$s){	$c=chr(1); $nashlo=array(); $x=s
 	} foreach($nashlo as $l) $s=substr_replace($s,$rep1.$l.$rep2,strpos($s,$c),1);
 	return $s;
 } function strtolower2($s){ return strtr(strtolower($s),'јЅ¬√ƒ≈®∆«»… ЋћЌќѕ–—“”‘’÷„Ўўџ№ЏЁёя','абвгдеЄжзийклмнопрстуфхцчшщыьъэю€'); }
+
 
 
 function ppp_nocomment() { return "<p class=z>комментариев нет или они все скрыты"; }
