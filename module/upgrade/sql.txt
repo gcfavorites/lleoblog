@@ -120,6 +120,7 @@ CREATE TABLE IF NOT EXISTS `dnevnik_zapisi` (
   `Comment_view` enum('on','off','rul','load','timeload') NOT NULL default 'timeload',
   `Comment_write` enum('on','off','friends-only','login-only','timeoff','login-only-timeoff') NOT NULL default 'timeoff',
   `Comment_screen` enum('open','screen','friends-open') NOT NULL default 'friends-open',
+  `Comment_tree` enum('1','0') NOT NULL default '1',
   `comments_order` enum('normal','rating','allrating') NOT NULL default 'normal',
   `DateUpdate` int(10) unsigned NOT NULL default '0',
   `view_counter` int(10) unsigned NOT NULL default '0',

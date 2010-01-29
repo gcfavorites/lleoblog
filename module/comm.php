@@ -207,8 +207,8 @@ function print_header($num) {
 
 function print1($p) { global $admin;
 	$id=$p['id'];
-	$level=($p['Parent']!=0?'100':'0');
-	return str_replace('{comment_otstup}',$level,comment_one($p));
+	$level=($p['Parent']!=0?'4':'0');
+	return comment_one($p,0,$level);
 }
 
 ?>

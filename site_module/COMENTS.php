@@ -86,7 +86,7 @@ if($idzan) { // если вообще есть комментарии
 
 if($comments_list) { // грузить простыню изначально
 	$template=$e; include_once $GLOBALS['include_sys']."_onecomm.php";
-	$pro = load_comments($article["num"],$article["comments_order"]);
+	$pro = load_comments($article); //,$article["comments_order"]);
 } elseif($comments_knopka) // подгружать по кнопке
 	$pro = "<input TYPE='BUTTON' VALUE=' читать комментарии".$dopload." (".($podzamok?"всего":"открытых")." ".$idzan." шт) ' onClick=\"majax('comment.php',{a:'loadcomments',dat:".$article['num']."})\">";
 }

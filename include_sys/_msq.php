@@ -135,7 +135,6 @@ function ms($query,$mode='_a',$ttl=666) { $s = false; $magic='@'.$GLOBALS['blogd
 //function my_memcache_connect() {}
 
 // function cache_init() { global $memcache; $memcache = new Memcache; $memcache->connect('localhost', 11211) or $memcache=false; }
-
 function cache_set($k,$v,$e) { global $memcache; if(!$memcache) return false; return $memcache->set($k,$v,0,$e); }
 function cache_get($k) { global $memcache; if(!$memcache) return false; return $memcache->get($k); }
 function cache_rm($k) { global $memcache; if(!$memcache) return false; return $memcache->delete($k); }

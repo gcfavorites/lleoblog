@@ -15,7 +15,6 @@ $id=intval($_REQUEST["id"]); // if(!$id and $_REQUEST["id"]!='000') $erorrs[]="Ф
 $lev=intval($_REQUEST["lev"]);
 $dat=intval($_REQUEST["dat"]); // if(!$dat and $id) $erorrs[]="Фатальный сбой.";
 
-
 include $include_sys."_onecomm.php";
 
 //========================================================================================================================
@@ -25,7 +24,7 @@ if($a=='loadpanel') { $idhelp=$_REQUEST['idhelp'];
 }
 //========================================================================================================================
 if($a=='loadcomments') {
-	$sql=ms("SELECT `id`,`unic`,`Name`,`Text`,`Parent`,`Time`,`whois`,`rul`,`ans`,`golos_plu`,`golos_min`,`scr`,`Mail`,`DateID` FROM `dnevnik_comm` WHERE `DateID`=".e($dat)." ORDER BY `Time`","_a");
+	$art=ms("SELECT `Comment`,`Comment_write`,`Comment_tree`,`num` FROM `dnevnik_zapisi` WHERE `num`='".e($dat)."'","_1");
 
 $s="
 	// loadCSS('commentstyle.css');
@@ -41,7 +40,9 @@ $s="
 	opc=function(e) { e=ecom(e); majax('comment.php',{a:'pokazat',oid:e.id,lev:e.style.marginLeft,comnu:comnum}); };
 	ecom=function(e) { while( ( e.id == '' || e.id == undefined ) && e.parentNode != undefined) e=e.parentNode; if(e.id == undefined) return 0; return e; };
 
-	idd(0).innerHTML=\"".njs(print_prostynka($sql,0))."\";";
+	idd(0).innerHTML=\"".njs(load_comments($art))."\";";
+
+//cache_rm(comment_cachename($i));
 
 	otprav($s);
 }
@@ -49,26 +50,13 @@ $s="
 if($a=='pokazat') { // показать
 	$oid=$_REQUEST["oid"]; $id=intval(substr($oid,1));
 	if(substr($oid,0,1)!='o' or !$id) oalert("WTF?!");
-
-//        $p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0);
-//	if($p['unic']==$unic) otprav("");
-//	$e=mysql_query("INSERT INTO `dnevnik_plusiki` (`commentID`,`unic`,`var`) VALUES ($id,$unic,'plus')"); if(!$e) otprav("");
-//	mysql_query("UPDATE `dnevnik_comm` SET `golos_plu`=`golos_plu`+1 WHERE `id`='$id'");
-//	$p['golos_plu']++;
-//	otprav("idd($id).innerHTML=\"".njs(comment_one($p,1))."\"");
-
 	$pp=ms("SELECT * FROM `dnevnik_comm` WHERE `Parent`='$id'","_a");
-
-// oalert("p=".print_r($pp,1));
-
 	$r="clean('$oid');";
-
 	foreach($pp as $p) { $pid=$p['id'];
 	$r.="
-	mkdiv2($pid,\"".njs(comment_one($p,1))."\", '".commclass($p)."', idd(0), idd($id));
+	mkdiv2($pid,\"".njs(comment_one($p,getmojno_comm($p['DateID'])))."\", '".commclass($p)."', idd(0), idd($id));
 	idd($pid).style.marginLeft='".$lev."px';
 	otkryl($pid);";
-
 
 	if(ms("SELECT COUNT(*) FROM `dnevnik_comm` WHERE `Parent`='$pid'","_l")) $r.="
 		mkdiv2('o$pid','', 'opc', idd(0), idd($pid));
@@ -87,7 +75,7 @@ if($a=='plus') { // плюсик
 	$e=mysql_query("INSERT INTO `dnevnik_plusiki` (`commentID`,`unic`,`var`) VALUES ($id,$unic,'plus')"); if(!$e) otprav("");
 	mysql_query("UPDATE `dnevnik_comm` SET `golos_plu`=`golos_plu`+1 WHERE `id`='$id'");
 	$p['golos_plu']++;
-	otprav("idd($id).innerHTML=\"".njs(comment_one($p,1))."\"");
+	otprav_comment($p);
 }
 //========================================================================================================================
 if($a=='minus') { // плюсик
@@ -99,24 +87,26 @@ if($a=='minus') { // плюсик
 	mysql_query("UPDATE `dnevnik_comm` SET `golos_min`=`golos_min`+1 WHERE `id`='$id'");
         $p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0);
 	$p['golos_min']++;
-	otprav("idd($id).innerHTML=\"".njs(comment_one($p,1))."\"");
+	otprav_comment($p);
 }
 //========================================================================================================================
 if($a=='editsend') { // прислан отредактированный комментарий
 
-	$p=ms("SELECT `unic`,`Text` FROM `dnevnik_comm` WHERE `id`='$id'","_1",0); if($dat===false) oalert("А такого комментария нет.");
+	$p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0); if($dat===false) oalert("А такого комментария нет.");
 	if(!$admin and $p['unic']!=$unic) oalert("Чужой комментарий редактировать?");
 	
 	$text=$_REQUEST["text"]; $text=trim($text,"\n\r\t "); $text=str_replace("\r","",$text);
 	if($text==$p['Text']) otprav("clean('$idhelp');");
 
 	msq_update('dnevnik_comm',array('Text'=>e($text)),"WHERE `id`='$id'");
-	sendcomment1($id,"clean('$idhelp');");
+	$p['Text']=$text;
+	otprav_comment($p,"clean('$idhelp');");
 }
-
 //========================================================================================================================
 if($a=='del') { // id удалить комментарий
-	if($admin) otprav( del_comm($id) ); otprav("clean($id);");
+	if(!$admin) otprav("clean($id);");
+	cache_rm(comment_cachename(ms("SELECT `DateID` FROM `dnevnik_comm` WHERE `id`='$id'","_l")));
+	otprav( del_comm($id) );
 }
 //========================================================================================================================
 if($a=='edit') { // id редактировать комментарий
@@ -152,7 +142,7 @@ if($a=='scr') { // id скрыть-раскрыть
 	$p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0); if($dat===false) oalert("А такого комментария нет.");
 	$p['scr']=($p['scr']==1?0:1);
 	msq_update('dnevnik_comm',array('scr'=>$p['scr']),"WHERE `id`='$id'");
-	otprav("idd($id).innerHTML=\"".njs(comment_one($p,1))."\"; idd($id).className='".commclass($p)."';");
+	otprav_comment($p,"idd($id).className='".commclass($p)."';");
 }
 
 //========================================================================================================================
@@ -161,14 +151,11 @@ if($a=='rul') { // id скрыть-раскрыть
 	$p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0); if($dat===false) oalert("А такого комментария нет.");
 	$p['rul']=($p['rul']==1?0:1);
 	msq_update('dnevnik_comm',array('rul'=>$p['rul']),"WHERE `id`='$id'");
-	otprav("idd($id).innerHTML=\"".njs(comment_one($p,1))."\"; idd($id).className='".commclass($p)."';");
+	otprav_comment($p,"idd($id).className='".commclass($p)."';");
 }
 
 //========================================================================================================================
-if($a=='editpanel') { 
-	otprav("alert('$a')");
-	// otprav_sb('commentform.js',$s);
-}
+// if($a=='editpanel') { 	otprav("alert('$a')");	// otprav_sb('commentform.js',$s); }
 //========================================================================================================================
 
 if($a=='comsend') {
@@ -215,13 +202,15 @@ if($IS['capcha']!='yes') {
 	msq_add('dnevnik_comm',$ara); $newid=mysql_insert_id();
 
 	$p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='".intval($newid)."'","_1",0);
-	$c=njs(comment_one($p,1));
+	$c=njs(comment_one($p,getmojno_comm($p['DateID'])));
 
 // ================= сохраняем данные в карточку =================
 	if($name!='anonymouse' && $IS['realname']=='') $ara_kartochka['realname']=e($name);
 	if($mail!='' && $IS['mail']=='') $ara_kartochka['mail']=e($mail);
 	if(sizeof($ara_kartochka)) msq_update('unic',$ara_kartochka,"WHERE `id`='$unic'");
 // ================= сохраняем данные в карточку =================
+
+	cache_rm(comment_cachename(intval($dat)));
 
 otprav("
 clean('$idhelp');
@@ -275,7 +264,7 @@ otprav_sb('commentform.js',$s);
 
 }
 
-//=================================== запросили форму ===================================================================
+//=================================== удалить комментарий ===================================================================
 
 function del_comm($id,$l=1) { if(!$id && !$GLOBALS['admin']) return " alert('id=0?!');";
 
@@ -314,9 +303,14 @@ function del_comm($id,$l=1) { if(!$id && !$GLOBALS['admin']) return " alert('id=
 	return $r.del_comm($Parent,0); // иначе повторить удаление с ним
 }
 
-function sendcomment1($id,$r='') {
-        $p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0);
-	otprav("idd($id).innerHTML=\"".njs(comment_one($p,1))."\"; ".$r);
+
+function otprav_comment($p,$r='') {
+	cache_rm(comment_cachename($p['DateID'])); // сбросить кэш коментов этой записи
+	otprav("idd(".$p['id'].").innerHTML=\"".njs(comment_one($p, getmojno_comm($p['DateID']) ))."\"; ".$r);
+}
+
+function getmojno_comm($num) {
+return mojno_comment(ms("SELECT `Comment`,`Comment_write`,`Comment_tree`,`num` FROM `dnevnik_zapisi` WHERE `num`='".e($num)."'","_1"));
 }
 
 function otprav_error($s,$p='') { global $comnu; otprav("zabil('co_".$comnu."',\"<div class=e>".njs($s)."</div>\");".$p); }
