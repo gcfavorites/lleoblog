@@ -52,7 +52,7 @@ $s=str_replace('<!--#exec cgi="/cgi/textcount.pl"-->',$count,$s); /* Зеноновские
 
 // ===========
 $scr="
-<script type=\"text/javascript\" language=\"JavaScript\" src=\"/sys/JsHttpRequest.js\"></script>
+<!-- script type=\"text/javascript\" language=\"JavaScript\" src=\"/sys/Js	HttpRequest.js\"></script -->
 <script><!--
 
 document.onkeydown = NavigateThrough;

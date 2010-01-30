@@ -7,7 +7,7 @@ if(isset($_GET['JsHttpRequest']) or isset($_POST['JsHttpRequest']) or isset($_CO
 //============================================================= AJAX ===================================================
 
 function setpole($s) { global $_RESULT,$name,$value,$unic;
-	msq_update('unic',array(e($name)=>e($value)),"WHERE `id`='$unic'");
+	msq_update($GLOBALS['db_unic'],array(e($name)=>e($value)),"WHERE `id`='$unic'");
 	$_RESULT["border"] = "2px solid green";
 	$_RESULT["value"] = $value;
 	$_RESULT["otvet"] = "<font color=green>$s<font>".$GLOBALS['msqe'];
@@ -16,7 +16,7 @@ function setpole($s) { global $_RESULT,$name,$value,$unic;
 }
 
 
-function zsetpole($s) { global $name,$value,$unic; msq_update('unic',array(e($name)=>e($value)),"WHERE `id`='$unic'"); zsetpole0($s); }
+function zsetpole($s) { global $name,$value,$unic; msq_update($GLOBALS['db_unic'],array(e($name)=>e($value)),"WHERE `id`='$unic'"); zsetpole0($s); }
 function zsetpole0($s) { global $_RESULT,$name; $_RESULT["zname"]='div'.$name; $_RESULT["zotvet"] = $s; $_RESULT["status"] = true; exit; }
 
 function errpole($s='') { global $_RESULT,$name,$value,$unic;
@@ -55,7 +55,7 @@ if(substr($name,0,7)=='capcha-') { list($name,$val)=explode('-',$name);
 if($name=='login') {
 	if(preg_match("/[^0-9a-z\-\_]/s",$value)) errpole("В логине допустимы только строчные латинские буквы, цифры, подчеркивание или минус.");
 	if(strlen($value)>32) { $value=substr($value,0,32); errpole("Длина логина - не более 32 символов."); }
-	$id=ms("SELECT `id` FROM `unic` WHERE `login`='".e($value)."'","_l",0);
+	$id=ms("SELECT `id` FROM ".$GLOBALS['db_unic']." WHERE `login`='".e($value)."'","_l",0);
 	if($id===false) setpole("Отныне твой логин - $value");
 	if($id==$unic) setpole("Да, твой логин $value, и не надо выпендриваться.");
 	errpole("Этот логин занят!");
@@ -64,7 +64,7 @@ if($name=='login') {
 if($name=='password') {
 	// блять, так хочется тоже сделать проверку "этот пароль уже используется"... но понимаю, перебор :)
 	// или сделать? да идите нахуй, сделаю! лови:
-	$id=ms("SELECT `id` FROM `unic` WHERE `password`='".e($value)."'","_l",0);
+	$id=ms("SELECT `id` FROM ".$GLOBALS['db_unic']." WHERE `password`='".e($value)."'","_l",0);
 	if($id!==false) errpole("Этот пароль уже занят! Придумай что-нибудь поинтереснее.");
 
 	$value=md5($value.$hashlogin); zsetpole("Пароль установлен!");
@@ -85,7 +85,7 @@ if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - на
 // if(!$admin) redirect($wwwhost."login/"); // посторонних - нахуй
 blogpage();
 
-if($unic0==0) die("У вас куки не включены. Или вы первый раз на этом сайте?");
+if($unic==0) die("У вас куки не включены. Или вы первый раз на этом сайте?");
 
 $OLOLO=md5($IP.$BRO.$hashlogin);
 
@@ -105,7 +105,7 @@ if($_GET['openid_mode'] == 'id_res'){ // Perform HTTP Request to OpenID server t
 		if(isset($_GET['openid_sreg_email'])) $ara['mail']=e($_GET['openid_sreg_email']);
 		if(isset($_GET['openid_sreg_fullname'])) $ara['realname']=e($_GET['openid_sreg_fullname']);
 		if(isset($_GET['openid_sreg_dob'])) $ara['birth']=e($_GET['openid_sreg_dob']);
-		msq_update('unic',$ara,"WHERE `id`='$unic'");
+		msq_update($GLOBALS['db_unic'],$ara,"WHERE `id`='$unic'");
 //		die('<pre>'.print_r($GLOBALS,1));
         }else if($openid->IsError() == true){                   // ON THE WAY, WE GOT SOME ERROR
                 $error = $openid->GetError();
@@ -158,7 +158,7 @@ STYLES('
 
 
 SCRIPTS_mine();
-SCRIPT_ADD($www_design."JsHttpRequest.js"); // подгрузить внешний скрипт
+SCRIPT_ADD($GLOBALS['www_design']."JsHttpRequest.js"); // подгрузить внешний скрипт
 SCRIPTS("
 
 function loginset(e) { var l = e.value;
@@ -220,7 +220,7 @@ function select_data($Y,$M,$D) {
 	return $o;
 }
 
-$p=ms("SELECT * FROM `unic` WHERE `id`='$unic'","_1");
+$p=ms("SELECT * FROM ".$GLOBALS['db_unic']." WHERE `id`='$unic'","_1");
 
 $o.="<form><div align=center><div><fieldset id='openid'><legend>Личное дело номер $unic</legend>
 <p class=br>зарегистрирован: <b>".date("Y-m-d H:i:s",$p['time_reg'])."</b><br>

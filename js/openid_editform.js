@@ -33,7 +33,7 @@ function mail_validate(p) { polese(p); var l=p.value; return l; }
 function site_validate(p) { polese(p); var l=p.value; return l; }
 function realname_validate(p) { polese(p); var l=p.value; return l; }
 
-function setbirth(y,m,d) { var e=document.getElementById('birth'); e.value=y.value+'-'+m.value+'-'+d.value; polesend(e); }
+function setbirth(y,m,d) { var e=idd('birth'); e.value=y.value+'-'+m.value+'-'+d.value; polesend(e); }
 
 function login_go(log,pas) {
         zabil('openidotvet','<div class=o>идет соединение</div>');
@@ -57,7 +57,6 @@ function polesend_all_time() { if(polesend_go) return;
 	if(lastp=='openid') return openid_go(lastpolevalue);
 	return polesend0(lastp,lastpolevalue);
 }
-
 
 function polesend0(name,value) {
 	zabil('openidotvet','<div class=o>'+name+': '+value+'</div>');

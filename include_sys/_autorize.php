@@ -25,7 +25,7 @@ elseif(isset($_SERVER["HTTP_REFERER"]) and strstr($_SERVER["HTTP_REFERER"],'/fri
 }
 // ======================= Определение ЖЖ-истов =========================================
 
-$IP = $_SERVER["REMOTE_ADDR"]; $IPNUM=ip2ipn($IP);
+$IP = $_SERVER["REMOTE_ADDR"]; $IPN=ip2ipn($IP);
 $BRO = $_SERVER["HTTP_USER_AGENT"];
 $MYPAGE=$_SERVER["REQUEST_URI"];
 list($mypage) = explode('?',$MYPAGE.'?',2);
@@ -42,7 +42,7 @@ if(isset($_COOKIE[$uc])) { // если кука $uc установлена
 			if(stristr($BRO,'blogtest')) { // для отладки
 				$admin=$podzamok=0;
 				$unic=666;
-				$IS=ms("SELECT * FROM `unic` WHERE `id`='$unic'","_1"); // dier($IS);
+				$IS=ms("SELECT * FROM ".$GLOBALS['db_unic']." WHERE `id`='$unic'","_1"); // dier($IS);
 				}
 		}
 	}
@@ -52,11 +52,9 @@ if(!isset($imgicourl) or $imgicourl=='') $imgicourl='#'.$unic;
 
 
 function set_unic_candidat() { global $unic,$uc; $unic=0; setcookie($uc, 'candidat', time()+86400*365, "/", "", 0); }
-function set_unic() { global $uc,$IPNUM,$unic,$hashlogin,$lju;
-	$ara=array('ipn'=>$IPNUM,'lju'=>e($lju),'time_reg'=>time());
-
-
-	if(msq_add('unic',$ara)===false) return false;
+function set_unic() { global $uc,$IPN,$unic,$hashlogin,$lju;
+	$ara=array('ipn'=>$IPN,'lju'=>e($lju),'time_reg'=>time());
+	if(msq_add($GLOBALS['db_unic'],$ara)===false) return false;
 	$unic=mysql_insert_id(); if(!$unic) die('unic=0 '.$GLOBALS['msqe']);
 	setcookie($uc, $unic.'-'.md5($unic.$hashlogin), time()+86400*365, "/", "", 0);
 //	setcookie('obr','', time()-86400*365, "/", "", 0);
@@ -78,7 +76,7 @@ function WHERE($s='') { global $access; if($s.$access=='') return ''; if($s=='' 
 
 
 function getis($unic) {
-	$IS=ms("SELECT * FROM `unic` WHERE `id`='$unic'","_1");	// if($admin) dier($IS);
+	$IS=ms("SELECT * FROM ".$GLOBALS['db_unic']." WHERE `id`='$unic'","_1");	// if($admin) dier($IS);
 	if($IS) { $IS=array_merge($IS,get_ISi($IS));
 		$IS['imgicourl']=h($IS['user']);
 		if(isset($IS['url'])) $IS['imgicourl']="<a href='http://".h($IS['url'])."'>".$IS['imgicourl']."</a>";
@@ -100,7 +98,7 @@ function get_ISi($is) {
 //			'ico'=>$GLOBALS['www_ico']."favicon.ico"
 	);
 	
-	$log=$is['openid']; if($log=='') return array('user'=>'anonymouse');
+	$log=$is['openid']; if($log=='') return array('user'=>'#'.$is['id'],'user_noname'=>'noname');
 	if(preg_match("/^([^\/]+).*\/([^\/]+)$/",$log,$l)) { $user=$l[2]; $dom=$l[1]; $root=$dom; }
 	elseif (preg_match("/^([^\. ]+)\.(.*)$/",$log,$l)) { $user=$l[1]; $dom=$l[2]; $root=$log; }
 	//else die($is);
@@ -264,9 +262,9 @@ function site_validate($s) { return
 }
 
 
-function get_link($Date) {
-        list($y,$m,$d)=explode("/",substr($Date,0,10),3); if(intval($y)*intval($m)*intval($d))
-        return $GLOBALS['httphost'].$Date.".html"; return $GLOBALS['httphost'].$Date;
+function get_link($Date) { list($y,$m,$d)=explode("/",substr($Date,0,10),3);
+	if(intval($y)*intval($m)*intval($d)) return $GLOBALS['httphost'].$Date.".html";
+	return $GLOBALS['httphost'].$Date;
 }
 
 
@@ -275,19 +273,12 @@ $months_rod = explode(" ", " января февраля марта апреля мая июня июля августа с
 
 // ==================== куки ================================================================================================
 $jog_scripts="
-function c_rest(name) {
+function c_rest(name) {	var f=fc_read(name); var c=c_read(name);
 
-	var f=fc_read(name); var c=c_read(name);
-
-	if(f != null && f != '') {
-		c_save(name,f);
-		fc_save(name,f); 
-
+	if(f != null && f != '') { c_save(name,f); fc_save(name,f); 
 		var e=location.href;
 		if(f!=c && name=='".$uc."' && e == e.replace(/i-snova-zdravstvyite/g,'') ) { location.href=e+'?i-snova-zdravstvyite'; }
 	}
-
-//	if( c != '' && c != 'candidat') {  } var c=c_read(name);
 }
 
 function c_save(name,v) { var N=new Date(); N.setTime(N.getTime()+(v==''?-1:3153600000000)); document.cookie=name+'='+v+';expires='+N.toGMTString()+';path=/;'; }
@@ -297,8 +288,7 @@ function fc_read(name){ if(swf('kuki').flashcookie_read){ return swf('kuki').fla
 function fc_save(name,v){ if(swf('kuki').flashcookie_save){ swf('kuki').flashcookie_save(name,v); }}
 ";
 
-$jog_kuki="<div style='position: absolute;width:1px;height:1px;overflow:hidden;left:-40px;top:0;opacity:0'><object classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' id='kuki' width='1' height='1' codebase='http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab' style='width:1px;height:1px;overflow:hidden;position:absolute;left:-400px;top:0;border:0;'><param name='movie' value='{www_design}kuki_ray.swf' /><embed src='{www_design}kuki_ray.swf' width='1' height='1' name='kuki' type='application/x-shockwave-flash' pluginspage='http://www.adobe.com/go/getflashplayer'></embed></object></div>";
-
+$jog_kuki="<div style='position:absolute;width:1px;height:1px;overflow:hidden;left:-40px;top:0;opacity:0'><object classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' id='kuki' width='1' height='1' codebase='http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab' style='width:1px;height:1px;overflow:hidden;position:absolute;left:-400px;top:0;border:0;'><param name='movie' value='{www_design}kuki_ray.swf' /><embed src='{www_design}kuki_ray.swf' width=1 height=1 name='kuki' type='application/x-shockwave-flash' pluginspage='http://www.adobe.com/go/getflashplayer'></embed></object></div>";
 
 function otprav($s) { global $_RESULT,$msqe; $_RESULT["modo"] = ($msqe?
 "helps('mysql_error',\"<fieldset><legend>mysql_error</legend>"

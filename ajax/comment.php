@@ -167,7 +167,7 @@ if($a=='comsend') {
 
 
 $text=$_REQUEST["text"]; $text=trim($text,"\n\r\t "); $text=str_replace("\r","",$text); if($text=='')  $erorrs[]="А где же комментарий?";
-$name=($IS['user']!=''&&$IS['user']!='anonymouse'?$IS['user']:$_REQUEST["name"]); if($name=='') $erorrs[]="Вы забыли подписаться.";
+$name=($IS['user']!=''&&$IS['user_noname']!='noname'?$IS['user']:$_REQUEST["name"]); if($name=='') $erorrs[]="Вы забыли подписаться.";
 $mail=mail_validate($_REQUEST["mail"]);
 
 if(!sizeof($erorrs)) {
@@ -195,8 +195,10 @@ if($IS['capcha']!='yes') {
 		'Mail'=>e(($mail!=''?$mail:$IS['mail'])),
 		'Name'=>e($name),
 		'group'=>($admin?1:0),
+		'IPN'=>e($GLOBALS['IPN']),
+		'BRO'=>e($GLOBALS['BRO']),
 		'DateID'=>$dat,
-		'unic'=>$unic,
+		'unic'=>e($GLOBALS['unic']),
 		'Time'=>time(),
 		'scr'=>e($scr),
 		'Parent'=>$id );
@@ -220,7 +222,7 @@ if($IS['capcha']!='yes') {
 	$c=njs(comment_one($p,getmojno_comm($p['DateID'])));
 
 // ================= сохраняем данные в карточку =================
-	if($name!='anonymouse' && $IS['realname']=='') $ara_kartochka['realname']=e($name);
+	if($IS['realname']=='') $ara_kartochka['realname']=e($name);
 	if($mail!='' && $IS['mail']=='') $ara_kartochka['mail']=e($mail);
 	if(sizeof($ara_kartochka)) msq_update('unic',$ara_kartochka,"WHERE `id`='$unic'");
 // ================= сохраняем данные в карточку =================
@@ -252,7 +254,7 @@ if($dat==0) $dat=ms("SELECT `DateID` FROM `dnevnik_comm` WHERE `id`='$id'","_l",
 $s="<form name='sendcomment' onsubmit='cmsend(this,".$comnu.",".$id.",".$dat.",".$lev."); return false;'><div id='co_$comnu'></div>";
 
 $s.= "<div><div class=l1>"
-.($IS['user']!=''&&$IS['user']!='anonymouse'?$imgicourl:"имя: <input name='nam' class='in' type='text'>")."
+.($IS['user']!=''&&$IS['user_noname']!='noname'?$imgicourl:"имя: <input name='nam' class='in' type='text'>")."
 
 <div id='".$idhelp."p' style='display:inline; margin-left: 3px;'><img class=l onclick='majax(\\\"comment.php\\\",{a:\\\"loadpanel\\\",idhelp:\\\"".$idhelp."\\\"})' src='".$www_design."e3/finish.png' alt='panel'></div>
 

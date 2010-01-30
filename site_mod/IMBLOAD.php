@@ -23,7 +23,7 @@ $s=str_replace("\n","","
 ");
 
 
-	SCRIPT_ADD($www_design."JsHttpRequest.js"); // подгрузить аякс
+	SCRIPT_ADD($GLOBALS['www_design']."JsHttpRequest.js"); // подгрузить аякс
 
 	SCRIPTS('IMBLOAD',"
 function imbload(id,Date) { e=document.getElementById(id); e.innerHTML = '<center>...идет загрузка...</center>';

@@ -41,7 +41,7 @@ print "<html><head>
 <title>админка: правки</title>
 <link href=\"/sys/pravka/pravka.css\" rel=\"stylesheet\" type=\"text/css\" />
 
-<script type=\"text/javascript\" language=\"JavaScript\" src=\"/sys/JsHttpRequest.js\"></script>
+<!-- script type=\"text/javascript\" language=\"JavaScript\" src=\"/sys/Js	HttpRequest.js\"></script -->
 <script>
 function pp(id) { pravka(id,'podrobno'); }
 function pdi(id) { var i=prompt('\\nДа, принято. Потому что:\\n','Спасибо, '); if(i && i.length != 0 ) pravka(id,1,i); }

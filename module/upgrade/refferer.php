@@ -18,4 +18,15 @@ $s .= msq_del_pole("dnevnik_search","Date","мусор");
 $s .= msq_add_pole("dnevnik_link","last_ipn","int(10) unsigned NOT NULL","статистика по линкам");
 $s .= msq_add_pole("dnevnik_search","last_ipn","int(10) unsigned NOT NULL","статистика по поисковикам");
 
+
+
+
+
+
+
+
+
+
+
+
 ?>

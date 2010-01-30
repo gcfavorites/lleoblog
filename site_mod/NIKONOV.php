@@ -3,12 +3,8 @@
 
 function NIKONOV($e) { global $admin,$podzamok,$article;
 	list($url,$text)=explode("\n",$e,2); $url=c($url); $text=c($text);
-
 	if( time() > (strtotime($article['Date']) + 86400*8) ) { // если больше недели - не заменять
-	$u=NIKONOVU($url); return $text."<p>
-<div style='border: 1px dotted black; margin-left:15%; margin-right:15%; padding:10pt; font-size: 12pt;'>
-Этот материал был написан для проекта <a href='$url'>$u</a>, где я веду авторскую колонку. Вообще для $u я
-написал немало подобных материалов, <a href=http://lleo.aha.ru/dnev/contents/?search=".$u."&smode=hed>вот их полный список</a></div>";
+	return $text.NIKONOV_NEMALO(NIKONOVU($url));
 }
 
 // --- razgovor.org ---
@@ -43,15 +39,15 @@ function NIKONOVU($url) {
 	return 'error';
 }
 
-function NIKONOV_PRODOL($url) { $u=NIKONOVU($url);
+function NIKONOV_NEMALO($u) { return "
+<p><div style='border: 1px dotted black; margin-left:15%; margin-right:15%; padding:10pt; font-size: 12pt;'>
+Этот текст написан для проекта <a href='$url'>$u</a>, где я веду авторскую колонку. Вообще для $u я написал немало подобных
+материалов, <span class=l onclick=\"majax('search.php',{a:'header',search:'".$u."'})\">вот их полный список</span></div>";
+}
 
-	return "<p><center><a href='$url'>...читать продолжение этого материала на ".NIKONOVU($url)."</a></center>
-
-<p><br><div style='border: 1px dotted black; margin-left:15%; margin-right:15%; padding:10pt; font-size: 12pt;'>
-Этот материал был написан для проекта <a href='$url'>$u</a>, где я веду авторскую колонку. Вообще для $u я
-написал немало подобных материалов, <a href=http://lleo.aha.ru/dnev/contents/?search=".$u."&smode=hed>вот их полный список</a></div>
-";
-
+function NIKONOV_PRODOL($url) {
+	$u=NIKONOVU($url);
+	return "<p><center><a href='$url'>...читать продолжение этого материала на ".NIKONOVU($url)."</a></center>".NIKONOV_NEMALO($u);
 }
 
 ?>

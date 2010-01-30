@@ -55,18 +55,18 @@ function ms_connect() { if(isset($GLOBALS['ms_connected'])) return;
 }
 
 function e($s) { return mysql_real_escape_string($s); }
-function msq_exist($tb,$u) { return ms("SELECT COUNT(*) FROM `$tb` $u","_l",0); }
+function msq_exist($tb,$u) { return ms("SELECT COUNT(*) FROM $tb $u","_l",0); }
 //function msqn($sql) { return mysql_num_rows($sql); }
 
 function msq_add($tb,$ara) {
         $a=$b=''; foreach($ara as $n=>$m) { $a.="`$n`,"; $b.="'$m',"; } $a=trim($a,','); $b=trim($b,',');
-        $s = "INSERT INTO `$tb` ($a) VALUES ($b)";
+        $s = "INSERT INTO $tb ($a) VALUES ($b)";
         return msq($s);
 }
 
 function msq_update($tb,$ara,$u='') {
         $a=''; foreach($ara as $n=>$m) $a.="`$n`='$m',"; $a=trim($a,',');
-        $s="UPDATE `$tb` SET $a $u";
+        $s="UPDATE $tb SET $a $u";
         return msq($s);
 }
 
@@ -79,7 +79,7 @@ function msq_add_update($tb,$ara,$key='id') { $keys=explode(' ',$key);
 
 function msq_del($tb,$ara,$u='') {
 	$a=''; foreach($ara as $n=>$m) $a.="`$n`='$m',"; $a=trim($a,',');
-	$s="DELETE FROM `$tb` WHERE $a $u";
+	$s="DELETE FROM $tb WHERE $a $u";
 	return msq($s);
 }
 
@@ -90,7 +90,7 @@ function msq($s) { global $msqe;
 }
 
 function msq_pole($tb,$pole) { // проверить, существует ли такое поле в таблице $tb
-        $pp=ms("SHOW COLUMNS FROM `".e($tb)."`","_a",0); foreach($pp as $p) if($p['Field']==$pole) return $p['Type'];
+        $pp=ms("SHOW COLUMNS FROM ".e($tb)."","_a",0); foreach($pp as $p) if($p['Field']==$pole) return $p['Type'];
 	return false;
 }
 
@@ -100,7 +100,7 @@ function msq_table($pole) { // проверить, существует ли такая таблица
 }
 
 function msq_index($tb,$pole) { // проверить, существует ли такой индекс
-        $pp=ms("SHOW INDEX FROM `$tb`","_a",0); if($pp!==false) foreach($pp as $p) if($p['Column_name']==$pole) return true;
+        $pp=ms("SHOW INDEX FROM $tb","_a",0); if($pp!==false) foreach($pp as $p) if($p['Column_name']==$pole) return true;
         return false;
 }
 

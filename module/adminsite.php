@@ -32,7 +32,7 @@ $_PAGE = array('design'=>file_get_contents($GLOBALS['host_design']."adminsite.ht
 // include_once $include_sys."_one_pravka.php"; // процедура вывода окошка с одной правкой
 // include_once $include_sys."text_scripts.php"; // включить библиотеку скриптов
 
-SCRIPT_ADD($www_design."JsHttpRequest.js");
+SCRIPT_ADD($GLOBALS['www_design']."JsHttpRequest.js");
 
 SCRIPTS("
 function zabil(id,text) { document.getElementById(id).innerHTML = text; }
