@@ -218,7 +218,8 @@ function pr_comments_($sq) { global $wwwhost;
         	}
 
 	$level=($p['Parent']!=0?'100':'0');
-	$s.= str_replace('{comment_otstup}',$level,comment_one($p));
+	$s.= comment_one($p,0,$level);
+// str_replace('{comment_otstup}',$level,comment_one($p));
 	}
 	return $s;
 }

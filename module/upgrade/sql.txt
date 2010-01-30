@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `dnevnik_comm` (
   `whois` varchar(128) NOT NULL COMMENT 'Определялка страны',
   `scr` enum('1','0') NOT NULL default '0' COMMENT 'Открытый, скрытый',
   `rul` enum('1','0') NOT NULL default '0' COMMENT 'Особый',
-  `ans` enum('1','0') NOT NULL default '1' COMMENT 'Разрешено ли принимать комментарии к нему?',
+  `ans` enum('1','0','u') NOT NULL default 'u' COMMENT 'Разрешено ли принимать комментарии к нему?',
   `group` tinyint(3) unsigned NOT NULL COMMENT 'Группа для выделения разным цветом. 0 - все, 1 - админ, 2... ну, допустим, Topbot',
   `golos_plu` int(10) unsigned NOT NULL default '0' COMMENT 'Голосование плюсики',
   `golos_min` int(10) unsigned NOT NULL default '0' COMMENT 'Голосование минусики',
