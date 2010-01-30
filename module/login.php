@@ -32,11 +32,11 @@ if(isset($_POST['login'])) { $l = $_POST['login'];
 
 } else {
 
-	$p=ms("SELECT `password`,`id` FROM `unic` WHERE `login`='".e($l)."'","_1",0);
+	$p=ms("SELECT `password`,`id` FROM ".$GLOBALS['db_unic']." WHERE `login`='".e($l)."'","_1",0);
 	$unicnew=$p['id'];
 
 	if(md5($_POST['password'].$hashlogin) == $p['password']) {
-	msq("DELETE FROM `unic` WHERE `id`='".e($unic)."' AND `password`=''"); print $msqe; // удалить ненужный более логин
+	msq("DELETE FROM ".$GLOBALS['db_unic']." WHERE `id`='".e($unic)."' AND `password`=''"); print $msqe; // удалить ненужный более логин
 
 		$unicnew=$p['id'];
 		$kuka=$unicnew.'-'.md5($unicnew.$hashlogin);
@@ -47,7 +47,7 @@ function setIsReady() {	if(swf('kuki').flashcookie_save) swf('kuki').flashcookie
 ".($_POST['retpage']!=''?"setTimeout(\"location.replace('".h($_POST['retpage'])."')\", 2000);":"")."}");
 		$o.="<div style='position: absolute;width:1px;height:1px;overflow:hidden;left:-40px;top:0;opacity:0'><object classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' id='kuki' width='1' height='1' codebase='http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab' style='width:1px;height:1px;overflow:hidden;position:absolute;left:-400px;top:0;border:0;'><param name='movie' value='{www_design}kuki_ray.swf' /><embed src='{www_design}kuki_ray.swf' width='1' height='1' name='kuki' type='application/x-shockwave-flash' pluginspage='http://www.adobe.com/go/getflashplayer'></embed></object></div>";
 
-		$p=ms("SELECT `realname`,`login` FROM `unic` WHERE `login`='".e($l)."'","_1",0);
+		$p=ms("SELECT `realname`,`login` FROM ".$GLOBALS['db_unic']." WHERE `login`='".e($l)."'","_1",0);
 
 		die($o."<p>¬ы залогинились как ".h($l)."!");
 	} else {
@@ -67,7 +67,7 @@ function setIsReady() {	if(swf('kuki').flashcookie_save) swf('kuki').flashcookie
 		if(isset($_GET['openid_sreg_email'])) $ara['mail']=e($_GET['openid_sreg_email']);
 		if(isset($_GET['openid_sreg_fullname'])) $ara['realname']=e($_GET['openid_sreg_fullname']);
 		if(isset($_GET['openid_sreg_dob'])) $ara['birth']=e($_GET['openid_sreg_dob']);
-		msq_update('unic',$ara,"WHERE `id`='$unic'");
+		msq_update($GLOBALS['db_unic'],$ara,"WHERE `id`='$unic'");
                 die("<font color=green>¬ы залогинены по Openid как ".$_COOKIE['jopenid']."</font>");
         }else if($openid->IsError() == true){                   // ON THE WAY, WE GOT SOME ERROR
                 $error = $openid->GetError();

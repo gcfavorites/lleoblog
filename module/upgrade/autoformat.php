@@ -8,6 +8,9 @@ $s .= msq_add_pole("dnevnik_zapisi","autokaw","enum('auto','no')","тогда можно б
 $s .= msq_add_pole("dnevnik_zapisi","count_comments_open","int(10) unsigned default '0'","это связано с оптимизацией движка");
 $s .= msq_del_pole("dnevnik_zapisi","include","поле include больше не нужно, мы перешли на систему модулей II поколения");
 
+$s .= msq_add_pole("dnevnik_zapisi","template","varchar(32) NOT NULL default 'blog'","темплайт дизайна задается в каждой заметке");
+
+
 /*
 $action='go';
 $timesec=10;

@@ -26,15 +26,15 @@ die($s);
             [global_value] => 11211
             [local_value] => 11211
             [access] => 7
-
-
 */
 
 $_SCRIPT=array(); $_SCRIPT_ADD=array();
 $_STYLE=array(); $_STYLE_ADD=array();
 mystart();
 
-SCRIPTS("jog_kuki",$jog_scripts." function setIsReady() { c_rest('".$uc."'); c_rest('lju'); }");
+SCRIPTS("jog_kuki",$jog_scripts." function setIsReady() { c_rest('".$uc."'); c_rest('lju'); } ");
+
+SCRIPT_ADD($GLOBALS['www_design']."JsHttpRequest.js"); // подгрузить аякс
 
 $hashpage=rand(0,1000000); $hashpage=substr(broident($hashpage.$hashinput),0,6).'-'.$hashpage;
 
@@ -217,8 +217,8 @@ function posdiv(id,x,y) { // позиционирование (с проверкой на вылет)
 //	e.innerHTML=e.innerHTML+'<table bgcolor=white><td><b><big>W=' + W + ' w=' + w + '<br>H=' + H + ' h=' + h +'</big></b></td></table>';
 //}
 
-        if(x<0) x=0; if(y<0) y=0;
-        if(x+w>W) x=W-w; if(y+h>H) y=H-h;
+        if(x+w>W) x=W-w; if(x<0) x=0; 
+	if((y+h)>H) y=H-h; if(y<0) y=0;
         e.style.top=y+'px'; e.style.left=x+'px';
 
 }

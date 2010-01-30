@@ -250,7 +250,18 @@ if(!isset($_GET['action'])) { die("
 <td><form method=get action='$mypage'><input type=hidden name='action' value='check'><input type=submit value='Check'></form></td>
 <td><form method=get action='$mypage'><input type=hidden name='action' value='back'><input type=submit value='Back'></form></td>
 <td><form method=get action='$mypage'><input type=hidden name='action' value='clean'><input type=submit value='Clean *.old'></form></td>
-</tr></table></center>");
+</tr></table>
+
+
+
+<p>WARNING! Add to config.php:
+<table><td>
+<p>\$db_unic=\"unic\";
+<br>\$comment_otstup=25; // добавочный отступ в пикселях от левой границы каждого комментария-ответа
+<br>\$comment_pokazscr=1; // 1 - показывать скрытые комментарии словом 'скрыт', 0 - не показывать
+</td></table>
+
+</center>");
 }
 // ==================== на выбор ===================================
 
@@ -276,7 +287,7 @@ function print_o($a,$act,$color) { global $filehost,$veto_my; $rez=strlen($fileh
 //====================================================================
 
 function get_dvijok_files($files,$filehostn) { global $stop,$veto_dir;
-$stop=(intval($stop)?intval($stop):100); if(!--$stop) die('stop error');
+$stop=(intval($stop)?intval($stop):1000); if(!--$stop) die('stop error');
         $a=glob($files); $r=array();
         foreach($a as $n=>$l) if(!is_dir($l)){ if(!in_array($l,$veto_dir) and substr($l,strlen($l)-4,4)!='.old' ) {
 
@@ -290,7 +301,7 @@ $stop=(intval($stop)?intval($stop):100); if(!--$stop) die('stop error');
 }
 
 
-function get_dvijok_files_old($files) { global $stop; $stop=(intval($stop)?intval($stop):100); if(!--$stop) die('stop error');
+function get_dvijok_files_old($files) { global $stop; $stop=(intval($stop)?intval($stop):1000); if(!--$stop) die('stop error 2');
         $a=glob($files); $r=array();
         foreach($a as $n=>$l) if(!is_dir($l)) { if( preg_match("/\.old$/si",$l) ) { $r[]=$l; } unset($a[$n]); }
         foreach($a as $l) $r=array_merge($r,get_dvijok_files_old($l."/*"));

@@ -259,7 +259,7 @@ if($a=='polesend') {
 	$val=$_REQUEST["val"];
 	if($name=='template' and $val=='') $val='blog'; // поле по умолчанию
 
-	if($name=='' or $num==0) idie('Неверные данные!');
+	if($name=='' or $num==0) otprav(''); //idie('Неверные данные!');
 	if($name=='autokaw') $val=($val=='true'?'auto':'no');
 
 	if($admin) msq_update('dnevnik_zapisi',array(e($name)=>e($val),'DateUpdate'=>time()),"WHERE `num`='$num'");

@@ -1,8 +1,8 @@
 <?php
 
-SCRIPT_ADD($www_design."pravka_blog.js"); // подгрузить внешний скрипт
-SCRIPT_ADD($www_design."pins.js"); // подгрузить pins
-SCRIPT_ADD($www_design."JsHttpRequest.js"); // подгрузить аякс
+SCRIPT_ADD($GLOBALS['www_design']."pravka_blog.js"); // подгрузить внешний скрипт
+SCRIPT_ADD($GLOBALS['www_design']."pins.js"); // подгрузить pins
+SCRIPT_ADD($GLOBALS['www_design']."JsHttpRequest.js"); // подгрузить аякс
 
 // SCRIPTS_mine();
 

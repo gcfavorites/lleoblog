@@ -38,7 +38,10 @@ function module($t) { $s=$t[1]; // подцепить модули
 
 
                         if(!function_exists($mod)) idie("Нет такой функции: ".h($mod)
-.($GLOBALS['admin']&&isset($GLOBALS['Date'])?"<p><a href=".$GLOBALS['httphost']."editor/?Date=".$GLOBALS['Date'].">редактировать</a>":'')
+.($GLOBALS['admin']&&isset($GLOBALS['Date'])?"
+<p><a href=".$GLOBALS['httphost']."editor/?Date=".$GLOBALS['Date'].">редактировать</a>
+<p><div class=l onclick=\"majax('editor.php',{a:'editform',num:'".$GLOBALS['article']['num']."'})\">редактировать в окне</div>
+":'')
 );
                 }
                 return call_user_func($mod,modules(str_replace(array('{=','=}'),array('{_','_}'),c($arg))));

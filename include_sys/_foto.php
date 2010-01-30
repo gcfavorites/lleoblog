@@ -5,7 +5,7 @@ onmouseover=\"this.className='bar2'\" onmouseout=\"this.className='bar1'\" id='w
 
 STYLES("Всплывающее окно фотки","
 
-.fotoa{ width:200; height:150; float: left; text-align: center; border: 1px solid black; }
+.fotoa{ width:200px; height:150px; float: left; text-align: center; border: 1px solid black; }
 .fotoa:hover { border: 1px solid blue; }
 .fotoa a { color: #814c52; }
 .fotot{ font-size: 10px; }

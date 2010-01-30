@@ -68,7 +68,7 @@ function admin_redirect($path,$timesec) { return "<noscript><meta http-equiv=ref
 function msq_add_pole($table,$pole,$znachenie,$text) {
 	$name=$table."-".$pole;
 	$kom='Add Field';
-	if(!msq_pole($table,$pole)) {
+	if(msq_pole($table,$pole)===false) {
 		if($GLOBALS['PEST'][$name]==$kom) {
 			msq("ALTER TABLE `".$table."` ADD `".$pole."` ".$znachenie." NOT NULL");
 			return admin_kletka($name,"<font color=green>в `$table` добавлено поле `$pole`</font>".$GLOBALS['msqe']);
@@ -80,7 +80,7 @@ function msq_add_pole($table,$pole,$znachenie,$text) {
 function msq_del_pole($table,$pole,$text) {
 	$name=$table."-".$pole;
 	$kom='Delete Field';
-        if(msq_pole($table,$pole)) {
+        if(msq_pole($table,$pole)!==false) {
 		if($GLOBALS['PEST'][$name]==$kom) {
                 	msq("ALTER TABLE `".$table."` DROP `".$pole."`");
 			return admin_kletka($name,"<font color=green>из `$table` удалено поле `$pole`</font>".$GLOBALS['msqe']);
@@ -90,7 +90,7 @@ function msq_del_pole($table,$pole,$text) {
 
 
 // добавить поле в базу
-function msq_add_index($table,$pole,$znachenie,$text) { if(!msq_pole($table,$pole)) return;
+function msq_add_index($table,$pole,$znachenie,$text) { if(msq_pole($table,$pole)===false) return;
 	$name=$table."-".$pole;
 	$kom='Add Index';
 	if(!msq_index($table,$pole)) {
