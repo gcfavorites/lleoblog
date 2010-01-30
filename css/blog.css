@@ -81,13 +81,17 @@ overflow: auto; padding: 0 0 0 5px; margin-top: 5px; }
 .rul0:before {content:url('{www_design}e3/list-remove.png')}
 
 /* кнопки */
-.kus,.kd,.ked,.ks0,.ks1,.ka { cursor: pointer; float:left; font-size: 6pt; color: blue; padding: 0 2pt 0 7pt; }
+.kus,.kd,.ked,.ks0,.ks1,.ka,.ko1,.ko0,.kou { cursor: pointer; float:left; font-size: 6pt; color: blue; padding: 0 2pt 0 7pt; }
 .kus:before {content:'info'} /* показать личную карточку автора */
 .kd:before {content:'del'} /* удалить комментарий */
 .ked:before {content:'edit'} /* редактировать комментарий */
 .ks0:before {content:'скрыть'}
 .ks1:before {content:'раскрыть'}  /* скрыть-раскрыть */
 .ka:before {content:'ответить'} /* ответить */
+
+.ko1:before {content:'разрешено'; background-color: #FBDFAA;} 
+.ko0:before {content:'запрещено'; background-color: #AAFAFA;}
+.kou:before {content:'-';}
 
 .cscr,.cdel { max-width: 20%; border: 1px dotted #bbb; padding: 0 0 0 5px; margin-top: 5px; }
 

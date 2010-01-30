@@ -20,7 +20,7 @@ if($template=='plain') $GLOBALS['_PAGE'] = array('design'=>file_get_contents($GL
 
 function blogpage($title='') { global $IS,$_PAGE,$wwwhost,$login,$podzamok;
 
-	STYLE_ADD($GLOBALS['httpsite'].$GLOBALS['www_design']."styles.css");
+	STYLE_ADD($GLOBALS['file_css']."blog.css");
 
 	if(isset($IS['user']) and isset($IS['obr'])) $loginobr=$GLOBALS['imgicourl'];
 	else $loginobr='login&nbsp;'.$GLOBALS['unic'];

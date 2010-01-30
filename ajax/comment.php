@@ -69,23 +69,19 @@ otprav($r);
 
 //========================================================================================================================
 if($a=='plus') { // плюсик
-	if(!$unic) otprav("");
-        $p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0);
-	if($p['unic']==$unic) otprav("");
+	if(!$unic) otprav("А у вас всегда куки отключены?");
+        $p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0); if($p['unic']==$unic) idie("Не слишком ли самонадеянно?");
 	$e=mysql_query("INSERT INTO `dnevnik_plusiki` (`commentID`,`unic`,`var`) VALUES ($id,$unic,'plus')"); if(!$e) otprav("");
 	mysql_query("UPDATE `dnevnik_comm` SET `golos_plu`=`golos_plu`+1 WHERE `id`='$id'");
 	$p['golos_plu']++;
 	otprav_comment($p);
 }
 //========================================================================================================================
-if($a=='minus') { // плюсик
-	if(!$unic) otprav("");
-        $p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0);
-	if($p['unic']==$unic) otprav("");
-	$e=mysql_query("INSERT INTO `dnevnik_plusiki` (`commentID`,`unic`,`var`) VALUES ($id,$unic,'minus')");
-	if(!$e) otprav("");
+if($a=='minus') { // минусик
+	if(!$unic) otprav("А у вас всегда куки отключены?");
+        $p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0); if($p['unic']==$unic) idie("Не слишком ли самокритично?");
+	$e=mysql_query("INSERT INTO `dnevnik_plusiki` (`commentID`,`unic`,`var`) VALUES ($id,$unic,'minus')"); if(!$e) otprav("");
 	mysql_query("UPDATE `dnevnik_comm` SET `golos_min`=`golos_min`+1 WHERE `id`='$id'");
-        $p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0);
 	$p['golos_min']++;
 	otprav_comment($p);
 }
@@ -137,6 +133,15 @@ otprav_sb('commentform.js',$s);
 }
 
 //========================================================================================================================
+if($a=='ans') { // id скрыть-раскрыть
+	if(!$admin) oalert("Не админ");
+	$p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0); if($dat===false) oalert("А такого комментария нет.");
+	$p['ans']=($p['ans']=='u'?'0':($p['ans']=='0'?'1':'u'));
+	msq_update('dnevnik_comm',array('ans'=>$p['ans']),"WHERE `id`='$id'");
+	otprav_comment($p,"idd($id).className='".commclass($p)."';");
+}
+
+//========================================================================================================================
 if($a=='scr') { // id скрыть-раскрыть
 	if(!$admin) oalert("Не админ");
 	$p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0); if($dat===false) oalert("А такого комментария нет.");
@@ -159,6 +164,7 @@ if($a=='rul') { // id скрыть-раскрыть
 //========================================================================================================================
 
 if($a=='comsend') {
+
 
 $text=$_REQUEST["text"]; $text=trim($text,"\n\r\t "); $text=str_replace("\r","",$text); if($text=='')  $erorrs[]="А где же комментарий?";
 $name=($IS['user']!=''&&$IS['user']!='anonymouse'?$IS['user']:$_REQUEST["name"]); if($name=='') $erorrs[]="Вы забыли подписаться.";
@@ -189,15 +195,24 @@ if($IS['capcha']!='yes') {
 		'Mail'=>e(($mail!=''?$mail:$IS['mail'])),
 		'Name'=>e($name),
 		'group'=>($admin?1:0),
-		'DateID'=>intval($dat),
+		'DateID'=>$dat,
 		'unic'=>$unic,
 		'Time'=>time(),
 		'scr'=>e($scr),
-		'Parent'=>intval($id) );
+		'Parent'=>$id );
 
 	// ================ отправить почтой =============================
 	if($GLOBALS['admin'] and $id!=0 ) { include_once $GLOBALS['include_sys']."_mail_answer.php"; mail_answer($id,$ara); }
 	// ===============================================================
+
+// а имеем ли мы право забубенить этот комм?
+	$ans=($id==0?'u':ms("SELECT `ans` FROM `dnevnik_comm` WHERE `id`='$id'='1'","_l"));
+	if($ans=='0') idie('Админ запретил отвечать на этот комментарий.');
+	if($ans=='u') {	$e=getmojno_comm($dat);
+		if($e===false) idie('В этой заметке отвечать нельзя.');
+		if($e=='root' and $id!=0) idie('В этой заметке разрешены комментарии, но не ответы на них.');
+	}
+// ------------------------------------------
 
 	msq_add('dnevnik_comm',$ara); $newid=mysql_insert_id();
 
@@ -210,16 +225,18 @@ if($IS['capcha']!='yes') {
 	if(sizeof($ara_kartochka)) msq_update('unic',$ara_kartochka,"WHERE `id`='$unic'");
 // ================= сохраняем данные в карточку =================
 
-	cache_rm(comment_cachename(intval($dat)));
+	cache_rm(comment_cachename($dat));
 
-otprav("
-clean('$idhelp');
+otprav("clean('$idhelp');
 ".($id?"mkdiv2($newid,\"$c\",'".commclass($p)."',idd(0),idd($id));":"mkdiv($newid,\"$c\",'".commclass($p)."',idd(0));")."
 idd($newid).style.marginLeft='".($lev+25)."px';
 idd($newid).name='$newid';
 otkryl($newid);
 ".(!$id?"window.location=mypage.replace(/#[^#]+$/g,'')+'#$newid';":"")."
-");
+"
+
+// .($GLOBALS['admin']?"alert('сбросили кэш заметки #".$dat." = ".comment_cachename($dat)."'); ":'')
+);
 
 
 } else { otprav_error(implode('<br>',$erorrs)); }
@@ -306,6 +323,7 @@ function del_comm($id,$l=1) { if(!$id && !$GLOBALS['admin']) return " alert('id=
 
 function otprav_comment($p,$r='') {
 	cache_rm(comment_cachename($p['DateID'])); // сбросить кэш коментов этой записи
+//	if($GLOBALS['admin']) $r.=" alert('сбросили кэш заметки #".$p['DateID']." = ".comment_cachename($p['DateID'])."');";
 	otprav("idd(".$p['id'].").innerHTML=\"".njs(comment_one($p, getmojno_comm($p['DateID']) ))."\"; ".$r);
 }
 

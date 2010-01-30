@@ -95,10 +95,7 @@ function UNIC($e) { global $IS;
 	$s=preg_replace("/<a\s[^>]+>/s","",$s);
 	$s=str_replace('</a>','',$s);
 
-	return "<div id=loginobr style='cursor: pointer; padding: 2px; margin: 1px 10px 1px 10px;
-border: 1px dotted #B0B0B0;' onclick=\"majax('login.php',{action:'openid_form'})\"><spav
-style='font-size:7px;'>ваш логин:</span><div style='font-weight: bold; color: blue; font-size: 8px;'>".$s."</div></div>"
-.$GLOBALS['jog_kuki'];
+	return "<div id=loginobr style='cursor: pointer; padding: 2px; margin: 1px 10px 1px 10px; border: 1px dotted #B0B0B0;' onclick=\"majax('login.php',{action:'openid_form'})\"><span style='font-size:7px;'>ваш логин:</span><div style='font-weight: bold; color: blue; font-size: 8px;'>".$s."</div></div>".$GLOBALS['jog_kuki'];
 
 }
 

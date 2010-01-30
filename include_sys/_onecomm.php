@@ -14,6 +14,7 @@ function kus(unic) { if(unic) majax('login.php',{action:'getinfo',unic:unic}); }
 function kd(e) { if(confirm('Точно удалить?')) majax('comment.php',{a:'del',id:ecom(e).id}); } // удалить комментарий
 function ked(e) { majax('comment.php',{a:'edit',id:ecom(e).id}); } // редактировать комментарий
 function ksc(e) { majax('comment.php',{a:'scr',id:ecom(e).id}); } // скрыть-раскрыть
+function ko(e) { majax('comment.php',{a:'ans',id:ecom(e).id}); } // ans-0-1-undef
 function rul(e) { majax('comment.php',{a:'rul',id:ecom(e).id}); } // rul-не rul
 function ka(e) { e=ecom(e); majax('comment.php',{a:'comform',id:e.id,lev:e.style.marginLeft,comnu:comnum}); } // ответить
 
@@ -199,7 +200,9 @@ function comment_prep($p,$mojno_comm,$level) { global $admin,$unic,$podzamok,$ge
 // ---- кнопки ----
 	$c['kn']=''; // "'$mojno_comm'";
 
-	if($admin or $mojno_comm=="1") $c['kn'] .= "<div class=ka onclick='ka(this)'></div>"; // ответить
+	if($p['ans']!='0' and ($admin or $mojno_comm=="1" or $p['ans']=='1') )
+		$c['kn'] .= "<div class=ka onclick='ka(this)'></div>"; // ответить
+	if($admin) $c['kn'] .= "<div class=ko".$p['ans']." onclick='ko(this)'></div>"; // ответить
 
 //	$c['kn'] .= "<div class=kus onclick='kus(".$p['unic'].")'></div>"; // показать личную карточку автора
 
@@ -256,7 +259,7 @@ function load_comments($art) { global $comc,$comindex,$kstop,$podzamok,$comment_
 	$num=$art['num'];
 
 $cachename=comment_cachename($num); $mas=cache_get($cachename); // есть ли в кэше?
-if($mas===false) { // ------------ если нет в кэше, то прочесть ------------
+if(($GLOBALS['admin'] and !empty($_GET['nocache'])) or $mas===false) { // ------------ если нет в кэше, то прочесть ------------
 	$sql=ms("SELECT `id`,`unic`,`group`,`Name`,`Text`,`Parent`,`Time`,`whois`,`rul`,`ans`,`golos_plu`,`golos_min`,`scr`,`Mail`,`DateID`
 	FROM `dnevnik_comm` WHERE `DateID`='".e($num)."' ORDER BY `Time`","_a",0);
 	if(!sizeof($sql)) return ppp_nocomment();

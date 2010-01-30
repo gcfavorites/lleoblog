@@ -89,10 +89,9 @@ function msq($s) { global $msqe;
 	return($sql);
 }
 
-
 function msq_pole($tb,$pole) { // проверить, существует ли такое поле в таблице $tb
-        $pp=ms("SHOW COLUMNS FROM `$tb`","_a",0); if($pp!==false) foreach($pp as $p) if($p['Field']==$pole) return true;
-        return false;
+        $pp=ms("SHOW COLUMNS FROM `".e($tb)."`","_a",0); foreach($pp as $p) if($p['Field']==$pole) return $p['Type'];
+	return false;
 }
 
 function msq_table($pole) { // проверить, существует ли такая таблица
