@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS `dnevnik_zapisi` (
   `DateDate` int(11) NOT NULL default '0',
   `template` varchar(32) NOT NULL default 'blog',
   UNIQUE KEY `num` (`num`),
-  KEY `Date` (`Date`),
+  KEY `Date` (`Date`(128)),
   KEY `Access` (`Access`),
   KEY `DateDatetime` (`DateDatetime`),
   KEY `DateDate` (`DateDate`)
@@ -160,9 +160,9 @@ CREATE TABLE IF NOT EXISTS `pravki` (
   `Answer` text NOT NULL,
   `metka` enum('new','submit','discard') NOT NULL default 'new',
   PRIMARY KEY  (`id`),
-  KEY `Date` (`Date`),
+  KEY `Date` (`Date`(255)),
   KEY `metka` (`metka`),
-  KEY `sc` (`sc`)
+  KEY `sc` (`sc`(32))
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Правки блога' AUTO_INCREMENT=1526 ;
 
 -- --------------------------------------------------------
@@ -194,7 +194,7 @@ CREATE TABLE IF NOT EXISTS `site` (
   `text` text NOT NULL,
   `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`),
-  KEY `name` (`name`),
+  KEY `name` (`name`(1024)),
   KEY `type` (`type`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Контент сайта' AUTO_INCREMENT=169 ;
 
