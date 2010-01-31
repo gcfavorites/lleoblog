@@ -51,11 +51,13 @@ function openid_go(log) {
 
 function polesend(p) { polesend_go=1; setTimeout("polesend_go=0;", 500); return polesend0(p.name,p.value); }
 
-function polesend_all() { setTimeout("polesend_all_time()", 100); return false; }
+function polesend_all() { setTimeout("polesend_all_time();", 100); return false; }
 
 function polesend_all_time() { if(polesend_go) return;
-	if(lastp=='openid') return openid_go(lastpolevalue);
-	return polesend0(lastp,lastpolevalue);
+//	alert('\npolesend_go: '+polesend_go + '\nlastp: '+lastp); //+'\nlastpolevalue: '+lastpolevalue);
+//	alert('\npolesend_go: '+polesend_go + '\nlastp: '+lastp); //+'\nlastpolevalue: '+lastpolevalue);
+	if(lastpolename=='openid') return openid_go(lastpolevalue);
+	return polesend0(lastpolename,lastpolevalue);
 }
 
 function polesend0(name,value) {

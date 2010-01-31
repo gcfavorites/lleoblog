@@ -107,7 +107,7 @@ if($path."/" == $wwwhost) {
 }
 
 // Старый стиль именования
-
+if(preg_match("/^".$pwwwhost."(\d\d\d\d)\-(\d\d)\-(\d\d)\.shtml/", $path, $m)) redirect($httphost.$m[1]."/".$m[2]."/".$m[3].".html");
 
 // ===== подключение внешних модулей из директории /module/* ====
 $mod_name=substr($path,strlen($wwwhost)); $mod_name=str_replace('..','.',$mod_name);
