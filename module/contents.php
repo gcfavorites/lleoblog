@@ -10,7 +10,9 @@ if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - на
 blogpage();
 
 $_PAGE["title"] = $_PAGE["header"] = "Содержание дневника";
-$_PAGE["calendar"] = "<a href=".$GLOBALS["wwwhost"].">в дневник</a>";
+$_PAGE["calendar"] = "<a href=".$GLOBALS["wwwhost"].">в блог</a>";
+if($admin) $_PAGE["calendar"] .= "<p><a href=".$GLOBALS["wwwhost"]."install.php>install</a>
+<p><a href=".$GLOBALS["wwwhost"]."admin>admin</a>";
 $_PAGE["counter"] = "";
 
 $SIZEDEFAULT=60;

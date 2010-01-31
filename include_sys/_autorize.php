@@ -39,11 +39,8 @@ if(isset($_COOKIE[$uc])) { // если кука $uc установлена
 		if($unicpass!=md5($unic.$hashlogin)) set_unic_candidat(); // неверный пароль? странно. ну... назначим снова кандидатом.
 		else { // авторизация пройдена успешно
 			$IS=getis($unic); $imgicourl=$IS['imgicourl'];
-			if(stristr($BRO,'blogtest')) { // для отладки
-				$admin=$podzamok=0;
-				$unic=666;
-				$IS=ms("SELECT * FROM ".$GLOBALS['db_unic']." WHERE `id`='$unic'","_1"); // dier($IS);
-				}
+			if($IS['admin']=='podzamok') $podzamok=true;
+			// if(stristr($BRO,'blogtest')) { $admin=$podzamok=0; $unic=666; $IS=ms("SELECT * FROM ".$GLOBALS['db_unic']." WHERE `id`='$unic'","_1"); } // для отладки
 		}
 	}
 } else set_unic_candidat(); // куки пусты? выставить куку 'candidat', номер не давать, в базу не вносить

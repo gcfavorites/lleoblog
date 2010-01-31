@@ -8,7 +8,7 @@ color: #000000; position:relative; border-bottom: green 2px solid;
 }
 
 .twoCol #container { width: 100%; margin: 0 auto; text-align: left; padding: 0; position:relative; } 
-.twoCol #sidebar1 { float: left; width: 143px; padding: 15px 0; border-right: green 2px solid; border-collapse:collapse; }
+.twoCol #sidebar1 { float: left; width: 143px; padding: 15px 0; border-right: green 2px solid; overflow-y: hidden; overflow: auto; }
 .twoCol #sidebar1 h3, .twoCol #sidebar1 p { margin-left: 10px; margin-right: 10px; }
 .twoCol #mainContent { /* БЛОК ЗАМЕТКИ */
 text-align:justify; margin: 0 0 0 143px; /* отступ основного блока на ширину левой колонки */
@@ -53,7 +53,7 @@ padding: 20px 0; border-left: green 2px solid; border-collapse:collapse; }
 /* комментарии */
 
 
-.opc, .cnam, .rul1,.rul0,.cplu,.cmin {cursor: pointer}
+.opc, .cnam, .rul1,.rul0 {cursor: pointer}
 .rul1,.rul0,.cplu,.cmin,.kmail {float:left}
 
 .c0, .c1, .c2, .c3 { font: 80% sans-serif, Helvetica, Arial, Verdana; max-width: 80%; border: 1px dotted #bbb;
@@ -72,9 +72,9 @@ overflow: auto; padding: 0 0 0 5px; margin-top: 5px; }
 
 .cnam { font-size: 12pt; font-weight: bold; }
 
-.cplu,.cmin { font-size:6pt }
-.cplu {color:red} .cplu:before { content:'+'} .cplu:after { content:'  '}
-.cmin {color:blue} .cmin:before { content:'-'} .cmin:after { content:'  '}
+.cplu,.cmin { font-size:8pt }
+.cplu {color:red;cursor:n-resize} .cplu:before { content:'+'} .cplu:after { content:'  '}
+.cmin {color:blue;cursor:s-resize} .cmin:before { content:'-'} .cmin:after { content:'  '}
 .kmail:after { content: ' 'url('{www_design}e2/kmail.png')' ' }
 
 .rul1:before {content:url('{www_design}e3/button_accept.png')}
