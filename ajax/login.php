@@ -115,58 +115,63 @@ if($a=='polesend') {
 	$name=strtr($_REQUEST["name"],"\r\n\t ",'');
 	$value=trim(strtr($_REQUEST["value"],"\r",''),"\n\t ");
 
-if($name=='mail') {
-	if(mail_validate($value)) setpole("mail записан");
-	if($value=='') setpole("mail стерт");
-	errpole("Неверный формат email.");
-}
-
-if($name=='site') {
-        if(site_validate($value)) setpole("site записан");
-        elseif(site_validate('http://'.$value)) { $value='http://'.$value; setpole("site записан"); }
-        else errpole("Это необязательная графа. Если нет сайта - оставь пустой. Но писать глупости незачем.");
-}
-
-if($name=='birth') {
-        list($y,$m,$d)=explode('-',$value); $value=sprintf("%04d-%02d-%02d",$y,$m,$d);
-        if(intval($y)*intval($m)*intval($d)) setpole("день рождения записан: ".h($value)); else errpole();
-}
-
-if(substr($name,0,7)=='capcha-') { include_once $GLOBALS['include_sys']."_antibot.php";
-	list($name,$val)=explode('-',$name);
-        if(!antibot_check($value,$val)) {
-		errpole("цифры введены неверно!","zabil('ozcapcha',\"<table><tr valign=center><td><input onkeyup='polese(this)' onchange='polesend(this)' class='capcha' maxlength=".$GLOBALS['antibot_C']." type=text name='capcha-".antibot_make()."'></td><td>".antibot_img()."</td></tr></table>\");");
-        } else {
-		$value='yes';
-		setpole("не робот"," zabil('ozcapcha','факт: не робот');");
+	if($name=='mail') {
+		if(mail_validate($value)) setpole("mail записан");
+		if($value=='') setpole("mail стерт");
+		errpole("Неверный формат email.");
 	}
-}
 
-if($name=='login') {
-        if(preg_match("/[^0-9a-z\-\_]/s",$value)) errpole("В логине допустимы только строчные латинские буквы, цифры, подчеркивание или минус.");
-        if(strlen($value)>32) { $value=substr($value,0,32); errpole("Длина логина - не более 32 символов."); }
-        $id=ms("SELECT `id` FROM ".$GLOBALS['db_unic']." WHERE `login`='".e($value)."'","_l",0);
-        if($id===false) setpole("Отныне твой логин - ".h($value));
-        if($id==$unic) setpole("Да, твой логин ".h($value).", и не надо выпендриваться.");
-        errpole("Этот логин занят!");
-}
+	if($name=='site') {
+        	if(site_validate($value)) setpole("site записан");
+	        elseif(site_validate('http://'.$value)) { $value='http://'.$value; setpole("site записан"); }
+	        else errpole("Это необязательная графа. Если нет сайта - оставь пустой. Но писать глупости незачем.");
+	}
 
-if($name=='password') { $value=md5($value.$GLOBALS['hashlogin']);
-        // блять, так хочется тоже сделать проверку "этот пароль уже используется"... но понимаю, перебор :)
-        // или сделать? да идите нахуй, сделаю! лови:
-	if(intval(ms("SELECT COUNT(*) FROM ".$GLOBALS['db_unic']." WHERE `password`='".e($value)."'","_l")!=0)) {
-		errpole("Этот пароль уже кем-то занят. Придумай другой."); }
-	setpole("записан хэш пароля:<br>&nbsp;&nbsp;`".h($value)."`","zabil('ozpassword','пароль установлен');");
-}
+	if($name=='birth') {
+        	list($y,$m,$d)=explode('-',$value); $value=sprintf("%04d-%02d-%02d",$y,$m,$d);
+	        if(intval($y)*intval($m)*intval($d)) setpole("день рождения записан: ".h($value)); else errpole();
+	}
+
+	if(substr($name,0,7)=='capcha-') { include_once $GLOBALS['include_sys']."_antibot.php";
+		list($name,$val)=explode('-',$name);
+	        if(!antibot_check($value,$val)) {
+			errpole("цифры введены неверно!","zabil('ozcapcha',\"<table><tr valign=center><td><input onkeyup='polese(this)' onchange='polesend(this)' class='capcha' maxlength=".$GLOBALS['antibot_C']." type=text name='capcha-".antibot_make()."'></td><td>".antibot_img()."</td></tr></table>\");");
+	        } else {
+			$value='yes';
+			setpole("не робот"," zabil('ozcapcha','факт: не робот');");
+		}
+	}
+
+	if($name=='login') {
+	        if(preg_match("/[^0-9a-z\-\_]/s",$value)) errpole("В логине допустимы только строчные латинские буквы, цифры, подчеркивание или минус.");
+	        if(strlen($value)>32) { $value=substr($value,0,32); errpole("Длина логина - не более 32 символов."); }
+	        $id=ms("SELECT `id` FROM ".$GLOBALS['db_unic']." WHERE `login`='".e($value)."'","_l",0);
+	        if($id===false) setpole("Отныне твой логин - ".h($value));
+	        if($id==$unic) setpole("Да, твой логин ".h($value).", и не надо выпендриваться.");
+	        errpole("Этот логин занят!");
+	}
+
+	if($name=='password') { $value=md5($value.$GLOBALS['hashlogin']);
+	        // блять, так хочется тоже сделать проверку "этот пароль уже используется"... но понимаю, перебор :)
+	        // или сделать? да идите нахуй, сделаю! лови:
+		if(intval(ms("SELECT COUNT(*) FROM ".$GLOBALS['db_unic']." WHERE `password`='".e($value)."'","_l")!=0)) {
+			errpole("Этот пароль уже кем-то занят. Придумай другой."); }
+		setpole("записан хэш пароля:<br>&nbsp;&nbsp;`".h($value)."`","zabil('ozpassword','пароль установлен');");
+	}
 
 setpole(h($name)." записано: ".h($value));
 
 }
 
-
-
+function dva_pole($a,$b) { return "<tr><td><small>$a</small></td><td><small>$b</small></td></tr>"; }
 
 //========================================================================================================================
+if($a=='dostup') { // unic личная карточка автора
+	if(!$admin) idie("Ты не админ.");
+	ms("UPDATE `unic` SET `admin`='".e($_REQUEST['value'])."' WHERE `id`='".intval($_REQUEST['unic'])."'","_l",0);
+	otprav("idd('openidotvet').innerHTML='<font size=1 color=green>изменен доступ: ".h($_REQUEST['value'])."</font>'");
+}
+
 if($a=='getinfo') { // unic личная карточка автора
 
 	$is=getis(intval($_REQUEST['unic']));
@@ -176,37 +181,34 @@ if($a=='getinfo') { // unic личная карточка автора
 //	otprav("alert(\"".njs(h(print_r($is,1)))."\")");
 //}
 
-	$s="<div id=openidotvet></div>".$is['imgicourl'];
+	$s="<small><div id=openidotvet></div>".$is['imgicourl']."<table>";
+
 
 if($admin) {
-	$s.="<form name='openiddelo'>";
-	$s.= "<div class=l0><div class=l1>доступ:</div><div class=l2>".$is['admin']."</div><br class=q /></div>";
-	$s.= "<div class=l0><div class=l1>доступ:</div><div class=l2>".selecto('admin',h($is['admin']),array('user'=>'user','podzamok'=>'podzamok','admin'=>'admin'),"class='in' onchange='polesend(this)' name")."</div><br class=q /></div>";
-	$s.="<input style='display:none' type=submit value='go'></form>";
+	$s.= dva_pole("доступ:",selecto('admin',h($is['admin']),array('user'=>'user','podzamok'=>'podzamok','admin'=>'admin'),"class='in' onchange='majax(\"login.php\",{action:\"dostup\",unic:\"".$is['id']."\",value:this.value})' name"));
 
-	if($is['capcha']=='no') $s.="<div class=l0><div class=l1>робот:</div><div class=l2>капча не введена</div><br class=q /></div>";
-	if($is['ipn']!=0) $s.="<div class=l0><div class=l1>ip:</div><div class=l2><a href='http://yandex.ru/yandsearch?text=%22".ipn2ip($is['ipn'])."%22'>".ipn2ip($is['ipn'])."</a></div><br class=q /></div>";
-	if($is['obr']) $s.="<div class=l0><div class=l1>подпись:</div><div class=l2>".h($is[$is['obr']])."</div><br class=q /></div>";
+	if($is['capcha']=='no') $s.=dva_pole("робот:","капча не введена");
+	if($is['ipn']!=0) $s.=dva_pole("ip:","<a href='http://yandex.ru/yandsearch?text=%22".ipn2ip($is['ipn'])."%22'>".ipn2ip($is['ipn'])."</a>");
+	if($is['obr']) $s.=dva_pole("подпись:",h($is[$is['obr']]));
 }
 
-if($is['lju']) $s.="<div class=l0><div class=l1>livejournal:</div><div class=l2><a href='http://".h($is['lju']).".livejournal.com'>".h($is['lju'])."</a></div><br class=q /></div>";
-if($is['login']) $s.="<div class=l0><div class=l1>login:</div><div class=l2>".h($is['login'])."</div><br class=q /></div>";
+if($is['lju']) $s.=dva_pole("livejournal:","<a href='http://".h($is['lju']).".livejournal.com'>".h($is['lju'])."</a>");
+if($is['login']) $s.=dva_pole("login:",h($is['login']) );
 
 // $m=explode('.',$IP); $lpass=''; foreach($m as $l) $lpass.=chr(32+$l);
 $pa='01234567890abcdefghijklmnopqrstuvwxyz_01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ'; $lpass=''; for($i=rand(4,14);$i>0;$i--) $lpass.=$pa[rand(0,strlen($pa)-1)];
-if($is['password']) $s.="<div class=l0><div class=l1>пароль:</div><div class=l2>".$lpass."</div><br class=q /></div>";
-if($is['openid']) $s.="<div class=l0><div class=l1>openid:</div><div class=l2><a href='http://".h($is['openid'])."'>".h($is['openid'])."</a></div><br class=q /></div>";
-if($is['mail']) $s.="<div class=l0><div class=l1>mail:</div><div class=l2>".($admin?" <a href='mailto:".h($is['mail'])."'>".h($is['mail'])."</a>":"записан")."</div><br class=q /></div>";
-if($is['site']) $s.="<div class=l0><div class=l1>site:</div><div class=l2><a href='".h($is['site'])."'>".h($is['site'])."</a></div><br class=q /></div>";
-if($is['realname']) $s.="<div class=l0><div class=l1>имя:</div><div class=l2>".h($is['realname'])."</div><br class=q /></div>";
-if($is['birth']!='0000-00-00') $s.="<div class=l0><div class=l1>дата рождения:</div><div class=l2>".h($is['birth'])."</div><br class=q /></div>";
-$s.="<div class=l0><div class=l1>регистрация:</div><div class=l2>".date("Y-m-d H:i:s",$is['time_reg'])."</div><br class=q /></div>";
+if($is['password']) $s.=dva_pole("пароль:",$lpass);
+if($is['openid']) $s.=dva_pole("openid:","<a href='http://".h($is['openid'])."'>".h($is['openid'])."</a>");
+if($is['mail']) $s.=dva_pole("mail:",($admin?" <a href='mailto:".h($is['mail'])."'>".h($is['mail'])."</a>":"записан") );
+if($is['site']) $s.=dva_pole("site:","<a href='".h($is['site'])."'>".h($is['site'])."</a>");
+if($is['realname']) $s.=dva_pole("имя:",h($is['realname']) );
+if($is['birth']!='0000-00-00') $s.=dva_pole("дата рождения:",h($is['birth']) );
+$s.=dva_pole("регистрация:",date("Y-m-d H:i:s",$is['time_reg']) );
 
 // показать все комментарии
 
-$s="helps('loginopenid',\"<fieldset id='openid'><legend>личная карточка ".$is['id']."</legend>".$s."</fieldset>\");";
+otprav("helps('userinfo',\"<fieldset><legend>личная карточка ".$is['id']."</legend>".njs($s)."</fieldset>\");");
 
-otprav_sb('openid_editform.js',$s);
 }
 
 // ======= запросил форму openid ============================================================================================

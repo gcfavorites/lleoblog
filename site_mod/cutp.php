@@ -8,7 +8,7 @@ function cutp($e) {
 	$tag0="[...]";
 	$l=(strstr($e,"\n")||strstr($e,'<')?1:0);
 
-	$e=str_replace(array("&","\\","'",'"',"\n\n","\n","\r"),array("&amp;","\\\\","\\'",'\\"',"<p>","<br>",""),$e);
+	$e=str_replace(array("&","\\","'",'"',"\n\n","\n","\r"),array("&amp;","\\\\","\\'",'&quot;',"<p>","<br>",""),$e);
 
 	SCRIPTS("cut","function cut(e,s,l) {
 		if(e.className=='cuts') { e.className='cut'; e.innerHTML=(l?'$tag':'$tag0'); }
