@@ -6,6 +6,36 @@ require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpReque
 $a=$_REQUEST["a"];
 $data=intval($_REQUEST["data"]);
 
+
+//====================== кто посетил ===========================================================================
+if($a == "ktoposetil") {
+
+//	$pp=ms("SELECT `unic` FROM `dnevnik_posetil` WHERE `url`='$data'","_a");
+	$pp=ms("
+SELECT r.url,r.unic,a.login,a.openid,a.realname
+FROM `dnevnik_posetil` AS r, ".$db_unic." AS a
+WHERE r.url='$data' AND a.id=r.unic
+".($_REQUEST["mode"]=='full'?'':"AND (a.login != '' OR a.openid !='' OR a.realname != '')")."
+LIMIT 2000","_a");
+
+// dier($pp);
+
+$s=$s2=''; foreach($pp as $p) {
+		if($p['realname']!='') $c=h($p['realname']);
+		elseif($p['openid']!='') list($c,)=explode('.',$p['openid'],2);
+		elseif($p['login']!='') $c=h($p['login']);
+		else { $s2.="#".$p['unic'].", "; continue; }
+		if($p['openid']!='') $c="<a href='http://".h($p['openid'])."'>$c</a>";
+		$s.="$c, ";
+	}
+
+otprav("helps('ktoposetil',\"<fieldset><legend>кто посещал страницу</legend><small>".njs(trim($s.$s2," ,"))."</small></fieldset>\");");
+
+}
+
+
+//===============================================================================================================
+
 if($admin && $a == "delmusor") { msq_del(($_REQUEST["type"]=='l'?'dnevnik_link':'dnevnik_search'), array('n'=>e($_REQUEST["n"])) ); }
 
 $bloksearch='';

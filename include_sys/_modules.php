@@ -9,7 +9,8 @@ function STYLE_ADD($s) { $GLOBALS['_STYLE_ADD'][$s]=$s; }
 // ==============================================================================================
 // повызывать все процедуры в цикле
 
-function modules($s) { $s_old=''; $stop=100; while($s!=$s_old && --$stop) {
+function modules($s) { 
+	$s_old=''; $stop=100; while($s!=$s_old && --$stop) {
         $s_old=$s; $s=preg_replace_callback("/\{_(.*?)_\}/s","module",$s);
         }
         return $s;
@@ -30,8 +31,8 @@ function module($t) { $s=$t[1]; // подцепить модули
                         $modfile2=$GLOBALS['site_module'].$mod.".php";
 
                         if(file_exists($modfile)) include_once($modfile);
-                        elseif(file_exists($modfile2)) include_once($modfile2);
-			else idie("Module error: ".h($modfile));
+			elseif(file_exists($modfile2)) include_once($modfile2);
+			else return "<font color=red>MODULE NOT FOUND: <b>".$t[1]."</b></font>";
 		
 //                        if(!file_exists($modfile)) idie("Module error: ".htmlspecialchars($modfile));
 //                        include_once($modfile);
