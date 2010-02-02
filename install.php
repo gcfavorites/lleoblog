@@ -24,6 +24,13 @@ $nadoserver=$filehost_s."update_nado_files.txt";
 // =========== —≈–¬≈–Ќјя „ј—“№ (только дл€ базы http://lleo.aha.ru/blog/) =============
 if(strstr($_SERVER["HTTP_HOST"],'lleo.aha.ru')) { // только на сервере lleo.aha.ru - зачем прочим эти гипотетические дыры в безопасности?
 
+if(isset($_GET['config'])) { //die('1');
+
+$s='###<pre>'; $r=get_config_perem(); die($s.print_r($r,1));
+foreach($r as $l) $s.="\$".$l."\n"; die($s); 
+
+}
+
 if(isset($_GET['probe'])) { die("".($_GET['probe']+12345)); } // показать, что сервер работает
 
 if(isset($_GET['load'])) { // отдать одиночный файл
@@ -56,13 +63,15 @@ if((sizeof($_POST) and !isset($_POST['action'])) or (isset($_GET['action']) and 
 	$filehost=$filehost_s;
 	$veto_dir=get_veto_files($vetoserver);
 	$my_files=get_dvijok_files($filehost."*",strlen($filehost));
-
 	foreach($my_files as $l=>$n) { $ll=strtr($l,'#','.');
 		if(isset($_POST[$l])) { if($_POST[$l]!=$n) { print "upd: $ll\n"; } unset($_POST[$l]); }
 		else { print "add: $ll\n"; }
 	}
 
-	foreach($_POST as $l=>$n) print "del: ".strtr($l,'#','.')."\n";
+	$my_config=get_config_data();
+	foreach($my_config as $l=>$n) { $c='config:'.$l; if(isset($_POST[$c])) unset($_POST[$c]); else print "add: config:$l = $n\n"; }
+
+	foreach($_POST as $l=>$n) { $e=strstr($l,'config:'); if(!$e) print "del: ".strtr($l,'#','.')."\n"; else print "del: $e\n"; }
 
 	print file_get_contents($nadoserver);
 
@@ -129,7 +138,6 @@ $vetomyfiles=$filehost."update_veto_my_files.txt";
 // =============== юзерска€ часть ================
 if(!$admin) die("Admin only"); // неправильно запрошенный скрипт - нахуй
 
-
 function mkdir_fileblog($l) { global $filehost;
 	$a=explode('/',$l); unset($a[sizeof($a)-1]);
 	$dir=$filehost;
@@ -156,30 +164,39 @@ function load_fileblog($l) { global $filehost;
 }
 
 
-
-
+// ============== —ќЅ—“¬≈ЌЌќ ѕ–»Ќя“»≈ »«ћ≈Ќ≈Ќ»… =========================
 if( isset($_POST['action']) ) { unset($_POST['action']);
 
 	$veto='';
-	foreach($_POST as $l=>$n) { $l=strtr($l,'#','.');
+	$conf='';
 
-	if($n=='no') { $veto.="$l\n"; }	else {
+	foreach($_POST as $n=>$l) { list($n,)=explode('_',$n,2); $l=urldecode($l);
+	
+//	print "<br>".htmlspecialchars($l)." = ".htmlspecialchars($n);
 
-$file=$filehost.$l;
+	if(substr($l,0,3)=='no:') { list($l,)=explode(' ',substr($l,3),2); $veto.="$l\n";} else {
 
-if($n=='del') {
-	if(!is_file($file)) print "<br><font color=red>DELETE: file not found '".htmlspecialchars($file)."'</font>";
-	else {
-		copy($file,$file.'.old');
-		unlink($file);
+	if(substr($l,0,7)=='config:') { $l=substr($l,7); // с конфигом
+		if($conf=='') $conf=file_get_contents('config.php');
+		if($n=='add') $conf=preg_replace("/\n\s*\?>\s*$/s","\n\n\$".$l."\n?>\n",$conf);
+		if($n=='del') $conf=preg_replace("/\n(\s*[\$]".$l."\s*=[^\n]+)/s","// delete this: $1",$conf);
+	} else { // с файлами
+
+		$file=$filehost.$l;
+
+		if($n=='del') {
+			if(!is_file($file)) print "<br><font color=red>DELETE: file not found '".htmlspecialchars($file)."'</font>";
+			else { copy($file,$file.'.old'); chmod($file.'.old',0666); unlink($file); }
+		}
+
+		if($n=='add') {	load_fileblog($l); }
+		if($n=='upd') {	copy($file,$file.'.old'); chmod($file.'.old',0666); load_fileblog($l); }
+		if($n=='mkdir') { mkdir_fileblog($l); }
+
+	}
 	}
 }
-
-if($n=='add') {	load_fileblog($l); }
-if($n=='upd') {	copy($file,$file.'.old'); load_fileblog($l); }
-if($n=='mkdir') { mkdir_fileblog($l); }
-	}
-}
+	if($conf!='' && file_put_contents('config.php',$conf)===false) die('Write error: config.php'); else chmod('config.php',0666);
 	if(file_put_contents($vetomyfiles,$veto)===false) die('Write error: '.$vetomyfiles); else chmod($vetomyfiles,0666);
 }
 
@@ -207,33 +224,35 @@ if(isset($_GET['action']) and $_GET['action']=='clean') {
 if(isset($_GET['action']) and $_GET['action']=='check') {
 
 $veto_dir=get_veto_files($filehost."update_veto_files.txt");
-$my_files=get_dvijok_files($filehost."*",strlen($filehost));
+$my_files=array_merge( get_dvijok_files($filehost."*",strlen($filehost)) , get_config_perem() );
 
 $s=curl_post( "http://lleo.aha.ru/blog/install.php", $my_files );
 
 if($s=='1' or $s=='') die('no new updates');
 
 $nado=explode("\n",$s);
-$del=array();
-$upd=array();
-$add=array();
-$mkdir=array();
+$all=array();	// $del=array(); $upd=array(); $add=array(); $mkdir=array(); $addconfig=array();
 if(sizeof($nado)) foreach($nado as $l) if($l!='') {
 	if(!strstr($l,' ')) die('Error: '.$l);
 	list($o,$file)=explode(' ',$l,2); $file=trim($file);
-	if($o=='add:') $add[]=$file;
-	elseif($o=='upd:') $upd[]=$file;
-	elseif($o=='del:') $del[]=$file;
-	elseif($o=='mkdir:' and !is_dir($filehost.$file)) $mkdir[]=$file;
+
+	if($o=='add:') $all[$file]=array('act'=>'add','color'=>'green'); // $add[]=$file;
+	elseif($o=='upd:') $all[$file]=array('act'=>'upd','color'=>'blue'); //$upd[]=$file;
+	elseif($o=='del:') $all[$file]=array('act'=>'del','color'=>'red'); //$del[]=$file;
+	elseif($o=='addconfig:') $all[$file]=array('act'=>'add_config','color'=>'green'); //$addconfig[]=$file;
+	elseif($o=='delconfig:') $all[$file]=array('act'=>'del_config','color'=>'red'); //$addconfig[]=$file;
+	elseif($o=='mkdir:' and !is_dir($filehost.$file)) $all[$file]=array('act'=>'mkdir','color'=>'green'); //$mkdir[]=$file;
 } unset($nado);
 
 $veto_my=get_veto_files($vetomyfiles,0);
 
 $s='';
-$c=print_o($add,'add','green'); if($c!='') $s.="<h1>Add new files:</h1>$c";
-$c=print_o($del,'del','red'); if($c!='') $s.="<h1>Delete files:</h1>$c";
-$c=print_o($upd,'upd','blue'); if($c!='') $s.="<h1>Update files:</h1>$c";
-$c=print_o($mkdir,'mkdir','magenta'); if($c!='') $s.="<h1>Make folder:</h1>$c";
+$s.=print_oo($all);
+//$c=print_o($add,'add','green'); if($c!='') $s.="<h1>Add new files:</h1>$c";
+//$c=print_o($del,'del','red'); if($c!='') $s.="<h1>Delete files:</h1>$c";
+//$c=print_o($upd,'upd','blue'); if($c!='') $s.="<h1>Update files:</h1>$c";
+//$c=print_o($mkdir,'mkdir','magenta'); if($c!='') $s.="<h1>Make folder:</h1>$c";
+//$c=print_o($addconfig,'add_config','pink'); if($c!='') $s.="<h1>Add to config.php:</h1>$c";
 if($s!='') {
 print "<form method=post action='$mypage'>".$s."<p>
 <input type=hidden name='action' value='Update'>
@@ -245,25 +264,44 @@ exit;
 
 
 // ==================== на выбор ===================================
-if(!isset($_GET['action'])) { die("
-<center><table><tr>
+if(!isset($_GET['action'])) { die("<center>
+<table><tr>
 <td><form method=get action='$mypage'><input type=hidden name='action' value='check'><input type=submit value='Check'></form></td>
 <td><form method=get action='$mypage'><input type=hidden name='action' value='back'><input type=submit value='Back'></form></td>
 <td><form method=get action='$mypage'><input type=hidden name='action' value='clean'><input type=submit value='Clean *.old'></form></td>
 </tr></table>
-
-
-
-<p>WARNING! Add to config.php:
-<table><td>
-<p>\$db_unic=\"unic\";
-<br>\$comment_otstup=25; // добавочный отступ в пиксел€х от левой границы каждого комментари€-ответа
-<br>\$comment_pokazscr=1; // 1 - показывать скрытые комментарии словом 'скрыт', 0 - не показывать
-</td></table>
-
+<p><a href='".'/'.$blogdir."admin'>admin</a>
 </center>");
 }
 // ==================== на выбор ===================================
+
+function print_oo($a) { global $filehost,$veto_my; $rez=strlen($filehost);
+	ksort($a);
+	$k=0;
+	$s='';
+	$lastdir='';
+	foreach($a as $ll=>$l) { $act=$l['act']; $color=$l['color'];
+
+		if(strstr($ll,'config:')) {
+			$otstup=''; $dirname='config:'; $filename=' $'.substr($ll,strlen('config:'));
+		} else {
+			$filename=strstr_true($ll,'/');
+			$dirname=substr($ll,0,strlen($ll)-strlen($filename));
+			$otstup=str_repeat("&nbsp;",substr_count($ll, '/')*10);
+		}
+		if($dirname!=$lastdir) $s.="<p><b>".htmlspecialchars($dirname)."</b>";
+		$lastdir=$dirname;
+
+	list($lvet,)=explode(' ',$ll,2);
+	if(in_array($lvet,$veto_my)) { $s2=' selected'; $s1=''; $col='black'; } else { $s1=' selected'; $s2=''; $col=$color; }
+
+		$s.="<br>$otstup"
+."<select name='".$act."_".(++$k)."'><option value='".urlencode($ll)."'$s1>$act<option value='".urlencode("no:".$ll)."'$s2>no</select>"
+."<font color='$col'>".htmlspecialchars($filename)."</font>";
+	}
+	return $s;
+}
+
 
 function print_o($a,$act,$color) { global $filehost,$veto_my; $rez=strlen($filehost);
 	$s='';
@@ -285,6 +323,19 @@ function print_o($a,$act,$color) { global $filehost,$veto_my; $rez=strlen($fileh
 }
 
 //====================================================================
+
+function get_config_perem() {
+        $a=file('config.php'); $r=array();
+	foreach($a as $l) if(preg_match("/^\s*[\$]([0-9a-z\_\-]+)\s*\=\s*/si",$l,$m)) $r['config:'.$m[1]]=$m[1];
+        return $r;
+}
+
+function get_config_data() {
+        $a=file('config.php.tmpl'); $r=array();
+	foreach($a as $l) if(preg_match("/^\s*[\$]([0-9a-z\_\-]+)\s*\=\s*(.*?)$/si",$l,$m)) $r[$m[1]]=$m[2];
+        return $r;
+}
+
 
 function get_dvijok_files($files,$filehostn) { global $stop,$veto_dir;
 $stop=(intval($stop)?intval($stop):1000); if(!--$stop) die('stop error');

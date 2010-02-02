@@ -54,7 +54,9 @@ CREATE TABLE IF NOT EXISTS `dnevnik_link` (
   `last_ipn` int(10) unsigned NOT NULL,
   `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `DateID` int(10) unsigned NOT NULL,
-  PRIMARY KEY  (`n`)
+  PRIMARY KEY  (`n`),
+  KEY `DateID` (`DateID`),
+  KEY `last_ipn` (`last_ipn`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='ссылки на дневник' AUTO_INCREMENT=638 ;
 
 -- --------------------------------------------------------
