@@ -11,12 +11,15 @@ $data=intval($_REQUEST["data"]);
 if($a == "ktoposetil") {
 
 //	$pp=ms("SELECT `unic` FROM `dnevnik_posetil` WHERE `url`='$data'","_a");
+
+$vsego=intval(ms("SELECT COUNT(*) FROM `dnevnik_posetil` WHERE `url`='$data'","_l"));
+
 	$pp=ms("
 SELECT r.url,r.unic,a.login,a.openid,a.realname
 FROM `dnevnik_posetil` AS r, ".$db_unic." AS a
 WHERE r.url='$data' AND a.id=r.unic
 ".($_REQUEST["mode"]=='full'?'':"AND (a.login != '' OR a.openid !='' OR a.realname != '')")."
-LIMIT 2000","_a");
+LIMIT 20000","_a");
 
 // dier($pp);
 
@@ -29,7 +32,7 @@ $s=$s2=''; foreach($pp as $p) {
 		$s.="$c, ";
 	}
 
-otprav("helps('ktoposetil',\"<fieldset><legend>кто посещал страницу</legend><small>".njs(trim($s.$s2," ,"))."</small></fieldset>\");");
+otprav("helps('ktoposetil',\"<fieldset><legend>посетители страницы: $vsego</legend><small>".njs(trim($s.$s2," ,"))."</small></fieldset>\");");
 
 }
 

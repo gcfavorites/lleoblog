@@ -152,12 +152,12 @@ $commentary=$x.$commentary;
 
 
 // 3 значения: false - нельзя вообще 'root' - можно в корне 'tree' - можно везде
-function mojno_comment($p) { global $IS,$pozdamok,$N_maxkomm,$enter_comentary_days;
+function mojno_comment($p) { global $IS,$podzamok,$N_maxkomm,$enter_comentary_days;
 	if($p['Comment']=='disabled') return false; // если запрещены вообще
 	if($p['Comment_tree']=='0') return 0; // если запрещено отвечать на комменты
 
 	// Превышение количества посещений или слишком старая заметка
-	$t=($p["view_counter"] < $N_maxkomm or $p["DateTime"] > time()-86400*$enter_comentary_days ?1:0);
+	$t=($p["view_counter"] < $N_maxkomm and $p["DateDatetime"] > time()-86400*$enter_comentary_days ?1:0);
 
 	switch($p["Comment_write"]) {
 		case 'off': return false;

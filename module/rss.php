@@ -42,7 +42,7 @@ $lastupdate=0; foreach($pp as $p) {
 
 		$p['Body']=RSS_zaban($p['Body']); // обработать забаненных
 		$Body=onetext($p); // обработать текст заметки как положено
-		if($RSSZ_mode==1) $Body=RSSZ_mode1($Body); // если в настройках указано не давать полный RSS
+		if($RSSZ_mode==1) $Body=RSSZ_mode1($Body,$link); // если в настройках указано не давать полный RSS
 		$Body=zamok($p['Access']).$Body; // добавить картинки подзамков
 		$Body=str_replace($subst1,$subst2,$Body);
 
@@ -99,12 +99,12 @@ function RSS_zaban($s) { global $admin; 	// если это забаненные мудаки, воры и р
 }
 
 
-function RSSZ_mode1($s) { global $admin;
+function RSSZ_mode1($s,$link) { global $admin;
 	$sim=ereg_replace("<[^>]*>",'',html_entity_decode($s)); // удалить все теги
 	$sim=ereg_replace("{[^}]*}",'',$sim); // удалить все фичи в фигурных скобках
 	$bukv=round(((strlen($sim))+99 )/100)*100;
 	$sim=trim(preg_replace("/^(.{260}[^\.\?\!]*[\.\!\?]).*$/si","$1",$sim))
-	."... [<a href='$zalink'>читать полностью: примерно $bukv символов</a>]\n\n";
+	."... [<a href='$link'>читать полностью: примерно $bukv символов</a>]\n\n";
 	// if(strstr($s,'<img')) $sim .= " + картинки или фотки";
 	// if(strstr($s,'<script')) $sim .= " + скрипты какие-то";
 	// if(strstr($s,'<object') || strstr($s,'<OBJECT')) $sim .= " + флэш вставлен (может, ролик или музыка?)";
