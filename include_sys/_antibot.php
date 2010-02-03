@@ -80,7 +80,7 @@ return "<img src='".$GLOBALS['antibot_www'].$GLOBALS['antibot_hash'].".jpg' widt
 
 /* удалить старые картинки, которые были созданы более часа назад. */
 function antibot_del() { $old = time()-$GLOBALS['antibot_deltime']; $deleted = 0;
-	$p=glob($GLOBALS['antibot_file']."*.jpg");
+	$p=glob($GLOBALS['antibot_file']."*.jpg"); if($p===false or !sizeof($p)) return "антиботовых картинок нет";
 	foreach($p as $f) if(filemtime($f)<$old) { unlink($f); $deleted++; }
 	return "Антиботовые картинки, удалено: ".$deleted;
 }

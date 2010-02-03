@@ -326,15 +326,15 @@ otprav_sb('openid_editform.js',$s);
 if($a=='oldlogin_form') {
 
 $s="<div id=openidotvet></div>
-<form name='openidnew' onsubmit='return login_go(this.log.value,this.pas.value);'>
+<form name='openidnew' onsubmit='return login_go(this.mylog.value,this.mypas.value);'>
 <div class=l0>
 <div class=l1>login или openid:</div>
-<div class=l2 id='d1'><input name='log' class=in type=text onkeyup='this.value=login_validate(this,1)' value='\"+logintext+\"'></div>
+<div class=l2 id='d1'><input name='mylog' class=in type=text onkeyup='this.value=login_validate(this,1)' value='\"+logintext+\"'></div>
 <br class=q /></div>
 
 <div class=l0 id=openidpass>
 <div class=l1>password:</div>
-<div class=l2 id='d1'><input name='pas' class=in type=password></div>
+<div class=l2 id='d1'><input name='mypas' class=in type=password></div>
 <br class=q /></div>
 
 <input type=submit value='go'>
@@ -352,23 +352,23 @@ otprav_sb('openid_editform.js',$s);
 // ======== вводит данные логина ===================
 if($a=='openid_logpas') {
 
-	$log=$_REQUEST["log"]; $pas=$_REQUEST["pas"];
-	if(preg_match("/[^0-9a-z\-\_\.\/\~\=\@]/si",$log)) otprav("zabil('openidotvet','<div class=e>неверные символы в логине</div>');");
+	$mylog=$_REQUEST["mylog"]; $mypas=$_REQUEST["mypas"];
+	if(preg_match("/[^0-9a-z\-\_\.\/\~\=\@]/si",$mylog)) otprav("zabil('openidotvet','<div class=e>неверные символы в логине</div>');");
 
 //================================= OPENID ================================================================================
-if(preg_match("/[A-Z\.\/\~\=\@]/s",$log)) {
+if(preg_match("/[A-Z\.\/\~\=\@]/s",$mylog)) {
 
 	require($GLOBALS['include_sys'].'class.openid.v3.php'); // библиотечка openid
 
 	// запомнить, что мы проверяли и куда нам вернуться
 	msq_add_update('unictemp',array('unic'=>$unic,'text'=>e(serialize(array(
-'openid'=>e($log),
+'openid'=>e($mylog),
 'rpage'=>e($_REQUEST['rpage']),
 'text'=>e($_REQUEST['text'])
 ))) ),'unic');
 
         $openid = new SimpleOpenID;
-        $openid->SetIdentity($log);
+        $openid->SetIdentity($mylog);
         $openid->SetTrustRoot('http://'.$_SERVER["HTTP_HOST"]);
         $openid->SetRequiredFields(array('email','fullname'));
 	$openid->SetOptionalFields(array('dob')); // 'dob','gender','postcode','country','language','timezone'
@@ -388,9 +388,9 @@ if(preg_match("/[A-Z\.\/\~\=\@]/s",$log)) {
 //================================= ЛОГИН ================================================================================
 // Если это был простой логин сайта
 
-	$p=ms("SELECT * FROM ".$GLOBALS['db_unic']." WHERE `login`='".e($log)."'","_1");
+	$p=ms("SELECT * FROM ".$GLOBALS['db_unic']." WHERE `login`='".e($mylog)."'","_1");
 
-	if(md5($pas.$GLOBALS['hashlogin']) != $p['password'])
+	if(md5($mypas.$GLOBALS['hashlogin']) != $p['password'])
 		otprav("zabil('openidotvet','<div class=e>неверный пароль, пробуй еще</div>');");
 
 	$obr=h($p['realname']?$p['realname']:$p['login']);
@@ -399,7 +399,7 @@ if(preg_match("/[A-Z\.\/\~\=\@]/s",$log)) {
 	$IS=array_merge($p,get_ISi($p));
 	$loginobr="<img src='".h($IS['ico'])."'><a href='http://".h($IS['url'])."'>".h($IS['user'])."</a>";
 
-	otprav("
+otprav("
 zabil('openidotvet',\"<div class=o>".$loginobr."!</div>\");
 zabil('loginobr',\"".$loginobr."\");
 c_save(uc,'".$kuka."'); fc_save(uc,'".$kuka."'); c_save('obr','".base64_encode($obr)."');

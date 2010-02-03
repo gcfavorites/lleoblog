@@ -21,3 +21,8 @@ module/upgrade/LLEO_login.php
 module/upgrade/LLEO_search.php
 module/upgrade/LLEO_zapisi.php
 design/userpick1.jpg
+
+template/nabokamaster.html
+css/nabokamaster.css
+design/nabokamaster
+

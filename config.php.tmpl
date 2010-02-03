@@ -24,7 +24,7 @@
 
 	$admin_ljuser=""; // "ваш ЖЖ для скачивания, например eu_shestakov";
 
-	// $rootpage = 'index.html'; // страница, которая открывается в корне (если не определена - откроется последняя заметка блога)
+	$rootpage = ''; // страница, которая открывается в корне (если пустая - откроется последняя заметка блога)
 
 $signature = "&copy; ".$admin_name."&nbsp;&nbsp;<a href='mailto:".$admin_mail."'>".$admin_mail."</a>";
 
@@ -39,6 +39,8 @@ $signature = "&copy; ".$admin_name."&nbsp;&nbsp;<a href='mailto:".$admin_mail."'
 # Если memcache не установлен, оставьте false (отключен), иначе все повиснет! Если установлен - включите параметры соединения:
 $memcache = false; // $memcache = new Memcache; $memcache->connect('localhost', 11211) or $memcache=false;
 $ttl_longsite = 10000; // длинное хранение данных
+$editor_cols = 80; // количество символов по ширине в окне редактора заметки
+$editor_rows = 20; // количество строк по высоте в окне редактора заметки
 
 # настройки RSS блога
 $RSSZ_skip = 10; // сколько выдавать за раз в RSS записей

@@ -55,9 +55,9 @@ function ARTICLE() { global $_PAGE,$article,$file_template,$wwwhost,$REF,$httpsi
 	        include_once $GLOBALS['include_sys']."_refferer.php"; $GLOBALS['linksearch']=refferer($REF,$article['num']);
 	}
 
-// if($article['template']=='') $article['template']='blog';
+if(empty($article['template'])) $article['template']='blog';
 $tmpl_name=$file_template.$article['template'].'.html';
-if(($design=file_get_contents($tmpl_name))===false) idie('Template not found: '.$tmpl_name);
+if(($design=file_get_contents($tmpl_name))===false) idie('Template not found: #'.$tmpl_name);
 
 $_PAGE=array();
 $_PAGE['prevlink']=$wwwhost;
@@ -97,7 +97,7 @@ if($path."/" == $wwwhost) {
  	redirect('http://lleo.aha.ru/na/?WWFuZGV4JSDy+yDt6PXz-yDt5SD36PLg5fj8IHJvYm90cy50eHQg6CDr5efl+Pwg6vPk4CDt5SDt4OTuLiDfIOTr-yDq7uPuIHJvYm90cy50eHQg7+jx4Os-JSDv8OXq8OD54Okg6O3k5erx6PDu4uDy-CDy6PLz6yDv5fDl4OTw5fHg9ujoIPLl7CDq7u3y5e3y7uwsIOru8u7w++kg7+4g7OXx8vMg7+Xw5eDk8OXx4Pbo6C4gx+Dl4eDrLCBZYW5kZXgsIPfl8fLt7uUg8evu4u4h');
  	}
 
-	if(isset($rootpage)) redirect($wwwhost.$rootpage); // если в конфиге установлен адрес заметки по умолчанию
+	if(!empty($rootpage)) redirect($wwwhost.$rootpage); // если в конфиге установлен адрес заметки по умолчанию
 
 	$last=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`!=0")." ORDER BY `Date` DESC LIMIT 1","_l",$ttl);
 	if($last=='') {
@@ -297,7 +297,7 @@ JsHttpRequest.query('".$GLOBALS['www_ajax']."'+name,value,function(responseJS,re
 
 function majax(url,a) { ajax(url,a,'if(responseJS.modo) eval(responseJS.modo);'); }
 
-/*
+
 function setOpacity(e, n) { var o=getOpacityProperty(); if(!e || !o) return;
 	if(o=='filter') { n *= 100; // Internet Exploder 5.5+
 	// ≈сли уже установлена прозрачность, то мен€ем еЄ через коллекцию filters, иначе добавл€ем прозрачность через style.filter
@@ -314,7 +314,7 @@ function getOpacityProperty() {
 	else if (document.body.filters && navigator.appVersion.match(/MSIE ([\d.]+);/)[1]>=5.5) return 'filter'; // IE 5.5+
 	return false;
 }
-*/
+
 
 function getScrollW(){ return (document.documentElement.scrollTop || document.body.scrollTop); }
 function getScrollH(){ return (document.documentElement.scrollLeft || document.body.scrollLeft); }

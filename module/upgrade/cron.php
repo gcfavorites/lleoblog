@@ -34,9 +34,11 @@ if($PEST[$name]==$$name) {
 
 // =============================== get_cache =========================================
 $name='get_cache'; $$name='Clean_cache';
-$a=glob($GLOBALS['fileget_tmp']."*"); $abot=sizeof($a); // сколько файлов в кэше?
-if($PEST[$name]==$$name) { foreach($a as $l) unlink($l); }
-if($abot) $s .= admin_kletka($name,"файлов в кэше: $abot",$$name);
+$a=glob($GLOBALS['fileget_tmp']."*"); if($a!==false) {
+	$abot=sizeof($a); // сколько файлов в кэше?
+	if($PEST[$name]==$$name) { foreach($a as $l) unlink($l); }
+	if($abot) $s .= admin_kletka($name,"файлов в кэше: $abot",$$name);
+}
 unset($a);
 
 ?>

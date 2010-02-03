@@ -205,23 +205,19 @@ function pr_comments_($sq) { global $wwwhost;
 	$sql=ms($sq,"_a",$ttl); $s.=$msqe;
 	$colnewcom=sizeof($sql); if(!$colnewcom) return $s;
 	$s.='<h2>Комментариев найдено: '.$colnewcom."</h2>";
-//?????????        	include_once("text_scripts.php"); $s.=text_scripts();
         $tmpDate='';
-
-//	dier($sql);
 
 	foreach($sql as $p) { $d=$p['DateID'];
 
 	if($tmpDate!=$d) {
-                $s .= "<p><b><a href='".$wwwhost.$d.".html".($_GET['search']?"?search=".$_GET['search']:'')."'>".$d." - ";
-                $x=ms("SELECT `Header` FROM `dnevnik_zapisi` WHERE `num`='".$d."' LIMIT 1","_l"); $s.=($x!=''?$x:"(&nbsp;)");
-                $s .= "</b></a>";
+		$x=ms("SELECT `Date`,`Header` FROM `dnevnik_zapisi` WHERE `num`='".$d."'","_1");
+                $s .= "<p><b><a href='".get_link($x['Date']).($_GET['search']?"?search=".$_GET['search']:'')."'>".$x['Date']." - "
+		.($x['Header']!=''?$x['Header']:"(&nbsp;)")."</b></a>";
                 $tmpDate=$d;
         	}
 
-	$level=($p['Parent']!=0?'100':'0');
+	$level=($p['Parent']!=0?'1':'0');
 	$s.= comment_one($p,0,$level);
-// str_replace('{comment_otstup}',$level,comment_one($p));
 	}
 	return $s;
 }

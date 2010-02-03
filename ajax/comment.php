@@ -190,6 +190,9 @@ if($IS['capcha']!='yes') {
 	$scr=0;
 	include_once $GLOBALS['include_sys']."spamoborona.php";
 
+	$c=ms("SELECT `Comment_screen` FROM `dnevnik_zapisi` WHERE `num`='$dat'","_l");
+	if($c=='screen' or (!$podzamok && $c=='friends-open')) $scr=1;
+
 	$ara=array(
 		'Text'=>e($text),
 		'Mail'=>e(($mail!=''?$mail:$IS['mail'])),
