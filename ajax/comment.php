@@ -233,7 +233,7 @@ if($IS['capcha']!='yes') {
 // ================= сохраняем данные в карточку =================
 	if($IS['realname']=='') $ara_kartochka['realname']=e($name);
 	if($mail!='' && $IS['mail']=='') $ara_kartochka['mail']=e($mail);
-	if(sizeof($ara_kartochka)) msq_update('unic',$ara_kartochka,"WHERE `id`='$unic'");
+	if(sizeof($ara_kartochka)) msq_update($GLOBALS['db_unic'],$ara_kartochka,"WHERE `id`='$unic'");
 // ================= сохраняем данные в карточку =================
 
 	cache_rm(comment_cachename($dat));
@@ -339,8 +339,9 @@ function otprav_comment($p,$r='') {
 }
 
 function getmojno_comm($num) {
-return mojno_comment(ms("SELECT `Comment`,`Comment_write`,`Comment_tree`,`view_counter`,`DateDatetime`,`num` 
-FROM `dnevnik_zapisi` WHERE `num`='".e($num)."'","_1"));
+	$p=ms("SELECT `Comment`,`Comment_write`,`Comment_tree`,`DateDatetime`,`num` FROM `dnevnik_zapisi` WHERE `num`='".e($num)."'","_1");
+	$p['view_counter']=get_counter($p);
+	return mojno_comment($p);
 }
 
 function otprav_error($s,$p='') { global $comnu; otprav("zabil('co_".$comnu."',\"<div class=e>".njs($s)."</div>\");".$p); }

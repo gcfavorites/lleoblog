@@ -69,8 +69,8 @@ if($se!='') {
 
 $a=$_GET['smode'];
 
-if($a=='hed') pr_zapisi("SELECT `Date`,`Header`,`view_counter`,`Access` FROM `dnevnik_zapisi` ".WHERE("`Header` $se")." ORDER BY `Date` DESC");
-if($a=='zam') pr_zapisi("SELECT `Date`,`Header`,`view_counter`,`Access` FROM `dnevnik_zapisi` ".WHERE("`Body` $se OR `Header` $se OR `Comment` $se".($admin?" OR `include` $se":''))." ORDER BY `Date` DESC");
+if($a=='hed') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE("`Header` $se")." ORDER BY `Date` DESC");
+if($a=='zam') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE("`Body` $se OR `Header` $se OR `Comment` $se".($admin?" OR `include` $se":''))." ORDER BY `Date` DESC");
 
 $WHERECOM1="SELECT * FROM `dnevnik_comm` WHERE (";
 $WHERECOM2=")".($podzamok?'':" AND `scr`='0'")." ORDER BY `Time` DESC";
@@ -81,34 +81,35 @@ if($a=='name') pr_comments($WHERECOM1."`Name` $se".$WHERECOM2);
 if($a=='comans') pr_comments($WHERECOM1."`Text` $se `Name` $se".$WHERECOM2);
 if($podzamok && $a=='namescr') { $onecomment_info=true; pr_comments($WHERECOM1."`Name` $se OR `lju` $se OR `mail` $se OR `IP` $se".$WHERECOM2); }
 
-if($a=='') pr_zapisi_comments("SELECT `Date`,`Header`,`view_counter`,`Access` FROM `dnevnik_zapisi` ".WHERE("`Body` $se OR `Header` $se OR `Comment` $se")." ORDER BY `Date` DESC",$WHERECOM1."`Text` $se OR `Name` $se".$WHERECOM2);
+if($a=='') pr_zapisi_comments("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE("`Body` $se OR `Header` $se OR `Comment` $se")." ORDER BY `Date` DESC",$WHERECOM1."`Text` $se OR `Name` $se".$WHERECOM2);
 
 }
 
 $g=$_GET['mode'];
 
-  if($g=='') pr_zapisi("SELECT `Date`,`Header`,`view_counter`,`Access` FROM `dnevnik_zapisi` ".WHERE()." ORDER BY `Date` DESC LIMIT ".$SIZEDEFAULT,true);
-  if($g=='more') pr_zapisi("SELECT `Date`,`Header`,`view_counter`,`Access` FROM `dnevnik_zapisi` ".WHERE()." ORDER BY `Date` DESC");
-  if($g=='rating') pr_zapisi_rating("SELECT `Date`,`Header`,`view_counter`,`Access` FROM `dnevnik_zapisi` ".WHERE()." ORDER BY `view_counter` DESC");
+  if($g=='') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE()." ORDER BY `Date` DESC LIMIT ".$SIZEDEFAULT,true);
+  if($g=='more') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE()." ORDER BY `Date` DESC");
+  if($g=='rating') pr_zapisi_rating("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access`".($GLOBALS['old_counter']==1?",`view_counter`":'')." FROM `dnevnik_zapisi` ".WHERE() );
 
 if($podzamok) {
-  if($admin) if($g=='invis_adm') pr_zapisi("SELECT `Date`,`view_counter`,`Header`,`Access` FROM `dnevnik_zapisi` WHERE `Access`='admin' ORDER BY `Date` DESC");
-  if($g=='invis') pr_zapisi("SELECT `Date`,`view_counter`,`Header`,`Access` FROM `dnevnik_zapisi` WHERE `Access`='podzamok' ORDER BY `Date` DESC");
-  if($g=='st_solidarnost') pr_zapisi("SELECT `Date`,`view_counter`,`Header`,`Access` FROM `dnevnik_zapisi` WHERE `include`='nikonov.php' AND `Body` LIKE '%{nikonov%' AND `Body` LIKE '%solidarnost.org%' ORDER BY `Date` DESC");
-  if($g=='st_nikonov') pr_zapisi("SELECT `Date`,`view_counter`,`Header`,`Access` FROM `dnevnik_zapisi` WHERE `include`='nikonov.php' AND `Body` LIKE '%{nikonov%' AND `Body` LIKE '%razgovor.org%' ORDER BY `Date` DESC");
-  if($g=='nikonoverr') pr_zapisi("SELECT `Date`,`view_counter`,`Header`,`Access` FROM `dnevnik_zapisi` WHERE `include`='nikonov.php' AND `Body` NOT LIKE '%{nikonov%' ORDER BY `Date` DESC");
+  if($admin) if($g=='invis_adm') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` WHERE `Access`='admin' ORDER BY `Date` DESC");
+  if($g=='invis') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` WHERE `Access`='podzamok' ORDER BY `Date` DESC");
+  if($g=='st_solidarnost') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` WHERE `include`='nikonov.php' AND `Body` LIKE '%{nikonov%' AND `Body` LIKE '%solidarnost.org%' ORDER BY `Date` DESC");
+  if($g=='st_nikonov') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` WHERE `include`='nikonov.php' AND `Body` LIKE '%{nikonov%' AND `Body` LIKE '%razgovor.org%' ORDER BY `Date` DESC");
+  if($g=='nikonoverr') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` WHERE `include`='nikonov.php' AND `Body` NOT LIKE '%{nikonov%' ORDER BY `Date` DESC");
 }
 
-if($g=='mudoslov') pr_zapisi("SELECT `Date`,`Header`,`view_counter`,`Access` FROM `dnevnik_zapisi` ".WHERE(mudos('LIKE','OR'))." ORDER BY `DATE` DESC");
-if($g=='mudoslov_rating') pr_zapisi_rating("SELECT `Date`,`Header`,`view_counter`,`Access` FROM `dnevnik_zapisi` ".WHERE(mudos('LIKE','OR'))." ORDER BY `view_counter` DESC");
-if($g=='nemudoslov') pr_zapisi("SELECT `Date`,`Header`,`view_counter`,`Access` FROM `dnevnik_zapisi` ".WHERE(mudos('NOT LIKE','AND'))." ORDER BY `DATE` DESC");
-if($g=='nemudoslov_rating') pr_zapisi_rating("SELECT `Date`,`Header`,`view_counter`,`Access` FROM `dnevnik_zapisi` ".WHERE(mudos('NOT LIKE','AND'))." ORDER BY `view_counter` DESC");
+if($g=='mudoslov') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE(mudos('LIKE','OR'))." ORDER BY `DATE` DESC");
+if($g=='mudoslov_rating') pr_zapisi_rating("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access`".($GLOBALS['old_counter']==1?",`view_counter`":'')." FROM `dnevnik_zapisi` ".WHERE(mudos('LIKE','OR')) );
+if($g=='nemudoslov') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE(mudos('NOT LIKE','AND'))." ORDER BY `DATE` DESC");
+if($g=='nemudoslov_rating') pr_zapisi_rating("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access`".($GLOBALS['old_counter']==1?",`view_counter`":'')." FROM `dnevnik_zapisi` ".WHERE(mudos('NOT LIKE','AND')));
 
 exit;
 
 
 
 function pr_comments($sq) { global $s; die($s.pr_comments_($sq)); }
+
 function pr_zapisi($sq,$more=false) { global $s; die($s.pr_zapisi_($sq).($more && $GLOBALS["colnewcom"]>=$GLOBALS["SIZEDEFAULT"]
 ?"<p><a href=?mode=more>показать больше &gt;&gt;</a>":'')); }
 
@@ -142,33 +143,37 @@ $s="
 
 
 function mudos($like,$or) {
-	$ara=explode("\n",file_get_contents('mudoslov.txt'));
+	$ara=explode("\n",file_get_contents($GLOBALS['host_design'].'mudoslov.txt'));
 	$a=''; foreach($ara as $m) if($m!='') $a.="`Body` $like '%$m%',";
 	$a=trim($a,','); $a=str_replace(',',"\n$or ",$a);
 	return $a;
 }
 
 //=========================================================================================================
-function pr_zapisi_($sq) { global $ttl,$wwwhost,$www_design,$numos,$podz_img,$colnewcom;
+function pr_zapisi_($sq) { global $numos,$colnewcom;
 	$s=''; $year=0;
-	$sql=ms($sq,"_a",$ttl); $s.=$msqe;
+	$sql=ms($sq,"_a"); $s.=$GLOBALS['msqe'];
 	$colnewcom=sizeof($sql); if(!$colnewcom) return $s;
 	$s.="<h2>Заметок найдено: ".$colnewcom."</h2>";
 	$s.="<ul>\n";
 // dier($sql);
+
+	$get=getget();
+
 	foreach($sql as $p) {
+			$p["counter"]=get_counter($p);
 			$Date=$p["Date"];
 			$head=($p["Header"]?" - ".htmlspecialchars($p["Header"]):"");
 
 		if(preg_match("/^(\d\d\d\d)\/(\d\d)\/(\d\d.*)$/si",$Date,$m)) { $Y=$m[1]; $M=$m[2]; $D=$m[3];
 			if($Y!=$year) { if($year) $s.="</ul>\n"; $s .= "<h2>".$Y." год</h2>\n<ul>\n"; $year = $Y; }
 			if($numos) $detail=" ".$numos++.". "; else $detail='';
-			$z=$detail."<a href='".$wwwhost."$Y/$M/$D.html".($_GET['search']?"?search=".$_GET['search']:'')."'>$M-$D (".$p["view_counter"].") ".$head."</a>";
+			$z=$detail."<a href='".get_link($Date).$get."'>$M-$D (".$p["counter"].") ".$head."</a>";
 			$z = zamok($p['Access']).$z;
 			$s.="\t<li>".$z."</li>\n";
 
 		} else {
-			$z=$detail."<a href='".$wwwhost.$Date.($_GET['search']?"?search=".$_GET['search']:'')."'>".$Date." (".$p["view_counter"].") ".$head."</a>";
+			$z=$detail."<a href='".get_link($Date).$get."'>".$Date." (".$p["counter"].") ".$head."</a>";
 			$z = zamok($p['Access']).$z;
 			$s.="<br>".$z;
 		}
@@ -181,28 +186,30 @@ function pr_zapisi_($sq) { global $ttl,$wwwhost,$www_design,$numos,$podz_img,$co
 
 
 //=========================================================================================================
-function pr_zapisi_rating($sq) { global $ttl,$web_path,$www_design,$podz_img;
-	$s='';
-	$sql=ms($sq,"_a",$ttl); $s.=$msqe;
-	$s.="<h2>Записей ".sizeof($sql)." (сортировка по счетчику посещений)</h2>";
-	$s.="<ol>\n";
+function pr_zapisi_rating($l) {	$pp=ms($l,"_a");
+	$ray=array(); foreach($pp as $n=>$p) { $c=get_counter($p); $pp[$n]["counter"]=$c; $ray[$n]=$c; } arsort($ray);
+	
+	$s = $GLOBALS['msqe'];
+	$s .= "<h2>Записей ".sizeof($pp)." (сортировка по числу посетителей)</h2>";
+	if($GLOBALS['old_counter']) $s.="<font color=red size=1>Учтите, что с февраля 2010 в движке подсчитываются не показы заметки, а реальные посетители, это число в несколько раз меньше.</font>";
+	$s .= "<p><table>";
 
-	foreach($sql as $p) {
-        	list($Y,$M,$D)=explode("/", $p["Date"]);
-		$head=($p["Header"]?" - ".htmlspecialchars($p["Header"]):"");
-	        $z = "<b>".$p['view_counter']."</b> - <a href='/".$web_path."$Y/$M/$D.html".($_GET['search']?"?search=".$_GET['search']:'')."'>".$p['Date'].$head."</a>";
-		$z = zamok($p['Access']).$z;
-		$s.="\t<li>".$z."</li>\n";
-		}
-	$s.="</ol>\n";
-	print $s; exit;
+	$get=getget(); $i=0; foreach($ray as $n=>$l) { $p=$pp[$n];
+		$s.= "<tr><td align=right>".(++$i).".</td><td><b>".$l."</b></td>"
+		."<td><small>".zamok($p['Access'])."<a href='".get_link($p['Date']).$get."'>"
+		.$p['Date'].($p["Header"]?" - ".h($p["Header"]):"")
+		."</a></small></td></tr>";
+	}
+
+	$s.="</table>";
+	die($s);
 }
 
 
 //=========================================================================================================
-function pr_comments_($sq) { global $wwwhost;
+function pr_comments_($sq) {
 	$s='';
-	$sql=ms($sq,"_a",$ttl); $s.=$msqe;
+	$sql=ms($sq,"_a"); $s.=$GLOBALS['msqe'];
 	$colnewcom=sizeof($sql); if(!$colnewcom) return $s;
 	$s.='<h2>Комментариев найдено: '.$colnewcom."</h2>";
         $tmpDate='';
@@ -220,6 +227,11 @@ function pr_comments_($sq) { global $wwwhost;
 	$s.= comment_one($p,0,$level);
 	}
 	return $s;
+}
+
+function getget() {
+	if(!sizeof($_GET)) return '';
+	$s="?"; foreach($_GET as $a=>$b) $s.=urlencode($a)."=".urlencode($b)."&"; return trim($s,"&");
 }
 
 ?>

@@ -309,4 +309,12 @@ function getmaketime($d) {
         return array($t0,$t);
 }
 
+function get_counter($p) { // $p['view_counter']
+	if(isset($GLOBALS['article']["counter"])) return $GLOBALS['article']["counter"];
+        $c=intval(ms("SELECT COUNT(*) FROM `dnevnik_posetil` WHERE `url`='".intval($p['num'])."'","_l"));
+        if($GLOBALS['old_counter']) $c+=$p["view_counter"];
+        $article["counter"]=$c;
+        return $c;
+}
+
 ?>

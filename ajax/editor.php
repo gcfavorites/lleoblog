@@ -242,7 +242,7 @@ idd('".$idhelp."_textarea').focus();
 //setOpacity(idd('".$idhelp."'), 3);
 ";
 
-$a=array('Date','Header','Body','DateUpdate','view_counter','last_view_ip','num','count_comments_open','DateDatetime','DateDate');
+$a=array('Date','Header','Body','DateUpdate','view_counter','num','count_comments_open','DateDatetime','DateDate');
 foreach($a as $l) unset($p[$l]);
 file_put_contents($GLOBALS['hosttmp'].'zapisi.set',serialize($p));
 

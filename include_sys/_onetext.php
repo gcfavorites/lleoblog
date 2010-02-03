@@ -1,11 +1,14 @@
 <?php // Отображение статьи с каментами - дата передана в $Date
 
-function onetext($p) { global $wwwhost,$IP,$unic;
+function onetext($p) { global $wwwhost,$unic;
 
 	$s=$p["Body"];
 
-	// Посчитать юзера
-	mysql_query("UPDATE `dnevnik_zapisi` SET view_counter=view_counter+1, last_view_ip='".e($IP)."' WHERE `num`='".e($p['num'])."' AND last_view_ip!='".e($IP)."'");
+//	// Посчитать юзера
+
+//	старый счетчик отключен:
+//	mysql_query("UPDATE `dnevnik_zapisi` SET view_counter=view_counter+1, last_view_ip='".e($IP)."' WHERE `num`='".e($p['num'])."' AND last_view_ip!='".e($IP)."'");
+
 	if($unic) {
 		$msqe_old=$GLOBALS['msqe']; // запомним накопленные ошибки
 		msq_add("dnevnik_posetil",array('unic'=>$unic,'url'=>e($p['num']))); // если есть - не внесет, а даст ошибку, нам не важно
@@ -16,14 +19,12 @@ function onetext($p) { global $wwwhost,$IP,$unic;
 
 	if($_GET['search']) $s=search_podsveti_body($s); // подсветка выделенных слов
 
-/*
-if($_GET['mode']=='mudoslov') {
-        $ara=explode("\n",file_get_contents('mudoslov.txt'));
-        foreach($ara as $m) { $m=trim($m); if($m!='') {
-			$_GET['search']=$m;
-			$article['Body']=search_podsveti_body($article['Body']);
-			}}
 
+if(isset($_GET['mode']) and $_GET['mode']=='mudoslov' or $_GET['mode']=='mudoslov_rating') {
+        $ara=explode("\n",file_get_contents($GLOBALS['host_design'].'mudoslov.txt'));
+        foreach($ara as $m) { $m=trim($m); if($m!='') { $_GET['search']=$m; $s=search_podsveti_body($s); }}
+}
+/*
 //} elseif($_GET['mode']=='hash') { include_once $include_sys."_hashdata2.php"; $article['Body'] = hashflash($article['Body']);
 
 } elseif( $login!='corwin' && !$podzamok && !$admin && $_GET['mode']!='h' ) { // hashdata для чужих
@@ -36,7 +37,6 @@ if($_GET['mode']=='mudoslov') {
 // произвести автоформатирование
 if($p['autoformat']=='no') return $s;
 return str_replace(array("\n\n","\n"),($p['autoformat']=='p'?array("<p>","<br>"):array("<p class=pd>","<p class=d>")),"\n\n"
-
 .str_replace("\n ","\n<p class=z>",$s)
 
 );
