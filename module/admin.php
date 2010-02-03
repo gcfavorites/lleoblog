@@ -155,7 +155,47 @@ function admin_tables() { global $filehost,$admin,$mypage;
 		if($admin && $GLOBALS['PEST'][$table]=='create' && !msq_table($table)) { msq($l); 
 $o .= $GLOBALS['msqe'];
 $o .= admin_kletka($table,"<font color=green>создана</font>"); }
-		else if(msq_table($table)) $o .= admin_kletka($table,"элементов ".ms("SELECT COUNT(*) FROM `$table`","_l"));
+		else if(msq_table($table)) {
+
+
+	$lta=explode("\n",$l);
+	$lma=array();
+	foreach($lta as $lt) {
+		$lt=trim($lt,"\n\r\t ,");
+		$lt=preg_replace("/[ ]+/s"," ",$lt);
+		$lt=preg_replace("/\s*COMMENT\s+[\'\"][^\'\"]+[\'\"]$/si","",$lt);
+		$lt=preg_replace("/\s+default\s+\'\'/si","",$lt);
+		$lt=preg_replace("/([ ])CURRENT_TIMESTAMP/si","$1'CURRENT_TIMESTAMP'",$lt);
+		$lt=preg_replace("/\s+on update 'CURRENT_TIMESTAMP'/si","",$lt);
+		if(preg_match("/^\`([^\`]+)\`/s",$lt,$mtmp)) { $lma[$mtmp[1]]=trim($lt); }
+	}
+
+// SQL error: Unknown column 'DateDatetime' in 'where clause'
+
+			$oo='';
+
+			$pp=ms("SHOW COLUMNS FROM ".e($table)."","_a",0);
+			foreach($pp as $p) {
+
+		$lt2 = trim("`".$p['Field']."` ".$p['Type']." "
+.($p['Null']=='NO'?"NOT NULL ":"")
+.($p['Default']!=''?"default '".$p['Default']."' ":"")
+.($p['Extra']!=''?$p['Extra']." ":""));
+
+		
+		if(!isset($lma[$p['Field']])) { $oo.=msq_del_pole($table,$p['Field'],"удалить поле"); }
+
+		elseif($lma[$p['Field']]==$lt2) { /*$oo.="\n<br>$lt2 <font color=green>ok</font>";*/ unset($lma[$p['Field']]); }
+		else $oo.="<p>\n$lt2<br><font color=red>\n".$lma[$p['Field']]."</font>";
+
+			}
+			if(sizeof($lma)) { foreach($lma as $lt=>$lt0) $oo.=msq_add_pole($table,$lt,preg_replace("/^\s*`".$lt."`\s*/si","",$lt0),"добавить поле"); }
+
+			$o .= admin_kletka($table,"элементов ".ms("SELECT COUNT(*) FROM `$table`","_l").$oo);
+
+
+
+		}
 		else { $o .=  admin_kletka($table,"<font color=red>отсутствует!</font>",'create'); $GLOBALS['admin_upgrade']=1; }
 	}
 	return $o;
@@ -170,9 +210,23 @@ $f_login = "<center>пароль: <input type='text' name='login' size='10'>&nbsp;<inp
 if(!preg_match("/^[0-9abcdef]{32}$/",$admin_hash)) { // неверный конфиг
 
 if($GLOBALS['PEST']['pass']!='') {
+	
+	$err=0;
+	// $os= "<p>Хэш пароля сгенерирован, 
+//$s.='<p><font color=red>Не получилось прописать автоматически в конфиг, придется руками.</font>'.$os;
+	$f='config.php';
 
-	$s.= "<p>Хэш пароля сгенерирован, пропиши в <b>config.php</b>: <p><center><font color=green>\$admin_hash=\"".md5($GLOBALS['PEST']['pass'].$koldunstvo)."\";</font>
-<p>".$f_login."</center>";
+	if(($conf=file_get_contents($f))===false) $err=1;
+	else {
+		$conf=preg_replace("/([\n\r]+\s*[\$]admin_hash\s*=\s*)[\'\"][\'\"]\s*;[^\n]*/si","$1\"".md5($GLOBALS['PEST']['pass'].$koldunstvo)."\";",$conf);
+	        if(file_put_contents($f,$conf)===false) $err=1; else chmod($f,0666);
+	}
+
+
+	if($err) $s.="<p>Не получилось прописать автоматически в конфиг, придется вам это сделать вручную:
+пропиши в <b>config.php</b>: <p><center><font color=green>\$admin_hash=\"".md5($GLOBALS['PEST']['pass'].$koldunstvo)."\";</font></center>";
+
+	else $s.="<p>Поздравляю, хэш удачно записан в config.php!<br>Осталось наберать тот же пароль и залогиниться:<p><center>".$f_login."</center>";
 
 	} else {
 

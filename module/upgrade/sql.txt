@@ -14,6 +14,31 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 --
 
 -- --------------------------------------------------------
+--
+-- Структура таблицы `unic`
+--
+
+CREATE TABLE IF NOT EXISTS `unic` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `login` varchar(32) NOT NULL,
+  `openid` varchar(64) NOT NULL COMMENT 'openid',
+  `obr` enum('realname','login','openid') NOT NULL default 'realname',
+  `lju` varchar(32) NOT NULL,
+  `password` varchar(32) NOT NULL,
+  `realname` varchar(128) NOT NULL,
+  `mail` varchar(64) NOT NULL,
+  `site` varchar(128) NOT NULL,
+  `birth` date NOT NULL,
+  `admin` enum('user','podzamok','admin','mudak') NOT NULL,
+  `ipn` int(10) unsigned NOT NULL,
+  `time_reg` int(11) NOT NULL default '0',
+  `timelast` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `capcha` enum('yes','no') NOT NULL default 'no',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Логины посетителей' AUTO_INCREMENT=7528 ;
+
+
+-- --------------------------------------------------------
 
 --
 -- Структура таблицы `dnevnik_comm`
@@ -200,29 +225,6 @@ CREATE TABLE IF NOT EXISTS `site` (
   KEY `type` (`type`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Контент сайта' AUTO_INCREMENT=169 ;
 
--- --------------------------------------------------------
---
--- Структура таблицы `unic`
---
-
-CREATE TABLE IF NOT EXISTS `unic` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `login` varchar(32) NOT NULL,
-  `openid` varchar(64) NOT NULL COMMENT 'openid',
-  `obr` enum('realname','login','openid') NOT NULL default 'realname',
-  `lju` varchar(32) NOT NULL,
-  `password` varchar(32) NOT NULL,
-  `realname` varchar(128) NOT NULL,
-  `mail` varchar(64) NOT NULL,
-  `site` varchar(128) NOT NULL,
-  `birth` date NOT NULL,
-  `admin` enum('user','podzamok','admin','mudak') NOT NULL,
-  `ipn` int(10) unsigned NOT NULL,
-  `time_reg` int(11) NOT NULL default '0',
-  `timelast` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  `capcha` enum('yes','no') NOT NULL default 'no',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Логины посетителей' AUTO_INCREMENT=7528 ;
 
 -- --------------------------------------------------------
 

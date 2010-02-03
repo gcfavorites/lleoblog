@@ -141,8 +141,8 @@ $s="
 
 <div id='".$idhelp."p' style='display:inline'><img class=l onclick=\"majax('editor.php',{a:'loadpanel',idhelp:'".$idhelp."'})\" src='".$www_design."e3/finish.png' alt='panel'></div>
 
-<br><input class=t type='text' id='".$idhelp."_Header' name='Header' value='".h($p["Header"])."' maxlength='255' size='80'> <span class=br>".strlen($p['Body'])." букв</span>
-<br><textarea onkeydown=\"keydownc('Body',this.value,$num)\" class=t id='".$idhelp."_textarea' cols='80' rows='20'>".h($p["Body"])."</textarea>
+<br><input class=t type='text' id='".$idhelp."_Header' name='Header' value='".h($p["Header"])."' maxlength='255' size=".$GLOBALS['editor_cols']."> <span class=br>".strlen($p['Body'])." букв</span>
+<br><textarea onkeydown=\"keydownc('Body',this.value,$num)\" class=t id='".$idhelp."_textarea' cols=".$GLOBALS['editor_cols']." rows=".$GLOBALS['editor_rows'].">".h($p["Body"])."</textarea>
 
 <div class=r>доступ: ".selecto('Access',$p['Access'],array('admin'=>"никому",'podzamok'=>"подзамок",'all'=>"всем"),"class=r id='".$idhelp."_Access' name")."
 автоформат: ".selecto('autoformat',$p['autoformat'],array('p'=>"p/br",'no'=>"нет",'pd'=>"class=pd"),"class=r id='".$idhelp."_autoformat' name")."
@@ -203,8 +203,8 @@ $s="
 ".($admin?'':"<font color=red>Вы не админ: в демо-режиме изменения не запишутся.</font>")."
 </div>
 
-<br><input onchange='ch_edit_pole(this,$num)' class=t type='text' name='Header' value='".h($p["Header"])."' maxlength='255' size='80'> <span class=br>".strlen($p['Body'])." букв</span>
-<br><textarea onkeydown=\"keydownc('Body',this.value,$num)\" class=t id='".$idhelp."_textarea' cols='80' rows='20'>".h($p["Body"])."</textarea>
+<br><input onchange='ch_edit_pole(this,$num)' class=t type='text' name='Header' value='".h($p["Header"])."' maxlength='255' size=".$GLOBALS['editor_cols']."> <span class=br>".strlen($p['Body'])." букв</span>
+<br><textarea onkeydown=\"keydownc('Body',this.value,$num)\" class=t id='".$idhelp."_textarea' cols=".$GLOBALS['editor_cols']." rows=".$GLOBALS['editor_rows'].">".h($p["Body"])."</textarea>
 
 <div class=r>доступ: ".selecto('Access',$p['Access'],array('admin'=>"никому",'podzamok'=>"подзамок",'all'=>"всем"),"class=r onchange='ch_edit_pole(this,$num)' name")."
 автоформат: ".selecto('autoformat',$p['autoformat'],array('p'=>"p/br",'no'=>"нет",'pd'=>"class=pd"),"class=r onchange='ch_edit_pole(this,$num)' name")."

@@ -123,4 +123,17 @@ function HEAD($e) { global $article;
 )?" class=l onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\"":'').">".($article["Header"]!=''?$article["Header"]:'(...)')."</div></div>";
 }
 
+
+function HEAD_D($e) { global $article;
+	$s="<div class='header'>".zamok($article['Access']).$article["Day"]." ".$GLOBALS['months_rod'][intval($article["Mon"])]." ".$article["Year"]."</div>";
+	if(!$GLOBALS['admin'] or $e!='1') return $s;
+	else return "<div class=l onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\">$s</div>";
+}
+
+function HEAD_N($e) { global $article;
+	$s="<div class='header' id='Header'>".($article["Header"]!=''?$article["Header"]:'(...)')."</div>";
+	if(!$GLOBALS['admin'] or $e!='1') return $s;
+	else return "<div class=l onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\">$s</div>";
+}
+
 ?>

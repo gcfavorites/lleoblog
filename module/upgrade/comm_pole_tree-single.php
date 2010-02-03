@@ -1,6 +1,6 @@
 <?
 
-$s .= msq_add_pole("dnevnik_zapisi","Comment_tree","enum('1','0') default '1'","настройка: комментарии древовидные/линейные");
+//$s .= msq_add_pole("dnevnik_zapisi","Comment_tree","enum('1','0') default '1'","настройка: комментарии древовидные/линейные");
 
 // если не было - добавить в ans поле u (undef) и сделать его полем по умолчанию по всей базе
 if(msq_pole('dnevnik_comm','ans')=="enum('1','0')") {

@@ -35,16 +35,16 @@ function realname_validate(p) { polese(p); var l=p.value; return l; }
 
 function setbirth(y,m,d) { var e=idd('birth'); e.value=y.value+'-'+m.value+'-'+d.value; polesend(e); }
 
-function login_go(log,pas) {
+function login_go(mylog,mypas) {
         zabil('openidotvet','<div class=o>идет соединение</div>');
-	majax('login.php',{ 'action': 'openid_logpas', 'rpage': mypage, 'log': log, 'pas': pas });
+	majax('login.php',{ 'action': 'openid_logpas', 'rpage': mypage, 'mylog': mylog, 'mypas': mypas });
 	return false;
 }
 
-function openid_go(log) {
-	if(log.replace(/\./g,'')==log) zabil('openidotvet','<div class=e>разве ж это openid?</div>');
+function openid_go(mylog) {
+	if(mylog.replace(/\./g,'')==mylog) zabil('openidotvet','<div class=e>разве ж это openid?</div>');
 	else { zabil('openidotvet','<div class=o>идет соединение</div>');
-	majax('login.php',{ 'action': 'openid_logpas', 'rpage': mypage, 'log': log });
+	majax('login.php',{ 'action': 'openid_logpas', 'rpage': mypage, 'mylog': mylog });
 	}
 	return false;
 }

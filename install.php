@@ -14,12 +14,13 @@ $s='curl_init'; if(function_exists($s)) idebug("CURL module - ok"); else die("<p
 $s='iconv'; if(function_exists($s)) idebug("ICONV module - ok"); else die("<p>Fatal error: ICONV not found! Install ICONV-module in Apache/PHP.");
 $s='ImageCreateFromJpeg'; if(function_exists($s)) idebug("GB module - ok"); else idebug("Warning: GD not found, install GD-module in Apache/PHP (for working with photoalbum).");
 
-
 $MYPAGE=$_SERVER["REQUEST_URI"]; list($mypage) = explode('?',$MYPAGE.'?',2);
 
 $filehost_s=rtrim($_SERVER["DOCUMENT_ROOT"],'/').'/blog/';
 $vetoserver=$filehost_s."update_veto_files.txt";
 $nadoserver=$filehost_s."update_nado_files.txt";
+
+
 
 // =========== —≈–¬≈–Ќјя „ј—“№ (только дл€ базы http://lleo.aha.ru/blog/) =============
 if(strstr($_SERVER["HTTP_HOST"],'lleo.aha.ru')) { // только на сервере lleo.aha.ru - зачем прочим эти гипотетические дыры в безопасности?
@@ -93,6 +94,7 @@ if(is_file("config.php")) {
 	setconf();
 	exit;
 } else {
+
 	// проверим, можем ли вообще создавать здесь файлы
 	$f='_temp_test.0';
 	$e=0; $i=rand(0,100);	
@@ -110,7 +112,7 @@ if(is_file("config.php")) {
 }
 
 
-if(!is_file('.htaccess') and is_file('htaccess') and $blogdir!='') {
+if(!is_file('.htaccess') and is_file('htaccess') and $msq_host!='') {
 	$s=file_get_contents("htaccess");
 	$s=str_replace('RewriteBase /blog/','RewriteBase /'.$blogdir,$s);
 	if(file_put_contents(".htaccess",$s)===false) die("<p>Fatal error: can't write '.htaccess'"); // else chmod(".htaccess",0666); 
@@ -176,7 +178,7 @@ if( isset($_POST['action']) ) { unset($_POST['action']);
 
 	if(substr($l,0,3)=='no:') { list($l,)=explode(' ',substr($l,3),2); $veto.="$l\n";} else {
 
-	if(substr($l,0,7)=='config:') { $l=substr($l,7); // с конфигом
+	if(substr($l,0,7)=='config:') {	$l=substr($l,7); // с конфигом
 		if($conf=='') $conf=file_get_contents('config.php');
 		if($n=='add') $conf=preg_replace("/\n\s*\?>\s*$/s","\n\n\$".$l."\n?>\n",$conf);
 		if($n=='del') $conf=preg_replace("/\n(\s*[\$]".$l."\s*=[^\n]+)/s","// delete this: $1",$conf);
@@ -192,7 +194,6 @@ if( isset($_POST['action']) ) { unset($_POST['action']);
 		if($n=='add') {	load_fileblog($l); }
 		if($n=='upd') {	copy($file,$file.'.old'); chmod($file.'.old',0666); load_fileblog($l); }
 		if($n=='mkdir') { mkdir_fileblog($l); }
-
 	}
 	}
 }
@@ -240,7 +241,7 @@ if(sizeof($nado)) foreach($nado as $l) if($l!='') {
 	elseif($o=='upd:') $all[$file]=array('act'=>'upd','color'=>'blue'); //$upd[]=$file;
 	elseif($o=='del:') $all[$file]=array('act'=>'del','color'=>'red'); //$del[]=$file;
 	elseif($o=='addconfig:') $all[$file]=array('act'=>'add_config','color'=>'green'); //$addconfig[]=$file;
-	elseif($o=='delconfig:') $all[$file]=array('act'=>'del_config','color'=>'red'); //$addconfig[]=$file;
+	elseif($o=='delconfig:' and is_file('config.php')) $all[$file]=array('act'=>'del_config','color'=>'red'); //$addconfig[]=$file;
 	elseif($o=='mkdir:' and !is_dir($filehost.$file)) $all[$file]=array('act'=>'mkdir','color'=>'green'); //$mkdir[]=$file;
 } unset($nado);
 
@@ -282,7 +283,7 @@ function print_oo($a) { global $filehost,$veto_my; $rez=strlen($filehost);
 	$lastdir='';
 	foreach($a as $ll=>$l) { $act=$l['act']; $color=$l['color'];
 
-		if(strstr($ll,'config:')) {
+		if(strstr($ll,'config:')) { if(!is_file('config.php')) continue;
 			$otstup=''; $dirname='config:'; $filename=' $'.substr($ll,strlen('config:'));
 		} else {
 			$filename=strstr_true($ll,'/');
@@ -324,7 +325,7 @@ function print_o($a,$act,$color) { global $filehost,$veto_my; $rez=strlen($fileh
 
 //====================================================================
 
-function get_config_perem() {
+function get_config_perem() { if(!is_file('config.php')) return array();
         $a=file('config.php'); $r=array();
 	foreach($a as $l) if(preg_match("/^\s*[\$]([0-9a-z\_\-]+)\s*\=\s*/si",$l,$m)) $r['config:'.$m[1]]=$m[1];
         return $r;
@@ -353,7 +354,7 @@ $stop=(intval($stop)?intval($stop):1000); if(!--$stop) die('stop error');
 
 
 function get_dvijok_files_old($files) { global $stop; $stop=(intval($stop)?intval($stop):1000); if(!--$stop) die('stop error 2');
-        $a=glob($files); $r=array();
+        $a=glob($files); $r=array(); if($a===false or !sizeof($a)) return $r;
         foreach($a as $n=>$l) if(!is_dir($l)) { if( preg_match("/\.old$/si",$l) ) { $r[]=$l; } unset($a[$n]); }
         foreach($a as $l) $r=array_merge($r,get_dvijok_files_old($l."/*"));
         return $r;
@@ -380,7 +381,7 @@ function curl_post($url, $post) {
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_POST, 1);
 	curl_setopt($ch, CURLOPT_HEADER, 0);
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+//	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($ch, CURLOPT_POSTFIELDS, join('&', $p));
 	$c=curl_exec($ch);
 	if(curl_errno($ch)!=0) $c=false;
@@ -411,7 +412,7 @@ $s="<h1>config.php</h1>
 <form action='".$GLOBALS['mypage']."' method='post'>";
 $s.="<p><b>Hosting:</b>";
 if(empty($GLOBALS['httpsite'])) { $e++; $s.="<br><input type=text size=30 name='httpsite' value='http://".$_SERVER["HTTP_HOST"]."'> server name (without folders, like 'http://lleo.aha.ru')"; }
-if(empty($GLOBALS['blogdir'])) { $e++; $s.="<br><input type=text size=30 name='blogdir' value='".substr(str_replace(strstr_true($mypage,'/'),'',$mypage),1)."'> folder ('blog/' or '' for root in site)"; }
+if(empty($GLOBALS['blogdir'])) { $s.="<br><input type=text size=30 name='blogdir' value='".substr(str_replace(strstr_true($mypage,'/'),'',$mypage),1)."'> folder ('blog/' or '' for root in site)"; }
 
 $s.="<p><b>MySQL:</b>";
 if(empty($GLOBALS['msq_host'])) { $e++; $s.="<br><input type=text size=30 name='msq_host' value='localhost'> MySQL-host (mysql.baze.lleo.aha.ru:64256)"; }
