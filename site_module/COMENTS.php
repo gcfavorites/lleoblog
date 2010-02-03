@@ -11,8 +11,10 @@ $comments_knopka=false; // выводить кнопку подкачки комментариев
 $comments_list=false; // грузить простыню комментариев
 $comments_screen=true;
 
+	get_counter($article); // установить значение счетчика, если не было
+
 $comments_timed=(
-		$article["view_counter"] > $N_maxkomm // Превышение количества посещений
+		$article["counter"] > $N_maxkomm // Превышение количества посещений
 		|| $article["DateTime"] < time()-86400*$enter_comentary_days // Слишком старая заметка
 		?true:false); 
 

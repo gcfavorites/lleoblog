@@ -136,7 +136,8 @@ CREATE TABLE IF NOT EXISTS `dnevnik_search` (
 
 --
 -- Структура таблицы `dnevnik_zapisi`
---
+--   `last_view_ip` varchar(15) NOT NULL default '',
+--   `view_counter` int(10) unsigned NOT NULL default '0' COMMENT 'счетчик для старых баз - не используем в новых версиях',
 
 CREATE TABLE IF NOT EXISTS `dnevnik_zapisi` (
   `Date` varchar(128) NOT NULL,
@@ -150,8 +151,6 @@ CREATE TABLE IF NOT EXISTS `dnevnik_zapisi` (
   `Comment_tree` enum('1','0') NOT NULL default '1',
   `comments_order` enum('normal','rating','allrating') NOT NULL default 'normal',
   `DateUpdate` int(10) unsigned NOT NULL default '0',
-  `view_counter` int(10) unsigned NOT NULL default '0',
-  `last_view_ip` varchar(15) NOT NULL default '',
   `num` int(10) unsigned NOT NULL auto_increment,
   `autokaw` enum('auto','no') NOT NULL,
   `count_comments_open` int(10) unsigned NOT NULL default '0',

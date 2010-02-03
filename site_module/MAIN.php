@@ -84,7 +84,10 @@ function OEMBED($e) { return '
 
 //==============================================================================================
 // [counter] - счетчик на странице
-function COUNTER($e) { return $GLOBALS['article']["view_counter"]+1; }
+function COUNTER($e) {
+	// return $GLOBALS['article']["view_counter"]+1; // старый счетчик
+	return get_counter($GLOBALS['article']);
+}
 
 //==============================================================================================
 function UNIC($e) { global $IS;
