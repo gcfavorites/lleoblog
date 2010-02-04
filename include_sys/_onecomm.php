@@ -157,7 +157,7 @@ function mojno_comment($p) { global $IS,$podzamok,$N_maxkomm,$enter_comentary_da
 	if($p['Comment_tree']=='0') return 0; // если запрещено отвечать на комменты
 
 	// Превышение количества посещений или слишком старая заметка
-	$t=($p["view_counter"] < $N_maxkomm and $p["DateDatetime"] > time()-86400*$enter_comentary_days ?1:0);
+	$t=($p["counter"] < $N_maxkomm and $p["DateDatetime"] > time()-86400*$enter_comentary_days ?1:0);
 
 	switch($p["Comment_write"]) {
 		case 'off': return false;

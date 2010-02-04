@@ -214,15 +214,9 @@ if($IS['capcha']!='yes') {
 	$ans=($id==0?'u':ms("SELECT `ans` FROM `dnevnik_comm` WHERE `id`='$id'","_l"));
 	if(!$admin and $ans=='0') idie('Админ запретил отвечать на этот комментарий.');
 	if($ans=='u') {	$e=getmojno_comm($dat);
-		if(!$admin and $e===false) idie('В этой заметке отвечать нельзя.'."
-<p>podzamok=".intval($podzamok)."
-<br>ans=".h($ans)."
-<br>dat=".h($dat)."
-<br>e=".($e===false?'false':intval($e))."
-<br>pt=".nl2br(h(print_r($pt,1)))."
-");
+		if(!$admin and $e===false) idie('В этой заметке отвечать нельзя.');
 		if(!$admin and $e=='root' and $id!=0) idie('В этой заметке разрешены комментарии, но не ответы на них.');
-}
+	}
 // ------------------------------------------
 
 	msq_add('dnevnik_comm',$ara); $newid=mysql_insert_id();
@@ -340,7 +334,7 @@ function otprav_comment($p,$r='') {
 
 function getmojno_comm($num) {
 	$p=ms("SELECT `Comment`,`Comment_write`,`Comment_tree`,`DateDatetime`,`num` FROM `dnevnik_zapisi` WHERE `num`='".e($num)."'","_1");
-	$p['view_counter']=get_counter($p);
+	$p['counter']=get_counter($p);
 	return mojno_comment($p);
 }
 

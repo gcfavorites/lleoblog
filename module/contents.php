@@ -20,12 +20,14 @@ $SIZEDEFAULT=60;
 $opt=array(
 	''=>"по дате",
 	'rating'=>"по рейтингу",
-	'st_nikonov'=>"статьи razgovor.org",
-	'st_solidarnost'=>"статьи solidarnost.org",
 	'mudoslov'=>"нецензурные",
 	'nemudoslov'=>"цензурные",
 	'mudoslov_rating'=>"рейтинг нецензурных",
 	'nemudoslov_rating'=>"рейтинг цензурных");
+
+if(strstr($httphost,'lleo.aha.ru')) $opt=array_merge(
+array('st:f5.ru'=>"стихи f5.ru",'st:razgovor.org'=>"статьи razgovor.org",'st:solidarnost.org'=>"статьи solidarnost.org")
+,$opt);
 
 $opt2=array(
 	''=>"везде",
@@ -86,23 +88,23 @@ if($a=='') pr_zapisi_comments("SELECT `num`,`Date`,`Header`".($old_counter?",`vi
 }
 
 $g=$_GET['mode'];
+$sss="SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ";
 
-  if($g=='') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE()." ORDER BY `Date` DESC LIMIT ".$SIZEDEFAULT,true);
-  if($g=='more') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE()." ORDER BY `Date` DESC");
-  if($g=='rating') pr_zapisi_rating("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access`".($GLOBALS['old_counter']==1?",`view_counter`":'')." FROM `dnevnik_zapisi` ".WHERE() );
+  if($g=='') pr_zapisi($sss.WHERE()." ORDER BY `Date` DESC LIMIT ".$SIZEDEFAULT,true);
+  if($g=='more') pr_zapisi($sss.WHERE()." ORDER BY `Date` DESC");
+  if($g=='rating') pr_zapisi_rating($sss." FROM `dnevnik_zapisi` ".WHERE() );
 
 if($podzamok) {
-  if($admin) if($g=='invis_adm') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` WHERE `Access`='admin' ORDER BY `Date` DESC");
-  if($g=='invis') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` WHERE `Access`='podzamok' ORDER BY `Date` DESC");
-  if($g=='st_solidarnost') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` WHERE `include`='nikonov.php' AND `Body` LIKE '%{nikonov%' AND `Body` LIKE '%solidarnost.org%' ORDER BY `Date` DESC");
-  if($g=='st_nikonov') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` WHERE `include`='nikonov.php' AND `Body` LIKE '%{nikonov%' AND `Body` LIKE '%razgovor.org%' ORDER BY `Date` DESC");
-  if($g=='nikonoverr') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` WHERE `include`='nikonov.php' AND `Body` NOT LIKE '%{nikonov%' ORDER BY `Date` DESC");
+  if($admin) if($g=='invis_adm') pr_zapisi($sss."WHERE `Access`='admin' ORDER BY `Date` DESC");
+  if($g=='invis') pr_zapisi($sss."WHERE `Access`='podzamok' ORDER BY `Date` DESC");
 }
 
-if($g=='mudoslov') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE(mudos('LIKE','OR'))." ORDER BY `DATE` DESC");
-if($g=='mudoslov_rating') pr_zapisi_rating("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access`".($GLOBALS['old_counter']==1?",`view_counter`":'')." FROM `dnevnik_zapisi` ".WHERE(mudos('LIKE','OR')) );
-if($g=='nemudoslov') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE(mudos('NOT LIKE','AND'))." ORDER BY `DATE` DESC");
-if($g=='nemudoslov_rating') pr_zapisi_rating("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access`".($GLOBALS['old_counter']==1?",`view_counter`":'')." FROM `dnevnik_zapisi` ".WHERE(mudos('NOT LIKE','AND')));
+if($g=='mudoslov') pr_zapisi($sss.WHERE(mudos('LIKE','OR'))." ORDER BY `DATE` DESC");
+if($g=='mudoslov_rating') pr_zapisi_rating($sss.WHERE(mudos('LIKE','OR')) );
+if($g=='nemudoslov') pr_zapisi($sss.WHERE(mudos('NOT LIKE','AND'))." ORDER BY `DATE` DESC");
+if($g=='nemudoslov_rating') pr_zapisi_rating($sss.WHERE(mudos('NOT LIKE','AND')));
+
+if(substr($g,0,3)=='st:') { pr_zapisi($sss."WHERE `Header` LIKE '".e(substr($g,3))."%' ORDER BY `Date` DESC"); }
 
 exit;
 
