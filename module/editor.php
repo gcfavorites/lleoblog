@@ -120,34 +120,6 @@ class=knop onClick=\"pns('BodyTextarea','\\n<pre style=\'border: 0.01mm solid rg
 Text ".strlen($_POST['Body'])." букв:
 <br><textarea class='t' style='width: 100%;' id='BodyTextarea' name='Body' cols='60' rows='20'>".htmlspecialchars($_POST["Body"])."</textarea>
 
-<p>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'<p class=pd>','');\"><img border=1 src=".$www_design."e2/pd.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'<p class=d>','');\"><img border=1 src=".$www_design."e2/d.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'".chr(160)."','');\"><img border=1 src=".$www_design."e2/nbsp.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'".chr(169)."','');\"><img border=1 src=".$www_design."e2/copy.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'".chr(151)."','');\"><img border=1 src=".$www_design."e2/mdash.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'".chr(171)."','".chr(187)."');\"><img border=1 src=".$www_design."e2/ltgt.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'<b>','</b>');\"><img border=1 src=".$www_design."e2/bold.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'<i>','</i>');\"><img border=1 src=".$www_design."e2/italic.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'<s>','</s>');\"><img border=1 src=".$www_design."e2/strikethrough.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'<u>','</u>');\"><img border=1 src=".$www_design."e2/underline.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'\\n<center>','</center>');\"><img border=1 src=".$www_design."e2/justifycenter.gif></a>
-<a onClick=\"pins2(document.getElementById('BodyTextarea'),'\\n<img src=".$www_design."e2/lj.gif style=\'vertical-align: middle;\'><a href=http://','.livejournal.com>','</a>');\"><img border=1 src=".$www_design."e2/ljuser.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'<p><center><img src=',' border=1></center>');\"><img border=1 src=".$www_design."e2/image.gif></a>
-<a onClick=\"pins2(document.getElementById('BodyTextarea'),'<a href=','>','</a>');\"><img border=1 src=".$www_design."e2/link.gif></a>
-<a onClick=\"pins2(document.getElementById('BodyTextarea'),'\\n\\n<p><center><object width=320 height=240><param name=movie value=\'','.swf\'></param><param name=wmode value=transparent></param><embed src=\'','.swf\' type=\'application/x-shockwave-flash\' wmode=transparent width=320 height=240></embed></object></center>');\"><img border=1 src=".$www_design."e2/ljvideo.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'\\n<blockquote style=\'border: 1px dashed rgb(255,0,0); padding: 20px; margin-left: 50px; margin-right: 50px; background-color: rgb(255,252,223);\'>','</blockquote>');\"><img border=1 src=".$www_design."e2/tableb_1.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'\\n<table style=\'border-collapse: collapse; border: 1px solid red; margin: 20pt;\'\\nbgcolor=#fffff0 border=1 cellpadding=20><td><div align=justify>','</td></table>');\"><img border=1 src=".$www_design."e2/tableb_r.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'\\n<table bgcolor=#fff0ff border=1 cellpadding=50 cellspacing=0 width=80%><td><div align=justify>','</td></table>');\"><img border=1 src=".$www_design."e2/tableb1.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'\\n<table bgcolor=#f0ffff border=1 cellpadding=50 cellspacing=0 width=80%><td><div align=justify>','</td></table>');\"><img border=1 src=".$www_design."e2/tableb2.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'\\n<table bgcolor=#fffff0 border=1 cellpadding=50 cellspacing=0 width=80%><td><div align=justify>','</td></table>');\"><img border=1 src=".$www_design."e2/tableb3.gif></a>
-<a onClick=\"pins(document.getElementById('BodyTextarea'),'\\n<pre style=\'border: 0.01mm solid rgb(0,0,0); padding: 4px; line-height: 100%; font-family: monospace; background-color: rgb(255,255,255);\'>','</pre>');\"><img border=1 src=".$www_design."e2/tableb_pre.gif></a>
-
-
-
-
-
-
 ";
 
 

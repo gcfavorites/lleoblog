@@ -30,7 +30,6 @@ $BRO = $_SERVER["HTTP_USER_AGENT"];
 $MYPAGE=$_SERVER["REQUEST_URI"];
 list($mypage) = explode('?',$MYPAGE.'?',2);
 include $include_sys."_msq.php";
-$uc='unic11';
 
 if(isset($_COOKIE[$uc])) { // если кука $uc установлена
 	$unic=$_COOKIE[$uc]; if($unic=='candidat') set_unic(); // был кандидатом, зашел второй раз? получи свой номер!
@@ -38,9 +37,11 @@ if(isset($_COOKIE[$uc])) { // если кука $uc установлена
 		list($unic,$unicpass) = explode('-',$unic,2); $unic=intval($unic); // прочитать куку авторизации
 		if($unicpass!=md5($unic.$hashlogin)) set_unic_candidat(); // неверный пароль? странно. ну... назначим снова кандидатом.
 		else { // авторизация пройдена успешно
-			$IS=getis($unic); $imgicourl=$IS['imgicourl'];
-			if($IS['admin']=='podzamok') $podzamok=true;
-			// if(stristr($BRO,'blogtest')) { $admin=$podzamok=0; $unic=666; $IS=ms("SELECT * FROM ".$GLOBALS['db_unic']." WHERE `id`='$unic'","_1"); } // для отладки
+			$IS=getis($unic); if($IS!==false) {
+				$imgicourl=$IS['imgicourl'];
+				if($IS['admin']=='podzamok') $podzamok=true;
+				// if(stristr($BRO,'blogtest')) { $admin=$podzamok=0; $unic=666; $IS=ms("SELECT * FROM ".$GLOBALS['db_unic']." WHERE `id`='$unic'","_1"); } // для отладки
+			} else set_unic_candidat(); // логин был удален
 		}
 	}
 } else set_unic_candidat(); // куки пусты? выставить куку 'candidat', номер не давать, в базу не вносить
@@ -74,6 +75,7 @@ function WHERE($s='') { global $access; if($s.$access=='') return ''; if($s=='' 
 
 function getis($unic) {
 	$IS=ms("SELECT * FROM ".$GLOBALS['db_unic']." WHERE `id`='$unic'","_1");	// if($admin) dier($IS);
+	if($IS===false) return false;
 	if($IS) { $IS=array_merge($IS,get_ISi($IS));
 		$IS['imgicourl']=h($IS['user']);
 		if(isset($IS['url'])) $IS['imgicourl']="<a href='http://".h($IS['url'])."'>".$IS['imgicourl']."</a>";
@@ -131,18 +133,17 @@ function broident($add) { return md5($_SERVER["HTTP_USER_AGENT"].$_SERVER["HTTP_
 
 function dier($a) { idie(nl2br(h(print_r($a,1)))); } // отладочная процедурка
 
-function idie($s) { 
+function idie($s,$h='') { 
+	// если это был аякс - выдать аякс-окно
+	if(!empty($GLOBALS['ajax'])) {
+		list($u)=explode('?',$_SERVER['REQUEST_URI'],2);
+		otprav("helps('idie',\"<fieldset><legend>Fatal error: ".h($u)."</legend><div style='font-size: 11px; text-align: left;'>".njs($s)."</div></fieldset>\");");
+	}
 
-// если это был аякс - выдать аякс-окно
-if(!empty($GLOBALS['ajax'])) {
-	list($u)=explode('?',$_SERVER['REQUEST_URI'],2);
-	otprav("helps('idie',\"<fieldset><legend>Fatal error: ".h($u)."</legend><div style='font-size: 11px; text-align: left;'>".njs($s)."</div></fieldset>\");");
+	ob_end_clean(); 
+	if($h) header($h);
+	die("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=".$GLOBALS['wwwcharset']."\" /><title>Error</title></head><body>".$s."</body></html>");
 }
-
-ob_end_clean(); die("<html><head>
-\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=".$GLOBALS['wwwcharset']."\" />
-\t<title>Error</title>
-</head><body>".$s."</body></html>"); }
 
 function mystart() {
 	Error_Reporting(E_ALL & ~E_NOTICE);

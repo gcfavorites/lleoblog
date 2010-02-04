@@ -44,9 +44,9 @@ function ARTICLE_Date($Date) { global $article;
         if($article!==false) ARTICLE();
 
 	$Date2=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`!=0")." ORDER BY `DateDatetime` DESC LIMIT 1","_l");
-idie("Заметка, датированная числом ".h($Date)." не существует. Скорее всего ее никогда не было. Может, она удалена или закрыта.
+	idie("Заметка, датированная числом ".h($Date)." не существует. Скорее всего ее никогда не было. Может, она удалена или закрыта.
 Последняя заметка дневника находится <a href='".$GLOBALS['wwwhost'].$Date2.".html'>здесь</a>. Также можно посмотреть
-<a href='".$GLOBALS['wwwhost']."contents/'>оглавление</a>");
+<a href='".$GLOBALS['wwwhost']."contents/'>оглавление</a>","HTTP/1.1 404 Not Found");
 }
 
 function ARTICLE() { global $_PAGE,$article,$file_template,$wwwhost,$REF,$httpsite;
