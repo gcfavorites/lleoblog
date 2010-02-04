@@ -1,6 +1,8 @@
 <?php
 
-function PREWORD($e) { global $IS,$REF; $s=''; $opoznan=$IS['imgicourl'];
+function PREWORD($e) { global $IS,$REF; $s='';
+
+	$opoznan=$IS['imgicourl']; if(substr($opoznan,0,1)=='#') $opoznan='';
 
 if(isset($GLOBALS['linksearch'])) {
 
