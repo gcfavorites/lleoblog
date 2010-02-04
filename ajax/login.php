@@ -14,13 +14,14 @@ if(isset($_GET['openid_mode'])) {
         $openid = new SimpleOpenID;
         $openid->SetIdentity($_GET['openid_identity']);
         $openid_validation_result = $openid->ValidateWithServer();
-        if ($openid_validation_result == true){ // OK HERE KEY IS VALID
+        if($openid_validation_result == true){ // OK HERE KEY IS VALID
 
 	// ========= мы залогинились, и шо теперь делать? ==========
 
 	// получим информацию о странице возврата и запрошенном openid
 	$dat=ms("SELECT `text` FROM `unictemp` WHERE `unic`='$unic'","_l",0); if($dat===false) die('error');
 	msq("DELETE FROM `unictemp` WHERE `unic`='$unic'");
+
 	$dat=unserialize($dat);
 
 	$openid=h($dat['openid']); $openid=preg_replace("/^www./i","",$openid); // нахер нам эта путаница
@@ -35,7 +36,8 @@ if(isset($_GET['openid_mode'])) {
 		if($IS['birth']='' and $_GET['openid_sreg_dob']!='') $ara['birth']=e($_GET['openid_sreg_dob']);
 		msq_update($GLOBALS['db_unic'],$ara,"WHERE `id`='$unic'");
 
-		print "ololo";
+		if($msqe) { logi('login_msqe.txt',"\n\n".$msqe); die($msqe); }
+
 		setcookie('obr',base64_encode(h($openid)), time()+86400*365, "/", "", 0);
 		redirect($dat['rpage']);
 
@@ -63,6 +65,7 @@ if(isset($_GET['openid_mode'])) {
 $kuka=$f['id'].'-'.md5($f['id'].$hashlogin);
 
 //	location.replace('".h($dat['rpage'])."');
+if($msqe) { logi('login_msqe.txt',"\n\n".$msqe); die($msqe); }
 
 die("<html><head>
 <script language='JavaScript'>
