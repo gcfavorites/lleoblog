@@ -40,7 +40,7 @@ padding: 20px 0; border-left: green 2px solid; border-collapse:collapse; }
 /* рамка форм - мне так нравится */
 .t { border: 1px solid #330000; }
 .r { font-size: 12px; }
-.l { cursor: pointer; color: blue; text-decoration: underline; }
+.l,.ll { cursor: pointer; color: blue; text-decoration: underline; } .ll { display: inline; }
 
 /* кнопки панели управления */
 
