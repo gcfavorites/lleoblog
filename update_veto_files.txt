@@ -25,4 +25,3 @@ design/userpick1.jpg
 template/nabokamaster.html
 css/nabokamaster.css
 design/nabokamaster
-

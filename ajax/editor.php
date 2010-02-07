@@ -162,9 +162,9 @@ $s.="<br>
 открывать: ".selecto('Comment_screen',$p['Comment_screen'],array('open'=>"всех",'friens-open'=>"друзей",'screen'=>"скрывать"),
 "class=r id='".$idhelp."_Comment_screen' name")."
 тип: ".selecto('Comment_tree',$p['Comment_tree'],array('1'=>"форум",'0'=>"гостевая"),
-"class=r onchange='ch_edit_pole(this,$num)' name")."
+"class=r onchange='ch_edit_pole(this,$num)' name");
 
-<br><input type=submit value='Save' onclick=\"edit_savenew()\">";
+$s.="<br><input type=submit value='Save' onclick=\"edit_savenew()\">"; // и кнопку!
 
 // сортировка: ".selecto('comments_order',$p['comments_order'],array('normal'=>"нет",'allrating'=>"сборная",'rating'=>"тупая") )."
 

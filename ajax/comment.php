@@ -200,6 +200,7 @@ if($IS['capcha']!='yes') {
 		'group'=>($admin?1:0),
 		'IPN'=>e($GLOBALS['IPN']),
 		'BRO'=>e($GLOBALS['BRO']),
+// 'whois'
 		'DateID'=>$dat,
 		'unic'=>e($GLOBALS['unic']),
 		'Time'=>time(),
