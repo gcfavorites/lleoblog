@@ -2,31 +2,37 @@
 
 function refferer($ref,$DateID) { global $IPNUM;
 
+if(striplink($ref)) return false;
+
 $u=poiskovik($ref);
 
 if($u[0]!="") { // если поиск найден - дополнить базу `dnevnik_search`
 
 	if(msq_exist("dnevnik_search","WHERE `DateID`=".$DateID." AND `search`='".e($u[0])."'")) { // увеличить счетчик
-		msq_update("dnevnik_search",array("last_ipn"=>$IPNUM,"`count`=`count`+1
-WHERE `DateID`='".$DateID."' AND `search`='".e($u[0])."' AND last_ipn!=".$IPNUM));
+		msq_update("dnevnik_search",array("last_ipn"=>$IPNUM),
+"`count`=`count`+1 WHERE `DateID`='".$DateID."' AND `search`='".e($u[0])."' AND last_ipn!=".$IPNUM);
 	} else { // вставить новый счетчик если не было
 		msq_add("dnevnik_search",array("DateID"=>$DateID,"poiskovik"=>e($u[1]),"search"=>e($u[0]),"link"=>e($ref),
 "count"=>1, "last_ipn"=>$IPNUM) );
 	}
 
-	} elseif(!striplink($ref)) { // если не запрещенные - дополнить базу `dnevnik_link`
-		if(msq_exist("dnevnik_link","WHERE `DateID`=".$DateID." AND `link`='".e($ref)."'")) { // увеличить счетчик
-			msq_update("dnevnik_link",array("last_ipn"=>$IPNUM,"`count`=`count`+1 WHERE `DateID`=".$DateID."
-			AND `link`='".e($ref)."' AND last_ipn!=".$IPNUM));
-		} else { // вставить новый счетчик
-			msq_add("dnevnik_link",array("DateID"=>$DateID, "link"=>e($ref), "count"=>1, "last_ipn"=>$IPNUM ) );
-		}
+} else { // дополнить базу `dnevnik_link`
+	if(msq_exist("dnevnik_link","WHERE `DateID`=".$DateID." AND `link`='".e($ref)."'")) { // увеличить счетчик
+		msq_update("dnevnik_link",array("last_ipn"=>$IPNUM),
+"`count`=`count`+1 WHERE `DateID`=".$DateID." AND `link`='".e($ref)."' AND last_ipn!=".$IPNUM);
+	} else { // вставить новый счетчик
+		msq_add("dnevnik_link",array("DateID"=>$DateID, "link"=>e($ref), "count"=>1, "last_ipn"=>$IPNUM ) );
 	}
+}
 
 return $u;
 }
 
 function striplink($l) {
+
+if(strstr($l,'www.google.') && strstr($l,'/reader/')) return true;
+if(strstr($l,'.livejournal.com') && strstr($l,'/friends')) return true; // из френдленты
+if(strstr($l,'yandex.ru/read.xml') or strstr($l,'yandex.ru/unread.xml'))  return true; // яндексовые читалки
 
 /*
 
@@ -35,20 +41,19 @@ http://www.google.ru/reader/view/
 http://www.google.com/reader/view/?tab=my
 http://www.google.com/reader/view/
 
-
 if( ( strstr($l,'.livejournal.com') && strstr($l,'/friends') ) // из френдленты
-    || strstr($l,'yandex.ru/top/') // топы
-    || strstr($l,'blog.yandex.ru') // топы
-    || strstr($l,'blogs.yandex.ru') // топы
+//    || strstr($l,'yandex.ru/top/') // топы
+//    || strstr($l,'blog.yandex.ru') // топы
+//    || strstr($l,'blogs.yandex.ru') // топы
     || strstr($l,'yandex.ru/read.xml') // яндексовые читалки
     || strstr($l,'yandex.ru/unread.xml') // яндексовые читалки
     || strstr($l,'bloglines.com') // блоглайнс какой-то
     || strstr($l,'graveron.fatal.ru') // спаммер что ли?
     || ( strstr($l,'www.google.') && strstr($l,'/reader/') )  // google reader
 ) return true;
-else return false;
 */
 
+return false;
 }
 
 
@@ -63,7 +68,7 @@ function maybelink($e) {
 
 function poiskovik($urlo) {
 
-	if(strstr($urlo,$GLOBALS['httphost'])) return(0);
+	if(strstr($urlo,$GLOBALS['httphost'])) return false;
 
 $u=parse_url($urlo); // $_SERVER["HTTP_REFERER"];
 parse_str($u['query'],$outr);
