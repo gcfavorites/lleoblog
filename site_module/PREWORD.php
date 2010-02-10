@@ -4,7 +4,7 @@ function PREWORD($e) { global $IS,$REF; $s='';
 
 	$opoznan=$IS['imgicourl']; if(substr($opoznan,0,1)=='#') $opoznan='';
 
-if(isset($GLOBALS['linksearch'])) {
+if(!empty($GLOBALS['linksearch'])) {
 
 	$u0=$GLOBALS['linksearch'][0];
 	$u1=$GLOBALS['linksearch'][1];
