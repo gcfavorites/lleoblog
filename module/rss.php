@@ -20,15 +20,15 @@ $s1="<?xml version='1.0' encoding='".$wwwcharset."'?>
 <rss version='2.0' xmlns:ya='http://blogs.yandex.ru/yarss/' xmlns:wfw='http://wellformedweb.org/CommentAPI/'>
 
 <channel>
-  <title>Ћеонид  аганов: второй блог - о веб-разработке</title>
+  <title>".$admin_name.": блог</title>
   <lastBuildDate>";
 
 $s="</lastBuildDate>
   <link>".$httphost."</link>
-  <description>Ѕлог lleo о разработке блогодвижка</description>
-  <generator>LLeoBlog 1.0</generator>
+  <description>".$admin_name.": блог</description>
+  <generator>LLeoBlog 3.0</generator>
   <wfw:commentRss>".$httphost."rssc"."</wfw:commentRss>
-  <ya:more>".$MYPAGE."?skip=".($skip+$RSSZ_skip)."</ya:more>
+  <ya:more>".$httpsite.$mypage."?skip=".($skip+$RSSZ_skip)."</ya:more>
   <image>
     <url>".$httphost."design/userpick.jpg"."</url>
     <width>120</width>
@@ -54,8 +54,8 @@ $s .= "\n<item>
 	<author>http://lleo.aha.ru</author>
 	<pubDate>".date("r", $p["DateUpdate"])."</pubDate>
 	<link>".$link."</link>
-	<description>".htmlspecialchars($Body)."</description>
-	<title>".htmlspecialchars($Header)."</title>
+	<description>".h($Body)."</description>
+	<title>".h($Header)."</title>
 	<comments>".$link."</comments>
 </item>\n";
 }
@@ -86,12 +86,12 @@ function check_if_modified($date, $etag = NULL) { $cache = NULL;
 
 // функци€ подготовки RSS, если он неполный
 
-function RSS_zaban($s) { global $admin; 	// если это забаненные мудаки, воры и роботы
-	if(	$_SERVER["REMOTE_ADDR"]=='78.46.74.53' // http://feedex.net/view/lleo.aha.ru/dnevnik/rss.xml
-		|| strstr($_SERVER["HTTP_USER_AGENT"],'eedjack') // BRO='Feedjack 0.9.10 - http://www.feedjack.org/'
+function RSS_zaban($s) { global $admin,$IP,$BRO; 	// если это забаненные мудаки, воры и роботы
+	if( $IP=='78.46.74.53' // http://feedex.net/view/lleo.aha.ru/dnevnik/rss.xml
+		|| strstr($BRO,'eedjack') // BRO='Feedjack 0.9.10 - http://www.feedjack.org/'
 		// || $_SERVER["REMOTE_ADDR"]=='79.165.191.215' // Feed43.com? http://feeds.feedburner.com/lleo ?
 //		|| strstr($_SERVER["HTTP_USER_AGENT"],'Wget/') // а нехуй вгетом качать!
-		|| $_SERVER["REMOTE_ADDR"]=='140.113.88.218' || strstr($_SERVER["HTTP_USER_AGENT"],'Yahoo Pipes')
+		|| $IP=='140.113.88.218' || strstr($BRO,'Yahoo Pipes')
 	) return "ƒл€ вас полный текст заметки <a href=".mkna("читатель RSS!",
 "вы настолько обленились, что вам лень ткнуть в ссылку и вы пытаетесь читать RSS пиратскими способами.",
 "ходите и читайте дневник по-человечески.").">находитс€ здесь</a>";
@@ -99,9 +99,9 @@ function RSS_zaban($s) { global $admin; 	// если это забаненные мудаки, воры и р
 }
 
 
-function RSSZ_mode1($s,$link) { global $admin;
-	$sim=ereg_replace("<[^>]*>",'',html_entity_decode($s)); // удалить все теги
-	$sim=ereg_replace("{[^}]*}",'',$sim); // удалить все фичи в фигурных скобках
+function RSSZ_mode1($s,$link) { global $admin,$BRO,$IP;
+	$sim=strip_tags(html_entity_decode($s)); // удалить все теги
+	$sim=ereg_replace("{_[^}]*_}",'',$sim); // удалить все модули в фигурных скобках
 	$bukv=round(((strlen($sim))+99 )/100)*100;
 	$sim=trim(preg_replace("/^(.{260}[^\.\?\!]*[\.\!\?]).*$/si","$1",$sim))
 	."... [<a href='$link'>читать полностью: примерно $bukv символов</a>]\n\n";
@@ -112,7 +112,7 @@ function RSSZ_mode1($s,$link) { global $admin;
 
 	// если это яндекс
 
-	if( strstr($_SERVER["HTTP_USER_AGENT"],'Yandex') || $_SERVER["REMOTE_ADDR"]=='78.110.50.100' ) return $sim."
+	if( strstr($BRO,'Yandex') || $IP=='78.110.50.100' ) return $sim."
 \n<p><b>ѕытаетесь читать мой дневник через RSS-ленту яндекса? «десь лишь груба€ текстова€ выжимка
 дл€ индексации в поиске - с битыми абзацами, без фоток, картинок, верстки, роликов, скриптов, голосований и прочего.
 Ќасто€щую версию моего дневника вы можете прочесть только на моем сайте (причины описаны <a href=".$httphost."/about_rss>здесь</a>).</b>";
@@ -120,7 +120,7 @@ function RSSZ_mode1($s,$link) { global $admin;
 	// если это робот трансл€ции ∆∆
 
 	// 204.9.177.18 (): , 'LiveJournal.com (webmaster@livejournal.com; for http://www.livejournal.com/users/lleo_run/; 488 readers)'
-	if(strstr($_SERVER["HTTP_USER_AGENT"],'LiveJournal.com') )
+	if(strstr($BRO,'LiveJournal.com') )
 	return $sim."\n„итатели ∆∆-трансл€ции! ќставл€йте комментарии только на моем сайте, иначе € их не увижу.";
 
 	return $sim;

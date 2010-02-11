@@ -23,7 +23,7 @@
 */
 
 function antibot_make() { global $antibot_pic, $antibot_H, $antibot_W, $antibot_C, $antibot_add2hash, $antibot_file, $antibot_hash;
-	$bgs=glob($antibot_pic."bg*"); $im=imagecreatefromjpeg($bgs[rand(0,count($bgs)-1)]); // Выбор случайной подложки
+	$bgs=glob($antibot_pic."bg-*"); $im=imagecreatefromjpeg($bgs[rand(0,count($bgs)-1)]); // Выбор случайной подложки
 	$h = round((ImageSY($im)-$antibot_H)/2); // Средняя высота
 	$w = round(ImageSX($im)/$antibot_C); // Средняя ширина
 

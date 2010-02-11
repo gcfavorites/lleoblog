@@ -2,27 +2,18 @@
 
 function refferer($ref,$DateID) { global $IPNUM;
 
-if(striplink($ref)) return false;
+	if(striplink($ref)) return false;
 
-$u=poiskovik($ref);
+	$u=poiskovik($ref);
 
-if($u[0]!="") { // если поиск найден - дополнить базу `dnevnik_search`
-
-	if(msq_exist("dnevnik_search","WHERE `DateID`=".$DateID." AND `search`='".e($u[0])."'")) { // увеличить счетчик
-		msq_update("dnevnik_search",array("last_ipn"=>$IPNUM),
-"`count`=`count`+1 WHERE `DateID`='".$DateID."' AND `search`='".e($u[0])."' AND last_ipn!=".$IPNUM);
-	} else { // вставить новый счетчик если не было
-		msq_add("dnevnik_search",array("DateID"=>$DateID,"poiskovik"=>e($u[1]),"search"=>e($u[0]),"link"=>e($ref),
-"count"=>1, "last_ipn"=>$IPNUM) );
-	}
-
-} else { // дополнить базу `dnevnik_link`
-	if(msq_exist("dnevnik_link","WHERE `DateID`=".$DateID." AND `link`='".e($ref)."'")) { // увеличить счетчик
-		msq_update("dnevnik_link",array("last_ipn"=>$IPNUM),
-"`count`=`count`+1 WHERE `DateID`=".$DateID." AND `link`='".e($ref)."' AND last_ipn!=".$IPNUM);
-	} else { // вставить новый счетчик
-		msq_add("dnevnik_link",array("DateID"=>$DateID, "link"=>e($ref), "count"=>1, "last_ipn"=>$IPNUM ) );
-	}
+if($u[0]!="") { // если поиск - дополнить базу `dnevnik_search`
+	$n=ms("SELECT `n` FROM `dnevnik_search` WHERE `DateID`='$DateID' AND `search`='".e($u[0])."'","_l",0);
+	if($n!==false) ms("UPDATE `dnevnik_search` SET `last_ipn`='$IPNUM', count=count+1 WHERE `n`='$n' AND `last_ipn`!='$IPNUM'","_l",0); // + счетчик
+	else msq_add("dnevnik_search",array("DateID"=>$DateID,"poiskovik"=>e($u[1]),"search"=>e($u[0]),"link"=>e($ref),"count"=>1,"last_ipn"=>$IPNUM));
+} else { // иначе дополнить базу `dnevnik_link`
+	$n=ms("SELECT `n` FROM `dnevnik_link` WHERE `DateID`='$DateID' AND `link`='".e($ref)."'","_l",0);
+	if($n!==false) ms("UPDATE `dnevnik_link` SET `last_ipn`='$IPNUM', count=count+1 WHERE `n`='$n' AND `last_ipn`!='$IPNUM'","_l",0);
+	else msq_add("dnevnik_link",array("DateID"=>$DateID,"link"=>e($ref),"count"=>1,"last_ipn"=>$IPNUM));
 }
 
 return $u;
@@ -30,9 +21,11 @@ return $u;
 
 function striplink($l) {
 
+if(strstr($l,$GLOBALS['admin_site'])) return true;
 if(strstr($l,'www.google.') && strstr($l,'/reader/')) return true;
 if(strstr($l,'.livejournal.com') && strstr($l,'/friends')) return true; // из френдленты
-if(strstr($l,'yandex.ru/read.xml') or strstr($l,'yandex.ru/unread.xml'))  return true; // яндексовые читалки
+if(strstr($l,'yandex.ru/read.xml') or strstr($l,'yandex.ru/unread.xml') or strstr($l,'blogs.yandex.ru') or strstr($l,'lenta.yandex.ru')
+)  return true; // яндексовые читалки
 
 /*
 
@@ -57,13 +50,7 @@ return false;
 }
 
 
-function maybelink($e) {
-	$s=urldecode($e); if($s!=$e) $s=htmlspecialchars($s);
-	if( ( strlen($s)/((int)substr_count($s,'Р')+0.1) ) < 11 ) return(iconv("utf-8",$GLOBALS['wwwcharset']."//IGNORE",$s));
-	else return(trim($s));
-}
-
-
+// =======================================================================
 
 
 function poiskovik($urlo) {
@@ -155,6 +142,12 @@ $s[0]=trim(htmlspecialchars($s[0]));
 $s[0]=maybelink($s[2]);
 
 return $s;
+}
+
+function maybelink($e) {
+	$s=urldecode($e); if($s!=$e) $s=htmlspecialchars($s);
+	if( ( strlen($s)/((int)substr_count($s,'Р')+0.1) ) < 11 ) return(iconv("utf-8",$GLOBALS['wwwcharset']."//IGNORE",$s));
+	else return(trim($s));
 }
 
 ?>
