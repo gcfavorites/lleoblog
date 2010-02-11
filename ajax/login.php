@@ -171,7 +171,7 @@ function dva_pole($a,$b) { return "<tr><td><small>$a</small></td><td><small>$b</
 //========================================================================================================================
 if($a=='dostup') { // unic личная карточка автора
 	if(!$admin) idie("Ты не админ.");
-	ms("UPDATE `unic` SET `admin`='".e($_REQUEST['value'])."' WHERE `id`='".intval($_REQUEST['unic'])."'","_l",0);
+	ms("UPDATE ".$GLOBALS['db_unic']." SET `admin`='".e($_REQUEST['value'])."' WHERE `id`='".intval($_REQUEST['unic'])."'","_l",0);
 	otprav("idd('openidotvet').innerHTML='<font size=1 color=green>изменен доступ: ".h($_REQUEST['value'])."</font>'");
 }
 

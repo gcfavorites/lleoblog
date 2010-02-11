@@ -6,7 +6,13 @@ header("Content-Type: text/xml; charset=".$wwwcharset);
 
 $skip=intval($_GET['skip']);
 
-$p=ms("SELECT * FROM `dnevnik_comments` WHERE `metka`='open' ORDER BY `Answer_time` DESC LIMIT ".$skip.",".$RSSC_skip."",'_a',0);
+
+// взять соответствия Date - num, чтоб по одной всякий раз не лазить
+$e=ms("SELECT `num`,`Date` FROM `dnevnik_zapisi`","_a",$ttl_longsite);
+	$d=array(); foreach($e as $l) $d[$l['num']]=get_link($l['Date']); unset($e);
+
+$pp=ms("SELECT `id`,`Text`,`Name`,`Parent`,`Time`,`DateID`
+FROM `dnevnik_comm` ".WHERE()." ORDER BY `Time` DESC LIMIT ".$skip.",".$RSSC_skip."",'_a',0);
 
 $s="<?xml version='1.0' encoding='".$wwwcharset."'?>
 <rss version='2.0' xmlns:ya='http://blogs.yandex.ru/yarss/'>
@@ -16,38 +22,24 @@ $s="<?xml version='1.0' encoding='".$wwwcharset."'?>
 	<generator>LLeoBlog 1.0:comments</generator>
 "; //  <lastBuildDate></lastBuildDate>
 
-$s.="	<ya:more>".$MYPAGE."?skip=".($skip+$RSSC_skip)."</ya:more>
+$s.="	<ya:more>".$httpsite.$mypage."?skip=".($skip+$RSSC_skip)."</ya:more>
 	<category>ya:comments</category>
 ";
 
-foreach($p as $l) {
-	$link=$l['Date'].".html";
-	$comlink=$httphost.$link."#c".$l['id'];
+foreach($pp as $p) {
+	$post=$d[$p['DateID']];
+	$link=$post."#".$p['id'];
 
 $s .= "\n<item>
-	<guid isPermaLink='true'>".$comlink."</guid>
-	<ya:post>".$httphost.$link."</ya:post>
-	<pubDate>".date("r", $l['DateTime'])."</pubDate>
-	<author>".htmlspecialchars(strtr($l['Name'],"\r",""))."</author>
-	<link>".$comlink."</link>
+	<guid isPermaLink='true'>".$link."</guid>
+	<ya:post>".$post."</ya:post>
+".($p['Parent']!=0?"        <ya:parent>".$post."#".$p['Parent']."</ya:parent>":'')."
+	<pubDate>".date("r", $p['Time'])."</pubDate>
+	<author>".h(strtr($p['Name'],"\r",""))."</author>
+	<link>".$link."</link>
 	<title></title>
-	<description>".htmlspecialchars(strtr($l['Commentary'],"\r",""))."</description>
+	<description>".h(strtr($p['Text'],"\r",""))."</description>
 </item>\n";
-
-if($l['Answer']!='') { if($l['Answer_user']=='') $l['Answer_user']=$admin_name;
-
-$s .= "\n<item>
-	<guid isPermaLink='true'>".$comlink."</guid>
-	<ya:post>http://anton.example.com/post100.html</ya:post>
-	<ya:parent>".$comlink."</ya:parent>
-	<pubDate>".date("r",$l['Answer_time'])."</pubDate>
-	<author>".$l['Answer_user']."</author>
-	<link>".$comlink."</link>
-	<title></title>
-	<description>".htmlspecialchars(strtr($l['Answer'],"\r",""))."</description>
-</item>\n";
-
-}
 
 }
 
@@ -55,6 +47,5 @@ $s .= "\n</channel>\n\n</rss>\n";
 
 die($s);
 // die($s1.date("r",$lastupdate).$s);
-
 
 ?>
