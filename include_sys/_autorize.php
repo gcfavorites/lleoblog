@@ -219,6 +219,12 @@ function kawa($p) { $s=$p[1];
         return $s;
 }
 
+function ispravkawa($s) {
+	$s=preg_replace_callback("/(>[^<]+<)/si","kawa","<>$s<>");
+	$s=preg_replace("/([\s>]+)\-([\s<]+)/si","$1".chr(151)."$2","<>$s<>"); // длинное тире
+	return str_replace('<>','',$s);
+}
+
 function set_cookie($Name,$Value='',$MaxAge=0,$Path='',$Domain='',$Secure=false,$HTTPOnly=false) {
 
 if(isset($GLOBALS['cookie_method_old'])) { setcookie($Name, $Value, $MaxAge, $Path, $Domain, 0); return; }
