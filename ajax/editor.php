@@ -103,6 +103,11 @@ $Date=$_REQUEST['Date']; if($Date=='') idie("ќшибка: неверна€ дата.");
 
 $t=getmaketime($Date);
 
+
+if($_REQUEST["autokaw"]=="true") { $_REQUEST["autokaw"]='no';
+	$_REQUEST["Body"]=ispravkawa($_REQUEST["Body"]); // если разрешено обработать кавычки и тире
+} else $_REQUEST["autokaw"]='auto';
+
 $ara=array(
 	'Date'		=> e($Date),
 'DateDate'=>$t[0],
@@ -230,8 +235,8 @@ if(strstr(file_get_contents($filehost."template/".$p['template'].".html"),'{_COM
 // сортировка: ".selecto('comments_order',$p['comments_order'],array('normal'=>"нет",'allrating'=>"сборна€",'rating'=>"тупа€") )."
 
 $s="
-keydowncount=0;
-ch_edit_pole=function(e,num){edit_polesend(e.name,e.value,num,0)};
+var keydowncount=0;
+ch_edit_pole=function(e,num){ edit_polesend(e.name,e.value,num,0) };
 edit_polesend=function(n,v,num,clo){ majax('editor.php',{a:'polesend',name:n,val:v,num:num,clo:clo}); };
 keydownc=function(n,v,num){ keydowncount++; if(keydowncount>".$autosave_count.") { keydowncount=0; edit_polesend(n,v,num,1); } };
 
@@ -257,25 +262,32 @@ if($a=='polesend') {
 
 	$name=$_REQUEST["name"];
 	$val=$_REQUEST["val"];
-	if($name=='template' and $val=='') $val='blog'; // поле по умолчанию
 
-	if($name=='' or $num==0) otprav(''); //idie('Ќеверные данные!');
-	if($name=='autokaw') $val=($val=='true'?'auto':'no');
-
-	if($admin) msq_update('dnevnik_zapisi',array(e($name)=>e($val),'DateUpdate'=>time()),"WHERE `num`='$num'");
-
-	if($name=='Header') otprav("idd('$name').innerHTML=\"".njs($val)."\"");
 	if($name=='Body') {
 
 		include_once $include_sys."_onetext.php";
 		include_once $include_sys."_modules.php";
 		$p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0); if($p===false) idie("ќшибочна€ заметка #$num");
 
+		if($p["autokaw"]!="no") $val=ispravkawa($val); // если разрешено обработать кавычки и тире
+
+		$p['Body']=$val;
+
+		if($admin) msq_update('dnevnik_zapisi',array(e($name)=>e($val),'DateUpdate'=>time()),"WHERE `num`='$num'");
+
 		$s=onetext($p);
 		$s="idd('$name').innerHTML=\"".njs($s)."\";";
 		if($_REQUEST["clo"]==0) $s.="clean('".$idhelp."');";
 		otprav($s);
-		}
+	}
+
+	if($name=='template' and $val=='') $val='blog'; // поле по умолчанию
+	if($name=='' or $num==0) otprav(''); //idie('Ќеверные данные!');
+	if($name=='autokaw') $val=($val=='true'?'no':'auto');
+
+		if($admin) msq_update('dnevnik_zapisi',array(e($name)=>e($val),'DateUpdate'=>time()),"WHERE `num`='$num'");
+
+	if($name=='Header') otprav("idd('$name').innerHTML=\"".njs($val)."\"");
 	otprav("");
 }
 

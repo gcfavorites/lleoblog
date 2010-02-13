@@ -30,11 +30,7 @@ if($_POST["action"] == "Save") {
 			$s=$_POST["Body"];
 			$s=str_replace("\r",'',$s); // вот это сразу, потому что ненавижу
 
-		if($_POST["autokaw"]!="no") { // если разрешено обработать кавычки и тире
-			$s=preg_replace_callback("/(>[^<]+<)/si","kawa",$s);
-			$s=preg_replace("/([\s>]+)\-([\s<]+)/si","$1".chr(151)."$2",$s); // длинное тире
-		}
-
+		if($_POST["autokaw"]!="no") $s=ispravkawa($s); // если разрешено обработать кавычки и тире
 
 	$t=getmaketime($_POST["Date"]);
 
