@@ -124,9 +124,24 @@ if($text!='') { $name=$mod_name; include("site.php"); exit; }
 $article=ms("SELECT * FROM `dnevnik_zapisi` WHERE `Date`='".e($mod_name)."'","_1",$ttl); if($article!==false && $article!='') ARTICLE();
 
 // и если совсем ничего не нашлось
+
+
+// SCRIPTS_mine()
+
+$article=array('template'=>'error','num'=>0,'Date'=>h($mod_name)); ARTICLE();
+
+/*
 idie("Error 404: Page not found <b>".$httphost.h($mod_name)."</b>"
-.($admin?"<p><a href='".$wwwhost."adminsite/?a=create&name=".urlencode($mod_name)."'>Создать эту страницу в базе `".$db_site."`?</a>":"")
+.($admin?
+"<p><a href='".$wwwhost."adminsite/?a=create&name=".urlencode($mod_name)."'>Создать эту страницу в базе `".$db_site."`?</a>"
+."<p><a href=\"javascript:majax()
+
+
+
+".$wwwhost."adminsite/?a=create&name=".urlencode($mod_name)."'>Создать эту страницу в базе `".$db_site."`?</a>"
+:"")
 );
+*/
 
 // function urldata($d) { return $GLOBALS['wwwhost'].h($d).(substr($d,4,1).substr($d,7,1)=='//'?".html":''); }
 /*
