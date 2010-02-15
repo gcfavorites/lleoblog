@@ -133,7 +133,9 @@ redirect(get_link($Date)); // на нее и перейти
 //=================================== новую заметку ===================================================================
 if($a=='newform') {
 
-$Date=date("Y/m/d"); $i=0;
+if(isset($_REQUEST['Date'])) $Date=h($_REQUEST['Date']); else $Date=date("Y/m/d");
+
+$i=0;
 while(ms("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date`='".e($Date)."'","_l",0)!=0) { $Date=date("Y/m/d").'_'.sprintf("%02d", ++$i); }
 $idhelp=$Date;
 
@@ -228,9 +230,9 @@ if(strstr(file_get_contents($filehost."template/".$p['template'].".html"),'{_COM
 открывать: ".selecto('Comment_screen',$p['Comment_screen'],array('open'=>"всех",'friens-open'=>"друзей",'screen'=>"скрывать"),
 "class=r onchange='ch_edit_pole(this,$num)' name")."
 тип: ".selecto('Comment_tree',$p['Comment_tree'],array('1'=>"форум",'0'=>"гостевая"),
-"class=r onchange='ch_edit_pole(this,$num)' name")."
+"class=r onchange='ch_edit_pole(this,$num)' name");
 
-<br><input type=submit value='Save' onclick=\"edit_polesend('Body',idd('".$idhelp."_textarea').value,".$num.")\">";
+$s.="<br><input type=submit value='Save' onclick=\"edit_polesend('Body',idd('".$idhelp."_textarea').value,".$num.")\">";
 
 // сортировка: ".selecto('comments_order',$p['comments_order'],array('normal'=>"нет",'allrating'=>"сборная",'rating'=>"тупая") )."
 

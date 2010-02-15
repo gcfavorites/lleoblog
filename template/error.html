@@ -1,0 +1,25 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset={wwwcharset}" />
+{_MAIN:_}
+{_PRAVKA:_}
+{_STYLE_ADD: {www_css}blog.css _}
+{_SCRIPT_ADD: {www_design}pravka_blog.js _}
+{_SCRIPT_ADD: {www_design}pins.js _}
+<title>Error not found: {_TITLE:_}</title>
+<link rel="prev" href="{prevlink}" id="PrevLink" />
+<link rel="next" href="{nextlink}" id="NextLink" />
+<link rel="UpLink" href="{uplink}" id="UpLink" />
+<link rel="DownLink" href="{downlink}" id="DownLink" />
+{mystyle}
+{myscript}
+</head>
+
+<body>
+<table width=100% height=100%><tr><td valign=center align=center>
+
+404 not found
+<p>страница с именем <b>/{_TITLE:_}</b> не существует
+
+{_ is_admin: <p><a href="javascript:majax('editor.php',{a:'newform',clo:'',Date:'{_TITLE:_}'})">открыть редактор и создать?</a> _}
+
+</td></tr></table>
+</body></html>

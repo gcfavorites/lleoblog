@@ -23,5 +23,8 @@ module/upgrade/LLEO_zapisi.php
 design/userpick1.jpg
 
 template/nabokamaster.html
+template/silkway.html
 css/nabokamaster.css
+css/silkway.css
+
 design/nabokamaster
