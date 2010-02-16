@@ -120,42 +120,13 @@ p.epigrafp {text-indent:0pt;text-align:right;margin-top:0pt;margin-bottom:4%;mar
 .pravka_textarea {border:1px solid #ccc; font-size: 15pt; margin-right:5px;}
 
 .popup { overflow:auto; top:100px;left:100px;position:absolute;z-index:999; }
-
-/*  
-cursor:move; user-select:none; -moz-user-select:none; -khtml-user-select:none;
-cursor:auto; user-select:auto; -moz-user-select:auto; -khtml-user-select:auto;
-*/
-
-
-
 .popup .content{padding:4px 4px; background:#F3F1E0}
-
-/*
-.corners .inner { position:relative; overflow:hidden; padding:9px 9px 0 9px; margin:-9px -9px 0 -9px; width:100%; }
-.corners .tl, .corners .tr, .corners .bl, .corners .br { position:absolute; background:url({www_design}pravka/corners.png) no-repeat; left:-9px; z-index:-1; }
-.corners .tl, .corners .tr { top:-9px; height:500px; }
-.corners .tl, .corners .bl {width:100%}
-.corners .tr, .corners .br { margin-left:100%; width:9px; }
-.corners .bl, .corners .br {height:9px}
-.corners .bl { left:-18px; padding-right:18px; clip:rect(auto, auto, auto, 9px); }
-.corners .br {left:0}
-.corners .content {padding:5px}
-
-
- 100% 10px 0 no-repeat
-
-*/
-
 .corners{position:relative;height:1%;background:url({www_design}pravka/popup_l.png) repeat-y;margin:9px 0;padding:1px 9px;}
 .corners .inner{position:relative;z-index:1;margin-right:-9px;background:url({www_design}pravka/popup_r.png) 100% 0 repeat-y;padding:1px 9px 1px 0}
 .corners:before{display:block;height:9px;content:url({www_design}pravka/popup_lt.png);background:url({www_design}pravka/popup_rt.png) 100% 0 no-repeat;font-size:0;margin:-10px -9px 0}
 .corners .inner:before{display:block;height:9px;content:'';background:url({www_design}pravka/popup_t.png) repeat-x;font-size:0;margin:-10px 0 0}
-.corners:after{display:block;height:9px; content:url({www_design}pravka/popup_lb.png);
-background:url({www_design}pravka/popup_rb.png) 100% 10px no-repeat;
-
-font-size:0;margin:0 -9px -10px}
+.corners:after{display:block;height:9px; content:url({www_design}pravka/popup_lb.png); background:url({www_design}pravka/popup_rb.png) 100% 10px no-repeat; font-size:0;margin:0 -9px -10px}
 .corners .inner:after{display:block;height:9px;content:'';background:url({www_design}pravka/popup_b.png) repeat-x;font-size:0;margin:0 0 -10px}
-
 
 .can { position:absolute; top:1px; right:8px; width:16px; height:16px; cursor: pointer; }
 .can:after { content: url("{www_design}e3/button_cancel.png"); }
@@ -192,6 +163,10 @@ a[href *=".myopenid.com"] {
 }
 a[href *=".ya.ru"] {
 	background: transparent url({www_design}ico/ya.ru.gif) no-repeat center left;
+	padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
+}
+a[href *=".youtube.com"] {
+	background: transparent url(http://www.youtube.com/favicon.ico) no-repeat center left;
 	padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
 }
 
