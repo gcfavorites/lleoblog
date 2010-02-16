@@ -283,6 +283,10 @@ a[href *=".ya.ru"] {
 	background: transparent url({www_design}ico/ya.ru.gif) no-repeat center left;
 	padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
 }
+a[href *=".youtube.com"] {
+        background: transparent url(http://www.youtube.com/favicon.ico) no-repeat center left;
+        padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
+}
 
 .clearfloat { clear:both; height:0; font-size: 1px; line-height: 0px; }
 .cf { clear:both; height:0; font-size: 1px; line-height: 0px; }

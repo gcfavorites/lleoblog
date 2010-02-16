@@ -163,7 +163,7 @@ var www_design='".$GLOBALS['www_design']."';
 var mypage='".$GLOBALS['httpsite'].$GLOBALS['mypage']."';
 var uc='".$GLOBALS['uc']."';
 var comnum=0;
-var hid=0;
+var hid=1;
 
 var mHelps={};
 

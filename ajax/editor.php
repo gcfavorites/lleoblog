@@ -137,7 +137,9 @@ if(isset($_REQUEST['Date'])) $Date=h($_REQUEST['Date']); else $Date=date("Y/m/d"
 
 $i=0;
 while(ms("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date`='".e($Date)."'","_l",0)!=0) { $Date=date("Y/m/d").'_'.sprintf("%02d", ++$i); }
-$idhelp=$Date;
+
+$hid=intval($_REQUEST['hid']); if(!$hid) idie('Ошибка в движке: Лео, ты забыл установить hid!');
+$idhelp='editnew'.$hid;
 
 $p=unserialize(file_get_contents($GLOBALS['hosttmp'].'zapisi.set')); // взять настройки по умолчанию
 
@@ -175,7 +177,7 @@ $s.="<br><input type=submit value='Save' onclick=\"edit_savenew()\">"; // и кноп
 
 // сортировка: ".selecto('comments_order',$p['comments_order'],array('normal'=>"нет",'allrating'=>"сборная",'rating'=>"тупая") )."
 
-$s="edit_savenew=function(){ majax('editor.php',{a:'savenew',idhelp:'".$idhelp."',"
+$s="hid++; edit_savenew=function(){ majax('editor.php',{a:'savenew',idhelp:'".$idhelp."',"
 ."Date:idd('".$idhelp."_Date').value,"
 ."Header:idd('".$idhelp."_Header').value,"
 ."Body:idd('".$idhelp."_textarea').value,"
@@ -202,7 +204,7 @@ if($a=='editform') {
 $p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0); if($p===false) idie("Отсутствует заметка #$num");
 
 $s="
-<img class=l onclick=\"majax('editor.php',{a:'newform',clo:'".$idhelp."'})\" src='".$www_design."e3/filenew.png' alt='new'>
+<img class=l onclick=\"majax('editor.php',{a:'newform',hid:hid,clo:'".$idhelp."'})\" src='".$www_design."e3/filenew.png' alt='new'>
 <img class=l onclick=\"majax('editor.php',{a:'move',Date:'".h($p['Date'])."'})\" src='".$www_design."e3/redo.png' alt='move'>
 <img class=l onclick=\"if(confirm('Вы точно хотите удалить эту заметку?')) majax('editor.php',{a:'delete',num:$num});\" src='".$www_design."e3/remove.png' alt='delete'>
 <div id='".$idhelp."p' style='display:inline'>
@@ -244,9 +246,6 @@ keydownc=function(n,v,num){ keydowncount++; if(keydowncount>".$autosave_count.")
 
 helps('".$idhelp."',\"<fieldset id='commentform'><legend>Заметка ".h($p['Date'])."</legend>".njsn($s)."</fieldset>\");
 idd('".$idhelp."_textarea').focus();
-
-//setOpacity(document.body, 0.5);
-//setOpacity(idd('".$idhelp."'), 3);
 ";
 
 $a=array('Date','Header','Body','DateUpdate','view_counter','num','count_comments_open','DateDatetime','DateDate');

@@ -1,9 +1,12 @@
 <?php // Если строка в браузере - выдает один аргумент, если нет - второй
 
-// {_ linux | это линукс | это не линукс _}
+// {_IFBRP: linux,nokia | это линукс или нокия | это не линукс и не нокия _}
 
-function IFBRO($e) { list($l,$a,$b)=explode('|',$e);
-	return ( stristr($GLOBALS['BRO'],c($l)) ? c($a) : c($b) );
+function IFBRO($e) {
+	list($l,$a,$b)=explode('|',$e);
+	$p=explode(',',$l);
+	foreach($p as $l) if(stristr($GLOBALS['BRO'],c($l))) return c($a);
+	return c($b);
 }
 
 ?>
