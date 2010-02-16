@@ -10,10 +10,11 @@ function STYLE_ADD($s) { $GLOBALS['_STYLE_ADD'][$s]=$s; }
 // повызывать все процедуры в цикле
 
 function modules($s) { 
-	$s_old=''; $stop=100;
-		$s=str_replace("{_","\001",$s);
-		$s=str_replace("_}","\002",$s);
-	while($s!=$s_old && --$stop) { $s_old=$s; $s=preg_replace_callback("/\001([^\001\002]+)\002/s","module",$s); }
+	$s_old=''; $stop=200; while($s!=$s_old && --$stop) {
+		$s=str_replace("{_","\001",str_replace("_}","\002",$s));
+		$s_old=$s;
+		$s=preg_replace_callback("/\001([^\001\002]+)\002/s","module",$s);
+	}
         return $s;
 }
 
