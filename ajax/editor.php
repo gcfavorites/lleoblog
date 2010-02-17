@@ -103,7 +103,6 @@ $Date=$_REQUEST['Date']; if($Date=='') idie("Ошибка: неверная дата.");
 
 $t=getmaketime($Date);
 
-
 if($_REQUEST["autokaw"]=="true") { $_REQUEST["autokaw"]='no';
 	$_REQUEST["Body"]=ispravkawa($_REQUEST["Body"]); // если разрешено обработать кавычки и тире
 } else $_REQUEST["autokaw"]='auto';
@@ -151,7 +150,7 @@ $s="
 <div id='".$idhelp."p' style='display:inline'><img class=l onclick=\"majax('editor.php',{a:'loadpanel',idhelp:'".$idhelp."'})\" src='".$www_design."e3/finish.png' alt='panel'></div>
 
 <br><input class=t type='text' id='".$idhelp."_Header' name='Header' value='".h($p["Header"])."' maxlength='255' size=".$GLOBALS['editor_cols']."> <span class=br>".strlen($p['Body'])." букв</span>
-<br><textarea onkeydown=\"keydownc('Body',this.value,$num)\" class=t id='".$idhelp."_textarea' cols=".$GLOBALS['editor_cols']." rows=".$GLOBALS['editor_rows'].">".h($p["Body"])."</textarea>
+<br><textarea onkeydown=\"keydownc('Body',this.value,$num)\" class=t id='".$idhelp."_Body' cols=".$GLOBALS['editor_cols']." rows=".$GLOBALS['editor_rows'].">".h($p["Body"])."</textarea>
 
 <div class=r>доступ: ".selecto('Access',$p['Access'],array('admin'=>"никому",'podzamok'=>"подзамок",'all'=>"всем"),"class=r id='".$idhelp."_Access' name")."
 автоформат: ".selecto('autoformat',$p['autoformat'],array('p'=>"p/br",'no'=>"нет",'pd'=>"class=pd"),"class=r id='".$idhelp."_autoformat' name")."
@@ -173,22 +172,20 @@ $s.="<br>
 тип: ".selecto('Comment_tree',$p['Comment_tree'],array('1'=>"форум",'0'=>"гостевая"),
 "class=r onchange='ch_edit_pole(this,$num)' name");
 
-$s.="<br><input type=submit value='Save' onclick=\"edit_savenew()\">"; // и кнопку!
+$s.="<br><input type=submit value='Save' onclick=\"edit_savenew('".$idhelp."')\">"; // и кнопку!
 
 // сортировка: ".selecto('comments_order',$p['comments_order'],array('normal'=>"нет",'allrating'=>"сборная",'rating'=>"тупая") )."
 
-$s="hid++; edit_savenew=function(){ majax('editor.php',{a:'savenew',idhelp:'".$idhelp."',"
-."Date:idd('".$idhelp."_Date').value,"
-."Header:idd('".$idhelp."_Header').value,"
-."Body:idd('".$idhelp."_textarea').value,"
-."Access:idd('".$idhelp."_Access').value,"
-."autoformat:idd('".$idhelp."_autoformat').value,"
-."autokaw:idd('".$idhelp."_autokaw').value,"
-."template:idd('".$idhelp."_template').value,"
-."Comment_view:idd('".$idhelp."_Comment_view').value,"
-."Comment_write:idd('".$idhelp."_Comment_write').value,"
-."Comment_screen:idd('".$idhelp."_Comment_screen').value}); };
-helps('".$idhelp."',\"<fieldset id='commentform'><legend>Новая заметка ".h($p['Date'])."</legend>".njsn($s)."</fieldset>\");
+$s="hid++;
+
+edit_savenew=function(idhelp){
+	var nara=['Date','Header','Body','Access','autoformat','autokaw','template','Comment_view','Comment_write','Comment_screen'];
+	var ara={a:'savenew',idhelp:idhelp};
+	for(var l in nara) { l=nara[l]; var ll=idhelp+'_'+l; if(idd(ll)) ara[l]=idd(ll).value; }
+	majax('editor.php',ara);
+};
+
+helps('".$idhelp."',\"<fieldset id='commentform'><legend>Новая статья ".h($p['Date'])."</legend>".njsn($s)."</fieldset>\");
 idd('".$idhelp."_textarea').focus();
 ";
 
@@ -224,7 +221,7 @@ $inc=glob($filehost."template/*.html"); $ainc=array(''=>'- нет -'); foreach($inc
 $s.="template: ".selecto('template',$p['template'],$ainc,"class=r onchange='ch_edit_pole(this,$num)' name");
 
 // нужны ли опции комментов
-if(strstr(file_get_contents($filehost."template/".$p['template'].".html"),'{_COMENTS:')) $s.="<br>
+if($_REQUEST["comments"]==1 or strstr(file_get_contents($filehost."template/".$p['template'].".html"),'{_COMENTS:')) $s.="<br>
 Комментарии показывать: ".selecto('Comment_view',$p['Comment_view'],array('timeload'=>"поначалу",'load'=>"кнопку",'off'=>"нет",'rul'=>"важные",'on'=>"все"),
 "class=r onchange='ch_edit_pole(this,$num)' name")."
 принимать: ".selecto('Comment_write',$p['Comment_write'],array('timeoff'=>"поначалу",'on'=>"вечно от всех",'off'=>"нет",'friends-only'=>"вечно от друзей",'login-only'=>"вечно от логинов",'login-only-timeoff'=>"поначалу от логинов"),

@@ -8,7 +8,7 @@ return "<div style='position:absolute;left:4px;top:4px;z-index:999;border:1px da
 <INPUT style='font-size: 9px' TYPE=SUBMIT VALUE='>'></FORM>
 
 посещений: <a href=\"javascript:majax('statistic.php',{a:'ktoposetil',data:'".$GLOBALS['article']['num']."',mode:'short'})\">{_COUNTER:_}</a>
-<br><a href=\"javascript:majax('editor.php',{a:'editform',num:'".$GLOBALS['article']['num']."'})\">редактировать</a>
+<br><a href=\"javascript:majax('editor.php',{a:'editform',num:'".$GLOBALS['article']['num']."',comments:(idd('commpresent')?1:0)})\">редактировать</a>
 <br><a href=\"{wwwhost}contents\">содержание</a>
 <br><a href=\"javascript:majax('statistic.php',{a:'loadstat',data:'".$GLOBALS['article']['num']."'})\">статистика</a>
 </div></div>";
