@@ -1,6 +1,7 @@
 <?php // Отображение статьи с каментами - дата передана в $Date
 
 function COMENTS($e) { global $article, $podzamok, $load_comments_MS, $enter_comentary_days, $N_maxkomm;
+
 //===================================
 // как быть с комментариями?
 $premesage="";
@@ -70,11 +71,11 @@ $s .= "<div id='oldcomform'><b>Оставить комментарий:</b>
 <textarea class=t onFocus='document.onkeydown='return true';' onBlur='document.onkeydown=NavigateThrough;' name='text' cols=60 rows=7>".h($_POST["text"])."</textarea>
 </td></tr>
 </table><br><input class=t type=submit value='Отправить'>
-</form></div><script>var s=document.getElementById('oldcomform').style.display='none'</script>";
+</form></div><script>document.getElementById('oldcomform').style.display='none';</script>";
 
 }
 
-$s.= "<div class=l style='font-weight: bold; margin: 20pt; font-size: 16px;' onclick=\"majax('comment.php',{a:'comform',id:0,lev:0,comnu:comnum,dat:".$article['num']."});\">Оставить комментарий</div>";
+$s.= "<div id='commpresent' class=l style='font-weight: bold; margin: 20pt; font-size: 16px;' onclick=\"majax('comment.php',{a:'comform',id:0,lev:0,comnu:comnum,dat:".$article['num']."});\">Оставить комментарий</div>";
 
 if ( $article["DateTime"] > time() ) $s .= "<blockquote style='border: 3px dotted rgb(255,0,0); padding: 2px;'><font size=2>Заметка датирована будущим числом, и это просто значит, что прошлые дни заняты, а материал хотелось разместить.</font></blockquote>";
 

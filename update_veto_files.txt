@@ -24,7 +24,13 @@ design/userpick1.jpg
 
 template/nabokamaster.html
 template/silkway.html
+template/silkway_titul
+template/silkway.html.old.no
+template/silkway_titul.html.old.no
+
 css/nabokamaster.css
 css/silkway.css
 
 design/nabokamaster
+
+
