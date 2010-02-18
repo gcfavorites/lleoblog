@@ -39,10 +39,10 @@ $fotoset=get_fotoset();
 
 $s="<table>
 <tr><td>ширина картинки:</td><td><input id='fotoset_X' size=4 type=text name='X' value='".h($fotoset['X'])."'>px</td></tr>
-<tr><td>ширина превью:</td><td><input id='fotoset_Q'size=3 type=text name='Q' value='".h($fotoset['Q'])."' disabled>%</td></tr>
-<tr><td>качество картинки:</td><td><input id='fotoset_x' size=4 type=text name='x' value='".h($fotoset['x'])."' disabled>px</td></tr>
-<tr><td>качество превью:</td><td><input id='fotoset_q' size=3 type=text name='q' value='".h($fotoset['q'])."' disabled>%</td></tr>
-<tr><td>папка:</td><td><input id='fotoset_dir' size=15 type=text name='dir' value='".h($fotoset['dir'])."' disabled></td></tr>
+<tr><td>ширина превью:</td><td><input id='fotoset_Q'size=3 type=text name='Q' value='".h($fotoset['Q'])."'>%</td></tr>
+<tr><td>качество картинки:</td><td><input id='fotoset_x' size=4 type=text name='x' value='".h($fotoset['x'])."'>px</td></tr>
+<tr><td>качество превью:</td><td><input id='fotoset_q' size=3 type=text name='q' value='".h($fotoset['q'])."'>%</td></tr>
+<tr><td>папка:</td><td><input id='fotoset_dir' size=15 type=text name='dir' value='".h($fotoset['dir'])."'></td></tr>
 <tr><td>подпись:</td><td><input id='fotoset_logo' size=25 type=text name='logo' value='".h($fotoset['logo'])."'></td></tr>
 </table>
 <input type=submit value='Save' onclick=\"edit_savefotoset()\">";
