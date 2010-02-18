@@ -9,7 +9,56 @@ $hid=intval($_REQUEST["hid"]);
 $a=$_REQUEST["a"];
 
 $lastphoto_file=$hosttmp."lastphoto.txt";
+$fileset=$foto_file_small."_fotoset.dat";
 
+//=================================== работа с нодами альбома ===================================================================
+
+if($a=='saveset') {
+
+	$X=$_REQUEST['X']; if(!intval($X) or $X<10 or $X>1600) idie('Не паясничай, выставь ширину человеческую.');
+	$x=$_REQUEST['x']; if(!intval($x) or $x<5 or $x>200) idie('Не паясничай, выставь ширину превью человеческую.');
+
+	$Q=$_REQUEST['Q']; $q=$_REQUEST['q'];
+	if(!intval($q) or $q<50 or $q>95 or !intval($Q) or $Q<50 or $Q>95) idie('Качество имеет смысл делать в пределах 50-95%');
+	$dir=$_REQUEST['dir'];
+	$logo=$_REQUEST['logo'];
+
+	if(file_put_contents($fileset,serialize(array('X'=>$X,'x'=>$x,'q'=>$q,'Q'=>$Q,'dir'=>$dir,'logo'=>$logo))) ===false)
+	idie("Ошибка записи $fileset!");
+
+	otprav("clean('fotoset')");
+
+}
+
+//=================================== работа с нодами альбома ===================================================================
+if($a=='formfotoset') { $idhelp='fotoset';
+
+$fotoset=get_fotoset();
+
+//  <tr><td>закачать новую картинку:</td><td><div class=l onclick=\"majax('foto.php',{a:'uploadform',hid:hid})\">здесь</div></td></tr>
+
+$s="<table>
+<tr><td>ширина картинки:</td><td><input id='fotoset_X' size=4 type=text name='X' value='".h($fotoset['X'])."'>px</td></tr>
+<tr><td>ширина превью:</td><td><input id='fotoset_Q'size=3 type=text name='Q' value='".h($fotoset['Q'])."' disabled>%</td></tr>
+<tr><td>качество картинки:</td><td><input id='fotoset_x' size=4 type=text name='x' value='".h($fotoset['x'])."' disabled>px</td></tr>
+<tr><td>качество превью:</td><td><input id='fotoset_q' size=3 type=text name='q' value='".h($fotoset['q'])."' disabled>%</td></tr>
+<tr><td>папка:</td><td><input id='fotoset_dir' size=15 type=text name='dir' value='".h($fotoset['dir'])."' disabled></td></tr>
+<tr><td>подпись:</td><td><input id='fotoset_logo' size=25 type=text name='logo' value='".h($fotoset['logo'])."'></td></tr>
+</table>
+<input type=submit value='Save' onclick=\"edit_savefotoset()\">";
+
+$s="
+edit_savefotoset=function(){
+	var ara={a:'saveset'};
+        var nara=['X','x','Q','q','dir','logo']; for(var l in nara) { l=nara[l]; ara[l]=idd('fotoset_'+l).value; }
+        majax('foto.php',ara);
+};
+
+helps('fotoset',\"<fieldset><legend>Настройки фото</legend>".njsn($s)."</fieldset>\"); idd('fotosetx').focus();
+";
+
+otprav($s);
+}
 //=================================== работа с нодами альбома ===================================================================
 if($a=='albumgo') { $id=$_REQUEST["id"]; $id=preg_replace("/\.+/s",'.',$id);
 
@@ -76,7 +125,7 @@ if(is_file($lastphoto_file)) $kuda=trim(file_get_contents($lastphoto_file)); els
 // if($kuda='') $kuda='/';
 
 otprav("helps('foto_$hid',\"<fieldset><legend>закачиваем новое фото</legend>"
-."<span class=l style='font-size: 13px' onclick=\\\"clean('foto_$hid'); majax('foto.php',{a:'album'})\\\">".$kuda."</span><br>"
+."<div class=ll style='font-size: 13px' onclick=\\\"clean('foto_$hid'); majax('foto.php',{a:'album'})\\\">".$kuda."</div> <a href=\\\"javascript:majax('foto.php',{a:'formfotoset'})\\\" class=br>настройки</a><br>"
 ."<form enctype='multipart/form-data'>"
 ."<input type=file id='fotou_$hid' onchange=\\\"majax('foto.php',{a:'upload',hid:'$hid',kuda:'$kuda',file:idd('fotou_$hid')})\\\"></form>"
 ."</fieldset>\");");
@@ -115,91 +164,33 @@ if($a=='upload') {
 
 if(count($_FILES)>0) foreach($_FILES as $FILE) if(is_uploaded_file($FILE["tmp_name"])) { $fname=h($FILE["name"]);
 
+$fotoset=get_fotoset();
+
 	if(!preg_match("/\.jpe*g$/si",$fname)) idie("Это разве фотка?");
 	if(preg_match("^\./si",$fname)) idie("Имя с точки?");
 	if(strstr($fname,'..')) idie("Ошибка. Хакерствуем, бля?");
 
 	if(is_file($foto_file_small.$fname)) idie("Этот файл уже есть.");
 
-	idie("kuda=$kuda");
+//	idie("kuda=$kuda");
 
-	obrajpeg($FILE["tmp_name"],$foto_file_small.$fname,$foto_res_small,$foto_qality_small,$foto_logo);
-	obrajpeg($foto_file_small.$fname,$foto_file_preview.$fname,$foto_res_preview,$foto_qality_preview);
-//	obrajpeg($foto_file_micro.$fname,$foto_file_preview.$fname,$foto_res_preview,$foto_qality_preview);
+//	obrajpeg($FILE["tmp_name"],$foto_file_small.$fname,$foto_res_small,$foto_qality_small,$foto_logo);
+//	obrajpeg($foto_file_small.$fname,$foto_file_preview.$fname,$foto_res_preview,$foto_qality_preview);
 
-//	msq_add($db_site,array(
-//               'name'=>e( ($_REQUEST["name"]==''?$fname:$_REQUEST["name"]) ),
-//                'text'=>e($fname),
-//                'type'=>'photo',
-//                'Access'=>e($_REQUEST["Access"])
-//        ));
+	obrajpeg($FILE["tmp_name"],$foto_file_small.$fname,$fotoset['X'],$fotoset['Q'],$fotoset['logo']);
+	obrajpeg($foto_file_small.$fname,$foto_file_preview.$fname,$fotoset['x'],$fotoset['q']);
 
-// dier($GLOBALS['_PAGE']);
-// exit;
-
-/*
-        function zabil(id,text) { document.getElementById(id).innerHTML = text; }
-        function vzyal(id) { return document.getElementById(id).innerHTML; }
-        function zakryl(id) { document.getElementById(id).style.display='none'; }
-        function otkryl(id) { document.getElementById(id).style.display='block'; }
-
-
-$GLOBALS['_PAGE']['body'].="<a onclick='hide_foto()'><div class='bar1'
-onmouseover=\"this.className='bar2'\" onmouseout=\"this.className='bar1'\" id='winfoto'></div></a>";
-
-STYLES("Всплывающее окно фотки","
-
-.fotoa{ width:200; height:150; float: left; text-align: center; border: 1px solid black; }
-.fotoa:hover { border: 1px solid blue; }
-.fotoa a { color: #814c52; }
-.fotot{ font-size: 10px; }
-
-.ok { cursor: pointer; text-align: right; float: left; }
-.ok:after { content: url(\"{www_design}e/cancel1.png\"); }
-
-.fotoc { margin: 0px 8px 8px 8px; }
-
-.bar1, .bar2 { position: absolute; z-index:9996; padding: 2px; visibility: hidden; background-color: #F0F0F0 }
-.bar1 { border: 1px solid #ccc; }
-.bar2 { border: 1px solid blue; }
-");
-
-
-SCRIPTS("Всплывающая фотка","
-
-var imgy=".$GLOBALS['foto_res_small'].";
-var imgx=(800/600)*imgy;
-
-function foto(e) { o=idd('winfoto');
-    o.style.top = (getWinH()-imgy)/2+getScrollW()+'px';
-    o.style.left = (getWinW()-imgx)/2+getScrollH()+'px';
-    o.style.visibility = 'visible';
-    o.innerHTML = \"<div class=ok title='Ок' onclick=\\\"zakryl('winfoto')\\\"></div><img class=fotoc src='\"+e+\"'>\";
-    return false;
-}
-");
-
-SCRIPTS("getWH","
-function getScrollW(){ return (document.documentElement.scrollTop || document.body.scrollTop); }
-function getScrollH(){ return (document.documentElement.scrollLeft || document.body.scrollLeft); }
-function getWinW(){ return document.compatMode=='CSS1Compat' &&
-!window.opera?document.documentElement.clientWidth:document.body.clientWidth; }
-function getWinH(){ return document.compatMode=='CSS1Compat' &&
-!window.opera?document.documentElement.clientHeight:document.body.clientHeight; }
-");
-
-*/
-
+//	helps('winfoto',\"<img onclick=\\\"clean('winfoto')\\\" src='\"+f+\"'>\");
 
 otprav("
 
-foto=function(f){ 
-	helps('winfoto',\"<img onclick=\\\"clean('winfoto')\\\" src='\"+f+\"'>\"); o=idd('winfoto');
-	o.style.top = mouse_y+'px'; //(getWinH()-imgy)/2+getScrollW()
-	o.style.left = (getWinW()-".$foto_res_small.")/2+getScrollH()+'px';
+foto=function(f){
+	helps('bigfoto',\"<img onclick=\\\"clean('winfoto')\\\" src='\"+f+\"'>\");
+	idd('bigfoto').style.top = mouse_y+'px'; //(getWinH()-imgy)/2+getScrollW()
+	idd('bigfoto').style.left = (getWinW()-".$foto_res_small.")/2+getScrollH()+'px';
 };
 
-helps('foto_$hid',\"<img onclick=\\\"foto('".$foto_www_small.$fname."')\\\" src='".$foto_www_preview.$fname."'>\");");
+helps('foto_$hid',\"<img onclick=\\\"foto('".$foto_www_small.$fname."')\\\" src='".$foto_www_preview.$fname."'><div align=center class=br>".h($fname)."</div>\");");
 
 //otprav("zabil('foto_$hid',\"<div class='fotoa'><div onclick=\\\"return foto('".$foto_www_small.$fname."')\\\">"
 //."<img src='".$foto_www_preview.$fname."' hspace=5 vspace=5><div class='fotot'>".$fname."</div></div></div>\\\");");
@@ -211,14 +202,14 @@ helps('foto_$hid',\"<img onclick=\\\"foto('".$foto_www_small.$fname."')\\\" src=
 
 //==================================================================================================
 
-function obrajpeg($from,$to,$h=150,$q=80,$s,$r=10) { // set_time_limit(0);
+function obrajpeg($from,$to,$X=150,$q=80,$s,$r=10) { // set_time_limit(0);
         $img1=ImageCreateFromJpeg($from); $W=ImagesX($img1); $H=ImagesY($img1);
-        if($h<$H) { $w=$W/($H/$h);
-                $img2=ImageCreateTrueColor($w,$h);
-                ImageCopyResampled($img2,$img1,0,0,0,0,$w,$h,$W,$H);
-        } else { $h=$H; $w=$W; $img2=$img1; }
+        if($X<$H) { $Y=$X*$H/$W;
+                $img2=ImageCreateTrueColor($X,$Y);
+                ImageCopyResampled($img2,$img1,0,0,0,0,$X,$Y,$W,$H);
+        } else { $X=$W; $Y=$H; $img2=$img1; }
 
-	if($s!='')  pic_podpis($img2,$w,$h,$s,$r); 
+	if($s!='')  pic_podpis($img2,$X,$Y,$s,$r); 
 
         ImageJpeg($img2, $to, $q);
         ImageDestroy($img2);
@@ -234,6 +225,19 @@ function pic_podpis($img,$w,$h,$s,$fs=20,$font) {
 // каким цветом $black/$white ?
 $c=(imagecolorat($img,$x,$y)>imagecolorallocate($img,127,127,127)?imagecolorallocate($img,0,0,0):imagecolorallocate($img,255,255,255));
 	imagettftext($img,$fs,0,$x,$y,$c,$font,$s);
+}
+
+
+
+function get_fotoset() { global $fileset;
+	$fotoset=unserialize(file_get_contents($fileset)); if($fotoset===false) $fotoset=array();
+	if(!intval($fotoset['X'])) $fotoset['X']=$foto_res_small;
+	if(!intval($fotoset['Q'])) $fotoset['Q']=$foto_qality_small;
+	if(!intval($fotoset['x'])) $fotoset['x']=$foto_res_preview;
+	if(!intval($fotoset['q'])) $fotoset['q']=$foto_qality_preview;
+	if(!isset($fotoset['dir'])) $fotoset['dir']='';
+	if(!isset($fotoset['logo'])) $fotoset['logo']=$foto_logo;
+	return $fotoset;
 }
 
 ?>
