@@ -6,6 +6,7 @@ idebug("PHP working, congratulations :) - ok");
 ini_set("display_errors","1");
 ini_set("display_startup_errors","1");
 ini_set('error_reporting', E_ALL);
+set_time_limit(0);
 
 // проверка, есть ли библиотека curl (извините, у меня работает через нее, заебался с этими fsockopen) и другие
 if(!function_exists('file_put_contents')) { function file_put_contents($url,$s) { $f=fopen($url,"w"); fputs($f,$s); fclose($f); chmod($url,0666); } }

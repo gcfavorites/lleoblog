@@ -35,22 +35,4 @@ function foto(e) { o=idd('winfoto');
 }
 ");
 
-SCRIPTS("getWH","
-function getScrollW(){ return (document.documentElement.scrollTop || document.body.scrollTop); }
-function getScrollH(){ return (document.documentElement.scrollLeft || document.body.scrollLeft); }
-function getWinW(){ return document.compatMode=='CSS1Compat' && !window.opera?document.documentElement.clientWidth:document.body.clientWidth; }
-function getWinH(){ return document.compatMode=='CSS1Compat' && !window.opera?document.documentElement.clientHeight:document.body.clientHeight; }
-");
-
-// dier($GLOBALS['_PAGE']);
-// exit;
-
-
-/*
-        function zabil(id,text) { document.getElementById(id).innerHTML = text; }
-        function vzyal(id) { return document.getElementById(id).innerHTML; }
-        function zakryl(id) { document.getElementById(id).style.display='none'; }
-        function otkryl(id) { document.getElementById(id).style.display='block'; }
-*/
-
 ?>
