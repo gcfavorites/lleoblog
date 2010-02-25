@@ -33,25 +33,6 @@ function AddBB($var) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	$var = str_replace('&quot;','"', $var);
 
         $search = array(
@@ -76,7 +57,7 @@ function AddBB($var) {
 
                 '/\[img\](.*?)\[\/img\]/is',
                 '/\[url\](.*?)\[\/url\]/is',
-                '/\[url\=(.*?)\](.*?)\[\/url\]/is'
+                '/\[url\=([^\>\<\'\"\=]*?)\](.*?)\[\/url\]/is'
                 );
 
         $replace = array(
