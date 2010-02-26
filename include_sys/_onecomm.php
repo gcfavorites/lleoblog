@@ -208,9 +208,12 @@ function comment_prep($p,$mojno_comm,$level) { global $admin,$unic,$podzamok,$ge
 
 if($admin or ($unic==$p['unic'] and time()-$p['Time'] < 15*60)) $c['kn'] .= "<div class=ked onclick='ked(this)'></div>"; // редактировать комментарий
 
+if($podzamok) {
+	$c['kn'] .= "<div class=ks".intval($p['scr'])." onclick='ksc(this)'></div>"; // скрыть/раскрыть
+}
+
 if($admin) {
 	$c['kn'] .= "<div class=kd onclick='kd(this)'></div>"; // удалить комментарий
-	$c['kn'] .= "<div class=ks".intval($p['scr'])." onclick='ksc(this)'></div>"; // скрыть/раскрыть
 	$c['rul'] .= "<div class=rul".intval($p['rul'])." onclick='rul(this)'></div>"; // особая отметка
 } else {
 	$c['rul'] .= ''; // особая отметка

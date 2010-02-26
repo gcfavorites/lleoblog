@@ -143,7 +143,8 @@ if($a=='ans') { // id скрыть-раскрыть
 
 //========================================================================================================================
 if($a=='scr') { // id скрыть-раскрыть
-	if(!$admin) oalert("Не админ");
+//	if(!$admin) oalert("Не админ");
+	if(!$podzamok) oalert("Не подзамок");
 	$p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0); if($dat===false) oalert("А такого комментария нет.");
 	$p['scr']=($p['scr']==1?0:1);
 	msq_update('dnevnik_comm',array('scr'=>$p['scr']),"WHERE `id`='$id'");
