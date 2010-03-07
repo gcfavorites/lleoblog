@@ -188,7 +188,7 @@ if($a=='getinfo') { // unic личная карточка автора
 
 
 if($admin) {
-	$s.= dva_pole("доступ:",selecto('admin',h($is['admin']),array('user'=>'user','podzamok'=>'podzamok','admin'=>'admin'),"class='in' onchange='majax(\"login.php\",{action:\"dostup\",unic:\"".$is['id']."\",value:this.value})' name"));
+	$s.= dva_pole("доступ:",selecto('admin',h($is['admin']),array('user'=>'user','podzamok'=>'podzamok','admin'=>'admin','mudak'=>'mudak'),"class='in' onchange='majax(\"login.php\",{action:\"dostup\",unic:\"".$is['id']."\",value:this.value})' name"));
 
 	if($is['capcha']=='no') $s.=dva_pole("робот:","капча не введена");
 	if($is['ipn']!=0) $s.=dva_pole("ip:","<a href='http://yandex.ru/yandsearch?text=%22".ipn2ip($is['ipn'])."%22'>".ipn2ip($is['ipn'])."</a>");

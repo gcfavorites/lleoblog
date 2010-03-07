@@ -1,0 +1,6 @@
+85662
+
+SELECT COUNT(*) FROM `unic` WHERE `login`='' AND `openid`='' AND `lju`='' AND `password`='' AND `realname`='' AND `mail`='' AND `site`='' AND `birth`='0000-00-00'
+
+79089
+81445
