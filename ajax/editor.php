@@ -13,6 +13,30 @@ $a=$_REQUEST["a"];
 
 
 
+//=================================== help ===================================================================
+if($a=='help') {
+	$mod=$_REQUEST["mod"]; $mod=str_replace('..','',$mod);
+	// if(c($mod)=='')
+	$modfile=$filehost."site_mod/".$mod.".php";
+	$s=file_get_contents($modfile);
+
+	if(!preg_match("/\/\*(.*?)\*\//si",$s,$m)) idie("Для модуля <b>$mod</b> еще не написано справки, пинайте автора.");
+	$s=c($m[1]);
+	if(preg_match("/^([^\n]+)\n(.*?)$/si",$s,$m)) { $head=$m[1]; $s=c($m[2]); }
+	if(preg_match("/(.*?)\n([^\n]*\{\_.*?)$/si",$s,$m)) { $s=c($m[1]); $prim=c($m[2]); }
+
+
+	include $include_sys."_modules.php";
+	$prim2=modules($prim);
+
+	idie("<table width=600><td><center><b>$head</b></center><p>".nl2br($s)."
+<p><i>например:</i><p>".nl2br($prim)."
+<p><i>и получаем:</i><div style='border: 1px dashed #ccc'>".nl2br($prim2)."</div>
+
+</td></table>","about: ".$mod.".php");
+}
+
+
 // === test ===
 if($a=='test') {
 

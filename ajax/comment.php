@@ -110,12 +110,12 @@ if($a=='edit') { // id редактировать комментарий
 	$p=ms("SELECT `unic`,`Text`,`Time`,`Name` FROM `dnevnik_comm` WHERE `id`='$id'","_1",0); if($dat===false) oalert("Фатальный сбой.");
 
 	if(!$admin) { // разрешено ли редактировать?
-		if($unic != $p['unic']) oalert("Редактировать чужие комментарии? Оригинально!");
-		if(time()-$p['Time'] > 15*60) oalert("Редактировать можно только в течение 15 минут.");
-		if(ms("SELECT COUNT(*) FROM `dnevnik_comm` WHERE `Parent`=$id","_l",0)) oalert("Редактировать нельзя - уже есть ответы.");
+		if($unic != $p['unic']) idie("Редактировать чужие комментарии? Оригинально!");
+		if(time()-$p['Time'] > 15*60) idie("Редактировать можно только в течение 15 минут.");
+		if(ms("SELECT COUNT(*) FROM `dnevnik_comm` WHERE `Parent`=$id","_l",0)) idie("Редактировать нельзя - уже есть ответы.");
 	}
 
-if(!$admin) oalert("Редактировать пока нельзя.");
+//if(!$admin) oalert("Редактировать пока нельзя.");
 
 // onsubmit='cmsend_edit(this,".$comnu.",".$id.");
 // majax(\'comment.php\',{a:\'editsend\',this.txt.value,".$comnu.",".$id."});
@@ -134,7 +134,7 @@ otprav_sb('commentform.js',$s);
 
 //========================================================================================================================
 if($a=='ans') { // id скрыть-раскрыть
-	if(!$admin) oalert("Не админ");
+	if(!$admin) idie("Не админ");
 	$p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0); if($dat===false) oalert("А такого комментария нет.");
 	$p['ans']=($p['ans']=='u'?'0':($p['ans']=='0'?'1':'u'));
 	msq_update('dnevnik_comm',array('ans'=>$p['ans']),"WHERE `id`='$id'");
@@ -144,7 +144,7 @@ if($a=='ans') { // id скрыть-раскрыть
 //========================================================================================================================
 if($a=='scr') { // id скрыть-раскрыть
 //	if(!$admin) oalert("Не админ");
-	if(!$podzamok) oalert("Не подзамок");
+	if(!$podzamok) idie("Не подзамок");
 	$p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0); if($dat===false) oalert("А такого комментария нет.");
 	$p['scr']=($p['scr']==1?0:1);
 	msq_update('dnevnik_comm',array('scr'=>$p['scr']),"WHERE `id`='$id'");
@@ -153,7 +153,7 @@ if($a=='scr') { // id скрыть-раскрыть
 
 //========================================================================================================================
 if($a=='rul') { // id скрыть-раскрыть
-	if(!$admin) oalert("Не админ");
+	if(!$admin) idie("Не админ");
 	$p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0); if($dat===false) oalert("А такого комментария нет.");
 	$p['rul']=($p['rul']==1?0:1);
 	msq_update('dnevnik_comm',array('rul'=>$p['rul']),"WHERE `id`='$id'");

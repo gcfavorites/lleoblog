@@ -136,8 +136,8 @@ function dier($a) { idie(nl2br(h(print_r($a,1)))); } // отладочная процедурка
 function idie($s,$h='') { 
 	// если это был аякс - выдать аякс-окно
 	if(!empty($GLOBALS['ajax'])) {
-		list($u)=explode('?',$_SERVER['REQUEST_URI'],2);
-		otprav("helps('idie',\"<fieldset><legend>Fatal error: ".h($u)."</legend><div style='font-size: 11px; text-align: left;'>".njs($s)."</div></fieldset>\");");
+		if($h=='') { list($h)=explode('?',$_SERVER['REQUEST_URI'],2); $h="Fatal error: ".h($h); }
+		otprav("helps('idie',\"<fieldset><legend>".$h."</legend><div style='font-size: 11px; text-align: left;'>".njs($s)."</div></fieldset>\");");
 	}
 
 	ob_end_clean(); 
@@ -252,6 +252,7 @@ function zamok($d) {
 }
 
 function h($s) { return htmlspecialchars($s); }
+function c($s) { return trim($s,"\n\r\t \'\""); }
 function ip2ipn($s){ $m=explode('.',$s,4); return $m[0]*16777216+$m[1]*65536+$m[2]*256+$m[3]; }
 function ipn2ip($i){ $a=$i%256;$i=floor($i/256);$b=$i%256;$i=floor($i/256);$c=$i%256;$i=floor($i/256);$d=$i%256; return "$d.$c.$b.$a"; }
 

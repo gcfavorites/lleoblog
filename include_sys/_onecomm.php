@@ -263,7 +263,7 @@ function load_comments($art) { global $comc,$comindex,$kstop,$podzamok,$comment_
 
 $cachename=comment_cachename($num); $mas=cache_get($cachename); // есть ли в кэше?
 if(($GLOBALS['admin'] and !empty($_GET['nocache'])) or $mas===false) { // ------------ если нет в кэше, то прочесть ------------
-	$sql=ms("SELECT `id`,`unic`,`group`,`Name`,`Text`,`Parent`,`Time`,`whois`,`rul`,`ans`,`golos_plu`,`golos_min`,`scr`,`Mail`,`DateID`
+	$sql=ms("SELECT `id`,`unic`,`group`,`Name`,`Text`,`Parent`,`Time`,`whois`,`rul`,`ans`,`golos_plu`,`golos_min`,`scr`,`Mail`,`DateID`,`BRO`
 	FROM `dnevnik_comm` WHERE `DateID`='".e($num)."' ORDER BY `Time`","_a",0);
 	if(!sizeof($sql)) return ppp_nocomment();
 

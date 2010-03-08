@@ -1,9 +1,19 @@
 <?php // панель редактора заметок
 
+$inc=glob($filehost."site_mod/*.php");
+$ainc=array(); $ainc['']='- модули -'; foreach($inc as $l) {
+
+$s=file_get_contents($l);
+$l=preg_replace("/^.*?\/([^\/]+)\.php$/si","$1",$l); 
+if(!preg_match("/\/\*(.*?)\*\//si",$s,$m)) $l="--".$l;
+
+$ainc[$l]=$l; }
+
 $panel = strtr("
 
 <img class=knop onClick=\"majax('foto.php',{a:'album'})\" src=".$www_design."e3/foto.png>
-
+<img class=knop onClick=\"majax('editor.php',{a:'help',mod:idd('editor_mod').value})\" src=".$www_design."e3/gnome-help.png>
+&nbsp;&nbsp;
 <img class=knop onClick=\"pns('".$id."','<p class=pd>','')\" src=".$www_design."e2/pd.gif>
 <img class=knop onClick=\"pns('".$id."','<p class=d>','')\" src=".$www_design."e2/d.gif>
 <img class=knop onClick=\"pns('".$id."','".chr(160)."','')\" src=".$www_design."e2/nbsp.gif>
@@ -24,7 +34,6 @@ $panel = strtr("
 <img class=knop onClick=\"pns('".$id."','\\n<table bgcolor=#f0ffff border=1 cellpadding=50 cellspacing=0 width=80%><td><div align=justify>','</td></table>')\" src=".$www_design."e2/tableb2.gif>
 <img class=knop onClick=\"pns('".$id."','\\n<table bgcolor=#fffff0 border=1 cellpadding=50 cellspacing=0 width=80%><td><div align=justify>','</td></table>')\" src=".$www_design."e2/tableb3.gif>
 <img class=knop onClick=\"pns('".$id."','\\n<pre style=\'border: 0.01mm solid rgb(0,0,0); padding: 4px; line-height: 100%; font-family: monospace; background-color: rgb(255,255,255);\'>','</pre>')\" src=".$www_design."e2/tableb_pre.gif>
-
-","\n","");
+<div>".selecto('editor_mod','',$ainc,"id")."</div>","\n","");
 
 ?>
