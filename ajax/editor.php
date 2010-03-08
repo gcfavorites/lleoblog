@@ -3,8 +3,6 @@ include "../config.php";
 include $include_sys."_autorize.php";
 require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpRequest("windows-1251");
 
-if(!$admin) idie("Надо залогиниться админом!");
-
 
 $autosave_count = 200; // 128; // через сколько нажатий кнопки автозапись
 
@@ -35,6 +33,16 @@ if($a=='help') {
 
 </td></table>","about: ".$mod.".php");
 }
+
+
+
+
+
+
+
+if(!$admin) idie("Надо залогиниться админом!");
+
+
 
 
 // === test ===
