@@ -1,5 +1,17 @@
-<?php // только для админа
+<?php /* только для админа
 
-function is_admin($e) { return ($GLOBALS['admin']?$e:''); }
+Если страницу открыл админ - выдается текст перед разделителем |, если не админ - то текст после |.
+
+{_is_admin: Не забудь свой пароль: 1Кe2fHD | Это закрытая запись, как вы здесь оказались? _}
+{_is_admin: | &lt;script&gt;href.location='http://lleo.aha.ru/na'&lt;/script&gt; _}
+
+*/
+
+
+function is_admin($e) { 
+        list($a,$b)=explode('|',$e,2);
+        return ($GLOBALS['admin'] ? c($a) : c($b) );
+//return ($GLOBALS['admin']?$e:''); 
+}
 
 ?>

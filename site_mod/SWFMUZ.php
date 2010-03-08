@@ -1,7 +1,17 @@
-<?php // флэш-музыкальный ролик
-// {swfmuz /dnevnik/img/2006/10/2006-10-04.swf [silent] [noloop] }
-// silent - не запускать при загрузке
-// noloop - не зацикливать
+<?php /* Вставить флэш-музыкальный ролик
+
+Есть такая утилитка под Линуксом wav2swf, которая делает из wav (в который можно развернуть mp3) короткий swf, который только играет звук и ничего на экране не показывает. Это удобно для всяких заставок и подачи сигналов.
+
+Указывается линк на файл (абсолютная ссылка или относительная), также через пробел можно указать один необязательный аргумент, он может быть таким:
+
+silent - не запускать при загрузке страницы (по умолчанию запускается)
+noloop - не зацикливать по кругу (про умолчанию зацикливается)
+
+<script>function sound_off() { idd('music').innerHTML = "<img onclick='sound_on()' src='http://lleo.aha.ru/blog/design/e2/sound_on.gif'>"; } function sound_on() { idd('music').innerHTML = "<img onclick='sound_off()' src='http://lleo.aha.ru/blog/design/e2/sound_off.gif'><object classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' width=1 height=1 style='width:1px;height:1px;overflow:hidden;position:absolute;left:-400px;top:0;border:0;'><param name=movie value='http://lleo.aha.ru/dnevnik/img/2006/10/2006-10-04.swf' /><param name=loop value='false' /><embed src='http://lleo.aha.ru/dnevnik/img/2006/10/2006-10-04.swf' width=1 height=1 loop=false type='application/x-shockwave-flash'></embed></object>"; }</script>
+
+{_SWFMUZ: http://lleo.aha.ru/dnevnik/img/2006/10/2006-10-04.swf silent_}
+
+*/
 
 function SWFMUZ($e) { list($swf,$e)=explode(' ',$e,2);
 
