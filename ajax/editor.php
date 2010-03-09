@@ -10,6 +10,8 @@ $num=intval($_REQUEST["num"]); $idhelp='editor'.$num;
 $a=$_REQUEST["a"];
 
 
+//function nl2br2($s) { return str_replace(array("\n\n","\n"),array("<p>"," "),$s); }
+
 
 //=================================== help ===================================================================
 if($a=='help') {

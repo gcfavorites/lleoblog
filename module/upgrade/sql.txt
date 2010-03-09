@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `dnevnik_search` (
 CREATE TABLE IF NOT EXISTS `dnevnik_zapisi` (
   `Date` varchar(128) NOT NULL,
   `Header` varchar(255) NOT NULL default '',
-  `Body` text NOT NULL,
+  `Body` mediumtext NOT NULL,
   `Access` enum('all','podzamok','admin') NOT NULL,
   `Comment` enum('enabled','disabled','allways_on','screen','normalscreen') NOT NULL default 'enabled',
   `Comment_view` enum('on','off','rul','load','timeload') NOT NULL default 'timeload',
