@@ -34,7 +34,15 @@ if($a=='help') {
 </td></table>","about: ".$mod.".php");
 }
 
-
+//=================================== loadhelp ===================================================================
+if($a=='loadhelp') {
+	$name=$_REQUEST["name"];
+	include($file_template."help.php");
+	include $include_sys."_modules.php";
+	$s=modules($s);
+	otprav("helps('editor-help',\"<fieldset id='commentform'><legend>Справка: редактор</legend><div style='width: 750px'>".njs($s)."</div></fieldset>\");");
+}
+//=================================== loadhelp ===================================================================
 
 
 
@@ -141,8 +149,8 @@ if($_REQUEST["autokaw"]=="true") { $_REQUEST["autokaw"]='no';
 
 $ara=array(
 	'Date'		=> e($Date),
-'DateDate'=>$t[0],
-'DateDatetime'=>$t[1],
+	'DateDate'	=> $t[0],
+	'DateDatetime'	=> $t[1],
 	'Header'	=> e($_REQUEST['Header']),       	
 	'Body'		=> e($_REQUEST['Body']),
 	'Access'	=> e($_REQUEST['Access']),
