@@ -1,10 +1,10 @@
 <?php // hashdata v2
 
 // Перечислим символы замены
-$hash_ru='АВСЕНКМОРТХасеорху'; $hash_en='ABCEHKMOPTXaceopxy'; //y
+$GLOBALS['hash_ru']='АВСЕНКМОРТХасеорху'; $GLOBALS['hash_en']='ABCEHKMOPTXaceopxy'; //y
 // Обозначим старт и стоп-последовательности:
-$hash_s1='&#'; $hash_e1='#&'; // Нового стиля
-$hash_s='&#2'; $hash_e='2#&'; // Старого стиля (я его уже не использую, оставил для совместимости)
+$GLOBALS['hash_s1']='&#'; $GLOBALS['hash_e1']='#&'; // Нового стиля
+$GLOBALS['hash_s']='&#2'; $GLOBALS['hash_e']='2#&'; // Старого стиля (я его уже не использую, оставил для совместимости)
 
 
 /* =======================================================================================================
@@ -149,14 +149,8 @@ return $s;
 
 
 // подсветка изменяемого текста вне тэгов
-function hashflash($text) {
-	$text=preg_replace_callback("/(>[^<]+<)/si","hash2flash",'<>'.$text.'<>');
-	return str_replace('<>','',$text);
-} function hash2flash($r) { global $hash_ru,$hash_en; $text=$r[1];
-	$text=preg_replace("/([".$hash_en.$hash_ru."]+)/si","<font color=green>$1</font>",$text);
-	return $text;
-}
-
+function hashflash($s) {return str_replace('<>','',preg_replace_callback("/(>[^<]+<)/si","hash2fl","<>$s<>")); }
+function hash2fl($r) { return preg_replace("/([".$GLOBALS['hash_en'].$GLOBALS['hash_ru']."]+)/si","<font color=green>$1</font>",$r[1]); }
 
 // function p($s,$color) { print "<br><font color=$color>".htmlspecialchars($s)."</font>"; }
 // function pp($s,$color) { print "<font color=$color>".htmlspecialchars($s)."</font>"; }
