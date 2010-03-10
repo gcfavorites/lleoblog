@@ -137,7 +137,7 @@ function idie($s,$h='') {
 	// если это был аякс - выдать аякс-окно
 	if(!empty($GLOBALS['ajax'])) {
 		if($h=='') { list($h)=explode('?',$_SERVER['REQUEST_URI'],2); $h="Fatal error: ".h($h); }
-		otprav("helps('idie',\"<fieldset><legend>".$h."</legend><div style='font-size: 11px; text-align: left;'>".njs($s)."</div></fieldset>\");");
+		otprav("helps('idie',\"<fieldset><legend>".$h."</legend><div style='text-align: left;'><small>".njs($s)."</small></div></fieldset>\");");
 	}
 
 	ob_end_clean(); 
