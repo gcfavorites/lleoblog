@@ -1,6 +1,7 @@
 <?php 
 
 $ajax=1;
+// if(sizeof($_GET)) die('GET-error');
 
 /** 
  * JsHttpRequest: PHP backend for JavaScript DHTML loader. 
@@ -36,24 +37,24 @@ class JsHttpRequest
         "xml"    => "text/plain", 
         "form"   => "text/html", 
         ""       => "text/plain", // for unknown loader 
-    );     
+    );
 
-     
-    /** 
-     * Constructor. 
-     *  
-     * Create new JsHttpRequest backend object and attach it 
-     * to script output buffer. As a result - script will always return 
-     * correct JavaScript code, even in case of fatal errors. 
-     */ 
-    function JsHttpRequest($enc) 
-    { 
-        // QUERY_STRING is in form: PHPSESSID=<sid>&a=aaa&b=bbb&<id> 
-        // where <id> is request ID, <sid> - session ID (if present),  
-        // PHPSESSID - session parameter name (by default = "PHPSESSID"). 
-         
-        // Parse QUERY_STRING wrapper format. 
-        if (preg_match('/^(.*)(?:&|^)JsHttpRequest=(\d+)-([^&]+)((?:&|$).*)$/s', $_SERVER['QUERY_STRING'], $m)) { 
+
+    /**
+     * Constructor.
+     *
+     * Create new JsHttpRequest backend object and attach it
+     * to script output buffer. As a result - script will always return
+     * correct JavaScript code, even in case of fatal errors.
+     */
+    function JsHttpRequest($enc)
+    {
+        // QUERY_STRING is in form: PHPSESSID=<sid>&a=aaa&b=bbb&<id>
+        // where <id> is request ID, <sid> - session ID (if present),
+        // PHPSESSID - session parameter name (by default = "PHPSESSID").
+
+        // Parse QUERY_STRING wrapper format.
+        if(preg_match('/^(.*)(?:&|^)JsHttpRequest=(\d+)-([^&]+)((?:&|$).*)$/s', $_SERVER['QUERY_STRING'], $m)) {
             $this->ID = $m[2]; 
             $this->LOADER = strtolower($m[3]); 
             $_SERVER['QUERY_STRING'] = $m[1] . $m[4]; 
@@ -94,11 +95,10 @@ class JsHttpRequest
      *  
      * Return JavaScript part of library. 
      */ 
-    function getJsCode() 
-    { 
-        return file_get_contents(dirname(__FILE__).'/JsHttpRequest.js'); 
-    } 
-
+//    function getJsCode() 
+//    { 
+//        return file_get_contents(dirname(__FILE__).'/JsHttpRequest.js'); 
+//    } 
 
     /** 
      * void setEncoding(string $encoding) 
@@ -206,9 +206,9 @@ class JsHttpRequest
             (isset($_COOKIE)? $_COOKIE : array()) +  
             (isset($_POST)? $_POST : array()) +  
             (isset($_GET)? $_GET : array()); 
-        if (ini_get('register_globals')) { 
-            // TODO? 
-        } 
+//        if (ini_get('register_globals')) { 
+//            // TODO? 
+//        } 
     } 
 
 
@@ -243,8 +243,6 @@ class JsHttpRequest
         if ($jsWindow) { 
             $text = '<script type="text/javascript" language="JavaScript"><!--' . "\n$text" . '//--></script>'; 
         } 
-//        $f = fopen("/debug", "w"); fwrite($f, $text); fclose($f); 
-
         return $text; 
     } 
 
