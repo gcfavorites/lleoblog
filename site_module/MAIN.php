@@ -105,13 +105,15 @@ function UNIC($e) { global $IS;
 //==============================================================================================
 
 // [another_in_date] - блок, показывающий остальные заметки за это число
-function ANOTHER_DATE($e) { global $article; $s='';
-	if($article['DateDate']) {
+function ANOTHER_DATE() { global $article; $s='';
+    if($article['DateDate']) {
 	$pp=ms("SELECT `Date`,`Header` FROM `dnevnik_zapisi` ".WHERE("`DateDate`='".$article['DateDate']."' AND `Date`!='".e($article['Date'])."'"),"_a");
-	if($pp!==false && sizeof($pp)) foreach($pp as $p) $s.="<br><a href='".$wwwhost.$p['Date']."'>".$p['Date'].($p['Header']!=''?" - ".$p['Header']:'')."</a>";
-	return "<div style='text-align: left; border: 2px dashed #ccc;'><i>Другие записи за это число:</i>".$s."</div>";
+	if($pp!==false && sizeof($pp)) {
+	   foreach($pp as $p) $s.="<br><a href='".$wwwhost.$p['Date']."'>".$p['Date'].($p['Header']!=''?" - ".$p['Header']:'')."</a>";
+	   return "<div style='text-align: left; border: 2px dashed #ccc;'><i>Другие записи за это число:</i>".$s."</div>";
 	}
-	return '';
+    }
+return '';
 }
 
 //==============================================================================================
