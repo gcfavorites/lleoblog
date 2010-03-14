@@ -39,6 +39,7 @@ var ctrloff=".($_COOKIE['ctrloff']=='off'?1:0).";
 
 }
 
+
 //==============================================================================================
 
 
@@ -139,6 +140,15 @@ function HEAD_N($e) { global $article;
 	$s="<div class='header' id='Header'>".($article["Header"]!=''?$article["Header"]:'(...)')."</div>";
 	if(!$GLOBALS['admin'] or $e!='1') return $s;
 	else return "<div class=l onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\">$s</div>";
+}
+
+
+
+
+//============
+
+function CAT($e) { global $article, $httphost;
+	return ($article["cat"]!='')?"<p style='font-size: 10pt; margin-top:4px;'>Рубрика: <a style='font-size: 10pt;' href='".$httphost."blog?cat=".$article["cat"]."'>".$article["cat"]."</a></p>":'';
 }
 
 ?>

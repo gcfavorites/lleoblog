@@ -237,3 +237,29 @@ CREATE TABLE IF NOT EXISTS `unictemp` (
   `timelast` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`unic`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251 COMMENT='Временные данные пользователя';
+
+
+
+--
+-- Структура таблицы `golosovanie_golosa`
+--
+CREATE TABLE IF NOT EXISTS `golosovanie_golosa` (
+  `golosid` int(10) unsigned NOT NULL COMMENT 'id голосования',
+  `unic` int(10) unsigned NOT NULL COMMENT 'id голосующего',
+  `time` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `value` text NOT NULL,
+  PRIMARY KEY  (`golosid`,`unic`)
+) ENGINE=MyISAM DEFAULT CHARSET=cp1251 COMMENT='Голосования: голоса';
+
+--
+-- Структура таблицы `golosovanie_result`
+--
+CREATE TABLE IF NOT EXISTS `golosovanie_result` (
+  `golosid` int(10) unsigned NOT NULL auto_increment COMMENT 'id голосования',
+  `golosname` varchar(32) NOT NULL COMMENT 'имя голосования',
+  `n` bigint(20) NOT NULL,
+  `text` text NOT NULL,
+  PRIMARY KEY (`golosid`),
+  KEY `golosname` (`golosname`(32))
+) ENGINE=MyISAM DEFAULT CHARSET=cp1251 COMMENT='Голосования: результаты';
+

@@ -227,21 +227,11 @@ function posdiv(id,x,y) { // позиционирование (с проверкой на вылет)
         var W=d.clientWidth; var H=d.clientHeight;
         var w=e.clientWidth; var h=e.clientHeight;
 
-//if(admin && id != 'ajaxgif') {
-//        var w=e.clientWidth; var h=e.clientHeight;
-//	e.innerHTML=e.innerHTML+'<table bgcolor=white><td><b><big>W=' + W + ' w=' + w + '<br>H=' + H + ' h=' + h +'</big></b></td></table>';
-//}
-
         if(x+w>W) x=W-w; if(x<0) x=0; 
 	if((y+h)>H) y=H-h; if(y<0) y=0;
         e.style.top=y+'px'; e.style.left=x+'px';
 
 }
-
-var hmov = {};
-
-// onmousedown='hmov[this.id]=1' onmouseup='hmov[this.id]=0' onmousemove='doMove(event,this)'>
-
 
 
 function addEvent(e,evType,fn) {
@@ -250,52 +240,27 @@ function addEvent(e,evType,fn) {
 	else { e['on' + evType] = fn; }
 }
 
-function helps(id,s) {
-
-	s=s+\"<div onclick=\\\"clean('\"+id+\"')\\\" class='can' title='cancel'></div>\";
-
+function helps(id,s) { s=s+\"<div onclick=\\\"clean('\"+id+\"')\\\" class='can' title='cancel'></div>\";
 if(!idd(id)) {
-
-// if(admin) alert('a='+isHelps()+' '+print_r(mHelps));
-
 	mHelps[id]=1;
-
-	mkdiv(id,\"<div class='corners'><div class='inner'><div class='content' id='\"+id+\"_body' align=left>\"+s+\"\
-</div></div></div>\",'popup');
-
-//mkdiv(id,\"<div class='inner'><div class='content' id='\"+id+\"_body'>\"+s+\"\
-//<div onclick=\\\"clean('\"+id+\"')\\\" class='can' title='cancel'></div></div>\
-//<div class='tl'></div><div class='tr'></div></div><div class='bl'></div><div class='br'></div>\",'popup'); 
-//     if(id=='proverka_okna'){ var e=idd(id); 
-//     
-//     addEvent(e,'mousedown', function(e){ if(!e) e=window.event; this.style.cursor='move';
-//     hmov[this.id]={x: e.clientX ? e.clientX : e.layerX, y: e.clientY ? e.clientY : e.layerY };
-//     e.preventDefault();
-//     });
-//     
-//     addEvent(e,'mouseup', function(e){if(!e) e=window.event;hmov[this.id]=0;} );
-//     // addEvent(e,'mouseout', function(){if(hmov[this.id]){hmov[this.id]=0;}} );
-//     addEvent(e,'mousemove', function(e){if(!e) e=window.event;var i=this.id;
-//     if(hmov[i]) {
-//     	this.style.left = parseFloat(this.style.left)+e.clientX-hmov[i].x+'px';
-//     	this.style.top = parseFloat(this.style.top)+e.clientY-hmov[i].y+'px';
-//     	hmov[i].x=e.clientX;
-//     	hmov[i].y=e.clientY;
-//     	e.preventDefault();
-//     }
-//     } );
-//     }
-
+	mkdiv(id,\"<div class='corners'><div class='inner'><div class='content' id='\"+id+\"_body' align=left>\"+s+\"</div></div></div>\",'popup');
+	var e=idd(id);
+// ===========================================================================
+	addEvent(e,'mousedown', function() { this.style.cursor='move'; mov_y=mouse_y; mov_x=mouse_x; });
+	addEvent(e,'mouseup', function(){ this.style.cursor='auto'; });
+	addEvent(e,'mousemove', function(){ var e=this.style; if(e.cursor=='move') { var x=mouse_x; var y=mouse_y;
+		e.left=(parseFloat(e.left)-(mov_x-x))+'px'; mov_x=x;
+		e.top=(parseFloat(e.top)-(mov_y-y))+'px'; mov_y=y;
+	}});
+// ===========================================================================
 	hid++;
 	posdiv(id,mouse_x,mouse_y);
-
 } else zabil(id+'_body',s);
 }
 
 // координаты мыши
-var mouse_x=0, mouse_y=0;
-
-document.onclick = function(e){ if(!e) e=window.event;
+var mov_x=mouse_x=mov_y=mouse_y=0; 
+document.onmousemove = function(e){ if(!e) e=window.event;
   if(e.pageX || e.pageY) { mouse_x=e.pageX; mouse_y=e.pageY; }
   else if (e.clientX || e.clientY) {
     mouse_x = e.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft) - document.documentElement.clientLeft;
@@ -329,7 +294,6 @@ function getOpacityProperty() {
 	else if (document.body.filters && navigator.appVersion.match(/MSIE ([\d.]+);/)[1]>=5.5) return 'filter'; // IE 5.5+
 	return false;
 }
-
 
 function getScrollW(){ return (document.documentElement.scrollTop || document.body.scrollTop); }
 function getScrollH(){ return (document.documentElement.scrollLeft || document.body.scrollLeft); }
