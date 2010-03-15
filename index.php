@@ -244,14 +244,19 @@ function helps(id,s) { s=s+\"<div onclick=\\\"clean('\"+id+\"')\\\" class='can' 
 if(!idd(id)) {
 	mHelps[id]=1;
 	mkdiv(id,\"<div class='corners'><div class='inner'><div class='content' id='\"+id+\"_body' align=left>\"+s+\"</div></div></div>\",'popup');
-	var e=idd(id);
+
 // ===========================================================================
+var e=idd(id);
 	addEvent(e,'mousedown', function() { this.style.cursor='move'; mov_y=mouse_y; mov_x=mouse_x; });
 	addEvent(e,'mouseup', function(){ this.style.cursor='auto'; });
 	addEvent(e,'mousemove', function(){ var e=this.style; if(e.cursor=='move') { var x=mouse_x; var y=mouse_y;
 		e.left=(parseFloat(e.left)-(mov_x-x))+'px'; mov_x=x;
 		e.top=(parseFloat(e.top)-(mov_y-y))+'px'; mov_y=y;
 	}});
+//var e=idd(id+'_body');
+//	addEvent(e,'mousedown',function(){this.parentNode.parentNode.parentNode.style.cursor='auto'; return false;});
+//	addEvent(e,'mouseup',function(){this.parentNode.parentNode.parentNode.style.cursor='auto'; return false;});
+//	addEvent(e,'mousemove',function(){this.parentNode.parentNode.parentNode.style.cursor='auto'; return false;});
 // ===========================================================================
 	hid++;
 	posdiv(id,mouse_x,mouse_y);
