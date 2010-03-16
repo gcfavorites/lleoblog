@@ -253,15 +253,18 @@ var e=idd(id);
 		e.left=(parseFloat(e.left)-(mov_x-x))+'px'; mov_x=x;
 		e.top=(parseFloat(e.top)-(mov_y-y))+'px'; mov_y=y;
 	}});
-//var e=idd(id+'_body');
-//	addEvent(e,'mousedown',function(){this.parentNode.parentNode.parentNode.style.cursor='auto'; return false;});
-//	addEvent(e,'mouseup',function(){this.parentNode.parentNode.parentNode.style.cursor='auto'; return false;});
-//	addEvent(e,'mousemove',function(){this.parentNode.parentNode.parentNode.style.cursor='auto'; return false;});
+var e=idd(id+'_body');
+//	addEvent(e,'mousedown',function(){nomove(this)});
+//	addEvent(e,'mouseup',function(){nomove(this)});
+	addEvent(e,'mousemove',function(){nomove(this)});
 // ===========================================================================
 	hid++;
 	posdiv(id,mouse_x,mouse_y);
 } else zabil(id+'_body',s);
 }
+
+
+var nomoven; function nomove(e){ return; nomoven=e.parentNode.parentNode.parentNode; setTimeout(\"nomoven.style.cursor='auto'\", 20); }
 
 // координаты мыши
 var mov_x=mouse_x=mov_y=mouse_y=0; 
@@ -296,7 +299,7 @@ function getOpacityProperty() {
 	if(typeof document.body.style.opacity == 'string') return 'opacity'; // CSS3 compliant (Moz 1.7+, Safari 1.2+, Opera 9)
 	else if(typeof document.body.style.MozOpacity == 'string') return 'MozOpacity'; // Mozilla 1.6 и младше, Firefox 0.8 
 	else if(typeof document.body.style.KhtmlOpacity == 'string') return 'KhtmlOpacity'; // Konqueror 3.1, Safari 1.1
-	else if (document.body.filters && navigator.appVersion.match(/MSIE ([\d.]+);/)[1]>=5.5) return 'filter'; // IE 5.5+
+	else if(document.body.filters && navigator.appVersion.match(/MSIE ([\d.]+);/)[1]>=5.5) return 'filter'; // IE 5.5+
 	return false;
 }
 
