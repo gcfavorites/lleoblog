@@ -40,6 +40,7 @@ $hashpage=rand(0,1000000); $hashpage=substr(broident($hashpage.$hashinput),0,6).
 
 
 function ARTICLE_Date($Date) { global $article;
+
 	$article=ms("SELECT * FROM `dnevnik_zapisi` ".WHERE("`Date`='".e($Date)."'"),"_1");
         if($article!==false) ARTICLE();
 
@@ -121,7 +122,10 @@ $text=ms("SELECT `text` FROM `site` ".WHERE("`name`='".e($mod_name)."' AND `type
 if($text!='') { $name=$mod_name; include("site.php"); exit; }
 
 // затем в базе дневника
-$article=ms("SELECT * FROM `dnevnik_zapisi` WHERE `Date`='".e($mod_name)."'","_1",$ttl); if($article!==false && $article!='') ARTICLE();
+$article=ms("SELECT * FROM `dnevnik_zapisi` WHERE `Date`='".e($mod_name)."'","_1",$ttl); if($article!==false && $article!='') {
+	if(preg_match("/^\d\d\d\d\/\d\d\/\d\d[\_\d]*$/si",$mod_name)) idie("Wrong name.<p>Try: <a href='".get_link($mod_name)."'>".get_link($mod_name)."</a>");
+	ARTICLE();
+}
 
 // и если совсем ничего не нашлось
 
@@ -240,6 +244,7 @@ function addEvent(e,evType,fn) {
 	else { e['on' + evType] = fn; }
 }
 
+var nomove=0;
 function helps(id,s) { s=s+\"<div onclick=\\\"clean('\"+id+\"')\\\" class='can' title='cancel'></div>\";
 if(!idd(id)) {
 	mHelps[id]=1;
@@ -249,14 +254,13 @@ if(!idd(id)) {
 var e=idd(id);
 	addEvent(e,'mousedown', function() { this.style.cursor='move'; mov_y=mouse_y; mov_x=mouse_x; });
 	addEvent(e,'mouseup', function(){ this.style.cursor='auto'; });
-	addEvent(e,'mousemove', function(){ var e=this.style; if(e.cursor=='move') { var x=mouse_x; var y=mouse_y;
+	addEvent(e,'mousemove', function(){ var e=this.style; if(nomove==0 && e.cursor=='move') { var x=mouse_x; var y=mouse_y;
 		e.left=(parseFloat(e.left)-(mov_x-x))+'px'; mov_x=x;
 		e.top=(parseFloat(e.top)-(mov_y-y))+'px'; mov_y=y;
 	}});
 var e=idd(id+'_body');
-//	addEvent(e,'mousedown',function(){nomove(this)});
-//	addEvent(e,'mouseup',function(){nomove(this)});
-	addEvent(e,'mousemove',function(){nomove(this)});
+	addEvent(e,'mouseover',function(){nomove=1});
+	addEvent(e,'mouseout',function(){nomove=0});
 // ===========================================================================
 	hid++;
 	posdiv(id,mouse_x,mouse_y);
@@ -264,7 +268,6 @@ var e=idd(id+'_body');
 }
 
 
-var nomoven; function nomove(e){ return; nomoven=e.parentNode.parentNode.parentNode; setTimeout(\"nomoven.style.cursor='auto'\", 20); }
 
 // координаты мыши
 var mov_x=mouse_x=mov_y=mouse_y=0; 
