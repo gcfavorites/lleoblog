@@ -41,7 +41,7 @@ function NIKONOVU($url) {
 
 function NIKONOV_NEMALO($u) { return
 "<p><div style='border: 1px dotted black; margin-left:15%; margin-right:15%; padding:10pt; font-size: 12pt;'>"
-."Этот текст написан для проекта <a href='$url'>$u</a>, где я веду авторскую колонку. Вообще для $u я написал немало подобных "
+."Этот текст написан для проекта <a href='http://$u'>$u</a>, где я веду авторскую колонку. Вообще для $u я написал немало подобных "
 ."материалов, <span class=l onclick=\"majax('search.php',{a:'header',search:'".$u."'})\">вот их полный список</span></div>";
 }
 
