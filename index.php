@@ -240,34 +240,72 @@ function posdiv(id,x,y) { // позиционирование (с проверкой на вылет)
 
 function addEvent(e,evType,fn) {
 	if(e.addEventListener) { e.addEventListener(evType,fn,false); return true; }
-	else if (e.attachEvent) { var r = e.attachEvent('on' + evType, fn); return r; }
-	else { e['on' + evType] = fn; }
+	if(e.attachEvent) { var r = e.attachEvent('on' + evType, fn); return r; }
+	e['on' + evType] = fn;
 }
 
-var nomove=0;
+function removeEvent(e,evType,fn){
+	if(e.removeEventListener) { e.removeEventListener(evType,fn,false); return true; }
+	if(e.detachEvent) { e.detachEvent('on'+evType, fn) };
+}
+
 function helps(id,s) { s=s+\"<div onclick=\\\"clean('\"+id+\"')\\\" class='can' title='cancel'></div>\";
 if(!idd(id)) {
 	mHelps[id]=1;
 	mkdiv(id,\"<div class='corners'><div class='inner'><div class='content' id='\"+id+\"_body' align=left>\"+s+\"</div></div></div>\",'popup');
 
 // ===========================================================================
+// (c)mkm Вот рецепт локального счастья, проверенный в Опера10, ИЕ6, ИЕ8, FF3, Safari, Chrome.
+// Таскать окно можно за 'рамку' - элементы от id до id+'_body', исключая body (и всех его детей).
+
+var e_body=idd(id+'_body'); // За тело не таскаем
+var hmov=false; // Предыдущие координаты мыши
 var e=idd(id);
-	addEvent(e,'mousedown', function() { this.style.cursor='move'; mov_y=mouse_y; mov_x=mouse_x; });
-	addEvent(e,'mouseup', function(){ this.style.cursor='auto'; });
-	addEvent(e,'mousemove', function(){ var e=this.style; if(nomove==0 && e.cursor=='move') { var x=mouse_x; var y=mouse_y;
-		e.left=(parseFloat(e.left)-(mov_x-x))+'px'; mov_x=x;
-		e.top=(parseFloat(e.top)-(mov_y-y))+'px'; mov_y=y;
-	}});
-var e=idd(id+'_body');
-	addEvent(e,'mouseover',function(){nomove=1});
-	addEvent(e,'mouseout',function(){nomove=0});
+var pnt=e; while(pnt.parentNode) pnt=pnt.parentNode; //Ищем Адама
+
+var mmFunc=function(ev) { if(!ev) ev=window.event;
+	if(hmov) {
+		e.style.left = parseFloat(e.style.left)+ev.clientX-hmov.x+'px';
+		e.style.top = parseFloat(e.style.top)+ev.clientY-hmov.y+'px';
+		hmov={ x:ev.clientX, y:ev.clientY };
+		if(ev.preventDefault) ev.preventDefault();
+		return false;
+	}
+};
+
+var muFunc=function(){
+	if(hmov){
+		hmov=false;
+		removeEvent(pnt,'mousemove',mmFunc);
+		removeEvent(pnt,'mouseup',muFunc);
+		e.style.cursor='auto';
+	}
+};
+
+addEvent(e,'mousedown', function(ev){ if(hmov) return;
+	if(!ev) ev=window.event;
+	var lbtn=(window.addEventListener?0:1); //Если ИЕ, левая кнопка=1, иначе 0
+	if(!ev.target) ev.target=ev.srcElement;
+	if((lbtn!==ev.button)) return; //Это была не левая кнопка или 'тело' окна, ничего не делаем
+	var tgt=ev.target;
+	while(tgt){
+		if(tgt==e_body) return;
+		if(tgt==e) break;
+		tgt=tgt.parentNode;
+	};
+	//Начинаем перетаскивать
+	e.style.cursor='move';
+	hmov={ x:ev.clientX, y:ev.clientY };
+	addEvent(pnt,'mousemove',mmFunc);
+	addEvent(pnt,'mouseup',muFunc);
+	if(ev.preventDefault) ev.preventDefault();
+	return false;
+});
 // ===========================================================================
 	hid++;
 	posdiv(id,mouse_x,mouse_y);
 } else zabil(id+'_body',s);
 }
-
-
 
 // координаты мыши
 var mov_x=mouse_x=mov_y=mouse_y=0; 
