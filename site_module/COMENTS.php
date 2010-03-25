@@ -54,8 +54,9 @@ if(strstr($_SERVER["HTTP_USER_AGENT"],'Yandex')) { // роботу Яндекса
 
 $s='';
 
-if($comments_form) { // РАЗРЕШЕНО ОСТАВИТЬ КОММЕНТАРИЙ
+if($GLOBALS['admin'] or $comments_form) { // РАЗРЕШЕНО ОСТАВИТЬ КОММЕНТАРИЙ
 
+/*
 if($GLOBALS['admin']) {
 
 //	include_once $include_sys."_antibot.php"; // антибота подгружаем
@@ -74,6 +75,7 @@ $s .= "<div id='oldcomform'><b>Оставить комментарий:</b>
 </form></div><script>document.getElementById('oldcomform').style.display='none';</script>";
 
 }
+*/
 
 $s.= "<div id='commpresent' class=l style='font-weight: bold; margin: 20pt; font-size: 16px;' onclick=\"majax('comment.php',{a:'comform',id:0,lev:0,comnu:comnum,dat:".$article['num']."});\">Оставить комментарий</div>";
 
