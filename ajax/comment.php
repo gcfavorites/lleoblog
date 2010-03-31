@@ -1,7 +1,6 @@
 <?php // Авторизация пользователей
 include "../config.php";
 include $include_sys."_autorize.php";
-
 require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpRequest("windows-1251");
 
 // if($admin) idie('отладочная ошибка - сейчас все заработает снова!');

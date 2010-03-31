@@ -2,6 +2,8 @@
 
 //-- авторизация админа
 if(broident($admin_hash.$koldunstvo)!=$_COOKIE["adm"]) $admin=0; else {	$admin = 1;
+
+	if(!strstr($_SERVER['REQUEST_URI'],'/ajax/')) { // если не аякс - включить отладочные сообщения для админа
 	// включить сообщения об ошибках
         ini_set("display_errors","1");
         ini_set("display_startup_errors","1");
@@ -9,6 +11,7 @@ if(broident($admin_hash.$koldunstvo)!=$_COOKIE["adm"]) $admin=0; else {	$admin =
         // error_reporting(E_ALL);
         // error_reporting = E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR
         // error_reporting = E_ALL & ~E_USER_ERROR & ~E_USER_WARNING & ~E_USER_NOTICE
+	}
 }
 
 // if(!$admin) die("На ремонте, извините.");
