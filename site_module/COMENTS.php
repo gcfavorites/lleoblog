@@ -43,7 +43,7 @@ switch($article["Comment_screen"]) { // Comment_screen  enum('open', 'screen', '
 	case 'friends-open': $comments_screen=!$podzamok; if($comments_form && $podzamok) $coments.="<p> омментарии к этой заметке скрываютс€, но у друзей (у теб€) они будут открыты."; break;
 	}
 
-if(strstr($_SERVER["HTTP_USER_AGENT"],'Yandex')) { // роботу яндекса
+if(strstr($_SERVER["HTTP_USER_AGENT"],'Yandex') || $GLOBALS['IP']=='78.110.50.100') { // роботу яндекса
 	$premesage.=''; $coments='';
 	$comments_form=false; // принимать комментарии - не надо (зачем яндексу оставл€ть комментарии?)
 	$comments_knopka=false; // простыню комментариев - выдавать с заметкой (яндекс не умеет нажимать кнопку, а хотел бы индексировать)

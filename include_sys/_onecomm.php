@@ -157,7 +157,8 @@ function mojno_comment($p) { global $IS,$podzamok,$N_maxkomm,$enter_comentary_da
 	if($p['Comment_tree']=='0') return 0; // если запрещено отвечать на комменты
 
 	// Превышение количества посещений или слишком старая заметка
-	$t=($p["counter"] < $N_maxkomm and $p["DateDatetime"] > time()-86400*$enter_comentary_days ?1:0);
+	if(!isset($p["counter"])) $t=0;
+	else $t=($p["counter"] < $N_maxkomm and $p["DateDatetime"] > time()-86400*$enter_comentary_days ?1:0);
 
 	switch($p["Comment_write"]) {
 		case 'off': return false;
@@ -184,8 +185,7 @@ function comment_prep($p,$mojno_comm,$level) { global $admin,$unic,$podzamok,$ge
 	$c['unic']=$p['unic'];
 
 // ---- город и страна ----
-
-	list($gorod,$strana)=explode("\001",$p['whois']);
+	list($gorod,$strana)=explode("\001",$p['whois'],2);
 	$c['whois'] = ($strana?search_podsveti(h($strana)):'').($gorod?($strana?", ":'').search_podsveti(h($gorod)):'');
 
 // ---- время ----
@@ -262,6 +262,7 @@ function load_comments($art) { global $comc,$comindex,$kstop,$podzamok,$comment_
 	$num=$art['num'];
 
 $cachename=comment_cachename($num); $mas=cache_get($cachename); // есть ли в кэше?
+
 if(($GLOBALS['admin'] and !empty($_GET['nocache'])) or $mas===false) { // ------------ если нет в кэше, то прочесть ------------
 	$sql=ms("SELECT `id`,`unic`,`group`,`Name`,`Text`,`Parent`,`Time`,`whois`,`rul`,`ans`,`golos_plu`,`golos_min`,`scr`,`Mail`,`DateID`,`BRO`
 	FROM `dnevnik_comm` WHERE `DateID`='".e($num)."' ORDER BY `Time`","_a",0);
@@ -284,10 +285,20 @@ if(($GLOBALS['admin'] and !empty($_GET['nocache'])) or $mas===false) { // ------
 $mojno_comm=mojno_comment($art); // установить, на какие комменты можно отвечать
 
 // а вот теперь, откуда бы ни был массив $mas, из кэша или собранный вживую, выдать комменты
-foreach($mas as $m) { if($podzamok or !$m['value'] or $m['value']==$GLOBALS['unic']) // открыт ли?
+
+$podz = ($podzamok && (sizeof($mas)<100 || isset($_GET['screen'])));
+
+foreach($mas as $m) { if($podz or !$m['value'] or $m['value']==$GLOBALS['unic']
+or (( strstr($GLOBALS['BRO'],'Yandex') || $GLOBALS['IP']=='78.110.50.100') and intval($m['value'])==120530 ) // хитрую гайку показывать яндексу
+) // открыт ли?
 	$s.=comment_one($m['p'],$mojno_comm,$m['level']);
 	elseif($comment_pokazscr) $s.="<div class=cscr style='margin-left:".($m['level']*$comment_otstup)."px'></div>";
 }
+
+if(sizeof($mas)>10) $s.="<center><p class=br>всего комментариев: ".sizeof($mas)."</p>"
+.( (!$podz && $podzamok && sizeof($mas)>=100)?"<p>показаны только открытые комментарии - <a href=".$GLOBALS['mypage']."?screen=yes>показать все</a>":'')
+."</center>";
+if(sizeof($mas) && function_exists('PREVNEXT')) $s.=PREVNEXT();
 
 return $s;
 }

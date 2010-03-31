@@ -12,7 +12,7 @@ $e=ms("SELECT `num`,`Date` FROM `dnevnik_zapisi`","_a",$ttl_longsite);
 	$d=array(); foreach($e as $l) $d[$l['num']]=get_link($l['Date']); unset($e);
 
 $pp=ms("SELECT `id`,`Text`,`Name`,`Parent`,`Time`,`DateID`
-FROM `dnevnik_comm` ".WHERE()." ORDER BY `Time` DESC LIMIT ".$skip.",".$RSSC_skip."",'_a',0);
+FROM `dnevnik_comm` ".($podzamok?'':"WHERE `scr`='0' OR `unic`='$unic'")." ORDER BY `Time` DESC LIMIT ".$skip.",".$RSSC_skip."",'_a',0);
 
 $s="<?xml version='1.0' encoding='".$wwwcharset."'?>
 <rss version='2.0' xmlns:ya='http://blogs.yandex.ru/yarss/'>

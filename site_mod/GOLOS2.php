@@ -26,11 +26,11 @@
 _}
 */
 
-// обратились к этому скрипту напрямую при посте?
 
 $GLOBALS['GOLOS_db_golosa']='golosovanie_golosa';
 $GLOBALS['GOLOS_db_result']='golosovanie_result';
 
+// обратились к этому скрипту напрямую при посте?
 if(isset($_POST['golos_return'])) {
 		include "../config.php";
 		include $include_sys."_autorize.php";
@@ -57,19 +57,20 @@ function GOLOS2($e) { global $unic, $GOLOS_db_golosa,$GOLOS_db_result, $sc,$IP,$
 	if($golosoval) {
 		$s=ms("SELECT `text`,`n` FROM `$GOLOS_db_result` WHERE golosname='".e($golosname)."'",'_1');
 		$go=unserialize($s['text']); $nn=$s['n'];
+
+		$k=($nn?(640/$nn):0); // вычислилить коэффициент array_sum($go[$n])
+		$kp=($nn?(100/$nn):0);
+	} else {
+		$nn=intval(ms("SELECT `n` FROM `$GOLOS_db_result` WHERE golosname='".e($golosname)."'",'_l'));
 	}
 
-	$s=''; if($admin) $s.=nl2br(golos_recalculate($golosname)).'<p>';
+	if($admin) $s.=nl2br(golos_recalculate($golosname)).'<p>';
 
-	$k=($nn?(640/$nn):0); // вычислилить коэффициент array_sum($go[$n])
-	$kp=($nn?(100/$nn):0);
+	$s="<p>Уже проголосовали: <b>".$nn."</b>";
 
 	$n=0; foreach($vopr as $vop=>$var) { $n++;
-
-	$s.="\n<p><b>$vop</b><br><ul>";
-
+		$s.="\n<p><b>$vop</b><br><ul>";
 		foreach($var as $i=>$va) {
-
 			if($golosoval) { // если голосовал
 				$x=$go[$n][$i+1];
 				$s .= "$va<br><img src=".$www_design."e/gol.gif width=".floor($k*$x)." height=14>\n<span class=br><b>".floor($kp*$x)."%</b> (".intval($x).")</span><p>";
@@ -78,20 +79,13 @@ function GOLOS2($e) { global $unic, $GOLOS_db_golosa,$GOLOS_db_result, $sc,$IP,$
 				$s .= "\n<input id='".$gr."' name='".$golosname."_".$n."' type='radio' value='".($i+1)."'><label for='".$gr."'> $va</label><br>";
 			}
 		}
-
 	$s.="</ul>\n";
-
 	}
-
 
 	$s="<center><table width=90% cellspacing=20><td align=left>".$s."</td></table></center>";
 
-
-	if($golosoval) { // если голосовал
-
-		$s = "<p>Проголосовали <b>$nn</b> человек:".$s."<p><center><b>спасибо, что проголосовали!</b></center>";
+	if($golosoval) { $s .= "<p><center><b>спасибо, что проголосовали!</b></center>"; // если голосовал
 	} else { // если НЕ голосовал
-
 
 if($GLOBALS['IS']['capcha']!='yes') {
 	include_once $GLOBALS['include_sys']."_antibot.php";
@@ -141,8 +135,8 @@ idie("Нельзя оставлять пункты невыбранными.<br>Пожалуйста вернитесь и сделайте в
 		else $gol[$i]=$g;
 	}
 
-	if(!golos_update($golosname,$gol)) idie("Ошибка: вы уже голосовали!");
-	golos_calculate($golosname,$gol);
+	if(!golos_update($golosname,$gol)) idie("Ошибка: вы уже голосовали!"); // добавить голос, если не голосовал такой
+	golos_calculate($golosname,$gol); // пересчитать результат
 	redirect($_POST['golos_return']);
 }
 
@@ -155,79 +149,69 @@ idie("Нельзя оставлять пункты невыбранными.<br>Пожалуйста вернитесь и сделайте в
 //=======================================================================================
 //=======================================================================================
 
-
+// записать в базу голосов новый голос
 function golos_update($name,$gol) { global $GOLOS_db_golosa,$GOLOS_db_result,$unic;
 	$golosid=ms("SELECT `golosid` FROM `$GOLOS_db_result` WHERE `golosname`='".e($name)."'","_l");
-	if(!$golosid) { msq_add($GOLOS_db_result, array('golosname'=>e($name)) ); $golosid=mysql_insert_id(); }
+	if(!$golosid) { msq_add($GOLOS_db_result, array('golosname'=>e($name)) ); $golosid=mysql_insert_id(); } // если не было - завести
 	return msq_add($GOLOS_db_golosa, array( 'unic'=>$unic,'golosid'=>$golosid,'value'=>e(serialize($gol)) ) );
 }
 
+// учесть новый голос (пересчитать результаты)
 function golos_calculate($name,$gol) { global $GOLOS_db_result;
 	$g=ms("SELECT `n`,`text` FROM `$GOLOS_db_result` WHERE `golosname`='".e($name)."'","_1",0); if($g===false) $g=array();
-	$n=$g['n'];
 	$go=unserialize($g['text']); if($go===false) $go=array();
-	foreach($gol as $i=>$j) $go[$i][$j]++; // добавить голос нынешний
-	msq_add_update($GOLOS_db_result,array( 'name'=>e($name),'n'=>e(++$n),'text'=>e(serialize($go)) ),'name');
+	foreach($gol as $i=>$j) $go[$i][$j]++; // добавить голос нынешнего человека
+	msq_add_update($GOLOS_db_result,array( 'golosname'=>e($name),'n'=>(intval($g['n'])+1),'text'=>e(serialize($go)) ),'name');
 }
 
 
-
+// Провести контрольный пересчет (при заходе Админа)
 function golos_recalculate($name) { global $GOLOS_db_golosa,$GOLOS_db_result;
 
-	$limit=1000;
-	$start=0;
+	$summ=0; // число людей
+	$go=array(); // для результатов нового подсчета
+	$mes=''; // строка для служебных сообщений
 
-	$summ=0;
-	$go=array();
+	$golosid=ms("SELECT `golosid` FROM `$GOLOS_db_result` WHERE `golosname`='".e($name)."'","_l"); // есть ли такое голосования?
+	if(!$golosid) { msq_add($GOLOS_db_result, array('golosname'=>e($name)) ); $golosid=mysql_insert_id(); } // если нет - создать
 
-	$mes='';
-
-	$golosid=ms("SELECT `golosid` FROM `$GOLOS_db_result` WHERE `golosname`='".e($name)."'","_l");
-	if(!$golosid) { msq_add($GOLOS_db_result, array('golosname'=>e($name)) ); $golosid=mysql_insert_id(); }
-
-	$ct=0; while($ct++<100) {
+	$limit=1000; // обсчитывать порциями по 1000 штук
+	$start=0; // начиная с порции 0
+	$stop=0; while($stop++<1000) { // ограничение от зависания - 1000 раз по 1000 голосов (1 млн голосовавших?)
 		$pp=ms("SELECT `value` FROM `$GOLOS_db_golosa` WHERE `golosid`='".e($golosid)."' LIMIT $start,$limit","_a",0);
 		if(!sizeof($pp)) break;
 		$start+=$limit;
 		foreach($pp as $p) {
-			$g=unserialize($p['value']); if($g===false) { $mes.=' error 1'; break; }
-			$summ++;
-			foreach($g as $i=>$v) $go[$i][$v]++;
+			$g=unserialize($p['value']); if($g===false) { $mes.=' error 1'; break; } // если формат неправильный - ошибка
+			foreach($g as $i=>$v) $go[$i][$v]++; // учесть голос человека по каждому пункту
+			$summ++; // счетчик людей +1
 		}
 	}
 
+
+	$mmes=''; // строка для дополнительных служебных сообщений
+
 	$p=ms("SELECT `n`,`text` FROM `$GOLOS_db_result` WHERE `golosname`='".e($name)."'",'_1',0);
-	$go0=unserialize($p['text']); $summ0=$p['n'];
-
-//	dier($go);
-
-	$mmes='';
+	$go0=unserialize($p['text']); // результаты прежнего подсчета
+	$summ0=$p['n']; // сумма прежнего подсчета
 
 	if($summ!=$summ0) $mmes.="\nОПС! не сошлось число голосовавших: ".$summ0.", а правильно: ".$summ."\n";
 	if(sizeof($go0)!=sizeof($go)) $mmes.="\nОПС! не равны суммы: в базе: ".sizeof($go0).", а правильно: ".sizeof($go)."\n";
 
 	foreach($go as $i=>$g) {
-	   if(sizeof($go0[$i])!=sizeof($g)) $mmes.="\n $i) не равны суммы: в базе: ".sizeof($go0[$i]).", а правильно: ".sizeof($g)."\n";
+	   if(sizeof($go0[$i])!=sizeof($g)) $mmes.="\n $i) не совпали голоса: ".sizeof($go0[$i]).", а надо: ".sizeof($g)."\n";
 	   foreach($g as $k=>$l) if($go0[$i][$k]!=$l) $mmes.="\n $i($k): ".$go0[$i][$k]." != $l";
 	}
 
-	if($mmes=='') $mes .= '<font color=green>Пересчет: ВСЕ СОШЛОСЬ</font>'; else {
-	$mes.=$mmes;
-	if($GLOBALS['admin']) {
-	$mes .= '<p><font color=red>UPDATE! '.
-	msq_add_update($GOLOS_db_result,array( 'golosname'=>e($name),'n'=>e($summ),'text'=>e(serialize($go)) ),'golosname')
-	.'</font>';
-
-//	idie($GLOBALS['msqe']);
-//	dier( ms("SELECT * FROM `$GOLOS_db_result` WHERE `golosname`='".e($name)."'",'_1',0) );
-//	dier(array( 'golosname'=>e($name),'n'=>e($summ),'text'=>e(serialize($go)) ));
-
+	if($mmes=='') $mes .= "<font color=green>Пересчет: ВСЕ СОШЛОСЬ</font>";
+	else { $mes.=$mmes;
+		// перезаписать:
+		$mes .= "<p><font color=red>UPDATE: "
+		.msq_add_update($GOLOS_db_result,array( 'golosname'=>e($name),'n'=>e($summ),'text'=>e(serialize($go)) ),'golosname')
+		."</font>";
 	}
-
-	}
-
-	return $mes;
-
+	
+return $mes;
 }
 
 
