@@ -122,7 +122,7 @@ $text=ms("SELECT `text` FROM `site` ".WHERE("`name`='".e($mod_name)."' AND `type
 if($text!='') { $name=$mod_name; include("site.php"); exit; }
 
 // затем в базе дневника
-$article=ms("SELECT * FROM `dnevnik_zapisi` WHERE `Date`='".e($mod_name)."'","_1",$ttl); if($article!==false && $article!='') {
+$article=ms("SELECT * FROM `dnevnik_zapisi` ".WHERE("`Date`='".e($mod_name)."'"),"_1"); if($article!==false && $article!='') {
 	if(preg_match("/^\d\d\d\d\/\d\d\/\d\d[\_\d]*$/si",$mod_name)) idie("Wrong name.<p>Try: <a href='".get_link($mod_name)."'>".get_link($mod_name)."</a>");
 	ARTICLE();
 }

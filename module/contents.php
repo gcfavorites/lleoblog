@@ -66,13 +66,12 @@ $s="<FORM METHOD=get ACTION='".$wwwhost."contents/'>
 //===========================================================
 $se=$_GET['search'];
 if($se!='') {
-	$se=str_replace('_','\_',$se);
-	$se="LIKE '%".e($se)."%'";
+	$se=str_replace('_','\_',$se); $se="LIKE '%".e($se)."%'";
 
 $a=$_GET['smode'];
 
 if($a=='hed') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE("`Header` $se")." ORDER BY `Date` DESC");
-if($a=='zam') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE("`Body` $se OR `Header` $se OR `Comment` $se".($admin?" OR `include` $se":''))." ORDER BY `Date` DESC");
+if($a=='zam') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE("(`Body` $se OR `Header` $se OR `Comment` $se".($admin?" OR `include` $se":'').")")." ORDER BY `Date` DESC");
 
 $WHERECOM1="SELECT * FROM `dnevnik_comm` WHERE (";
 $WHERECOM2=")".($podzamok?'':" AND `scr`='0'")." ORDER BY `Time` DESC";
@@ -83,7 +82,7 @@ if($a=='name') pr_comments($WHERECOM1."`Name` $se".$WHERECOM2);
 if($a=='comans') pr_comments($WHERECOM1."`Text` $se `Name` $se".$WHERECOM2);
 if($podzamok && $a=='namescr') { $onecomment_info=true; pr_comments($WHERECOM1."`Name` $se OR `lju` $se OR `mail` $se OR `IP` $se".$WHERECOM2); }
 
-if($a=='') pr_zapisi_comments("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE("`Body` $se OR `Header` $se OR `Comment` $se")." ORDER BY `Date` DESC",$WHERECOM1."`Text` $se OR `Name` $se".$WHERECOM2);
+if($a=='') pr_zapisi_comments("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE("(`Body` $se OR `Header` $se OR `Comment` $se)")." ORDER BY `Date` DESC",$WHERECOM1."`Text` $se OR `Name` $se".$WHERECOM2);
 
 }
 

@@ -1,4 +1,4 @@
-<? // Перекачать старую базу логинов
+<?php // Перекачать старую базу логинов
 
 if(ms("SELECT COUNT(*) FROM `dnevnik_comm` WHERE `ans`='enable' OR `ans`='disable'","_l",0)) {
 

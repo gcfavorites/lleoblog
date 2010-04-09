@@ -1,4 +1,4 @@
-<? // привести в порядок таблицы статистики link и search
+<?php // привести в порядок таблицы статистики link и search
 
 $s .= msq_del_index("dnevnik_link","last_ip","мусор");
 //$s .= msq_del_pole("dnevnik_link","Date","мусор");

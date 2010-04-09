@@ -1,4 +1,4 @@
-<? // Перекачать старую базу комментариев
+<?php // Перекачать старую базу комментариев
 
 $mypage1 = ((msq_pole("dnevnik_link","mypage")===false)?0:1);
 $mypage2 = ((msq_pole("dnevnik_search","mypage")===false)?0:1);
