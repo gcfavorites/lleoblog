@@ -43,7 +43,7 @@ if(isset($_COOKIE[$uc])) { // если кука $uc установлена
 			$IS=getis($unic); if($IS!==false) {
 				$imgicourl=$IS['imgicourl'];
 				if($IS['admin']=='podzamok') $podzamok=true;
-				// if(stristr($BRO,'blogtest')) { $admin=$podzamok=0; $unic=666; $IS=ms("SELECT * FROM ".$GLOBALS['db_unic']." WHERE `id`='$unic'","_1"); } // для отладки
+				if(stristr($BRO,'blogtest')) { $admin=$podzamok=0; $unic=666; $IS=ms("SELECT * FROM ".$GLOBALS['db_unic']." WHERE `id`='$unic'","_1"); } // для отладки
 			} else set_unic_candidat(); // логин был удален
 		}
 	}

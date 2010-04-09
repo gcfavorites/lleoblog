@@ -1,4 +1,4 @@
-<?
+<?php
 
 function include_gadanie2008($e) {
 

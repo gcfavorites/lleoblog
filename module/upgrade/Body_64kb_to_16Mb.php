@@ -1,4 +1,4 @@
-<?
+<?php
 
 if(msq_pole('dnevnik_zapisi','Body')=="text") {
 

@@ -1,4 +1,4 @@
-<?
+<?php
 
 $action='Reinspect_COMM'; $Nskip=500;
 if($PEST['action']==$action) { $admin_upgrade=true;
