@@ -231,6 +231,8 @@ function posdiv(id,x,y) { // позиционирование (с проверкой на вылет)
         var W=d.clientWidth; var H=d.clientHeight;
         var w=e.clientWidth; var h=e.clientHeight;
 
+	if(x==-1) x=(W-w)/2; // если -1 - то по центру поставить
+
         if(x+w>W) x=W-w; if(x<0) x=0; 
 	if((y+h)>H) y=H-h; if(y<0) y=0;
         e.style.top=y+'px'; e.style.left=x+'px';
@@ -249,7 +251,7 @@ function removeEvent(e,evType,fn){
 	if(e.detachEvent) { e.detachEvent('on'+evType, fn) };
 }
 
-function helps(id,s) { s=s+\"<div onclick=\\\"clean('\"+id+\"')\\\" class='can' title='cancel'></div>\";
+function helps(id,s,pos) { s=s+\"<div onclick=\\\"clean('\"+id+\"')\\\" class='can' title='cancel'></div>\";
 if(!idd(id)) {
 	mHelps[id]=1;
 	mkdiv(id,\"<div class='corners'><div class='inner'><div class='content' id='\"+id+\"_body' align=left>\"+s+\"</div></div></div>\",'popup');
@@ -302,13 +304,13 @@ addEvent(e,'mousedown', function(ev){ if(hmov) return;
 	return false;
 });
 // ===========================================================================
-	hid++;
-	posdiv(id,mouse_x,mouse_y);
+hid++;
+if(!pos) posdiv(id,mouse_x,mouse_y);
 } else zabil(id+'_body',s);
 }
 
 // координаты мыши
-var mov_x=mouse_x=mov_y=mouse_y=0; 
+var mouse_x=mouse_y=0; 
 document.onmousemove = function(e){ if(!e) e=window.event;
   if(e.pageX || e.pageY) { mouse_x=e.pageX; mouse_y=e.pageY; }
   else if (e.clientX || e.clientY) {
