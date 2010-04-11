@@ -159,7 +159,7 @@ $ara=array(
 	'autoformat'	=> e($_REQUEST['autoformat']),
 	'autokaw'	=> e($_REQUEST['autokaw']),
 	'template'	=> e(($_REQUEST['template']!=''?$_REQUEST['template']:'blog')),
-	'Comment_view'	=> e($_REQUEST['Comment_view']),
+	'Comment_view'	=> (strstr(file_get_contents($filehost."template/".str_replace('..','.',$_REQUEST['template']).".html"),'{_COMENTS:')?e($_REQUEST['Comment_view']):'off'),
 	'Comment_write'	=> e($_REQUEST['Comment_write']),
 	'Comment_screen'=> e($_REQUEST['Comment_screen']),
 	'DateUpdate'=>time()

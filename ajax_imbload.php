@@ -1,4 +1,4 @@
-<? // протокол IMBLOAD - отдача заметки поаяксу любому пользователю
+<?php // протокол IMBLOAD - отдача заметки поаяксу любому пользователю
 include "config.php";
 include $include_sys."_autorize.php";
 // include $include_sys."_msq.php";
