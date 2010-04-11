@@ -225,18 +225,18 @@ function mkdiv2(id, cont, cls, parent, relative) { if(idd(id)) { idd(id).innerHT
 	r=relative.nextSibling; if(r) parent.insertBefore(div,r); else parent.appendChild(div);
 }
 
-function posdiv(id,x,y) { // позиционирование (с проверкой на вылет)
+function posdiv(id,x,y) { // позиционирование с проверкой на вылет, если аргумент '-1' - по центру экрана
 	otkryl(id);
         var e=idd(id); var d=document.body;
         var W=d.clientWidth; var H=d.clientHeight;
         var w=e.clientWidth; var h=e.clientHeight;
 
-	if(x==-1) x=(W-w)/2; // если -1 - то по центру поставить
+	if(x==-1) x=(W-w)/2; // по центру
+	if(y==-1) y=getScrollH()+(getWinH()-h)/2;
 
         if(x+w>W) x=W-w; if(x<0) x=0; 
 	if((y+h)>H) y=H-h; if(y<0) y=0;
         e.style.top=y+'px'; e.style.left=x+'px';
-
 }
 
 
@@ -346,8 +346,8 @@ function getOpacityProperty() {
 	return false;
 }
 
-function getScrollW(){ return (document.documentElement.scrollTop || document.body.scrollTop); }
-function getScrollH(){ return (document.documentElement.scrollLeft || document.body.scrollLeft); }
+function getScrollH(){ return (document.documentElement.scrollTop || document.body.scrollTop); }
+function getScrollW(){ return (document.documentElement.scrollLeft || document.body.scrollLeft); }
 function getWinW(){ return document.compatMode=='CSS1Compat' && !window.opera?document.documentElement.clientWidth:document.body.clientWidth; }
 function getWinH(){ return document.compatMode=='CSS1Compat' && !window.opera?document.documentElement.clientHeight:document.body.clientHeight; }
 

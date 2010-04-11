@@ -10,13 +10,18 @@ STYLES("Всплывающее окно фотки","
 
 ");
 */
-
 // visibility: hidden; 
 
 SCRIPTS("bigfoto","
+
+var bigfoto_onload=1;
+
 function bigfoto(e) {
-ajaxon();
-helps('bigfoto',\"<img onload=\\\"ajaxoff();posdiv('bigfoto',-1,mouse_y-20)\\\" onclick=\\\"clean('bigfoto')\\\" src='\"+e.href+\"'>\",1);
+ajaxon(); bigfoto_onload=1;
+
+setTimeout(\"if(bigfoto_onload){ajaxoff();posdiv('bigfoto',-1,-1)}\", 2000);
+
+helps('bigfoto',\"<img onload=\\\"bigfoto_onload=0;ajaxoff();posdiv('bigfoto',-1,-1)\\\" onclick=\\\"clean('bigfoto')\\\" src='\"+e.href+\"'>\",1);
 return false;
 }
 ");
