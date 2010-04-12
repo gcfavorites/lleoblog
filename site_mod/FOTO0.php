@@ -35,9 +35,10 @@ function bigfoto(e) {
 
 // posdiv('bigfoto',-1,-1);
 
-function FOTO($e) { // list($e,$s)=explode(':',$e,2); $e=c($e);
+function FOTO0($e) { // list($e,$s)=explode(':',$e,2); $e=c($e);
 	$epre=preg_replace("/^(.*?)\/([^\/]+)$/si","$1/pre/$2",$e);
 	return "<a href='".$e."' onclick='return bigfoto(this)'><img src='".h($epre)."' border=0></a>";
 }
+
 
 ?>
