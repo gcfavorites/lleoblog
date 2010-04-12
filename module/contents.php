@@ -91,7 +91,7 @@ $sss="SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Acces
 
   if($g=='') pr_zapisi($sss.WHERE()." ORDER BY `Date` DESC LIMIT ".$SIZEDEFAULT,true);
   if($g=='more') pr_zapisi($sss.WHERE()." ORDER BY `Date` DESC");
-  if($g=='rating') pr_zapisi_rating($sss." ORDER BY `view_counter` DESC ".WHERE() );
+  if($g=='rating') pr_zapisi_rating($sss." ".WHERE()." ORDER BY `view_counter` DESC");
 
 if($podzamok) {
   if($admin) if($g=='invis_adm') pr_zapisi($sss."WHERE `Access`='admin' ORDER BY `Date` DESC");
