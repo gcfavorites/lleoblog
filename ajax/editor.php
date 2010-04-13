@@ -228,6 +228,7 @@ edit_savenew=function(idhelp){
 };
 
 helps('".$idhelp."',\"<fieldset id='commentform'><legend>Новая статья ".h($p['Date'])."</legend>".njsn($s)."</fieldset>\");
+posdiv('".$idhelp."',-1,-1);
 idd('".$idhelp."_textarea').focus();
 ";
 
@@ -284,6 +285,7 @@ edit_polesend=function(n,v,num,clo){ majax('editor.php',{a:'polesend',name:n,val
 keydownc=function(n,v,num){ keydowncount++; if(keydowncount>".$autosave_count.") { keydowncount=0; edit_polesend(n,v,num,1); } };
 
 helps('".$idhelp."',\"<fieldset id='commentform'><legend>Заметка ".h($p['Date'])."</legend>".njsn($s)."</fieldset>\");
+posdiv('".$idhelp."',-1,-1);
 idd('".$idhelp."_textarea').focus();
 ";
 

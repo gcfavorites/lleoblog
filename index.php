@@ -351,14 +351,17 @@ function getOpacityProperty() {
 
 function getScrollH(){ return (document.documentElement.scrollTop || document.body.scrollTop); }
 function getScrollW(){ return (document.documentElement.scrollLeft || document.body.scrollLeft); }
-function getWinW(){ return document.compatMode=='CSS1Compat' && !window.opera?document.documentElement.clientWidth:document.body.clientWidth; }
-// function getWinH(){ return document.compatMode=='CSS1Compat' && !window.opera?document.documentElement.clientHeight:document.body.clientHeight; }
 
-function getWinH(){
-    var d=document.body; var e=d.parentNode;
-    if(window.opera) { var a=e.clientHeight; var b=d.clientHeight; return a>b?b:a; }
-    return document.compatMode=='CSS1Compat' ? e.clientHeight : d.clientHeight;
-}
+function getWinW(){ return window.innerWidth?window.innerWidth : document.compatMode=='CSS1Compat' && !window.opera?document.documentElement.clientWidth:document.body.clientWidth; }
+function getWinH(){ return window.innerHeight?window.innerHeight : document.compatMode=='CSS1Compat' && !window.opera?document.documentElement.clientHeight:document.body.clientHeight; }
+
+// function getWinW0(){ return document.compatMode=='CSS1Compat' && !window.opera?document.documentElement.clientWidth:document.body.clientWidth; }
+// function getWinH(){ return document.compatMode=='CSS1Compat' && !window.opera?document.documentElement.clientHeight:document.body.clientHeight; }
+//function getWinH0(){
+//    var d=document.body; var e=d.parentNode;
+//    if(window.opera) { var a=e.clientHeight; var b=d.clientHeight; return a>b?b:a; }
+//    return document.compatMode=='CSS1Compat' ? e.clientHeight : d.clientHeight;
+//}
 
 "); }
 
