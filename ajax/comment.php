@@ -278,7 +278,7 @@ type=text name='capcha'><input type=hidden name='capcha_hash' value='".antibot_m
 
 
 //$s.="<div><textarea name='txt' id='".$idhelp."_textarea' class='textar'></textarea></div>"
-$s.="<div><textarea name='txt' id='".$idhelp."_textarea' style='border: 1px dotted #ccc; margin: 0; padding: 0;' cols=70 rows=15></textarea></div>"
+$s.="<div><textarea name='txt' id='".$idhelp."_textarea' style='border: 1px dotted #ccc; margin: 0; padding: 0;' cols=60 rows=10></textarea></div>"
 ."<div class=l0><input type=submit value='send'></div></form>";
 
 $s="comnum++; helps('".$idhelp."',\"<fieldset id='commentform'><legend>комментарий</legend>".$s."</fieldset>\"); idd('".$idhelp."_textarea').focus();";

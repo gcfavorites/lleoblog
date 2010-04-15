@@ -237,8 +237,9 @@ function posdiv(id,x,y) { // позиционирование с проверкой на вылет, если аргумен
 	if(x==-1) x=(W-w)/2+getScrollW();
 	if(y==-1) y=(H-h)/2+getScrollH();
 
-        if(x+w>W) x=W-w; if(x<0) x=0; 
-	if(y<0) y=0; // if((y+h)>H) y=H-h; 
+	var DH=W-20; if(w<DH && x+w>DH) x=DH-w; if(x<0) x=0; 
+	DH=getDocH()-20; if(h<DH && y+h>DH) y=DH-h; if(y<0) y=0;
+
         e.style.top=y+'px'; e.style.left=x+'px';
 }
 
@@ -354,6 +355,8 @@ function getScrollW(){ return (document.documentElement.scrollLeft || document.b
 
 function getWinW(){ return window.innerWidth?window.innerWidth : document.compatMode=='CSS1Compat' && !window.opera?document.documentElement.clientWidth:document.body.clientWidth; }
 function getWinH(){ return window.innerHeight?window.innerHeight : document.compatMode=='CSS1Compat' && !window.opera?document.documentElement.clientHeight:document.body.clientHeight; }
+function getDocH(){ return document.compatMode!='CSS1Compat' ? document.body.scrollHeight : document.documentElement.scrollHeight; }
+// Math.max( , getViewportHeight())
 
 // function getWinW0(){ return document.compatMode=='CSS1Compat' && !window.opera?document.documentElement.clientWidth:document.body.clientWidth; }
 // function getWinH(){ return document.compatMode=='CSS1Compat' && !window.opera?document.documentElement.clientHeight:document.body.clientHeight; }
