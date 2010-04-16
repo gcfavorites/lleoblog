@@ -72,7 +72,7 @@ function STATISTIC($e) { global $article; return "<div class=l onclick=\"majax('
 // [body] - обработка текста заметки
 function TEXT($e) {
 	include_once $GLOBALS['include_sys']."_onetext.php";
-	global $article; return "<div id='Body'>".onetext($article)."</div>";
+	global $article; return "<div id='Body_".$article['num']."'>".onetext($article)."</div>";
 }
 
 //==============================================================================================
@@ -124,7 +124,7 @@ return '';
 // [Header] - заголовок на странице
 function HEAD($e) { global $article;
 	return "<div class='header'>".zamok($article['Access']).$article["Day"]." ".$GLOBALS['months_rod'][intval($article["Mon"])]." ".$article["Year"]
-."<div id=Header".(($GLOBALS['admin']
+."<div id=Header_".$article['num'].(($GLOBALS['admin']
 
 )?" class=l onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\"":'').">".($article["Header"]!=''?$article["Header"]:'(...)')."</div></div>";
 }
@@ -137,7 +137,7 @@ function HEAD_D($e) { global $article;
 }
 
 function HEAD_N($e) { global $article;
-	$s="<div class='header' id='Header'>".($article["Header"]!=''?$article["Header"]:'(...)')."</div>";
+	$s="<div class='header' id='Header_".$article['num']."'>".($article["Header"]!=''?$article["Header"]:'(...)')."</div>";
 	if(!$GLOBALS['admin'] or $e!='1') return $s;
 	else return "<div class=l onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\">$s</div>";
 }

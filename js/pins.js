@@ -53,6 +53,23 @@ ctrl.selectionEnd=ss+val.length;
 }
 
 
+// if(admin) alert(1);
+
+
+function ti(id,tmpl) {
+        var e = idd(id);
+        var v = e.value;
+        var ss = e.selectionStart;
+        var es = e.selectionEnd;
+        var val = tmpl.replace(/\{select\}/,v.substring(ss,es));
+        var pp=GetCaretPosition(e);
+        e.value = v.substring(0,ss) + val + v.substring(es,v.length);
+        setCaretPosition(e, ss+val.length);
+        e.selectionStart=ss;
+        e.selectionEnd=ss+val.length;
+}
+
+
 
 
 var scrollTop = 0;

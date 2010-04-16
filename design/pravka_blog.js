@@ -6,6 +6,9 @@
 //
 // не забудьте подсоединить процедуры pins.js
 
+
+// var aaa='bodyz_123'; alert( aaa + ' = ' + aaa.indexOf('brodyz_') );
+
 var opecha;
 var opechanew;
 var opecha_id;
@@ -117,9 +120,9 @@ function stextarea(opecha,id) {
 </tr><tr><td align=right valign=center>\
 '+(admin?'<a href="'+wwwhost+'editor?Date='+dnevnik_data+'"><div class=fmedit style="padding-top:10px;"></div></a>':'')+'\
 <a onclick=\'insert_n(idd("message"));\'><div class=fmn></div></a>\
-<a onclick=\'pins(idd("message"),"\251","");\'><div class=fmcopy></div></a>\
-<a onclick=\'pins(idd("message"),"\227","");\'><div class=fmmdash></div></a>\
-<a onclick=\'pins(idd("message"),"\253","\273");\'><div class=fmltgt></div></a>\
+<a onclick=\'ti("message","\251{select}")\'><div class=fmcopy></div></a>\
+<a onclick=\'ti("message","\227{select}")\'><div class=fmmdash></div></a>\
+<a onclick=\'ti("message","\253{select}\273")\'><div class=fmltgt></div></a>\
 </td></tr></table>');
 	editoshibka=1;
 	idd('message').focus();
@@ -141,6 +144,10 @@ function sendoshibka() {
 if(opecha_id_go=='Body') var data='@dnevnik_zapisi@Body@Date@'+dnevnik_data;
 else if(opecha_id_go=='Header') var data='@dnevnik_zapisi@Header@Date@'+dnevnik_data;
 else if(opecha_id_go.substring(0,1)=='a') var data='@dnevnik_comment@Answer@id@'+opecha_id_go.replace(/^a/,'');
+
+else if(!opecha_id_go.indexOf('Body_')) var data='@dnevnik_zapisi@Body@num@'+opecha_id_go.substr(5);
+else if(!opecha_id_go.indexOf('Header_')) var data='@dnevnik_zapisi@Header@num@'+opecha_id_go.substr(7);
+
 else var data='@dnevnik_comm@Text@id@'+opecha_id_go;
 
 if(opechanew && opechanew.length != 0 ) {
