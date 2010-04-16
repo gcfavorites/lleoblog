@@ -52,13 +52,17 @@ function ARTICLE_Date($Date) { global $article;
 
 function ARTICLE() { global $_PAGE,$article,$file_template,$wwwhost,$REF,$httpsite;
 
+//	dier($article);
+
 	$REF=$_SERVER["HTTP_REFERER"]; if($REF!='' && substr($REF,0,strlen($httpsite))!=$httpsite) {
 	        include_once $GLOBALS['include_sys']."_refferer.php"; $GLOBALS['linksearch']=refferer($REF,$article['num']);
 	}
 
 if(empty($article['template'])) $article['template']='blog';
-$tmpl_name=$file_template.$article['template'].'.html';
-if(($design=file_get_contents($tmpl_name))===false) idie('Template not found: #'.$tmpl_name);
+
+$f=$file_template.$article['template'].'.html';
+if(!is_file($f)) { $f=$file_template.$article['template'].'.htm'; if(!is_file($f)) idie('Template not found: '.$article['template']); }
+$design=file_get_contents($f);
 
 $_PAGE=array();
 $_PAGE['prevlink']=$wwwhost;
@@ -110,11 +114,15 @@ if($path."/" == $wwwhost) {
 // Старый стиль именования
 if(preg_match("/^".$pwwwhost."(\d\d\d\d)\-(\d\d)\-(\d\d)\.shtml/", $path, $m)) redirect($httphost.$m[1]."/".$m[2]."/".$m[3].".html");
 
-// ===== подключение внешних модулей из директории /module/* ====
-$mod_name=substr($path,strlen($wwwhost)); $mod_name=str_replace('..','.',$mod_name);
-if(preg_match("/[^0-9a-z_\-\.\/]+/si",$mod_name)) idie("Error 404: wrong name \"<b>".h($mod_name)."</b>\"");
 
-// сперва ищем в модулях
+// ===== подключение внешних модулей из директории /module/* ====
+if(preg_match("/[^0-9a-z_\-\.\/]+/si",$mod_name)) idie("Error 404: wrong name \"<b>".h($mod_name)."</b>\"");
+$mod_name=substr($path,strlen($wwwhost)); $mod_name=str_replace('..','.',$mod_name);
+
+// сперва ищем в модулях-страницах (темплайтах, вызывающих модуль - это более новый прогрессивный формат)
+if(file_exists($file_template.$mod_name.".htm")) { $article=array('template'=>$mod_name,'num'=>0,'Date'=>h($mod_name)); ARTICLE(); }
+
+// затем ищем в модулях
 $mod=$host_module.$mod_name.".php"; if(file_exists($mod)) { include($mod); exit; }
 
 // затем в базе site
@@ -237,8 +245,8 @@ function posdiv(id,x,y) { // позиционирование с проверкой на вылет, если аргумен
 	if(x==-1) x=(W-w)/2+getScrollW();
 	if(y==-1) y=(H-h)/2+getScrollH();
 
-	var DH=W-20; if(w<DH && x+w>DH) x=DH-w; if(x<0) x=0; 
-	DH=getDocH()-20; if(h<DH && y+h>DH) y=DH-h; if(y<0) y=0;
+	var DH=W-10; if(w<DH && x+w>DH) x=DH-w; if(x<0) x=0; 
+	DH=getDocH()-10; if(h<DH && y+h>DH) y=DH-h; if(y<0) y=0;
 
         e.style.top=y+'px'; e.style.left=x+'px';
 }

@@ -269,12 +269,13 @@ function site_validate($s) { return
 // (preg_match("/^([a-zA-Z]+:\/\/|(www\.))([a-z][a-z0-9_\.\-]*[a-z]{2,6})([a-zA-Z0-9!#\$\%\&\(\)\*\+,\-\.\/:;=\?\@\[a-zA-Z0-9\/\.\&\%\;\=])([\s<,:\.\%\&\;\)\!\?\=0-9a-z])$/i",$s)? $s : false);
 }
 
-
 function get_link($Date) { list($y,$m,$d)=explode("/",substr($Date,0,10),3);
-	if(intval($y)*intval($m)*intval($d)) return $GLOBALS['httphost'].$Date.".html";
-	return $GLOBALS['httphost'].$Date;
+	if($y*$m*$d) return $GLOBALS['httphost'].$Date.".html";	return $GLOBALS['httphost'].$Date;
 }
 
+function get_link_($Date) { list($y,$m,$d)=explode("/",substr($Date,0,10),3);
+	if($y*$m*$d) return $GLOBALS['wwwhost'].$Date.".html";	return $GLOBALS['wwwhost'].$Date;
+}
 
 $months = explode(" ", " €нварь февраль март апрель май июнь июль август сент€брь окт€брь но€брь декабрь");
 $months_rod = explode(" ", " €нвар€ феврал€ марта апрел€ ма€ июн€ июл€ августа сент€бр€ окт€бр€ но€бр€ декабр€");

@@ -315,10 +315,11 @@ if($a=='polesend') {
 
 		$p['Body']=$val;
 
-		if($admin) msq_update('dnevnik_zapisi',array(e($name)=>e($val),'DateUpdate'=>time()),"WHERE `num`='$num'");
+		if($admin) msq_update('dnevnik_zapisi',array('Body'=>e($val),'DateUpdate'=>time()),"WHERE `num`='$num'");
 
 		$s=onetext($p);
-		$s="idd('$name').innerHTML=\"".njs($s)."\";";
+
+		$s="idd('Body_$num').innerHTML=\"".njs($s)."\";";
 		if($_REQUEST["clo"]==0) $s.="clean('".$idhelp."');";
 		otprav($s);
 	}
@@ -329,7 +330,7 @@ if($a=='polesend') {
 
 		if($admin) msq_update('dnevnik_zapisi',array(e($name)=>e($val),'DateUpdate'=>time()),"WHERE `num`='$num'");
 
-	if($name=='Header') otprav("idd('$name').innerHTML=\"".njs($val)."\"");
+	if($name=='Header') otprav("idd('Header_".$num."').innerHTML=\"".njs($val)."\"");
 	otprav("");
 }
 

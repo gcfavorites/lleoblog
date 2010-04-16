@@ -5,6 +5,14 @@ function STYLES($s,$l=0) { if(!$l) $GLOBALS['_STYLE'][]=$s; else $GLOBALS['_STYL
 function SCRIPT_ADD($s) { $GLOBALS['_SCRIPT_ADD'][$s]=$s; }
 function STYLE_ADD($s) { $GLOBALS['_STYLE_ADD'][$s]=$s; }
 
+function mper($s,$ara) { foreach($ara as $n=>$l) $s=str_replace('{'.$n.'}',$l,$s); return $s; }
+
+function parse_e_conf($e) {
+        $a=array(); $p=explode("\n",$e);
+	foreach($p as $l) { if(c($l)=='') continue; list($n,$v)=explode('=',$l,2); $n=c($n); if($n=='') continue; $a[$n]=c($v); }
+        return $a;
+}
+
 // ==============================================================================================
 // повызывать все процедуры в цикле
 
