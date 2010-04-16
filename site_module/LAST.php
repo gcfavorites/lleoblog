@@ -16,7 +16,8 @@ $conf=array_merge(array(
 'next'=>"<small><a href={nextpage}>&lt;&lt;&nbsp;предыдущие {n}</a></small>",
 'prev'=>"<small><a href={prevpage}>следующие {n}</a>&nbsp;&gt;&gt;</small>",
 'prevnext'=>"<table width=100%><tr><td align=left>{next}</td><td align=right>{prev}</td></tr></table><p>",
-'comment'=>"<p align=right><a style='font-size:10pt;' href={0}#comments>Добавить комментарий</a> <small>(сейчас {1} шт)</small></p>",
+// 'comment'=>"<p align=right><a style='font-size:10pt;' href={link}#comments>Добавить комментарий</a> <small>(сейчас {ncomm} шт)</small></p>",
+'comment'=>"comment = <div style='text-align: right; font-size:10pt; margin-right: 5px'><a href={link}#comments>комментариев {ncomm}</a> | <a href=\"javascript:majax('comment.php',{a:'comform',id:0,lev:0,comnu:comnum,dat:{num}});\">оставить комментарий</a></div>",
 'template'=>"<div style='text-align:justify;padding:0 15px;'><div class='header' id='Header_{num}' style='text-align:left'>{edit}<a href='{link}'>{Y}-{M}-{D}: {Header}</a></div>{zamok}<div id='Body_{num}'>{Body}</div>{comment}</div><hr width=100% color=green>"
 ),parse_e_conf($e));
 
@@ -42,7 +43,7 @@ foreach($pp as $p) {
 
 if($p['Comment_view']!='off' && strstr($conf['template'],'{comment}')) {
    $idzan=intval(ms("SELECT COUNT(*) FROM `dnevnik_comm` WHERE `DateID`='".e($p["num"])."'",'_l'));
-   $comment = mper($conf['comment'],array($link,$idzan));
+   $comment = mper($conf['comment'],array('link'=>$link,'ncomm'=>$idzan,'num'=>$p['num']));
 } else $comment = '';
 
 $s.=mper($conf['template'],array(

@@ -12,7 +12,19 @@ $a=$_REQUEST["a"];
 
 //function nl2br2($s) { return str_replace(array("\n\n","\n"),array("<p>"," "),$s); }
 
-
+//=================================== tags ===================================================================
+if($a=='tags') {
+	$p=explode(',',$_REQUEST["mytags"]); $tag=array(); foreach($p as $l) { $l=c($l); if($l!='') $tag[$l]=1; }
+	$t=''; foreach(ms("SELECT DISTINCT `tag` FROM `dnevnik_tags`","_a") as $l) { $l=$l['tag'];
+		if(!isset($tag[$l])) $t.="<span class=l onclick='addtag(this)'>$l</span>, ";
+	} $t=trim($t,', '); if($t=='') otprav('');
+otprav("
+addtag=function(e){ var t=idd('tags_".$idhelp."'); var v=t.value; e.className=''; e=e.innerHTML;
+if(v.indexOf(e+',')<0 && v.indexOf(', '+e)<0) { t.value=v+(v==''?'':', ')+e; ch_edit_pole(t,$num); }; }
+helps('alltags_".$idhelp."',\"<fieldset id='commentform'><legend>Тэги заметки $num</legend>".njsn($t)."</fieldset>\");
+posdiv('alltags_".$idhelp."',-1,-1);
+");
+}
 //=================================== help ===================================================================
 if($a=='help') {
 	$mod=$_REQUEST["mod"]; $mod=str_replace('..','',$mod);
@@ -171,6 +183,8 @@ if($admin) msq_add('dnevnik_zapisi',$ara);
 
 redirect(get_link($Date)); // на нее и перейти
 }
+
+
 //=================================== новую заметку ===================================================================
 if($a=='newform') {
 
@@ -274,7 +288,13 @@ if($_REQUEST["comments"]==1 or strstr(file_get_contents($filehost."template/".$p
 тип: ".selecto('Comment_tree',$p['Comment_tree'],array('1'=>"форум",'0'=>"гостевая"),
 "class=r onchange='ch_edit_pole(this,$num)' name");
 
-$s.="<br><input type=submit value='Save' onclick=\"edit_polesend('Body',idd('".$idhelp."_textarea').value,".$num.")\">";
+// -- тэги --------------
+$tt=ms("SELECT `tag` FROM `dnevnik_tags` WHERE `num`='$num' ORDER BY `tag`","_a",0);
+$t=''; foreach($tt as $l) $t.=$l['tag'].', '; $t=trim($t,', ');
+$s.="<br><span class=l onclick=\"majax('editor.php',{a:'tags',num:$num,mytags:idd('tags_".$idhelp."').value})\">тэги</span> через запятую: <input onchange='ch_edit_pole(this,$num)' class=t type='text' name='tags' id='tags_".$idhelp."' value='".h($t)."' size=".$GLOBALS['editor_cols'].">";
+//-----------------------
+
+$s.="<br><input type=submit value='Save' onclick=\"if(idd('alltags_".$idhelp."')) clean('alltags_".$idhelp."'); edit_polesend('Body',idd('".$idhelp."_textarea').value,".$num.")\">";
 
 // сортировка: ".selecto('comments_order',$p['comments_order'],array('normal'=>"нет",'allrating'=>"сборная",'rating'=>"тупая") )."
 
@@ -304,6 +324,14 @@ if($a=='polesend') {
 
 	$name=$_REQUEST["name"];
 	$val=$_REQUEST["val"];
+
+
+	if($name=='tags') {
+		if($admin) msq("DELETE FROM `dnevnik_tags` WHERE `num`='$num'"); // удалить все тэги этой заметки
+		$p=explode(',',$val); foreach($p as $l) { $l=c($l); if($l!='' && $admin) msq_add('dnevnik_tags',array('num'=>$num,'tag'=>e(h($l)))); }
+		if(stristr($GLOBALS['msqe'],'Duplicate')) $GLOBALS['msqe']=''; // ошибка дублей - не ошибка
+		otprav("");
+	}
 
 	if($name=='Body') {
 
