@@ -146,9 +146,20 @@ function HEAD_N($e) { global $article;
 
 
 //============
-
-function CAT($e) { global $article, $httphost;
-	return ($article["cat"]!='')?"<p style='font-size: 10pt; margin-top:4px;'>Рубрика: <a style='font-size: 10pt;' href='".$httphost."blog?cat=".$article["cat"]."'>".$article["cat"]."</a></p>":'';
+/*
+function TAGS($e) { global $article; $s='';
+//	dier(ms("SELECT `tag` FROM `dnevnik_tags` WHERE `num`='".$article['num']."' ORDER BY `tag`",$a));
+foreach(ms("SELECT `tag` FROM `dnevnik_tags` WHERE `num`='".$article['num']."' ORDER BY `tag`","_a") as $l)
+$s.="<div class=ll onclick=\"majax('search.php',{a:'tag',tag:'".$l['tag']."'})\">".$l['tag']."</div>, ";
+$s=trim($s,', ');
+if($s!='') return $s;
+return $s;
 }
-
+*/
+/*
+//        $p=explode(',',$_REQUEST["mytags"]); 
+//        $t=''; foreach(ms("SELECT DISTINCT `tag` FROM `dnevnik_tags`","_a") as $l) {
+//        $l=$l['tag']; $t.="<span".(isset($tag[$l])?'':" class=l onclick='addtag(this)'").">$l</span>, "; } 
+//otprav("	return ($article["cat"]!='')?"<p style='font-size: 10pt; margin-top:4px;'>Рубрика: <a style='font-size: 10pt;' href='".$httphost."blog?cat=".$article["cat"]."'>".$article["cat"]."</a></p>":'';}
+*/
 ?>

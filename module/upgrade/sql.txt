@@ -226,7 +226,6 @@ CREATE TABLE IF NOT EXISTS `site` (
 
 
 -- --------------------------------------------------------
-
 --
 -- Структура таблицы `unictemp`
 --
@@ -239,7 +238,7 @@ CREATE TABLE IF NOT EXISTS `unictemp` (
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251 COMMENT='Временные данные пользователя';
 
 
-
+-- --------------------------------------------------------
 --
 -- Структура таблицы `golosovanie_golosa`
 --
@@ -251,6 +250,7 @@ CREATE TABLE IF NOT EXISTS `golosovanie_golosa` (
   PRIMARY KEY  (`golosid`,`unic`)
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251 COMMENT='Голосования: голоса';
 
+-- --------------------------------------------------------
 --
 -- Структура таблицы `golosovanie_result`
 --
@@ -263,3 +263,16 @@ CREATE TABLE IF NOT EXISTS `golosovanie_result` (
   KEY `golosname` (`golosname`(32))
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251 COMMENT='Голосования: результаты';
 
+
+-- --------------------------------------------------------
+--
+-- Структура таблицы `dnevnik_tags`
+--
+
+CREATE TABLE IF NOT EXISTS `dnevnik_tags` (
+  `num` int(10) unsigned NOT NULL COMMENT 'id заметки',
+  `tag` varchar(128) NOT NULL COMMENT 'имя тэга',
+  PRIMARY KEY  (`num`,`tag`(128)),
+  KEY `tag` (`tag`(128)),
+  KEY `num` (`num`)
+) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
