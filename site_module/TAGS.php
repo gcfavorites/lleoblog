@@ -2,6 +2,7 @@
 
 function TAGS($e) { global $article; $s='';
 
+
 $conf=array_merge(array(
 'template'=>"<div style='font-size: 10pt; margin: 10px 0 10px 0; text-align:left;'>Тэги записи: {tags}</div>"
 ),parse_e_conf($e));

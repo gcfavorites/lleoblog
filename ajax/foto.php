@@ -154,6 +154,7 @@ otprav( "
 	albumdirclick=function(){ majax('foto.php',{a:'savedir',dir:idd('albumdir').innerHTML}); };
 
         helps('foto',\"<fieldset id='commentform'><legend>פמעמאכüבמל</legend><div style='width: 750px'><div id='albumdir' class=l onclick='albumdirclick()'></div>".njs($s)."</div></fieldset>\");
+//	posdiv('foto',-1,-1);
         tree('root');
 ");
 
