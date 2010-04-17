@@ -99,9 +99,10 @@ function msq_table($pole) { // проверить, существует ли такая таблица
         return false;
 }
 
-function msq_index($tb,$pole) { // проверить, существует ли такой индекс
-        $pp=ms("SHOW INDEX FROM $tb","_a",0); if($pp!==false) foreach($pp as $p) if($p['Column_name']==$pole) return true;
-        return false;
+function msq_index($tb,$index) { // проверить, существует ли такой индекс
+        $pp=ms("SHOW INDEX FROM $tb","_a",0); if($pp!==false) foreach($pp as $p)
+	if($p['Column_name']==$index && $p['Non_unique']=='1') return true; // [Seq_in_index] => 1
+	return false;
 }
 
 //function tos($e) { return str_replace(array("\\","'",'"',"\n","\r"),array("\\\\","\\'",'\\"',"\\n",""),$e); }
