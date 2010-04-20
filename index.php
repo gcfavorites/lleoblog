@@ -189,7 +189,7 @@ function otkryl(id) { idd(id).style.display='block'; }
 function isHelps() { for(var k in mHelps) if(mHelps[k]==1) return k; return false; }
 
 function print_r(a) { var s=''; for(var k in a) { var v=a[k]; s='\\n'+k+'='+v+s; } return s; }
-// alert(print_r(a));
+function in_array(s,a){ var l; for(l in a) if(a[l]==s) return l; return false; }
 
 function clean(id) { 
 if(mHelps[id]) mHelps[id]=0;

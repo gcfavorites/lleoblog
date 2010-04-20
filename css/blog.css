@@ -41,7 +41,7 @@ padding: 20px 0; border-left: green 2px solid; border-collapse:collapse; }
 .t { border: 1px solid #330000; }
 .r { font-size: 12px; }
 .l,.ll { cursor: pointer; color: blue; text-decoration: underline; } .ll { display: inline; }
-.l:hover,.ll:hover { color: red; }
+.l:hover,.ll:hover { color: violet; }
 
 /* кнопки панели управления */
 
