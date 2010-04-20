@@ -15,16 +15,28 @@ $a=$_REQUEST["a"];
 //=================================== tags ===================================================================
 if($a=='tags') {
 	$p=explode(',',$_REQUEST["mytags"]); $tag=array(); foreach($p as $l) { $l=c($l); if($l!='') $tag[$l]=1; }
-	$t=''; foreach(ms("SELECT DISTINCT `tag` FROM `dnevnik_tags`","_a") as $l) { $l=$l['tag'];
-		if(!isset($tag[$l])) $t.="<span class=l onclick='addtag(this)'>$l</span>, ";
+	$t=''; foreach(ms("SELECT DISTINCT `tag` FROM `dnevnik_tags`","_a",0) as $l) { $l=$l['tag'];
+		//dier($tag);
+		$t.="<span".($tag[$l]!=1?'':" style='color:grey'")." class=l onclick='addtag(this)'>$l</span>, ";
+// color:graystyle.color
+//className=''
 	} $t=trim($t,', '); if($t=='') otprav('');
 otprav("
-addtag=function(e){ var t=idd('tags_".$idhelp."'); var v=t.value; e.className=''; e=e.innerHTML;
-if(v.indexOf(e+',')<0 && v.indexOf(', '+e)<0) { t.value=v+(v==''?'':', ')+e; ch_edit_pole(t,$num); }; }
+addtag=function(e){
+	var t=idd('tags_".$idhelp."');
+	var a=t.value.replace(/^[\s,]+|[\s,]+$/g,'').replace(/\s*,\s*/gi,',').split(',');
+	var s=e.innerHTML;
+	var p=in_array(s,a); if(p!==false) { a.splice(p,1); e.style.color='blue'; } else { a.push(s); e.style.color='grey'; }
+	t.value=a.join(', ').replace(/^[\s,]+/g,'');
+	ch_edit_pole(t,$num);
+}
+
 helps('alltags_".$idhelp."',\"<fieldset id='commentform'><legend>Тэги заметки $num</legend>".njsn($t)."</fieldset>\");
 posdiv('alltags_".$idhelp."',-1,-1);
 ");
 }
+
+
 //=================================== help ===================================================================
 if($a=='help') {
 	$mod=$_REQUEST["mod"]; $mod=str_replace('..','',$mod);
