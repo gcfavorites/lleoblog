@@ -27,6 +27,7 @@ addtag=function(e){
 	var a=t.value.replace(/^[\s,]+|[\s,]+$/g,'').replace(/\s*,\s*/gi,',').split(',');
 	var s=e.innerHTML;
 	var p=in_array(s,a); if(p!==false) { a.splice(p,1); e.style.color='blue'; } else { a.push(s); e.style.color='grey'; }
+	a.sort();
 	t.value=a.join(', ').replace(/^[\s,]+/g,'');
 	ch_edit_pole(t,$num);
 }
