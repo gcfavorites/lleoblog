@@ -208,7 +208,7 @@ function comment_prep($p,$mojno_comm,$level) { global $admin,$unic,$podzamok,$ge
 
 if($admin or ($unic==$p['unic'] and time()-$p['Time'] < 15*60)) $c['kn'] .= "<div class=ked onclick='ked(this)'></div>"; // редактировать комментарий
 
-if($podzamok) {
+if( $GLOBALS['comment_friend_scr'] && $podzamok || $admin ) {
 	$c['kn'] .= "<div class=ks".intval($p['scr'])." onclick='ksc(this)'></div>"; // скрыть/раскрыть
 }
 
