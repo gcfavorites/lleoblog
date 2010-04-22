@@ -142,8 +142,7 @@ if($a=='ans') { // id скрыть-раскрыть
 
 //========================================================================================================================
 if($a=='scr') { // id скрыть-раскрыть
-//	if(!$admin) oalert("Не админ");
-	if(!$podzamok) idie("Не подзамок");
+	if( !( ($GLOBALS['comment_friend_scr'] && $podzamok || $admin) ) ) oalert("У тебя нет прав делать это.");
 	$p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0); if($dat===false) oalert("А такого комментария нет.");
 	$p['scr']=($p['scr']==1?0:1);
 	msq_update('dnevnik_comm',array('scr'=>$p['scr']),"WHERE `id`='$id'");
@@ -164,7 +163,6 @@ if($a=='rul') { // id скрыть-раскрыть
 //========================================================================================================================
 
 if($a=='comsend') {
-
 
 $text=$_REQUEST["text"]; $text=trim($text,"\n\r\t "); $text=str_replace("\r","",$text); if($text=='')  $erorrs[]="А где же комментарий?";
 $name=($IS['user']!=''&&$IS['user_noname']!='noname'?$IS['user']:$_REQUEST["name"]); if($name=='') $erorrs[]="Вы забыли подписаться.";
