@@ -1,47 +1,68 @@
-<?php /* Меню 'а ля mary kay'
+<?php /* Простой тестик
 
-Этот модуль был сделан по просьбе одного сайта. При наведении мышкой на ссылки меняется картинка и описание.
+Данные состоят из двух блоков, разделенных строкой "---". Сперва мы перечисляем вопросы и варианты ответов (они начинаются с -). В варианте ответа сперва указываем число - вес этого ответа (это число не выводится, а нужно при подсчете). Затем через пробел сам ответ.
 
-Формат заиси прост: через разделитель | в каждой строке указываем:
+Во второй части мы перечисляем (с интервалом в пустую строку) вармианты ответов по нарастающей - по сумме набранных баллов. Первым указыавется число - от скольких набранных баллов выводить этот ответ. В первом варианте ответа должно всегда стоять 0: он выдается, если набрана сумма баллов от нуля, но меньеш числа, указанного в следующем варианте ответа.
 
-просто имя картинки, лежащей в фотоальбоме, либо полный урл (определит само) | заголовок | линк | подробное описание
+Внимание! Пример теста ниже ответ здесь выдавать не будет, потому что мне лень вставлять туда сейчаас руками все скрипты, которые вставятся туда автоматически, когда вы будете его использовать.
 
-<script>function menukay(i,img,text) { idd('img'+i).src=img; zabil('text'+i,text); }</script>
+{_SILK_TEST:
+1. Любимое время суток?
+- 0 утро
+- 2 день
+- 4 вечер
+- 5 ночь
 
-{_MENUKAY:
+2. Любимое время года?
+- 1 зима
+- 5 весна
+- 4 лето
+- 3 осень
 
-http://lleo.aha.ru/blog/photo/1.jpg | Вить гнездо | /popa/gnezdo/index.html | Вить гнездо - древнейшее искусство, доставшееся нам от пернатых предков. Гнездо защищает от холода в морозы и эстетически привлекательно. Наша уникальная методика позволит каждой женщине легко свить гнездо из ткани или туалетной бумаги.
+---
 
-http://lleo.aha.ru/blog/photo/2.jpg | Спать на рабочем месте | /postel/podushka | Здоровому организму необходим ежедневный сон. Для сна нужна подушка, но где ее взять в офисе? О том, как сделать из ладоней подушку, расскажет наш раздел 'Постельное белье своими руками'.
+0 Вы неудачник, вы набрали всего {sum} баллов.
 
-http://lleo.aha.ru/blog/photo/3.jpg | Камни в позвоночнике | /medical/super/spina | Ломит спину? Чешется между лопатками? По исследованиям британских ученых, около 50% современных женщин страдают от камней в позвоночнике. Палочка-чесотка позволит избавиться от камней без операции за одно занятие!
+3 Вы робкий и неуверенный в себе человек.
 
+8 Вы молодец.
+
+10 Вы - супер! У вас баллов - аж {sum}!
 _}
 
 */
 
 SCRIPTS("SilkTest procedure","
-function silktest(i){
-//	var e=window.document.silktest_'+i].1.value;
-	var e=window.document.silktest_1.silktest_1_2.value;
-	alert(e);
-	// window.document.f_name.i_name.value='Текстовое поле';
-	// if(img.indexOf('/')) idd('img'+i).src=img; else idd('img'+i).src='".$GLOBALS['foto_www_small']."'+img;
-	// zabil('text'+i,text);
+
+function check_radio(e) { for(var i=0;i<e.length;i++) if(e[i].checked) return e[i].value; return 'undefined'; }
+
+var silktest_ara;
+
+function silktest(n,x,ara){ 
+	var sum=0; for(var i=1;i<=x;i++) {
+		var l=check_radio(document.getElementsByName('silktest_'+n+'_'+i));
+		if(l=='undefined') {
+			helps('silktest_error','<fieldset><legend>ошибка</legend>Пункт '+i+' не заполнен.<br>Заполните все пункты!</fieldset>');
+			posdiv('silktest_error',-1,-1); return;
+		} sum=(sum+1*l);
+	}
+
+	silktest_ara=ara; ajaxon(); setTimeout('silktest_print('+sum+')',1500);
+}
+
+function silktest_print(sum){ ajaxoff();
+	for(var i in silktest_ara) { if(i>sum) break; var txt=silktest_ara[i].replace(/\{sum\}/gi,sum); }
+	helps('silktest_otvet','<fieldset><legend>Ответ:</legend><div style=\"width:700px\" align=justify>'+txt+'</div></fieldset>');
+	posdiv('silktest_otvet',-1,-1);
 }");
 
 function SILK_TEST($e) { global $silktest_n; $silktest_n++;
-
 	list($vopros,$otvet)=explode("\n---",$e,2);
 	$vopr=get_vopross($vopros);
 	$otv=get_vopross_simple($otvet);
 
-
-
-
-// 	dier($otv);
-
-	$g=0; $s="<form name='silktest_".$silktest_n."'>"; foreach($vopr as $v=>$p) {
+	$g=0;
+	$s=""; foreach($vopr as $v=>$p) {
 		$s.="<p><b>".c($v)."</b><ul>";
 		$gr="silktest_".$silktest_n."_".++$g;
 
@@ -51,36 +72,17 @@ function SILK_TEST($e) { global $silktest_n; $silktest_n++;
 		}
 		$s.="</ul>";
 	}
-	$s.="<p><input type=button value='Получить результат' onclick=\"silktest('".$silktest_n."')\"></form><div id='silktest_".$silktest_n."_rez'></div>";
+	$s.="<p><input type=button value='Получить результат' onclick=\"silktest('$silktest_n',".sizeof($vopr).",silktest_".$silktest_n."_ara)\">";
+
+	$c="var silktest_".$silktest_n."_ara={"; foreach($otv as $l) {
+		list($x,$txt)=explode(' ',$l,2); $x=intval($x); $txt=c($txt);
+		$c.=intval($x).":'".str_replace(array("&","\\","'",'"',"\n","\r"),array("&amp;","\\\\","\\'",'&quot;',"\\n",""),c($txt))."', ";
+	} $c=trim($c,' ,')."};";
+
+	SCRIPTS("silktest_".$silktest_n."_DATA",$c);
 
 	return $s;
-
-
-// window.document.f_name.i_name.value="Текстовое поле";
-
-SCRIPTS("MenyKay procedure"," function menukay(i,img,text) { 
-
-if(img.indexOf('/')) idd('img'+i).src=img; else idd('img'+i).src='".$GLOBALS['foto_www_small']."'+img;
-
-zabil('text'+i,text); } ");
-
-$m=explode("\n",$e); foreach($m as $n=>$l) { if(c($l)=='') { unset($m[$n]); continue; }
-	list($img,$txt,$link,$text)=explode('|',$l,4);
-	$m[$n]=array('img'=>c($img),'txt'=>c($txt),'link'=>c($link),'text'=>c($text));
 }
-
-
-$s=''; foreach($m as $p) {
-  $s.="<p><a onmouseover=\"menukay('".$menykay_n."','".$p['img']."','".njs($p['text'])."')\" href='".$p['link']."'>".$p['txt']."</a>";
-}
-
-return "<center><table><tr valign=center>"
-."<td><img id='img".$menykay_n."' src='".(strstr($m[0]['img'],'/')?$m[0]['img']:$GLOBALS['foto_www_small'].$m[0]['img'])."' hspace=5 vspace=5 border=0></td>"
-."<td>{_CENTER:".$s."_}</td></tr></table>"
-."<div align=justify id='text".$menykay_n."'>".$m[0]['text']."</div></center>";
-
-}
-
 
 function get_vopross($s) { // распознать голосовалку
         preg_match_all("/#+\n*([^#]+)/si","#".str_replace("\n\n","#",$s),$km);
@@ -92,6 +94,6 @@ function get_vopross($s) { // распознать голосовалку
         return $vopr;
 }
 
-function get_vopross_simple($s) { preg_match_all("/#+\n*([^#]+)/si","#".str_replace("\n\n","#",$s),$km); return $km; } // распознать ответы
+function get_vopross_simple($s) { preg_match_all("/#+\n*([^#]+)/si","#".str_replace("\n\n","#",$s),$km); return $km[1]; } // распознать ответы
 
 ?>
