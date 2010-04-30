@@ -1,10 +1,10 @@
 <?php // hashdata v2
 
-include $GLOBALS['include_sys']."_hashdata2.php";
+if(!$GLOBALS['admin']) include $GLOBALS['include_sys']."_hashdata2.php";
 
-function hashme($e) { //return $e;
-//	if(substr($e,0,1)=='#') 
-//return hashflash($e);
+function hashme($e) {
+//	if(substr($e,0,1)=='#') return hashflash($e);
+	if($GLOBALS['admin']) return $e;
 	return hashdata($e," u".$GLOBALS['unic']." t".time()." ");
 }
 
