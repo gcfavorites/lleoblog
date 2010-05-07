@@ -1,5 +1,4 @@
 <?php // Вывод фотки в линке
-// Для lumestudio.ru:
 
 // STYLE_ADD("/design/lume/css/lightbox.css");
 /*

@@ -33,10 +33,6 @@ var ctrloff=".($_COOKIE['ctrloff']=='off'?1:0).";
 
 //  style='display:none;'
 
-
-
-
-
 }
 
 
@@ -142,7 +138,15 @@ function HEAD_N($e) { global $article;
 	else return "<div class=l onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\">$s</div>";
 }
 
+function HEAD_TXT($e) { return $GLOBALS["article"]["Header"]; }
 
+
+function MAY9() { global $article; //--- георгиевская ленточка ---
+	$m9=intval(date("md")); 
+	return (($m9>501 && $m9<515)?"<img src='".$GLOBALS['www_design']."img/9-may.jpg' align=right>":'');
+//return (($m9>501 && $m9<515)?"<img style='position:absolute;right:4px;top:4px;z-index:0;'src='".$GLOBALS['www_design']."img/9-may.jpg'>":'');
+
+}
 
 
 //============

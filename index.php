@@ -136,33 +136,8 @@ $article=ms("SELECT * FROM `dnevnik_zapisi` ".WHERE("`Date`='".e($mod_name)."'")
 }
 
 // и если совсем ничего не нашлось
-
-
-// SCRIPTS_mine()
-
+if(preg_match("/\.js/si",$mod_name)) die( ($admin?"alert('Admin $admin_name! Script not found:\\n".h($mypage)."')":"") ); // запрошен .js
 $article=array('template'=>'error','num'=>0,'Date'=>h($mod_name)); ARTICLE();
-
-/*
-idie("Error 404: Page not found <b>".$httphost.h($mod_name)."</b>"
-.($admin?
-"<p><a href='".$wwwhost."adminsite/?a=create&name=".urlencode($mod_name)."'>Создать эту страницу в базе `".$db_site."`?</a>"
-."<p><a href=\"javascript:majax()
-
-
-
-".$wwwhost."adminsite/?a=create&name=".urlencode($mod_name)."'>Создать эту страницу в базе `".$db_site."`?</a>"
-:"")
-);
-*/
-
-// function urldata($d) { return $GLOBALS['wwwhost'].h($d).(substr($d,4,1).substr($d,7,1)=='//'?".html":''); }
-/*
-function mk_prevnest($prev,$next) { // БЛИТЬ ИДИТЕ ВСЕ НАХУЙ!!! НЕ ПОЛУЧАЕТСЯ У МЕНЯ С ВАШИМИ ЙОБАННЫМИ CSS!!! ГОРЕТЬ ИМ В АДУ!!!
-$prev=($prev==''?'&nbsp;':"<font size=1>".$prev."</font>");
-$next=($next==''?'&nbsp;':"<font size=1>".$next."</font>");
-return "<center><table width=98% cellspacing=0 cellpadding=0><tr valign=top><td width=50%>$prev</td><td width=50% align=right>$next</td></tr></table></center>";
-}
-*/
 
 //===============================================================================================================================
 //===============================================================================================================================

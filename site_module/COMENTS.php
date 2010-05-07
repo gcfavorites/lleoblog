@@ -21,7 +21,7 @@ $comments_timed=(
 
 switch($article["Comment_view"]) { // Comment_view enum('on', 'off', 'rul', 'load', 'timeload')
 	case 'on': $comments_knopka=false; $comments_list=true; break;
-	case 'off': $comments_knopka=false; $comments_list=false; break;
+	case 'off': $comments_knopka=false; $comments_form=false; $comments_list=false; break;
 	case 'rul': $comments_knopka=true; $comments_list=true; $load_comments_MS=" AND `rul`='1'"; $dopload=" îñòàëüíûå"; break;
 	case 'load': $comments_knopka=true; $comments_list=false; break;
 	case 'timeload': $comments_knopka=$comments_timed; $comments_list=!$comments_timed; break;
@@ -54,7 +54,9 @@ if(strstr($_SERVER["HTTP_USER_AGENT"],'Yandex') || $GLOBALS['IP']=='78.110.50.10
 
 $s='';
 
-if($GLOBALS['admin'] or $comments_form) { // ĞÀÇĞÅØÅÍÎ ÎÑÒÀÂÈÒÜ ÊÎÌÌÅÍÒÀĞÈÉ
+if(
+// $GLOBALS['admin'] or 
+$comments_form) { // ĞÀÇĞÅØÅÍÎ ÎÑÒÀÂÈÒÜ ÊÎÌÌÅÍÒÀĞÈÉ
 
 /*
 if($GLOBALS['admin']) {
