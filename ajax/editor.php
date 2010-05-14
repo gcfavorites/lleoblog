@@ -5,6 +5,7 @@ require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpReque
 
 
 $autosave_count = 200; // 128; // через сколько нажатий кнопки автозапись
+// $autosave_count = 20; // 128; // через сколько нажатий кнопки автозапись
 
 $num=intval($_REQUEST["num"]); $idhelp='editor'.$num;
 $a=$_REQUEST["a"];
@@ -213,13 +214,16 @@ $p=unserialize(file_get_contents($GLOBALS['hosttmp'].'zapisi.set')); // взять на
 
 // idie('---'.nl2br(h(print_r($p,1))));
 
-$s="
-<input class=t type='text' id='".$idhelp."_Date' name='Date' value='".h($Date)."' maxlength='128' size='20'>
+// получим информацию о странице возврата и запрошенном openid
+//$dat=ms("SELECT `text` FROM `unictemp` WHERE `unic`='$unic'","_l",0); if($dat===false) die('error');
+//msq("DELETE FROM `unictemp` WHERE `unic`='$unic'");
+
+$s="<input class=t type='text' id='".$idhelp."_Date' name='Date' value='".h($Date)."' maxlength='128' size='20'>
 
 <div id='".$idhelp."p' style='display:inline'><img class=l onclick=\"majax('editor.php',{a:'loadpanel',idhelp:'".$idhelp."'})\" src='".$www_design."e3/finish.png' alt='panel'></div>
 
 <br><input class=t type='text' id='".$idhelp."_Header' name='Header' value='".h($p["Header"])."' maxlength='255' size=".$GLOBALS['editor_cols']."> <span class=br>".strlen($p['Body'])." букв</span>
-<br><textarea onkeydown=\"keydownc('Body',this.value,$num)\" class=t id='".$idhelp."_Body' cols=".$GLOBALS['editor_cols']." rows=".$GLOBALS['editor_rows'].">".h($p["Body"])."</textarea>
+<br><textarea onkeydown=\"keydownc('Body',this.value,0)\" class=t id='".$idhelp."_Body' cols=".$GLOBALS['editor_cols']." rows=".$GLOBALS['editor_rows'].">".h(get_last_tmp())."</textarea>
 
 <div class=r>доступ: ".selecto('Access',$p['Access'],array('admin'=>"никому",'podzamok'=>"подзамок",'all'=>"всем"),"class=r id='".$idhelp."_Access' name")."
 автоформат: ".selecto('autoformat',$p['autoformat'],array('p'=>"p/br",'no'=>"нет",'pd'=>"class=pd"),"class=r id='".$idhelp."_autoformat' name")."
@@ -245,7 +249,12 @@ $s.="<br><input type=submit value='Save' onclick=\"edit_savenew('".$idhelp."')\"
 
 // сортировка: ".selecto('comments_order',$p['comments_order'],array('normal'=>"нет",'allrating'=>"сборная",'rating'=>"тупая") )."
 
+
 $s="hid++;
+
+var keydowncount=0;
+edit_polesend=function(n,v,num,clo){ majax('editor.php',{a:'polesend',name:n,val:v,num:num,clo:clo}); };
+keydownc=function(n,v,num){ if(++keydowncount > ".$autosave_count.") { keydowncount=0; edit_polesend(n,v,num,1); } };
 
 edit_savenew=function(idhelp){
 	var nara=['Date','Header','Body','Access','autoformat','autokaw','template','Comment_view','Comment_write','Comment_screen'];
@@ -256,7 +265,7 @@ edit_savenew=function(idhelp){
 
 helps('".$idhelp."',\"<fieldset id='commentform'><legend>Новая статья ".h($p['Date'])."</legend>".njsn($s)."</fieldset>\");
 posdiv('".$idhelp."',-1,-1);
-idd('".$idhelp."_textarea').focus();
+idd('".$idhelp."_Body').focus();
 ";
 
 if(isset($_REQUEST["clo"])) $s="clean('".h($_REQUEST["clo"])."');".$s;
@@ -333,30 +342,32 @@ otprav($s);
 
 //=================================== запросили форму ===================================================================
 
-if($a=='polesend') {
+if($a=='polesend') { if(!$admin) idie('Admin error!');
 
 	$name=$_REQUEST["name"];
 	$val=$_REQUEST["val"];
 
 
 	if($name=='tags') {
-		if($admin) msq("DELETE FROM `dnevnik_tags` WHERE `num`='$num'"); // удалить все тэги этой заметки
-		$p=explode(',',$val); foreach($p as $l) { $l=c($l); if($l!='' && $admin) msq_add('dnevnik_tags',array('num'=>$num,'tag'=>e(h($l)))); }
+		msq("DELETE FROM `dnevnik_tags` WHERE `num`='$num'"); // удалить все тэги этой заметки
+		$p=explode(',',$val); foreach($p as $l) { $l=c($l); if($l!='') msq_add('dnevnik_tags',array('num'=>$num,'tag'=>e(h($l)))); }
 		if(stristr($GLOBALS['msqe'],'Duplicate')) $GLOBALS['msqe']=''; // ошибка дублей - не ошибка
 		otprav("");
 	}
 
 	if($name=='Body') {
 
+
 		include_once $include_sys."_onetext.php";
 		include_once $include_sys."_modules.php";
-		$p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0); if($p===false) idie("Ошибочная заметка #$num");
+		$p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0);
+		if($p===false) { put_last_tmp($val); otprav(''); } else { del_last_tmp(); } // сохранять в tmp текст для новых
 
 		if($p["autokaw"]!="no") $val=ispravkawa($val); // если разрешено обработать кавычки и тире
 
 		$p['Body']=$val;
 
-		if($admin) msq_update('dnevnik_zapisi',array('Body'=>e($val),'DateUpdate'=>time()),"WHERE `num`='$num'");
+		msq_update('dnevnik_zapisi',array('Body'=>e($val),'DateUpdate'=>time()),"WHERE `num`='$num'");
 
 		$s=onetext($p);
 
@@ -369,7 +380,7 @@ if($a=='polesend') {
 	if($name=='' or $num==0) otprav(''); //idie('Неверные данные!');
 	if($name=='autokaw') $val=($val=='true'?'no':'auto');
 
-		if($admin) msq_update('dnevnik_zapisi',array(e($name)=>e($val),'DateUpdate'=>time()),"WHERE `num`='$num'");
+		msq_update('dnevnik_zapisi',array(e($name)=>e($val),'DateUpdate'=>time()),"WHERE `num`='$num'");
 
 	if($name=='Header') otprav("idd('Header_".$num."').innerHTML=\"".njs($val)."\"");
 	otprav("");
