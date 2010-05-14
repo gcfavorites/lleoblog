@@ -295,9 +295,17 @@ or (( strstr($GLOBALS['BRO'],'Yandex') || $GLOBALS['IP']=='78.110.50.100') and i
 	elseif($comment_pokazscr) $s.="<div class=cscr style='margin-left:".($m['level']*$comment_otstup)."px'></div>";
 }
 
-if(sizeof($mas)>10) $s.="<center><p class=br>всего комментариев: ".sizeof($mas)."</p>"
-.( (!$podz && $podzamok && sizeof($mas)>=100)?"<p>показаны только открытые комментарии - <a href=".$GLOBALS['mypage']."?screen=yes>показать все</a>":'')
-."</center>";
+
+
+if(sizeof($mas)>10) {
+	$s.="<center><p class=br>всего комментариев: ".sizeof($mas)."</p>";
+	if(!$podz && $podzamok && sizeof($mas)>=100) {
+//		$url=$GLOBALS['mypage']; if(strstr($url,$GLOBALS['www_ajax'])) $url=get_link_(ms("SELECT `Date` FROM `dnevnik_zapisi` WHERE `num`='".intval($art['num'])."'","_l"));
+//	$s.="<p>показаны только открытые комментарии - <a href=".$url."?screen=yes>показать все</a>";
+	$s.="<p>показаны только открытые комментарии - <a href=\"javascript:majax('comment.php',{a:'loadcomments',dat:".intval($art['num']).",mode:'all'})\">показать все</a>";
+	}
+	$s.="</center>";
+}
 if(sizeof($mas) && function_exists('PREVNEXT')) $s.=PREVNEXT();
 
 return $s;

@@ -3,6 +3,9 @@ include "../config.php";
 include $include_sys."_autorize.php";
 require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpRequest("windows-1251");
 
+$autosave_com_count = 100; // через сколько нажатий кнопки автозапись
+$time_edit_sec = 15*60;
+
 // if($admin) idie('отладочная ошибка - сейчас все заработает снова!');
 
 $erorrs=array();
@@ -17,6 +20,9 @@ $dat=intval($_REQUEST["dat"]); // if(!$dat and $id) $erorrs[]="Фатальный сбой.";
 include $include_sys."_onecomm.php";
 
 //========================================================================================================================
+if($a=='autosave') { put_last_tmp($_REQUEST['text']); otprav(''); }
+
+//========================================================================================================================
 if($a=='loadpanel') { $idhelp=$_REQUEST['idhelp'];
         $id=$idhelp."_textarea"; include($file_template."panel_comment.php");
         otprav("idd('".h($idhelp."p")."').innerHTML='".njs($panel)."'; loadScript('pins.js'); idd('".$id."').focus();");
@@ -24,6 +30,8 @@ if($a=='loadpanel') { $idhelp=$_REQUEST['idhelp'];
 //========================================================================================================================
 if($a=='loadcomments') {
 	$art=ms("SELECT `Comment`,`Comment_write`,`Comment_tree`,`num` FROM `dnevnik_zapisi` WHERE `num`='".e($dat)."'","_1");
+
+if(isset($_REQUEST["mode"])) $_GET['screen']=$_REQUEST["mode"];
 
 $s="
 	// loadCSS('commentstyle.css');
@@ -110,7 +118,7 @@ if($a=='edit') { // id редактировать комментарий
 
 	if(!$admin) { // разрешено ли редактировать?
 		if($unic != $p['unic']) idie("Редактировать чужие комментарии? Оригинально!");
-		if(time()-$p['Time'] > 15*60) idie("Редактировать можно только в течение 15 минут.");
+		if(time()-$p['Time'] > $time_edit_sec) idie("Редактировать можно только в течение 15 минут.");
 		if(ms("SELECT COUNT(*) FROM `dnevnik_comm` WHERE `Parent`=$id","_l",0)) idie("Редактировать нельзя - уже есть ответы.");
 	}
 
@@ -120,12 +128,12 @@ if($a=='edit') { // id редактировать комментарий
 // majax(\'comment.php\',{a:\'editsend\',this.txt.value,".$comnu.",".$id."});
 // cmsend_edit(this,".$comnu.",".$id.");
 $s="<form name='sendcomment_".$comnu."' onsubmit='cmsend_edit(this,".$comnu.",".$id."); return false;'><div id='co_$comnu'></div>
-<textarea id='textarea_".$comnu."' style='border: 1px dotted #ccc; margin: 0; padding: 0;' name='txt' cols=50 rows=".page(h($p['Text']),50).">".h(str_replace("\n",'\\n',$p['Text']))."</textarea>
+<textarea id='textarea_".$comnu."' style='border: 1px dotted #ccc; margin: 0; padding: 0;' name='txt' cols=50 rows=".max(3,page(h($p['Text']),50)).">".h(str_replace("\n",'\\n',$p['Text']))."</textarea>
 <div><input type=submit value='send'></div>
 </form>";
 
 $s="comnum++; helps('".$idhelp."',\"<fieldset id='commentform_".$comnu."'><legend>"
-.($admin?h($p['Name']):"редактирование, осталось <span id='tiktik_".$comnu."'>".(time()-$p['Time'])."</span> секунд")
+.($admin?h($p['Name']):"редактирование, осталось <span id='tiktik_".$comnu."'>".(date("i:s",$time_edit_sec-(time()-$p['Time'])))."</span> секунд")
 ."</legend>".$s."</fieldset>\"); idd('textarea_".$comnu."').focus();";
 
 otprav_sb('commentform.js',$s);
@@ -163,9 +171,8 @@ if($a=='rul') { // id скрыть-раскрыть
 //========================================================================================================================
 
 if($a=='comsend') {
-
-$text=$_REQUEST["text"]; $text=trim($text,"\n\r\t "); $text=str_replace("\r","",$text); if($text=='')  $erorrs[]="А где же комментарий?";
-$name=($IS['user']!=''&&$IS['user_noname']!='noname'?$IS['user']:$_REQUEST["name"]); if($name=='') $erorrs[]="Вы забыли подписаться.";
+$text=$_REQUEST["text"]; $text=trim($text,"\n\r\t "); $text=str_replace("\r","",$text); if($text=='') $erorrs[]="А где же комментарий?";
+$name=($IS['user']!=''&&$IS['user_noname']!='noname'?$IS['user']:$_REQUEST["name"]); if($name=='') { $erorrs[]="Вы забыли подписаться."; }
 $mail=mail_validate($_REQUEST["mail"]);
 
 if(!sizeof($erorrs)) {
@@ -219,6 +226,7 @@ if($IS['capcha']!='yes') {
 // ------------------------------------------
 
 	msq_add('dnevnik_comm',$ara); $newid=mysql_insert_id();
+	del_last_tmp(); // удалить кэш
 
 	$p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='".intval($newid)."'","_1",0);
 	$c=njs(comment_one($p,getmojno_comm($p['DateID'])));
@@ -251,12 +259,14 @@ otkryl($newid);
 
 if($a=='comform') { // {a:'comform',id:e.id,lev:e.style.marginLeft,comnu:comnum}); } // ответить
 
-if($dat==0) $dat=ms("SELECT `DateID` FROM `dnevnik_comm` WHERE `id`='$id'","_l",0); if($dat===false) oalert("Фатальный сбой.");
+//idie(h(get_last_tmp()))
+
+if($dat==0) $dat=ms("SELECT `DateID` FROM `dnevnik_comm` WHERE `id`='$id'","_l",0); if($dat===false) idie("Фатальный сбой.");
 
 $s="<form name='sendcomment' onsubmit='cmsend(this,".$comnu.",".$id.",".$dat.",".$lev."); return false;'><div id='co_$comnu'></div>";
 
 $s.= "<div><div class=l1>"
-.($IS['user']!=''&&$IS['user_noname']!='noname'?$imgicourl:"имя: <input name='nam' class='in' type='text'>")."
+.($IS['user']!=''&&$IS['user_noname']!='noname'?$imgicourl:"имя: <input name='name' class='in' type='text'>")."
 
 <div id='".$idhelp."p' style='display:inline; margin-left: 3px;'><img class=l onclick='majax(\\\"comment.php\\\",{a:\\\"loadpanel\\\",idhelp:\\\"".$idhelp."\\\"})' src='".$www_design."e3/finish.png' alt='panel'></div>
 
@@ -274,18 +284,27 @@ type=text name='capcha'><input type=hidden name='capcha_hash' value='".antibot_m
 }
 
 
+$tmp=h(get_last_tmp());
+if($tmp!='' && !strstr($tmp,'}')) $s.="<div class=br>с прошлого раза остался несохраненный текст:</div>";
 
 //$s.="<div><textarea name='txt' id='".$idhelp."_textarea' class='textar'></textarea></div>"
-$s.="<div><textarea name='txt' id='".$idhelp."_textarea' style='border: 1px dotted #ccc; margin: 0; padding: 0;' cols=60 rows=10></textarea></div>"
+$s.="<div><textarea name='text' onkeydown='keydowncom(this.value)' id='".$idhelp."_textarea' style='border: 1px dotted #ccc; margin:0; padding:0;' cols=60 rows=10>".$tmp."</textarea></div>"
 ."<div class=l0><input type=submit value='send'></div></form>";
 
-$s="comnum++; helps('".$idhelp."',\"<fieldset id='commentform'><legend>комментарий</legend>".$s."</fieldset>\"); 
-posdiv('".$idhelp."',-1,-1); // иначе в блядском FF пропадает курсор
-idd('".$idhelp."_textarea').focus();
-";
+// function cmsend_edit(t,comnu,id) { majax('comment.php',{a:'editsend',text:t['txt'].value,comnu:comnu,id:id}); return false; }
 
-otprav_sb('commentform.js',$s);
-
+otprav("
+loadCSS('commentform.css');
+var keydownccount=0;
+keydowncom=function(s){ if(++keydownccount > ".$autosave_com_count."){ keydownccount=0; majax('comment.php',{a:'autosave',text:s}); }};
+cm_mail_validate=function(p){ return p.value; };
+cmsend=function(t,comnu,id,dat,lev) {
+	var ara={a:'comsend',comnu:comnu,id:id,dat:dat,lev:lev}; var nara=['mail','name','text','capcha','capcha_hash'];
+        for(var l in nara) { l=nara[l]; if(t[l]) ara[l]=t[l].value; } majax('comment.php',ara); return false;
+};
+comnum++; helps('".$idhelp."',\"<fieldset id='commentform'><legend>комментарий</legend>".njsn($s)."</fieldset>\"); 
+posdiv('".$idhelp."',-1,-1); idd('".$idhelp."_textarea').focus();
+");
 }
 
 //=================================== удалить комментарий ===================================================================

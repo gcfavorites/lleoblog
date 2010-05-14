@@ -329,4 +329,9 @@ function get_counter($p) { // $p['view_counter']
         return $c;
 }
 
+// работа с объектами tmp в записях и комменатриях
+function get_last_tmp() { $s=ms("SELECT `text` FROM `unictemp` WHERE `unic`='".intval($GLOBALS['unic'])."'","_l",0); return ($s===false?'':$s); }
+function del_last_tmp() { msq("DELETE FROM `unictemp` WHERE `unic`=".intval($GLOBALS['unic']).""); }
+function put_last_tmp($s) { msq_add_update('unictemp',array('unic'=>intval($GLOBALS['unic']),'text'=>e($s)),'unic'); }
+
 ?>
