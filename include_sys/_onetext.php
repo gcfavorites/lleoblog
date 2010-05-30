@@ -2,6 +2,8 @@
 
 function onetext($p) { global $wwwhost,$unic;
 
+	$GLOBALS['article']=$p;
+
 	$s=$p["Body"];
 
 //	// Посчитать юзера

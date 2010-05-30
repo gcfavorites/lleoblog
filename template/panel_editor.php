@@ -14,6 +14,7 @@ $ainc[$l]=$l; }
 $panel = strtr("
 
 <img class=knop onClick=\"majax('foto.php',{a:'album'})\" src=".$www_design."e3/foto.png>
+<img class=knop onclick=\"majax('foto.php',{a:'lostfoto',idhelp:'".$idhelp."'})\" src='".$www_design."e3/ledlightblue.png' alt='Find lost foto'>
 &nbsp;&nbsp;
 <img class=knop onclick=\"majax('editor.php',{a:'loadhelp'})\" src='".$www_design."e3/gnome-help.png' alt='Help!'>
 &nbsp;&nbsp;

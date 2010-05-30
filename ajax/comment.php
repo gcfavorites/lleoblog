@@ -268,7 +268,7 @@ $s="<form name='sendcomment' onsubmit='cmsend(this,".$comnu.",".$id.",".$dat.","
 $s.= "<div><div class=l1>"
 .($IS['user']!=''&&$IS['user_noname']!='noname'?$imgicourl:"имя: <input name='name' class='in' type='text'>")."
 
-<div id='".$idhelp."p' style='display:inline; margin-left: 3px;'><img class=l onclick='majax(\\\"comment.php\\\",{a:\\\"loadpanel\\\",idhelp:\\\"".$idhelp."\\\"})' src='".$www_design."e3/finish.png' alt='panel'></div>
+<div id='".$idhelp."p' style='display:inline; margin-left: 3px;'><img class=l onclick=\"majax('comment.php',{a:'loadpanel',idhelp:'".$idhelp."'})\" src='".$www_design."e3/finish.png' alt='panel'></div>
 
 </div><div class=l2>"
 .($IS['mail']!=''?"<acronym title='ответы придут на ".h($IS['mail'])."'><img src='".$www_design."e2/mail.png' align=right></acronym>"

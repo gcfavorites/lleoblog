@@ -3,6 +3,9 @@ include "../config.php";
 include $include_sys."_autorize.php";
 require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpRequest("windows-1251");
 
+
+if(!$admin) idie('not admin');
+
 //idie('l');
 
 $hid=intval($_REQUEST["hid"]);
@@ -20,7 +23,7 @@ if($a=='saveset') {
 
 	$Q=$_REQUEST['Q']; $q=$_REQUEST['q'];
 	if(!intval($q) or $q<50 or $q>95 or !intval($Q) or $Q<50 or $Q>95) idie('Качество имеет смысл делать в пределах 50-95%');
-	$dir=$_REQUEST['dir'];
+	$dir=trim($_REQUEST['dir'],'/');
 	$logo=$_REQUEST['logo'];
 
 	if(file_put_contents($fileset,serialize(array('X'=>$X,'x'=>$x,'q'=>$q,'Q'=>$Q,'dir'=>$dir,'logo'=>$logo))) ===false)
@@ -42,7 +45,7 @@ $s="<table>
 <tr><td>качество картинки:</td><td><input id='fotoset_Q'size=3 type=text name='Q' value='".h($fotoset['Q'])."'>%</td></tr>
 <tr><td>ширина превью:</td><td><input id='fotoset_x' size=4 type=text name='x' value='".h($fotoset['x'])."'>px</td></tr>
 <tr><td>качество превью:</td><td><input id='fotoset_q' size=3 type=text name='q' value='".h($fotoset['q'])."'>%</td></tr>
-<tr><td>папка (пока не используется):</td><td><input id='fotoset_dir' size=15 type=text name='dir' value='".h($fotoset['dir'])."'></td></tr>
+<tr><td>папка:</td><td>".$wwwhost."<input id='fotoset_dir' size=15 type=text name='dir' value='".h($fotoset['dir'])."'></td></tr>
 <tr><td>подпись:</td><td><input id='fotoset_logo' size=25 type=text name='logo' value='".h($fotoset['logo'])."'></td></tr>
 </table>
 <input type=submit value='Save' onclick=\"edit_savefotoset()\">";
@@ -121,14 +124,32 @@ if($a=='savedir') { $dir=$_REQUEST["dir"]; $dir=h(preg_replace("/\.+/s",'.',$dir
 //=================================== editpanel ===================================================================
 if($a=='uploadform') {
 
-if(is_file($lastphoto_file)) $kuda=trim(file_get_contents($lastphoto_file)); else $kuda='';
+$fotoset=get_fotoset();
+$kuda=$fotoset['dir'];
+
+//if(is_file($lastphoto_file)) $kuda=trim(file_get_contents($lastphoto_file)); else $kuda='';
 // if($kuda='') $kuda='/';
 
-otprav("helps('foto_$hid',\"<fieldset><legend>закачиваем новое фото</legend>"
+$sendfoto="\\\"majax('foto.php',{a:'upload',hid:'$hid',kuda:'$kuda',num:'".intval($_REQUEST["num"])."'"
+.",file1:idd('fotou1_$hid')"
+.",file2:idd('fotou2_$hid')"
+.",file3:idd('fotou3_$hid')"
+.",file4:idd('fotou4_$hid')"
+.",file5:idd('fotou5_$hid')"
+.",file6:idd('fotou6_$hid')"
+."})\\\"";
+
+otprav("helps('foto_$hid',\"<fieldset><legend>закачиваем новое фото в папку ".$wwwhost.$kuda."</legend>"
 ."<div class=ll style='font-size: 13px' onclick=\\\"clean('foto_$hid'); majax('foto.php',{a:'album'})\\\">".$kuda."</div> <a href=\\\"javascript:majax('foto.php',{a:'formfotoset'})\\\" class=br>настройки</a><br>"
 ."<form enctype='multipart/form-data'>"
-."<input type=file id='fotou_$hid' onchange=\\\"majax('foto.php',{a:'upload',hid:'$hid',kuda:'$kuda',file:idd('fotou_$hid')})\\\"></form>"
-."</fieldset>\");");
+    ."<input name=file1 type=file id='fotou1_$hid'>"
+."<br><input name=file2 type=file id='fotou2_$hid'>"
+."<br><input name=file3 type=file id='fotou3_$hid'>"
+."<br><input name=file4 type=file id='fotou4_$hid'>"
+."<br><input name=file5 type=file id='fotou5_$hid'>"
+."<br><input name=file6 type=file id='fotou6_$hid' onchange=$sendfoto>"
+."<br><input type=button onclick=$sendfoto value='SEND'>"
+."</form></fieldset>\");");
 
 }
 //=================================== editpanel ===================================================================
@@ -163,25 +184,52 @@ otprav( "
 //=================================== editpanel ===================================================================
 if($a=='upload') {
 
-if(count($_FILES)>0) foreach($_FILES as $FILE) if(is_uploaded_file($FILE["tmp_name"])) { $fname=h($FILE["name"]);
+$num=intval($_REQUEST["num"]);
 
 $fotoset=get_fotoset();
 
+$foto_file_small=$filehost.$fotoset['dir'].'/';
+$foto_www_small=$wwwhost.$fotoset['dir'].'/';
+	if(!is_dir($foto_file_small)) { mkdir($foto_file_small); chmod($foto_file_small,0777); }
+$foto_file_preview=$filehost.$fotoset['dir'].'/pre/';
+$foto_www_preview=$wwwhost.$fotoset['dir'].'/pre/';
+	if(!is_dir($foto_file_preview)) { mkdir($foto_file_preview); chmod($foto_file_preview,0777); }
+
+$s='';
+// $ts='';
+
+if(count($_FILES)>0) foreach($_FILES as $FILE) if(is_uploaded_file($FILE["tmp_name"])) { $fname=h($FILE["name"]);
+
 	if(!preg_match("/\.jpe*g$/si",$fname)) idie("Это разве фотка?");
-	if(preg_match("^\./si",$fname)) idie("Имя с точки?");
+	if(preg_match("/^\./si",$fname)) idie("Имя с точки?");
 	if(strstr($fname,'..')) idie("Ошибка. Хакерствуем, бля?");
 
-	if(is_file($foto_file_small.$fname)) idie("Этот файл уже есть.");
 
-//	idie("kuda=$kuda");
+	//--- фотоальбом Nokia ---
+	if(preg_match("/^(\d\d)(\d\d)(\d{4})(\d+)\.jpg/si",$fname,$m) && $m[3]."/".$m[2]==$fotoset['dir']) {
+		$fname=$m[1]."-".$m[4].".jpg";
+	}
+	//--- фотоальбом Nokia ---
 
-//	obrajpeg($FILE["tmp_name"],$foto_file_small.$fname,$foto_res_small,$foto_qality_small,$foto_logo);
-//	obrajpeg($foto_file_small.$fname,$foto_file_preview.$fname,$foto_res_preview,$foto_qality_preview);
+	if(is_file($foto_file_small.$fname)) { $s.="<td><img onclick=\\\"foto('".$foto_www_small.$fname."')\\\" src='".$foto_www_preview.$fname."'><div class=br><font color=red>".h($fname)."</font></div></td>"; }
+	else {
+		obrajpeg($FILE["tmp_name"],$foto_file_small.$fname,$fotoset['X'],$fotoset['Q'],$fotoset['logo']);
+		obrajpeg($foto_file_small.$fname,$foto_file_preview.$fname,$fotoset['x'],$fotoset['q']);
+		$s.="<td><img onclick=\\\"foto('".$foto_www_small.$fname."')\\\" src='".$foto_www_preview.$fname."'><div class=br>".h($fname)."</div></td>";
+		if($num) $ts.="\\n{_FOTOM: ".str_replace('.jpg','',$fname)." _}";
+	     }
+	} 
 
-	obrajpeg($FILE["tmp_name"],$foto_file_small.$fname,$fotoset['X'],$fotoset['Q'],$fotoset['logo']);
-	obrajpeg($foto_file_small.$fname,$foto_file_preview.$fname,$fotoset['x'],$fotoset['q']);
+if($s=='') idie("Ошибка 2! ".nl2br(h(print_r($_FILES,1))));
 
-//	helps('winfoto',\"<img onclick=\\\"clean('winfoto')\\\" src='\"+f+\"'>\");
+
+if($num && $ts!='') $ts="
+	var v=idd('editor".$num."_textarea'); if(v){
+		v.value=v.value+'$ts';
+		edit_polesend('Body',idd('editor".$num."_textarea').value,".$num.");
+	}
+";
+
 
 otprav("
 
@@ -191,16 +239,31 @@ foto=function(f){
 	idd('bigfoto').style.left = (getWinW()-".$foto_res_small.")/2+getScrollH()+'px';
 };
 
-helps('foto_$hid',\"<img onclick=\\\"foto('".$foto_www_small.$fname."')\\\" src='".$foto_www_preview.$fname."'><div align=center class=br>".h($fname)."</div>\");");
+$ts
 
-//otprav("zabil('foto_$hid',\"<div class='fotoa'><div onclick=\\\"return foto('".$foto_www_small.$fname."')\\\">"
-//."<img src='".$foto_www_preview.$fname."' hspace=5 vspace=5><div class='fotot'>".$fname."</div></div></div>\\\");");
+helps('foto_$hid',\"<table><tr align=center>$s</tr></table>\");
 
-	} else idie("Ошибка 2! ".nl2br(h(print_r($_FILES,1))));
+");
 
 }
 
+//==================================================================================================
+if($a=='lostfoto') {
+	$num=intval(str_replace('editor','',$_REQUEST["idhelp"])); if(!$num) idie('Error 0');
+	$Date=ms("SELECT `Date` FROM `dnevnik_zapisi` WHERE `num`=".$num,"_l"); if($Date===false) idie('Error 1');
+        list($y,$m,)=explode('/',$Date,3); if(!intval($y)||!intval($m)) idie('Error 2');
+	$p=glob($filehost.$y."/".$m."/*.jpg");
+	$s=''; foreach($p as $l) {
+		preg_match("/([^\/]+)\.jpg$/si",$l,$e); $e=$e[1];
+		if(!ms("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date` LIKE '".e($y)."/".e($m)."/%' AND `Body` LIKE '%".e($e)."%'","_l"))
+		$s.="\\n{_FOTOM: $e _}";
+	}
 
+	otprav("
+		var v=idd('editor".$num."_textarea');
+		if(v) v.value=v.value+'".$s."';
+	");
+}
 //==================================================================================================
 
 function obrajpeg($from,$to,$X=150,$q=80,$s,$r=10) { // set_time_limit(0);
