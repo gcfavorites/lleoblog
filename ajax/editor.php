@@ -357,7 +357,6 @@ if($a=='polesend') { if(!$admin) idie('Admin error!');
 
 	if($name=='Body') {
 
-
 		include_once $include_sys."_onetext.php";
 		include_once $include_sys."_modules.php";
 		$p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0);

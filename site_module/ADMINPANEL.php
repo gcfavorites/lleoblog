@@ -1,6 +1,6 @@
 <?php
 
-function ADMINPANEL($e) { if(!$GLOBALS['admin'])return '';
+function ADMINPANEL($e) { if(!$GLOBALS['admin']) return '';
 
 return "<div style='position:absolute;left:4px;top:4px;z-index:999;border:1px dashed rgb(255,0,0); padding: 6px; background-color: rgb(255,252,223); font-size:9px'>
 <div style='font-size: 9px'>
@@ -11,7 +11,7 @@ return "<div style='position:absolute;left:4px;top:4px;z-index:999;border:1px da
 <br><a href=\"javascript:majax('editor.php',{a:'editform',num:'".$GLOBALS['article']['num']."',comments:(idd('commpresent')?1:0)})\">редактировать</a>
 <br><a href=\"{wwwhost}contents\">содержание</a>
 <br><a href=\"javascript:majax('statistic.php',{a:'loadstat',data:'".$GLOBALS['article']['num']."'})\">статистика</a>
-<br><a href=\"javascript:majax('foto.php',{a:'uploadform',hid:hid})\">закачать картинку</a>
+<br><a href=\"javascript:majax('foto.php',{a:'uploadform',hid:hid,num:'".$GLOBALS['article']['num']."'})\">закачать картинку</a>
 </div></div>";
 
 }

@@ -1,0 +1,8 @@
+<?php // Работа с фотоальбомом
+
+file_put_contents('_upload.txt',print_r($_FILES,1).print_r($_POST,1).print_r($_SERVER,1));
+
+die("ok");
+//phpinfo();
+
+?>
