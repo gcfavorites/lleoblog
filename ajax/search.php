@@ -20,7 +20,6 @@ foreach(ms("SELECT z.`Date`,z.`Header` FROM `dnevnik_zapisi` AS z, `dnevnik_tags
 otprav("helps('search',\"<fieldset id='commentform'><legend>Записи с тэгом <a onclick='majax(\\\"search.php\\\",{a:\\\"tagpage\\\",tag:\\\"".h($tag)."\\\"})'>'".h($tag)."'</a></legend>".njsn("<small>".implode("<br>",$m)."</small>")."</fieldset>\"); posdiv('search',-1,-1);");
 }
 
-
 //=================================== tagpage ===================================================================
 if($a=='tagpage') { $tag=$_REQUEST["tag"]; $m=array();
 	include $include_sys."_onetext.php";
@@ -29,7 +28,15 @@ foreach(ms("SELECT z.`Body`,z.`Date`,z.`Header` FROM `dnevnik_zapisi` AS z, `dne
 { $m[]=$p['Date']." - <a href='".get_link_($p['Date'])."'>".($p['Header']!=''?$p['Header']:'(...)')."</a>"
 ."<p>".onetext($p);
 }
-otprav("helps('search',\"<fieldset id='commentform'><legend>Запsиси с тэгом <a onclick='majax(\\\"search.php\\\",{a:\\\"tagpage\\\",tag:\\\"".h($tag)."\\\"})'>'".h($tag)."'</a></legend>".njsn("<small>".implode("<br>",$m)."</small>")."</fieldset>\"); posdiv('search',-1,-1);");
+otprav("helps('search',\"<fieldset id='commentform'><legend>Записи с тэгом <a onclick='majax(\\\"search.php\\\",{a:\\\"tagpage\\\",tag:\\\"".h($tag)."\\\"})'>'".h($tag)."'</a></legend>".njsn("<small>".implode("<br>",$m)."</small>")."</fieldset>\"); posdiv('search',-1,-1);");
+}
+
+//=================================== alltag ===================================================================
+if($a=='alltag') {
+$mm=ms("SELECT DISTINCT `tag` FROM `dnevnik_tags` ORDER BY COUNT(`tag`)","_a");
+$a=array(); foreach($mm as $m) $a[$m['tag']]=ms("SELECT COUNT(*) FROM `dnevnik_tags` WHERE `tag`='".e($m['tag'])."'","_l"); arsort($a);
+$o=''; foreach($a as $l=>$n) $o.="<tr><td><div class=ll onclick=\"majax('search.php',{a:'tag',tag:'".h($l)."'})\">".h($l)."</div></td><td> &nbsp; $n</td></tr>";
+otprav("helps('search',\"<fieldset id='commentform'><legend>Все тэги</legend><table>".njsn($o)."</table></fieldset>\"); posdiv('search',-1,-1);");
 }
 
 ?>
