@@ -22,8 +22,12 @@ if($a=='saveset') {
 	$x=$_REQUEST['x']; if(!intval($x) or $x<5 or $x>200) idie('Ќе па€сничай, выставь ширину превью человеческую.');
 
 	$Q=$_REQUEST['Q']; $q=$_REQUEST['q'];
-	if(!intval($q) or $q<50 or $q>95 or !intval($Q) or $Q<50 or $Q>95) idie(' ачество имеет смысл делать в пределах 50-95%');
+	if(!intval($q) or $q<50 or $q>98 or !intval($Q) or $Q<50 or $Q>98) idie(' ачество имеет смысл делать в пределах 50-95%');
 	$dir=trim($_REQUEST['dir'],'/');
+
+	// создать директории
+	$m=explode('/',$dir); $a=$filehost; foreach($m as $l) { $l=str_replace("..","_",$l); $a.=$l."/"; if(!is_dir($a)) { mkdir($a); chmod($a,0777); } }
+
 	$logo=$_REQUEST['logo'];
 
 	if(file_put_contents($fileset,serialize(array('X'=>$X,'x'=>$x,'q'=>$q,'Q'=>$Q,'dir'=>$dir,'logo'=>$logo))) ===false)

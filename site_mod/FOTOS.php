@@ -1,16 +1,19 @@
-<?php // Отображение всего фотоальбома или избранных
+<?php /* Вывод группы фоток через превьюшки и с подписями
 
-/*
-STYLES("Всплывающее окно фотки","
+Указываем относительный адрес фотки на сайте (а можно и полный с http://). Предполагается, что она залита средствами движка, поэтому там же есть папка pre/, где лежит для этой фотки одноименная превьюшка.
+Через пробел можно указать строку подписи любой длины (она выровняется по длине блока).
+Все фотки выстраиваются блоками, ширину блока полезно задать вручную, потому что движок не телепат и не знает, какого размера вы храните на этот раз превьюшки. По умолчанию ширина 210 (т.е. для превьюшек шириной 200), но можно указать командой "WIDTH nnn".
 
-.fotof{ float:left; text-align:center; border:1px solid black; }
-.fotof:hover { border: 1px solid blue; }
-.fotof a { color: #814c52; }
-.fototf{ font-size: 10px; }
+<script>var bigfoto_onload=1;function bigfoto_pos(){ajaxoff();e=idd('bigfotoimg');posdiv('bigfoto',-1,-1);var H=(getWinH()-20); if(e.height>H && H>480) { e.height=H; posdiv('bigfoto',-1,-1); posdiv('bigfoto',-1,-1);}var W=(getWinW()-50); if(e.width>W && W>640) { e.width=W; posdiv('bigfoto',-1,-1); posdiv('bigfoto',-1,-1);}}function bigfoto(e){ajaxon();bigfoto_onload=1;setTimeout(\"if(bigfoto_onload) bigfoto_pos();\", 2000);helps('bigfoto',\"<img id='bigfotoimg' onclick=\\\"clean('bigfoto')\\\" onload=\\\"bigfoto_onload=0;bigfoto_pos()\\\" src='\"+e.href+\"'>\",1);return false;}</script>
 
-");
+{_FOTOS: WIDTH 150
+http://lleo.aha.ru/blog/2010/05/26-2098.jpg Какие-то съемки
+http://lleo.aha.ru/blog/2010/05/30-2114.jpg День рождения Grassy, шашлыки в парке около Борисовского пруда
+http://lleo.aha.ru/blog/2010/05/30-2112.jpg День рождения Grassy, шашлыки в парке
+http://lleo.aha.ru/blog/2010/05/LLeo_Vysotsky.jpg Алекс Тарнавский пошутил и прислал скриншот
+http://lleo.aha.ru/blog/2010/05/Screenshot0022.jpg А это скриншот с моей мобилки
+_}
 */
-// visibility: hidden; 
 
 SCRIPTS("bigfoto","
 

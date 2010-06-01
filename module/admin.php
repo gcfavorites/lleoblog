@@ -204,6 +204,7 @@ $o .= admin_kletka($table,"<font color=green>создана</font>"); }
 // логины админа
 function admin_login() { global $mypage,$koldunstvo,$admin,$admin_hash; $s='';
 
+
 $f_logout = "<center><input type='submit' name='logout' value='разлогиниться'></center>";
 $f_login = "<center>пароль: <input type='text' name='login' size='10'>&nbsp;<input type='submit' value='залогиниться'></center>";
 
