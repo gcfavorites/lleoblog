@@ -1,4 +1,5 @@
-<?php // Перекачать старую базу комментариев
+<?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+// Перекачать старую базу комментариев
 
 $mypage1 = ((msq_pole("dnevnik_link","mypage")===false)?0:1);
 $mypage2 = ((msq_pole("dnevnik_search","mypage")===false)?0:1);

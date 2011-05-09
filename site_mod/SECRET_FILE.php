@@ -15,7 +15,7 @@ function SECRET_FILE($e) { global $hashinput,$IP,$BRO;
 	list($e,$a)=explode('|',$e,2);
 	$e=c($e);
 
-	$url=$GLOBALS['www_ajax']."secret_file.php?o=".substr(md5($hashinput.$IP.$BRO),5,5)."&file=".urlencode($e);
+	$url=$GLOBALS['www_ajax']."secret_file.php?o=".md5($hashinput.$IP.$BRO.$e)."&file=".urlencode($e);
 
 	if(c($a)!='a') return $url;
 

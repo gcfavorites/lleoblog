@@ -9,26 +9,27 @@ $id=$p['id']; $prostynka = ''; $metka=$p['metka'];
 if($answer=='') $answer=$p['Answer'];
 if($answer!='') $answer="<div class=pct>$answer</div>";
 
-        $knopki .= "\n<a id=k class=pkr href=\"javascript:pd($id)\">да, конечно!</a>";
-        $knopki .= "\n<a id=k class=pkr href=\"javascript:pu($id)\">уговорили</a>";
-        $knopki .= "\n<a id=k class=pkr href=\"javascript:pdi($id)\">да и</a>";
+//        $knopki .= "\n<div class=pkr onclick=\"ppo(this)\">test</div>";
+        $knopki .= "\n<div class=pkr onclick='pd(this)'>да, конечно!</div>";
+        $knopki .= "\n<div class=pkr onclick='pu(this)'>уговорили</div>";
+        $knopki .= "\n<div class=pkr onclick='pdi(this)'>да и</div>";
 
-        $knopki .= "\n<a id=k class=pkl href=\"javascript:pe($id)\">EDIT</a>";
-        $knopki .= "\n<a id=k class=pkl href=\"javascript:pc($id)\">edit_c</a>";
-        $knopki .= "\n<a id=k class=pkl href=\"?a=ego&sc=".htmlspecialchars($p['sc'])."\">его правки</a>";
-        $knopki .= "\n<a id=k class=pkl href=\"javascript:px($id)\">del</a>";
-	$knopki .= "\n<a id=k class=pkl href=\"javascript:pp($id)\">подробнее</a>";
+        $knopki .= "\n<div class=pkl onclick='pe(this)'>EDIT</div>";
+        $knopki .= "\n<div class=pkl onclick='pc(this)'>edit_c</div>";
+        $knopki .= "\n<div class=pkl onclick=\"?a=ego&sc=".h($p['sc'])."\">его правки</div>";
+        $knopki .= "\n<div class=pkl onclick='px(this)'>del</div>";
+	$knopki .= "\n<div class=pkl onclick='pp(this)'>подробнее</div>";
 
-        $knopki .= "\n<a id=k class=pkg href=\"javascript:pz($id)\">так надо</a>";
-        $knopki .= "\n<a id=k class=pkg href=\"javascript:pg($id)\">грамотей</a>";
-        $knopki .= "\n<a id=k class=pkg href=\"javascript:pl($id)\">лень</a>";
-        $knopki .= "\n<a id=k class=pkg href=\"javascript:ps($id)\">спам</a>";
-        $knopki .= "\n<a id=k class=pkg href=\"javascript:pni($id)\">нет и</a>";
+        $knopki .= "\n<div class=pkg onclick='pz(this)'>так надо</div>";
+        $knopki .= "\n<div class=pkg onclick='pg(this)'>грамотей</div>";
+        $knopki .= "\n<div class=pkg onclick='pl(this)'>лень</div>";
+        $knopki .= "\n<div class=pkg onclick='ps(this)'>спам</div>";
+        $knopki .= "\n<div class=pkg onclick='pni(this)'>нет и</div>";
 
-	$Name=htmlspecialchars($p['login']);
-	if($Name=='') $Name=htmlspecialchars($p['Name']);
-	if($Name=='') $Name=htmlspecialchars($p['lju']);
-	if($Name=='') $Name=htmlspecialchars(substr($p['sc'],0,3));
+	$Name=h($p['login']);
+	if($Name=='') $Name=h($p['Name']);
+	if($Name=='') $Name=h($p['lju']);
+	if($Name=='') $Name=h(substr($p['sc'],0,3));
 
 //	$page_author='LLeo';
 

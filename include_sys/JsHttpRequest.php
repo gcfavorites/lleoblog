@@ -1,6 +1,7 @@
 <?php 
 
-$ajax=1;
+$GLOBALS['ajax']=1;
+
 // if(sizeof($_GET)) die('GET-error');
 
 /** 
@@ -225,7 +226,8 @@ class JsHttpRequest
         // Content-type header. 
         // In XMLHttpRRequest mode we must return text/plain - damned stupid Opera 8.0. :( 
         $ctype = !empty($this->_contentTypes[$this->LOADER])? $this->_contentTypes[$this->LOADER] : $this->_contentTypes['']; 
-        header("Content-type: $ctype; charset={$this->SCRIPT_ENCODING}"); 
+        header("Content-type: $ctype; charset={$this->SCRIPT_ENCODING}");
+	header("Access-Control-Allow-Origin: *");
                  
         // Make resulting hash. 
         if (!isset($this->RESULT)) $this->RESULT = isset($GLOBALS['_RESULT'])? $GLOBALS['_RESULT'] : null; 

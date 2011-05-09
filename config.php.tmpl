@@ -1,5 +1,7 @@
 <?php
 
+$a="1"; if(ini_get('register_globals')!=false) foreach(array_merge($_GET,$_POST,$_REQUEST,$_COOKIE) as $n=>$l) unset(${$n});
+
 # Первоочередные параметры
 
 # хэш пароля админа (сам пароль не хранится! при инсталляции переменная должна быть пустой, потом скрипт сам скажет, что вписать!)
@@ -26,18 +28,31 @@
 
 	$rootpage = ''; // страница, которая открывается в корне (если пустая - откроется последняя заметка блога)
 
+//	$mnogouser = 'yes'; // включить многопользовательский режим движка (если выключено - стэндалон)
+
+
 $signature = "&copy; ".$admin_name."&nbsp;&nbsp;<a href='mailto:".$admin_mail."'>".$admin_mail."</a>";
 
+// $redirect_www = 1; // если включить - будет редиректить все обращения http://www. на обычное http://
+
 # строка для хэширования пароля (любая, от балды)
-	$koldunstvo = ""; // "у опушки продала лиса волнушки";
-	$hashinput = ""; // "всякая дурь всякая дурь"; // строка для вывода хэшиков каждой страницы
-	$hashlogin = ""; // "прамамамамама"; // допаролька - залогиненные юзеры
+	$koldunstvo = "_md5_"; // "у опушки продала лиса волнушки";
+	$hashinput = "_md5_"; // "всякая дурь всякая дурь"; // строка для вывода хэшиков каждой страницы
+	$hashlogin = "_md5_"; // "прамамамамама"; // допаролька - залогиненные юзеры
+        $newhash_user = "_md5_"; // "прамамамамама"; // допаролька - залогиненные юзеры
+
+
+$admin_hash1 = '';
+$koldunstvo1 = "_md5_";
+$readru_api='';
+$readru_partner='';
 
 	// $cookie_method_old = true; // включить, чтобы была старая система кук
 	// if(stristr($_SERVER["HTTP_USER_AGENT"],'Nokia') or stristr($_SERVER["HTTP_USER_AGENT"],'konquer') ) $cookie_method_old=true;
 
-# Если memcache не установлен, оставьте false (отключен), иначе все повиснет! Если установлен - включите параметры соединения:
-$memcache = false; // $memcache = new Memcache; $memcache->connect('localhost', 11211) or $memcache=false;
+# Если установлен и работает memcache - пытаемся подключиться к нему
+$memcache=function_exists('memcache_connect'); if($memcache) $memcache=memcache_connect('localhost',ini_get('memcache.default_port'));
+
 $ttl_longsite = 10000; // длинное хранение данных
 $editor_cols = 80; // количество символов по ширине в окне редактора заметки
 $editor_rows = 20; // количество строк по высоте в окне редактора заметки
@@ -83,19 +98,23 @@ $pravka_paranoid=true; // true - записывать в базу даже собственные правки, чтоб
 $pravki_npage=50; // сколько показывать правок на каждой странице при листании архива
 
 ############ логины ###########################################################################
-$uc='unic11'; // имя переменной для кук
+$uc='unic16'; // имя переменной для кук
 $db_unic="unic"; // имя базы логинов
 $db_rekomenda="rekomenda"; // имя базы рекомендаций
 #########################################################################################
 
 # настройки блога
+$del_user_comments=0; // разрешать пользователям удалять собственные комментарии? да - 1
 $comment_friend_scr=false; // true - доверить друзьям открывать и скрывать чужие и свои комментарии, false - только админу
 $maxcommlevel=10; // уровень, после которого комментарии скрываются под подзагрузку
+$maxcommload=10; // сколько уровней читать при подзагрузке
 $enter_comentary_days = 7; // число дней, когда заметка устарела
 $N_maxkomm = 20000; // когда отключать возможность комментировать
+$max_comperday = 0; // максимальное число разрешенных комментариев от человека в сутки
 
 $comment_otstup=25; // добавочный отступ в пикселях от левой границы каждого комментария-ответа
 $comment_pokazscr=1; // 1 - показывать скрытые комментарии словом "скрыт", 0 - не показывать
+$podzamcolor='#CADFEF'; // цвет подзамочных элементов
 
 ############ антибот ###########################################################################
 $antibot_pic = $include_sys."antibot_pic/";        // Путь до папки с картинками
@@ -135,8 +154,23 @@ $foto_www_preview=$wwwhost.$foto_preview;
 $foto_res_preview=100;
 $foto_qality_preview=70;
 
+#$zopt_include='';
+#$zopt_Comment_foto_logo=chr(169)." ".chr(171)."{name}: ".$httpsite.chr(187);
+#$zopt_Comment_foto_x=600;
+#$zopt_Comment_foto_q=75;
+#$zopt_Comment_media='all';
+#$zopt_Comment_view='on';
+#$zopt_Comment_write='on';
+#$zopt_Comment_screen='open';
+#$zopt_Comment_tree='1';
+#$zopt_autoformat='p';
+#$zopt_template='blog';
+#$zopt_autokaw='auto';
+
 $foto_ttf=$host_design."ttf/PTC55F.ttf";
 $foto_logo=chr(169)." ".chr(171).$admin_name." ".$httpsite.chr(187); // автоматическая подпись фоток
 /* chr(160) nbsp chr(169) copy chr(151) mdash chr(171) chr(187) ltgt */
+
+$comments_on_page=50;
 
 ?>

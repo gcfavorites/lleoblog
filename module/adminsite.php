@@ -1,6 +1,6 @@
-<?php // Правки
+<?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+// Правки
 
-if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 if(!$admin) redirect($wwwhost."login/"); // посторонних - нахуй
 
 // $pravki_npage$npage=50; // сколько показывать правок на каждой странице при листании архива
@@ -27,10 +27,7 @@ $_PAGE = array('design'=>file_get_contents($GLOBALS['host_design']."adminsite.ht
 
 
 //$_PAGE["wwwhost"] = $wwwhost;
-
-
 // include_once $include_sys."_one_pravka.php"; // процедура вывода окошка с одной правкой
-// include_once $include_sys."text_scripts.php"; // включить библиотеку скриптов
 
 SCRIPT_ADD($GLOBALS['www_design']."JsHttpRequest.js");
 
@@ -186,8 +183,8 @@ function print_header($data,$i) { return "<div id=><li>".htmlspecialchars($data)
 	list($base,$table,$bodyname,$wherename,$whereid)=explode('@',$data);
 	if($base=='_file_') {
 		$data=htmlspecialchars($table); $link=$GLOBALS['wwwhost'].$data;
-	} elseif($table=='dnevnik_zapisi') { // в случае блога
-		$p=ms("SELECT `Date`,`Header` FROM `dnevnik_zapisi` ".WHERE("`".e($wherename)."`='".e($whereid)."'")." LIMIT 1","_1",$GLOBALS['ttl']);
+	} elseif($table=='dnevnik  _zapisi') { // в случае блога
+		$p=ms("SELECT `Date`,`Header` FROM `dnevnik  _zapisi` ".WHERE("`".e($wherename)."`='".e($whereid)."'")." LIMIT 1","_1",$GLOBALS['ttl']);
 		$data=htmlspecialchars($p['Date'].($p['Header']!=''?" ".$p['Header']:''));
 		$link=$GLOBALS['wwwhost'].htmlspecialchars($p['Date']).".html";
 	} else {

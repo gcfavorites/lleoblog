@@ -1,18 +1,26 @@
 <?php // Авторизация пользователей
-include "../config.php";
-include $include_sys."_autorize.php";
-require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpRequest("windows-1251");
 
+include "../config.php";
+require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpRequest($wwwcharset);
+if(isset($_REQUEST['onload'])) otprav(''); // все дальнейшие опции будут запрещены для GET-запроса
+include $include_sys."_autorize.php"; // сперва JsHttpRequest, затем autorize
 
 $autosave_count = 200; // 128; // через сколько нажатий кнопки автозапись
-// $autosave_count = 20; // 128; // через сколько нажатий кнопки автозапись
 
-$num=intval($_REQUEST["num"]); $idhelp='editor'.$num;
-$a=$_REQUEST["a"];
+$num=RE0('num'); $idhelp='editor'.$num; $a=RE('a');
 
+//=================================== nocomment ===================================================================
+if($a=='nocomment') { AD();
+	if(($po=ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0))===false) idie('false');
+	$po=mkzopt($po); $l=$po['Comment_write'];
 
-//function nl2br2($s) { return str_replace(array("\n\n","\n"),array("<p>"," "),$s); }
+	$src=$www_design."e3/";
+	if($po['Comment_write']=='off') { $src.='ledgreen.png'; $po['Comment_write']='on'; }
+	else { $src.='ledred.png'; $po['Comment_write']='off'; }
 
+	msq_update('dnevnik_zapisi',array('opt'=>e(ser($po))),"WHERE `num`='$num'");
+	otprav("idd('knopnocomment_".$num."').src='$src'");
+}
 //=================================== tags ===================================================================
 if($a=='tags') {
 	$p=explode(',',$_REQUEST["mytags"]); $tag=array(); foreach($p as $l) { $l=c($l); if($l!='') $tag[$l]=1; }
@@ -56,7 +64,7 @@ if($a=='help') {
 	$prim2=modules($prim);
 
 	idie("<table width=600><td><center><b>$head</b></center><p>".nl2br($s)."
-<p><i>например:</i><p>".nl2br($prim)."
+<p><i>например:</i><p>".nl2br(h($prim))."
 <p><i>и получаем:</i><div style='border: 1px dashed #ccc'>".nl2br($prim2)."</div>
 
 </td></table>","about: ".$mod.".php");
@@ -72,11 +80,47 @@ if($a=='loadhelp') {
 }
 //=================================== loadhelp ===================================================================
 
+AD();
 
+if($a=='bigfotoedit') { $i=RE0('i'); $p=RE0('p'); otprav("
+send_bigfotoedit=function(){majax('editor.php',{a:'bigfotoedit_send',img:idd('bigfot".$p.'_'.$i."').href,num:".RE0('num').",i:$i,p:$p,txt:idd('message').value})};
 
+helps('opechatku',\"<table border='0' cellspacing='0' cellpadding='0'><tr valign=top><td rowspan=2>"
+."<textarea class='pravka_textarea' id='message' class='t' cols=\"+textarea_cols+\" rows=\"+page(s)+\">\""
+."+vzyal('bigfottxt').replace(/<br>/gi,'\\n').replace(/<p>/gi,'\\n\\n').replace(/&quot;/gi,'\\\"').replace(/&lt;/gi,'<')"
+.".replace(/&gt;/gi,'>')+\"</textarea>"
+."<br><input type='button' style='font-size:6px;' value='Ctrl+Enter' onclick='send_bigfotoedit()'>"
+."</td></tr><tr><td align=right valign=center>"
+."<div class=fmn onclick=\\\"insert_n(idd('message'));\\\"></div>"
+."<div class=fmcopy onclick=\\\"ti('message','\\251{select}')\\\"></div>"
+."<div class=fmmdash onclick=\\\"ti('message','".chr(151)."{select}')\\\"></div>"
+."<div class=fmltgt onclick=\\\"ti('message','\\253{select}\\273')\\\"></div></td></tr></table>\");
+helps_cancel('opechatku',function(){clean('opechatku')});
+idd('message').focus();
+setkey('enter','ctrl',send_bigfotoedit,false);
+");
+}
 
+if($a=='bigfotoedit_send') { $img=RE('img'); $num=RE0('num');
+	$txt=str_replace(array("\n",'"'),array('<br>','&quot;'),h(RE('txt')));
+	$body=ms("SELECT `Body` FROM `dnevnik_zapisi` WHERE `num`='$num'","_l",0);
+		if(substr_count($body,$img)!=1) { $img=substr($img,strlen($httpsite));
+		if(substr_count($body,$img)!=1) { $img=array_pop(explode('/',$img));
+		if(substr_count($body,$img)!=1) idie('IMG not found'); }}
 
-if(!$admin) idie("Надо залогиниться админом!");
+//	file_put_contents('__oldbody.txt',$body);
+
+	$body=preg_replace("/(\s*".preg_quote($img,'/').")(.*?)(\n|_\})/s","$1 ".c($txt)."$3",$body);
+
+	msq_update('dnevnik_zapisi',array('Body'=>e($body)),"WHERE `num`='$num'");
+
+	$s="var txt=\"".njs($txt)."\";
+zabil('bigfottxt',txt);
+zabil('bigfott".RE0('p')."_".RE0('i')."',txt);
+clean('opechatku');"; otprav($s);
+	idie("img: $img www: ".$txt."<hr>".nl2br(h($body)));
+}
+
 
 
 
@@ -128,8 +172,8 @@ otprav(	"
 
 //=================================== editpanel ===================================================================
 if($a=='loadpanel') { $idhelp=$_REQUEST['idhelp'];
-	$id=$idhelp."_textarea"; include($file_template."panel_editor.php");
-	otprav("idd('".h($idhelp."p")."').innerHTML='".njs($panel)."'; loadScript('pins.js'); idd('".$id."').focus();");
+	$id=$idhelp."_Body"; include($file_template."panel_editor.php");
+	otprav("zabil('".h($idhelp."p")."','".njs($panel)."'); idd('".$id."').focus();");
 }
 //=================================== move ===================================================================
 if($a=='savemove') { // $Date=$_REQUEST['DateOld']; $idhelp='move';
@@ -165,226 +209,134 @@ otprav($s);
 }
 
 //=================================== новую заметку ===================================================================
-if($a=='savenew') {
-
-$Date=$_REQUEST['Date']; if($Date=='') idie("Ошибка: неверная дата.");
-
-$t=getmaketime($Date);
-
-if($_REQUEST["autokaw"]=="true") { $_REQUEST["autokaw"]='no';
-	$_REQUEST["Body"]=ispravkawa($_REQUEST["Body"]); // если разрешено обработать кавычки и тире
-} else $_REQUEST["autokaw"]='auto';
-
-$ara=array(
-	'Date'		=> e($Date),
-	'DateDate'	=> $t[0],
-	'DateDatetime'	=> $t[1],
-	'Header'	=> e($_REQUEST['Header']),       	
-	'Body'		=> e($_REQUEST['Body']),
-	'Access'	=> e($_REQUEST['Access']),
-	'autoformat'	=> e($_REQUEST['autoformat']),
-	'autokaw'	=> e($_REQUEST['autokaw']),
-	'template'	=> e(($_REQUEST['template']!=''?$_REQUEST['template']:'blog')),
-	'Comment_view'	=> (strstr(file_get_contents($filehost."template/".str_replace('..','.',$_REQUEST['template']).".html"),'{_COMENTS:')?e($_REQUEST['Comment_view']):'off'),
-	'Comment_write'	=> e($_REQUEST['Comment_write']),
-	'Comment_screen'=> e($_REQUEST['Comment_screen']),
-	'DateUpdate'=>time()
-);
-
-if(intval(ms("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date`='".$ara['Date']."'","_l",0))) idie("Запись с этим названием уже есть!");
-
-if($admin) msq_add('dnevnik_zapisi',$ara);
-
-redirect(get_link($Date)); // на нее и перейти
-}
-
-
-//=================================== новую заметку ===================================================================
-if($a=='newform') {
-
-if(isset($_REQUEST['Date'])) $Date=h($_REQUEST['Date']); else $Date=date("Y/m/d");
-
-$i=0;
-while(ms("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date`='".e($Date)."'","_l",0)!=0) { $Date=date("Y/m/d").'_'.sprintf("%02d", ++$i); }
-
-$hid=intval($_REQUEST['hid']); if(!$hid) idie('Ошибка в движке: Лео, ты забыл установить hid!');
-$idhelp='editnew'.$hid;
-
-$p=unserialize(file_get_contents($GLOBALS['hosttmp'].'zapisi.set')); // взять настройки по умолчанию
-
-// idie('---'.nl2br(h(print_r($p,1))));
-
-// получим информацию о странице возврата и запрошенном openid
-//$dat=ms("SELECT `text` FROM `unictemp` WHERE `unic`='$unic'","_l",0); if($dat===false) die('error');
-//msq("DELETE FROM `unictemp` WHERE `unic`='$unic'");
-
-$s="<input class=t type='text' id='".$idhelp."_Date' name='Date' value='".h($Date)."' maxlength='128' size='20'>
-
-<div id='".$idhelp."p' style='display:inline'><img class=l onclick=\"majax('editor.php',{a:'loadpanel',idhelp:'".$idhelp."'})\" src='".$www_design."e3/finish.png' alt='panel'></div>
-
-<br><input class=t type='text' id='".$idhelp."_Header' name='Header' value='".h($p["Header"])."' maxlength='255' size=".$GLOBALS['editor_cols']."> <span class=br>".strlen($p['Body'])." букв</span>
-<br><textarea onkeydown=\"keydownc('Body',this.value,0)\" class=t id='".$idhelp."_Body' cols=".$GLOBALS['editor_cols']." rows=".$GLOBALS['editor_rows'].">".h(get_last_tmp())."</textarea>
-
-<div class=r>доступ: ".selecto('Access',$p['Access'],array('admin'=>"никому",'podzamok'=>"подзамок",'all'=>"всем"),"class=r id='".$idhelp."_Access' name")."
-автоформат: ".selecto('autoformat',$p['autoformat'],array('p'=>"p/br",'no'=>"нет",'pd'=>"class=pd"),"class=r id='".$idhelp."_autoformat' name")."
-не менять кавычки: <input type=checkbox id='".$idhelp."_autokaw' name=autokaw".($p["autokaw"]=='no'?" checked":"").">";
-
-// выяснить о модулях
-$inc=glob($filehost."template/*.html"); $ainc=array(''=>'- нет -'); foreach($inc as $l) { $l=preg_replace("/^.*?\/([^\/]+)\.html$/si","$1",$l); $ainc[$l]=$l; }
-$s.="template: ".selecto('template',$p['template'],$ainc,"class=r id='".$idhelp."_template' name");
-
-// нужны опции комментов
-if(strstr(file_get_contents($filehost."template/".$p['template'].".html"),'{_COMENTS:')) 
-$s.="<br>
-Комментарии показывать: ".selecto('Comment_view',$p['Comment_view'],array('timeload'=>"поначалу",'load'=>"кнопку",'off'=>"нет",'rul'=>"важные",'on'=>"все"),
-"class=r id='".$idhelp."_Comment_view' name")."
-принимать: ".selecto('Comment_write',$p['Comment_write'],array('timeoff'=>"поначалу",'on'=>"вечно от всех",'off'=>"нет",'friends-only'=>"вечно от друзей",'login-only'=>"вечно от логинов",'login-only-timeoff'=>"поначалу от логинов"),
-"class=r id='".$idhelp."_Comment_write' name")."
-открывать: ".selecto('Comment_screen',$p['Comment_screen'],array('open'=>"всех",'friens-open'=>"друзей",'screen'=>"скрывать"),
-"class=r id='".$idhelp."_Comment_screen' name")."
-тип: ".selecto('Comment_tree',$p['Comment_tree'],array('1'=>"форум",'0'=>"гостевая"),
-"class=r onchange='ch_edit_pole(this,$num)' name");
-
-$s.="<br><input type=submit value='Save' onclick=\"edit_savenew('".$idhelp."')\">"; // и кнопку!
-
-// сортировка: ".selecto('comments_order',$p['comments_order'],array('normal'=>"нет",'allrating'=>"сборная",'rating'=>"тупая") )."
-
-
-$s="hid++;
-
-var keydowncount=0;
-edit_polesend=function(n,v,num,clo){ majax('editor.php',{a:'polesend',name:n,val:v,num:num,clo:clo}); };
-keydownc=function(n,v,num){ if(++keydowncount > ".$autosave_count.") { keydowncount=0; edit_polesend(n,v,num,1); } };
-
-edit_savenew=function(idhelp){
-	var nara=['Date','Header','Body','Access','autoformat','autokaw','template','Comment_view','Comment_write','Comment_screen'];
-	var ara={a:'savenew',idhelp:idhelp};
-	for(var l in nara) { l=nara[l]; var ll=idhelp+'_'+l; if(idd(ll)) ara[l]=idd(ll).value; }
-	majax('editor.php',ara);
-};
-
-helps('".$idhelp."',\"<fieldset id='commentform'><legend>Новая статья ".h($p['Date'])."</legend>".njsn($s)."</fieldset>\");
-posdiv('".$idhelp."',-1,-1);
-idd('".$idhelp."_Body').focus();
-";
-
-if(isset($_REQUEST["clo"])) $s="clean('".h($_REQUEST["clo"])."');".$s;
-
-otprav($s);
-
-}
-
+if($a=='newform') { AD();
+	$i=0; while(ms("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date`='".e($Date)."'","_l",0)!=0) { $Date=date("Y/m/d").'_'.sprintf("%02d", ++$i); }
+	// $hid=RE('hid');
+	$num=0; $idhelp='editor0';
+	edit_textarea(
+		array('Header'=>'','Body'=>'','num'=>0),
+		RE("clo")===false?'':"clean('".e(RE("clo"))."');"
+	);
+} 
 //=================================== запросили форму ===================================================================
-if($a=='editform') {
+if($a=='editform') { AD();
+	$p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0); if($p===false) idie("Отсутствует заметка #$num");
+	// $p=mkzopt($p);
+	edit_textarea($p,$s);
+}
+//====================================
 
-$p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0); if($p===false) idie("Отсутствует заметка #$num");
+function edit_textarea($p,$majax='') { global $www_design,$idhelp,$filehost,$autosave_count,$num,$zopt_a; $s='';
 
-$s="
-<img class=l onclick=\"majax('editor.php',{a:'newform',hid:hid,clo:'".$idhelp."'})\" src='".$www_design."e3/filenew.png' alt='new'>
-<img class=l onclick=\"majax('editor.php',{a:'move',Date:'".h($p['Date'])."'})\" src='".$www_design."e3/redo.png' alt='move'>
-<img class=l onclick=\"if(confirm('Вы точно хотите удалить эту заметку?')) majax('editor.php',{a:'delete',num:$num});\" src='".$www_design."e3/remove.png' alt='delete'>
-<div id='".$idhelp."p' style='display:inline'>
-<img class=l onclick=\"majax('editor.php',{a:'loadpanel',idhelp:'".$idhelp."'})\" src='".$www_design."e3/finish.png' alt='panel'>
-".($admin?'':"<font color=red>Вы не админ: в демо-режиме изменения не запишутся.</font>")."
+if(!$num) {
+	$Date=RE('Date'); if(empty($Date)) $Date=date("Y/m/d");
+	$s.="<input class='t' type='text' name='Date' id='".$idhelp."_Date' value='".h($Date)."' maxlength='128' size='20'><br>";
+}
+
+$s.=njsn("
+<img alt='".LL('Editor:newz')."' class=l onclick=\"majax('editor.php',{a:'newform',hid:hid,clo:'".$idhelp."'})\" src='".$www_design."e3/filenew.png' alt='new'>
+<img alt='".LL('Editor:change_data')."' class=l onclick=\"majax('editor.php',{a:'move',Date:'".h($p['Date'])."'})\" src='".$www_design."e3/redo.png' alt='move'>
+<img alt='".LL('Editor:delz')."' class=l onclick=\"if(confirm('".LL('confirm_del')."')) majax('editor.php',{a:'delete',num:$num});\" src='".$www_design."e3/remove.png' alt='delete'>
+<div id='".$idhelp."p' style='display:inline'><img alt='".LL('Editor:show_panel')."' class=l onclick=\"majax('editor.php',{a:'loadpanel',idhelp:'".$idhelp."'})\" src='".$www_design."e3/finish.png' alt='panel'></div>
+
+<div class='br'>".strlen($p['Body'])." букв</div>
+
+<div>
+<input id='".$idhelp."_head' onchange='ch_edit_pole(this,$num)' class='t' type='text' name='Header' value='".h($p['Header'])."' maxlength='255'")
+." style='width:\"+(getWinW()-100)+\"px'>"
+."<br><textarea onkeydown=\\\"keydownc(this,$num)\\\" class='t' id='".$idhelp."_Body' name='Body' style='width:\"+(getWinW()-100)+\"px; height:\"+(getWinH()-200)+\"px'>"
+.njsn(h($p["Body"])."</textarea>
 </div>
 
-<br><input onchange='ch_edit_pole(this,$num)' class=t type='text' name='Header' value='".h($p["Header"])."' maxlength='255' size=".$GLOBALS['editor_cols']."> <span class=br>".strlen($p['Body'])." букв</span>
-<br><textarea onkeydown=\"keydownc('Body',this.value,$num)\" class=t id='".$idhelp."_textarea' cols=".$GLOBALS['editor_cols']." rows=".$GLOBALS['editor_rows'].">".h($p["Body"])."</textarea>
+<div class=r>
+");
 
-<div class=r>доступ: ".selecto('Access',$p['Access'],array('admin'=>"никому",'podzamok'=>"подзамок",'all'=>"всем"),"class=r onchange='ch_edit_pole(this,$num)' name")."
-автоформат: ".selecto('autoformat',$p['autoformat'],array('p'=>"p/br",'no'=>"нет",'pd'=>"class=pd"),"class=r onchange='ch_edit_pole(this,$num)' name")."
-не менять кавычки: <input onchange='edit_polesend(this.name,this.checked,".$num.")' type=checkbox name=autokaw".($p["autokaw"]=='no'?" checked":"").">";
+// $admincolors=array(array('admin','ledred.png'),array('podzamok','ledyellow.png'),array('all','ledgreen.png'));
 
-// выяснить о модулях
-$inc=glob($filehost."template/*.html"); $ainc=array(''=>'- нет -'); foreach($inc as $l) { $l=preg_replace("/^.*?\/([^\/]+)\.html$/si","$1",$l); $ainc[$l]=$l; }
-$s.="template: ".selecto('template',$p['template'],$ainc,"class=r onchange='ch_edit_pole(this,$num)' name");
+$s.=njsn(ADMINSET($p));
 
-// нужны ли опции комментов
-if($_REQUEST["comments"]==1 or strstr(file_get_contents($filehost."template/".$p['template'].".html"),'{_COMENTS:')) $s.="<br>
-Комментарии показывать: ".selecto('Comment_view',$p['Comment_view'],array('timeload'=>"поначалу",'load'=>"кнопку",'off'=>"нет",'rul'=>"важные",'on'=>"все"),
-"class=r onchange='ch_edit_pole(this,$num)' name")."
-принимать: ".selecto('Comment_write',$p['Comment_write'],array('timeoff'=>"поначалу",'on'=>"вечно от всех",'off'=>"нет",'friends-only'=>"вечно от друзей",'login-only'=>"вечно от логинов",'login-only-timeoff'=>"поначалу от логинов"),
-"class=r onchange='ch_edit_pole(this,$num)' name")."
-открывать: ".selecto('Comment_screen',$p['Comment_screen'],array('open'=>"всех",'friens-open'=>"друзей",'screen'=>"скрывать"),
-"class=r onchange='ch_edit_pole(this,$num)' name")."
-тип: ".selecto('Comment_tree',$p['Comment_tree'],array('1'=>"форум",'0'=>"гостевая"),
-"class=r onchange='ch_edit_pole(this,$num)' name");
-
+$opt=unser($p['opt']); ksort($opt);
+if(sizeof($opt)<sizeof($zopt_a)) $s.="<div id='".$idhelp."_extopt' style='display:inline'><img src='".$www_design."e3/system.png' alt='".LL('Editor:settings')."'"
+." onclick=\\\"majax('editor.php',{a:'settings_panel',num:$num})\\\"></div>";
+$s.=pokaji_opt($opt,0);
+ 
 // -- тэги --------------
 $tt=ms("SELECT `tag` FROM `dnevnik_tags` WHERE `num`='$num' ORDER BY `tag`","_a",0);
 $t=''; foreach($tt as $l) $t.=$l['tag'].', '; $t=trim($t,', ');
-$s.="<br><span class=l onclick=\"majax('editor.php',{a:'tags',num:$num,mytags:idd('tags_".$idhelp."').value})\">тэги</span> через запятую: <input onchange='ch_edit_pole(this,$num)' class=t type='text' name='tags' id='tags_".$idhelp."' value='".h($t)."' size=".$GLOBALS['editor_cols'].">";
+$s.=njsn("<div class=r>"
+."<span alt='Тэги заметки по первому разу перечисляем через запятую, а если они уже использовались - кликаем сюда и просто выбираем из списка.'"
+." class=l onclick=\"majax('editor.php',{a:'tags',num:$num,mytags:idd('tags_".$idhelp."').value})\">Тэги:</span>&nbsp;"
+."<input onchange='ch_edit_pole(this,$num)' class='t' type='text' name='tags' id='tags_".$idhelp."' value='".h($t)."' ")
+." style='width:\"+(getWinW()-150)+\"px'></div>";
 //-----------------------
 
-$s.="<br><input type=submit value='Save' onclick=\"if(idd('alltags_".$idhelp."')) clean('alltags_".$idhelp."'); edit_polesend('Body',idd('".$idhelp."_textarea').value,".$num.")\">";
+$s.=njsn("<div><input title='".LL('shift+Enter')."' type='button' value='".LL('Save')."' onclick='save_and_close()'></div>");
 
-// сортировка: ".selecto('comments_order',$p['comments_order'],array('normal'=>"нет",'allrating'=>"сборная",'rating'=>"тупая") )."
 
 $s="
-var keydowncount=0;
-ch_edit_pole=function(e,num){ edit_polesend(e.name,e.value,num,0) };
-edit_polesend=function(n,v,num,clo){ majax('editor.php',{a:'polesend',name:n,val:v,num:num,clo:clo}); };
-keydownc=function(n,v,num){ keydowncount++; if(keydowncount>".$autosave_count.") { keydowncount=0; edit_polesend(n,v,num,1); } };
+if(f5s||jog) {
+interval_clipboard=function(e){
+	if(!idd(e+'_Body')) { eval('clearInterval(intervalID_'+e+')'); return; }
 
-helps('".$idhelp."',\"<fieldset id='commentform'><legend>Заметка ".h($p['Date'])."</legend>".njsn($s)."</fieldset>\");
-posdiv('".$idhelp."',-1,-1);
-idd('".$idhelp."_textarea').focus();
+	var m=f_read('clipboard_mode'); if(m=='') return;
+
+	if(m=='Copy link') {
+		ti(e+'_Body',\"<a href='\"+f_read('clipboard_link')+\"'>{select}\"+f_read('clipboard_text')+\"</a>\");
+	} else if(m=='plain') {
+		ti(e+'_Body',f_read('clipboard_text'));
+	} else alert('unknown mode: '+m);
+
+	f_save('clipboard_mode','');
+}; var intervalID_".$idhelp."=setInterval(\"interval_clipboard('".$idhelp."')\",1000);
+}
+
+save_and_close=function(){
+	var ara=get_pole_ara('".$idhelp."'); if(ara===false) return ara;
+	ara['a']='polesend_all'; ara['num']=".$num.";
+	majax('editor.php',ara);
+	if(idd('alltags_".$idhelp."')) clean('alltags_".$idhelp."');
+	return false;
+};
+
+var keydowncount=0;
+
+ch_edit_pole=function(e,num){ if(typeof e.defaultValue=='undefined' || e.value!=e.defaultValue){ edit_polesend(e.name,e.value,num,0); e.defaultValue=e.value;}};
+edit_polesend=function(n,v,num,clo){ majax('editor.php',{a:'polesend',name:n,val:v,num:num,clo:clo}); };
+keydownc=function(e,num){ keydowncount++; if(keydowncount>".$autosave_count."){ keydowncount=0; edit_polesend(e.name,e.value,num,1); } };
+
+/*majax_err=1;*/
+helpc('".$idhelp."',\"<fieldset id='commentform'><legend>Заметка ".h($p['Date'])."</legend>".$s."</fieldset>\");
+idd('".$idhelp."_Body').focus();
+
+setkey('esc','',function(e){ var e=idd('".$idhelp."_Body'); if(e.value==e.defaultValue || confirm('".LL('exit_no_save')."')) clean('".$idhelp."'); },false);
+setkey('enter','ctrl',save_and_close,false);
 ";
 
-$a=array('Date','Header','Body','DateUpdate','view_counter','num','count_comments_open','DateDatetime','DateDate');
-foreach($a as $l) unset($p[$l]);
-file_put_contents($GLOBALS['hosttmp'].'zapisi.set',serialize($p));
-
 otprav($s);
-
 }
 
 
-//=================================== запросили форму ===================================================================
-
-if($a=='polesend') { if(!$admin) idie('Admin error!');
-
-	$name=$_REQUEST["name"];
-	$val=$_REQUEST["val"];
-
-
-	if($name=='tags') {
-		msq("DELETE FROM `dnevnik_tags` WHERE `num`='$num'"); // удалить все тэги этой заметки
-		$p=explode(',',$val); foreach($p as $l) { $l=c($l); if($l!='') msq_add('dnevnik_tags',array('num'=>$num,'tag'=>e(h($l)))); }
-		if(stristr($GLOBALS['msqe'],'Duplicate')) $GLOBALS['msqe']=''; // ошибка дублей - не ошибка
-		otprav("");
-	}
-
-	if($name=='Body') {
-
-		include_once $include_sys."_onetext.php";
-		include_once $include_sys."_modules.php";
-		$p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0);
-		if($p===false) { put_last_tmp($val); otprav(''); } else { del_last_tmp(); } // сохранять в tmp текст для новых
-
-		if($p["autokaw"]!="no") $val=ispravkawa($val); // если разрешено обработать кавычки и тире
-
-		$p['Body']=$val;
-
-		msq_update('dnevnik_zapisi',array('Body'=>e($val),'DateUpdate'=>time()),"WHERE `num`='$num'");
-
-		$s=onetext($p);
-
-		$s="idd('Body_$num').innerHTML=\"".njs($s)."\";";
-		if($_REQUEST["clo"]==0) $s.="clean('".$idhelp."');";
-		otprav($s);
-	}
-
-	if($name=='template' and $val=='') $val='blog'; // поле по умолчанию
-	if($name=='' or $num==0) otprav(''); //idie('Неверные данные!');
-	if($name=='autokaw') $val=($val=='true'?'no':'auto');
-
-		msq_update('dnevnik_zapisi',array(e($name)=>e($val),'DateUpdate'=>time()),"WHERE `num`='$num'");
-
-	if($name=='Header') otprav("idd('Header_".$num."').innerHTML=\"".njs($val)."\"");
-	otprav("");
+//----------- setting panel --------------
+if($a=='settings_panel') { AD();
+	$opt=unser(ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='$num'","_l",0));
+	$opt2=mkzopt($opt); ksort($opt2);
+	foreach($opt as $n=>$l) unset($opt2[$n]);
+	otprav("zabil('".$idhelp."_extopt',\"".pokaji_opt($opt2)."\");");
 }
+//----------- setting panel --------------
 
+if($a=='ch_dostup') { global $admincolors; AD(); // смена доступа к заметке
+	$d=array_pop(explode('/',RE('d')));
+	foreach($admincolors as $n=>$l) if($l[1]==$d) { $k=$admincolors[(++$n)%3];
+		msq_update('dnevnik_zapisi',array('Access'=>$k[0]),"WHERE `num`='$num'");
+		if($k[0]=='all') { $pad=0; $col='transparent'; } else { $pad=10; $col=$GLOBALS['podzamcolor']; }
+		otprav("
+doclass('".$num."_adostup',function(e){e.src='".$GLOBALS['www_design']."e3/".$k[1]."'});
+var e=idd('Body_".$num."'); if(e){ e.style.padding='".$pad."pt'; e.style.backgroundColor='".$col."'; }
+		");
+	}
+	idie("error");
+}
 //=================================== удаление заметки ===================================================================
 
 if($a=='delete') {
@@ -396,6 +348,128 @@ if($a=='delete') {
 		msq("DELETE FROM `dnevnik_search` WHERE `DateID`='$num'"); // удалить статистику заходов с поисковиков
 	}
 	redirect($httphost);
+}
+//=================================== запросили форму ===================================================================
+if($a=='polesend_all') { AD(); $e=explode(' ',trim(RE('names')));
+
+	if($num) $p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0); else $p=array('opt'=>'');
+	$opt=unser($p['opt']);
+	foreach($opt as $n=>$l) if(!isset($zopt_a[$n])) unset($opt[$n]); // удалить некондиционные метки
+
+	unset($e['Body']); foreach($e as $name) { $val=str_replace("\r",'',RE($name));
+		if($name=='tags') { save_tags(RE($name)); continue; }
+		if(!isset($zopt_a[$name])) { $p[$name]=$val; continue; }
+		// опция
+		if($val=='default'
+ or $zopt_a[$name][1]=='s' && ( c($val)=='' or $val==$zopt_a[$name][0]) // дефолтная строка
+)
+		{ if(isset($opt[$name])) unset($opt[$name]); } else { $opt[$name]=$val; }
+	}
+
+	$p['DateUpdate']=time();
+	$p['opt']=ser($opt); // опции
+
+	// Body
+	$l=str_replace("\r",'',RE('Body'));
+	$po=mkzopt($p); if($po["autokaw"]!="no") $l=ispravkawa($l); // если разрешено обработать кавычки и тире
+	$p['Body']=$l;
+
+	// save
+	if($num) msq_update('dnevnik_zapisi',arae($p),"WHERE `num`='$num'");
+	else { //== новую заметку =====
+		$d=c($p['Date']);
+		if(preg_match("/[^0-9a-z\-\_\.\/]+/si",$d) or empty($d) ) {
+$d=preg_replace("/[^0-9a-z\-\_\.\/]+/si",'',$d);
+otprav("
+idd('".$idhelp."_Date').value=\"".$d."\";
+salert(\"".njs(LL('Editor:wrong_data',$httphost))."\")"
+);
+		}
+		$t=getmaketime($d);
+		if(0!=ms("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date`='".e($d)."'","_l",0)) {
+			$r=0; while(0!=ms("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date`='".e($d.'_'.(++$r))."'","_l",0)){}
+otprav("idd('".$idhelp."_Date').value=\"".h($d.'_'.$r)."\";
+salert(\"".LL('Editor:new_exist',get_link($d))."\");
+");
+		}
+		$p=array_merge($p,array('Access'=>'admin','DateUpdate'=>time(),'DateDate'=>$t[0],'DateDatetime'=>$t[1]));
+		msq_add('dnevnik_zapisi',arae($p));
+		redirect(get_link($d)); // перейти
+	}
+	// idie("#".mysql_insert_id());
+
+	if(RE('clo')==0) $s.="clean('".$idhelp."');"; else $s="salert('".LL('saved')."',500);";
+	$p=mkzopt($p);
+	include_once $include_sys."_onetext.php";
+	include_once $include_sys."_modules.php";
+	$s.="zabil('Body_$num',\"".njs(onetext($p))."\"); zabil('Header_$num',\"".njs($p['Header'])."\");";
+	otprav($s);
+}
+// -------------------
+if($a=='polesend') { AD(); $val=RE('val'); $name=RE('name');
+	$val=str_replace("\r",'',$val);
+
+	if($name=='tags') { settags($val); otprav(''); }
+
+	if($name=='Body') {
+		if($num==0) { put_last_tmp($val); otprav(''); } else { del_last_tmp(); } // сохранять в tmp текст для новых
+		$p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0); $p=mkzopt($p);
+		if($p["autokaw"]!="no") $val=ispravkawa($val); // если разрешено обработать кавычки и тире
+		msq_update('dnevnik_zapisi',array('Body'=>e($val),'DateUpdate'=>time()),"WHERE `num`='$num'");
+		include_once $include_sys."_onetext.php";
+		include_once $include_sys."_modules.php";
+		$p['Body']=$val; $s=onetext($p);
+		$s="idd('Body_$num').innerHTML=\"".njs($s)."\"; salert('".LL('saved')."',500);";
+		// if(RE('clo')==0) $s.="clean('".$idhelp."');";
+		otprav($s);
+	}
+
+	if($name=='' or $num==0) otprav(''); //idie('Неверные данные!');
+
+	if(isset($zopt_a[$name])) { // это опция?
+		$opt=unser(ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='$num'","_l",0));
+		if($val=='default'
+or $zopt_a[$name][1]=='s' && ( c($val)=='' or $val==$zopt_a[$name][0]) // дефолтная строка
+) { // по дефолту
+			if(isset($opt[$name])) unset($opt[$name]); // если было - сбросить
+			else otprav("salert('".LL('saved')."',200)"); // "salert(\"not change: ".h($name)."='".h($val)."'\",500)"); // если и не было - выйти
+		} else $opt[$name]=$val;
+		$ara=array('opt'=>e(ser($opt)));
+	} else { $ara=array(e($name)=>e($val));	}
+
+	$ara['DateUpdate']=time();
+	msq_update('dnevnik_zapisi',$ara,"WHERE `num`='$num'");
+
+	if($name=='Header') otprav("idd('Header_".$num."').innerHTML=\"".njs($val)."\"");
+	if($name=='Body') otprav('');
+	otprav("salert('".LL('saved')."',200)"); // otprav("salert(\"".h($name)."='".h($val)."'\",500)");
+}
+// -------------------
+function save_tags($val) { global $msqe,$num;
+	msq("DELETE FROM `dnevnik_tags` WHERE `num`='$num'"); // удалить все тэги этой заметки
+	$p=explode(',',$val); foreach($p as $l) { $l=c($l); if($l!='') msq_add('dnevnik_tags',array('num'=>$num,'tag'=>e(h($l)))); }
+	if(stristr($msqe,'Duplicate')) $msqe=''; // ошибка дублей - не ошибка
+}
+
+function pokaji_opt($opt,$def=1) { global $num,$zopt_a; $s='';
+	foreach($opt as $n=>$v) { if(!isset($zopt_a[$n])) continue; $l=$zopt_a[$n];
+		if($def) $val=($v!=$l[0]?$v:'default'); else $val=$v;
+	$s.="<br>".LL('zopt:'.$n)." : ";
+
+	if($n=='template') {
+		// выяснить о модулях
+		$inc=glob($GLOBALS['filehost']."template/*.html"); $ainc=array('default'=>'&mdash;'); foreach($inc as $l) { $l=preg_replace("/^.*?\/([^\/]+)\.html$/si","$1",$l); $ainc[$l]=$l; }
+		$s.=selecto('template',$val,$ainc,"class='r' onchange='ch_edit_pole(this,$num)' name");
+	} else { $m=explode(' ',$l[1]);
+		if($m[0]=='s') $s.="<input type='text' maxlength='".$l[2]."' size='".min($l[2],64)."' name='".$n."' class='r' onchange='ch_edit_pole(this,$num);' value=\\\"".h(isset($opt[$n])?$opt[$n]:'')."\\\">";
+		else {
+			$a=array('default'=>'&mdash;'); foreach($m as $i) $a[$i]=LL('zopt:'.$n.':'.$i);
+			$s.= selecto($n,$val,$a,"class='r' onchange='ch_edit_pole(this,$num)' name");
+			$s.= " &nbsp; ".LL('zopt:default')." &laquo;".LL('zopt:'.$n.':'.$l[0])."&raquo;";
+		}
+	}
+	}
+return $s;
 }
 
 ?>

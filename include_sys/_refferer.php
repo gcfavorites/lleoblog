@@ -1,19 +1,22 @@
 <?php
 
-function refferer($ref,$DateID) { global $IPNUM;
+function refferer($ref,$DateID) { global $IPNUM,$unic;
+
+if(!$unic || 0!=ms("SELECT COUNT(*) FROM `dnevnik_posetil` WHERE `unic`='$unic' AND `url`='$DateID'","_l",0)) return false;
 
 	if(striplink($ref)) return false;
 
 	$u=poiskovik($ref);
 
 if($u[0]!="") { // åñëè ïîèñê - äîïîëíèòü áàçó `dnevnik_search`
-	$n=ms("SELECT `n` FROM `dnevnik_search` WHERE `DateID`='$DateID' AND `search`='".e($u[0])."'","_l",0);
-	if($n!==false) ms("UPDATE `dnevnik_search` SET `last_ipn`='$IPNUM', count=count+1 WHERE `n`='$n' AND `last_ipn`!='$IPNUM'","_l",0); // + ñ÷åò÷èê
-	else msq_add("dnevnik_search",array("DateID"=>$DateID,"poiskovik"=>e($u[1]),"search"=>e($u[0]),"link"=>e($ref),"count"=>1,"last_ipn"=>$IPNUM));
+	if($GLOBALS['admin']) idie($ref);
+	$n=intval(ms("SELECT `n` FROM `dnevnik_search` WHERE `DateID`='$DateID' AND `search`='".e($u[0])."'","_l",0));
+	if($n) ms("UPDATE `dnevnik_search` SET count=count+1 WHERE `n`='$n'","_l",0); // + ñ÷åò÷èê
+	else msq_add("dnevnik_search",array("DateID"=>$DateID,"poiskovik"=>e($u[1]),"search"=>e($u[0]),"link"=>e($ref),"count"=>1));
 } else { // èíà÷å äîïîëíèòü áàçó `dnevnik_link`
-	$n=ms("SELECT `n` FROM `dnevnik_link` WHERE `DateID`='$DateID' AND `link`='".e($ref)."'","_l",0);
-	if($n!==false) ms("UPDATE `dnevnik_link` SET `last_ipn`='$IPNUM', count=count+1 WHERE `n`='$n' AND `last_ipn`!='$IPNUM'","_l",0);
-	else msq_add("dnevnik_link",array("DateID"=>$DateID,"link"=>e($ref),"count"=>1,"last_ipn"=>$IPNUM));
+	$n=intval(ms("SELECT `n` FROM `dnevnik_link` WHERE `DateID`='$DateID' AND `link`='".e($ref)."'","_l",0));
+	if($n) ms("UPDATE `dnevnik_link` SET count=count+1 WHERE `n`='$n'","_l",0);
+	else msq_add("dnevnik_link",array("DateID"=>$DateID,"link"=>e($ref),"count"=>1));
 }
 
 return $u;

@@ -1,4 +1,5 @@
-<?php if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+<?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+
 if(!$admin) redirect($wwwhost."login/"); // посторонних - нахуй
 
 if(!isset($admin_ljuser)) idie("Ошибка: не указано имя пользователя livejournal!
@@ -115,17 +116,11 @@ function get_one_ya($lyandex) { $r=array(); // качать записи
 'Header'=>e($head),
 'Body'=>e($text."<hr><a href='$link'>$link</a>"),
 'Access'=>'all',
-'Comment'=>'allways_on',
-'Comment_view'=>'on',
-'Comment_write'=>'friends-only',
-'Comment_screen'=>'open',
-'comments_order'=>'normal',
-'autoformat'=>'no',
-'autokaw'=>'no',
 'DateUpdate'=>time(),
 'DateDate'=>$t[0],
 'DateDatetime'=>$t[1],
-'template'=>'blog'
+'opt'=>e(serialize(array('Comment'=>'allways_on','Comment_view'=>'on','Comment_write'=>'friends-only',
+'Comment_screen'=>'open','comments_order'=>'normal','autoformat'=>'no','autokaw'=>'no','template'=>'blog')))
 );
 }
 

@@ -1,5 +1,6 @@
-<?php // редактор заметок
-if(!isset($admin_name)) idie("Error 404"); // неправильно запрошенный скрипт - нахуй
+<?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+// редактор заметок
+
 if(!$admin) redirect($wwwhost."login/"); // посторонних - нахуй
 blogpage("Редактор заметок");
 
@@ -8,6 +9,7 @@ isset($_POST["Date"]) ? h($_POST["Date"]) : (
 ms("SELECT `Date` FROM `dnevnik_zapisi` ORDER BY `Date` DESC LIMIT 1","_l",0)
 )));
 
+SCRIPTS("запретить навигацию","page_onstart.push(\"mHelps['editor']=1\");");
 
 if($article["Prev"].$article["Next"]!='') { list($y,$m)=explode("-",$Date,2); $_PAGE["calendar"] = getCalendar($y,$m); }
 
@@ -35,22 +37,18 @@ if($_POST["action"] == "Save") {
 	$t=getmaketime($_POST["Date"]);
 
 //	getCalendar_clear($_POST["Date"]); // сбросить кэш календаря
+
+        $opt=makeopt($_POST);
+
 	msq_add_update('dnevnik_zapisi',array(
 			'Date'=>e($_POST["Date"]),
 			'Header'=>e($_POST["Header"]),
 			'template'=>e($_POST["template"]),
 			'Body'=>e($s),
 			'Access'=>e($_POST["Access"]),
-//			'Comment'=>e($_POST["Comment"]),
-			'Comment_view'=>e($_POST["Comment_view"]),
-			'Comment_write'=>e($_POST["Comment_write"]),
-			'Comment_screen'=>e($_POST["Comment_screen"]),
-			'comments_order'=>e($_POST["comments_order"]),
-			'autoformat'=>e($_POST["autoformat"]),
-			'autokaw'=>($_POST["autokaw"]=='no'?'no':'auto'),
+			'opt'=> e(ser($opt)),
 			'DateDate'=>$t[0],
 			'DateDatetime'=>$t[1],
-			//count_comments_open
 			'DateUpdate'=>time()
 		),'Date');
 //	prosris(); // устаканить `dnevnik_zapisi`
@@ -72,7 +70,7 @@ elseif($_POST["action"] == "Delete") {
 
 if($Date) $_POST=ms("SELECT * FROM `dnevnik_zapisi` WHERE `Date`='".e($Date)."'","_1",0);
 else $_POST=ms("SELECT * FROM `dnevnik_zapisi` ORDER BY `Date` DESC LIMIT 1","_1",0);
-
+$_POST=mkzopt($_POST);
 
 $urldata=urldata(h($_POST["Date"]));
 

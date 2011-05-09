@@ -3,7 +3,7 @@
 
 function NIKONOV($e) { global $admin,$podzamok,$article;
 	list($url,$text)=explode("\n",$e,2); $url=c($url); $text=c($text);
-	if( time() > (strtotime($article['Date']) + 86400*8) ) { // если больше недели - не заменять
+	if( time() > (strtotime(substr($article['Date'],0,10)) + 86400*8) ) { // если больше недели - не заменять
 	return $text.NIKONOV_NEMALO(NIKONOVU($url));
 }
 

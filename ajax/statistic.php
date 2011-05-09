@@ -1,43 +1,60 @@
 <?php
 include "../config.php";
-include $include_sys."_autorize.php";
-require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpRequest("windows-1251");
+require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpRequest($wwwcharset);
+include $include_sys."_autorize.php"; // сперва JsHttpRequest, затем autorize
 
 $a=$_REQUEST["a"];
 $data=intval($_REQUEST["data"]);
 
-
 //====================== кто посетил ===========================================================================
 if($a == "ktoposetil") {
-
-//	$pp=ms("SELECT `unic` FROM `dnevnik_posetil` WHERE `url`='$data'","_a");
-
-$vsego=intval(ms("SELECT COUNT(*) FROM `dnevnik_posetil` WHERE `url`='$data'","_l"));
+	$vsego=intval(ms("SELECT COUNT(*) FROM `dnevnik_posetil` WHERE `url`='$data'","_l"));
 
 	$pp=ms("
-SELECT r.url,r.unic,a.login,a.openid,a.realname
+SELECT r.url,r.unic,a.login,a.openid,a.realname,a.admin,a.lju
 FROM `dnevnik_posetil` AS r, ".$db_unic." AS a
 WHERE r.url='$data' AND a.id=r.unic
-".($_REQUEST["mode"]=='full'?'':"AND (a.login != '' OR a.openid !='' OR a.realname != '')")."
+".($_REQUEST["mode"]=='full'?'':"AND (a.login != '' OR a.openid !='' OR a.realname != '' OR a.lju != '')")."
 LIMIT 20000","_a");
 
-// dier($pp);
-
-$s=$s2=''; foreach($pp as $p) {
+$s=$s2='';
+foreach($pp as $p) {
 		if($p['realname']!='') $c=h($p['realname']);
-		elseif($p['openid']!='') list($c,)=explode('.',$p['openid'],2);
+		elseif($p['openid']!='') { list($c,)=explode('.',$p['openid'],2); $c="<div class=ll><img src=".$www_design."ico/livejournal.com.gif>".h($c)."</div>"; }
 		elseif($p['login']!='') $c=h($p['login']);
+		elseif($p['lju']!='') $c="<img src=".$www_design."ico/livejournal.com.gif>".h($p['lju']);
 		else { $s2.="#".$p['unic'].", "; continue; }
-		if($p['openid']!='') $c="<a href='http://".h($p['openid'])."'>$c</a>";
-		$s.="$c, ";
-	}
-
-otprav("helps('ktoposetil',\"<fieldset><legend>посетители страницы: $vsego</legend><small>".njs(trim($s.$s2," ,"))."</small></fieldset>\");");
-
+	$c="<span onclick='kus(".$p['unic'].")'>$c</span>";
+	if(($admin||$podzamok) and $p["admin"]=="podzamok") $s0.="$c, ";
+	else $s.="$c, ";
+}
+if($s0!="") $s0="<big><b>".trim($s0,', ')."</b></big>, ";
+otprav("helps('ktoposetil',\"<fieldset><legend>посетители страницы: $vsego</legend><small>".njs(trim($s0.$s.$s2,', '))."</small></fieldset>\");");
 }
 
-
 //===============================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//=================================================================================================
+if(isset($_REQUEST['onload'])) otprav(''); // все дальнейшие опции будут запрещены дл€ GET-запроса
+//=================================================================================================
+
 
 if($admin && $a == "delmusor") { msq_del(($_REQUEST["type"]=='l'?'dnevnik_link':'dnevnik_search'), array('n'=>e($_REQUEST["n"])) ); }
 
@@ -75,9 +92,5 @@ function maybelink($e) {
         if( ( strlen($s)/((int)substr_count($s,'–')+0.1) ) < 11 ) return(iconv("utf-8",$GLOBALS['wwwcharset']."//IGNORE",$s));
         else return(trim($s));
 }
-
-// function otprav_sb($scr,$s) { global $_RESULT,$msqe; $_RESULT["modo"] = ScriptBefore($scr,$msqe.$s); $_RESULT["status"] = true; exit; }
-// function ScriptBefore($script,$run) { return "loadScriptBefore('$script',\"".njs($run)."\");"; }
-// function prejs($s) { return str_replace(array("&","\\","'",'"',"\n","\r"),array("&amp;","\\\\","\\'",'\\"',"\\n",""),$s); }
 
 ?>

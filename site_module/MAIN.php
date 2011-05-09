@@ -1,8 +1,23 @@
 <?php // Отображение статьи с каментами - дата передана в $Date
 
-// include_once $GLOBALS['include_sys']."text_scripts.php"; // включить библиотеку
-
 SCRIPTS_mine();
+
+if($_SERVER['QUERY_STRING']=='logout') {
+
+SCRIPTS("logout","function logout2() {
+	if(!confirm(realname+' действительно хочет разлогиниться?')) return;
+	helps('work',\"<fieldset>Сброшена авторизация: \"+realname+\"</fieldset>\"); posdiv('work',-1,-1);
+	up='logout'; fc_save('up',up); f5_save('up',up); c_save(uc,up);
+	realname='logout';
+	zabil('myunic',realname);
+	setTimeout(\"clean('work')\", 3000);
+}
+	page_onstart.push('logout2()');
+");
+}
+
+
+
 
 function MAIN($e) { global $article;
 
@@ -16,22 +31,17 @@ $article['Next']=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`
 
 return ''; }
 
-
 //==============================================================================================
 
 function PRAVKA($e) {
 
+// SCRIPT_ADD($GLOBALS['www_js']."pravka_blog.js"); уже не надо, я все хозяйство (6 кб в main.js перенес)
+
 SCRIPTS("text_scripts","
-var ajax_pravka='".$GLOBALS['wwwhost']."ajax_pravka.php';
+var ajax_pravka='".$GLOBALS['www_ajax']."ajax_pravka.php';
 var dnevnik_data='".$GLOBALS['article']['Date']."';
 var ctrloff=".($_COOKIE['ctrloff']=='off'?1:0).";
-
-// mkdiv('helper',\"<div class='corners'><div class='inner'><div class='content'><div id='helper_body'><textarea id='message'></textarea></div></div></div></div>\",'popup');
-
 ");
-
-
-//  style='display:none;'
 
 }
 
@@ -40,35 +50,58 @@ var ctrloff=".($_COOKIE['ctrloff']=='off'?1:0).";
 
 
 function PREVNEXT($e) { global $article,$wwwhost,$httphost,$mypage,$_PAGE;
-//	$_PAGE['prevlink']=$wwwhost.$article["Prev"].".html";
-//	$_PAGE['nextlink']=$wwwhost.$article["Next"].".html";
-$_PAGE["prevlink"] = ($article["Prev"]!=''?$httphost.$article["Prev"].".html":$mypage);
-$_PAGE["nextlink"] = ($article["Next"]!=''?$httphost.$article["Next"].".html":$mypage);
 
-	$prev=($article["Prev"]==''?'&nbsp;':"<a href=".$wwwhost.$article["Prev"].".html>&lt;&lt; предыдущая заметка</a>");
-	$next=($article["Next"]==''?'&nbsp;':"<a href=".$wwwhost.$article["Next"].".html>следующая заметка &gt;&gt;</a>");
+$conf=array_merge(array(
+	'prev'=>"<a href='{prevlink}'>&lt;&lt; предыдущая заметка</a>",
+	'next'=>"<a href='{nextlink}'>следующая заметка &gt;&gt;</a>",
+	'no'=>"&nbsp;",
+	'template'=>"<center><table width=98% cellspacing=0 cellpadding=0><tr valign=top>
+<td width=50%><font size=1>{prev}</font></td>
+<td width=50% align=right><font size=1>{next}</font></td>
+</tr></table></center>"
+),parse_e_conf($e));
 
-//return "<p>".$article["Prev"]."<p>".$article["Next"]."";
+	$_PAGE["prevlink"] = ($article["Prev"]!=''?$httphost.$article["Prev"].".html":$mypage);
+	$_PAGE["nextlink"] = ($article["Next"]!=''?$httphost.$article["Next"].".html":$mypage);
 
-return "
-<center><table width=98% cellspacing=0 cellpadding=0><tr valign=top>
-<td width=50%><font size=1>$prev</font></td>
-<td width=50% align=right><font size=1>$next</font></td>
-</tr></table></center>";
+	$conf['prevlink']=($article["Prev"]==''?$conf['no']:mper($conf['prev'],array('prevlink'=>$wwwhost.$article["Prev"].".html")));
+	$conf['nextlink']=($article["Next"]==''?$conf['no']:mper($conf['next'],array('nextlink'=>$wwwhost.$article["Next"].".html")));
 
+	return mper($conf['template'],array('prev'=>$conf['prevlink'],'next'=>$conf['nextlink']));
 }
 
 //==============================================================================================
 // [title] - заголовок html
-function TITLE($e) { global $article; return $article['Date']." ".($article['Header']!=''?$article['Header']:''); }
+function TITLE($e) { global $article; 
 
-function STATISTIC($e) { global $article; return "<div class=l onclick=\"majax('statistic.php',{a:'loadstat',data:'".$article['num']."'})\">статистика</div>"; }
+	if($e=='') $e="{site}: {date} {header}";
+
+	$e=str_ireplace('{site}',$GLOBALS['admin_name'],$e);
+	$e=str_ireplace('{date}',$article['Date'],$e);
+	$e=str_ireplace('{header}',($article['Header']!=''?$article['Header']:''),$e);
+
+	$GLOBALS['mytitle']=$e;
+
+	return '';
+}
+
+function STATISTIC($e) { global $article;
+$conf=array_merge(array(
+	'majax'=>"majax('statistic.php',{a:'loadstat',data:'".$article['num']."'})",
+	'template'=>"<div class=l onclick=\"{majax}\">статистика</div>"
+),parse_e_conf($e));
+	return mper($conf['template'],$conf);
+}
 
 //==============================================================================================
 // [body] - обработка текста заметки
-function TEXT($e) {
-	include_once $GLOBALS['include_sys']."_onetext.php";
-	global $article; return "<div id='Body_".$article['num']."'>".onetext($article)."</div>";
+function TEXT($e) { global $article; include_once $GLOBALS['include_sys']."_onetext.php";
+	// return onetext($article);
+	return "<div id='Body_".$article['num']."'>".onetext($article)."</div>";
+}
+
+function PODZAMCOLOR() { $a=$GLOBALS['article']['Access']; if($a=='all') return "";
+	return " style=\"background-color: ".$GLOBALS['podzamcolor']."\"";
 }
 
 //==============================================================================================
@@ -83,20 +116,68 @@ function OEMBED($e) { return '
 // [counter] - счетчик на странице
 function COUNTER($e) {
 	// return $GLOBALS['article']["view_counter"]+1; // старый счетчик
-	return get_counter($GLOBALS['article']);
+	return "<span class=counter"
+.($GLOBALS['memcache']?" onclick=\"this.onclick='';this.style.color='red';inject('counter.php?num="
+.trim($GLOBALS['blogdir'],'/').'_'.$GLOBALS['article']['num']
+."&ask=1&old=0');\"":'')
+.">".get_counter($GLOBALS['article'])."</span>";
 }
 
 //==============================================================================================
 function UNIC($e) { global $IS;
 
-	if(isset($IS['user']) and isset($IS['obr'])) $s=$GLOBALS['imgicourl'];
-	else $s='login&nbsp;'.$GLOBALS['unic'];
+$conf=array_merge(array(
+	'kuki'=>$GLOBALS['jog_kuki'],
+	'logintxt'=>'login&nbsp;',
+	'template'=>"<div id='loginobr' style='cursor:pointer; padding:2px; margin: 1px 10px 1px 10px; border:1px dotted #B0B0B0;' onclick=\"majax('login.php',{action:'openid_form'})\"><span style='font-size:7px;'>ваш логин:</span><div id='myunic' style='font-weight: bold; color: blue; font-size: 8px;'>{name}</div></div>{kuki}"
+),parse_e_conf($e));
 
-	$s=preg_replace("/<a\s[^>]+>/s","",$s);
-	$s=str_replace('</a>','',$s);
+	$conf['name']=((isset($IS['user']) and isset($IS['obr']))?$GLOBALS['imgicourl']:'{logintxt}'.$GLOBALS['unic']);
+	$conf['name']=preg_replace("/<a\s[^>]+>/s","",str_replace('</a>','',$conf['name']));
 
-	return "<div id=loginobr style='cursor: pointer; padding: 2px; margin: 1px 10px 1px 10px; border: 1px dotted #B0B0B0;' onclick=\"majax('login.php',{action:'openid_form'})\"><span style='font-size:7px;'>ваш логин:</span><div style='font-weight: bold; color: blue; font-size: 8px;'>".$s."</div></div>".$GLOBALS['jog_kuki'];
+	return mper($conf['template'],$conf);
 
+//	$s="<div id='loginobr' style='cursor: pointer; padding: 2px; margin: 1px 10px 1px 10px; border: 1px dotted #B0B0B0;' onclick=\"majax('login.php',{action:'openid_form'})\"><span style='font-size:7px;'>ваш логин:</span><div id=myunic style='font-weight: bold; color: blue; font-size: 8px;'>".$s."</div></div>".$GLOBALS['jog_kuki'];
+	
+
+//====================== restore unic 11 ================
+/*
+if( $GLOBALS['IS']['openid']=='' and $GLOBALS['IS']['password']=='' and isset($_COOKIE['unic11'])) {
+	list($unic,$unicpass) = explode('-',$_COOKIE['unic11'],2); $unic=intval($unic);
+	if($unicpass==md5($unic.$GLOBALS['hashlogin'])) {
+                $ISE=getis($unic);
+                if($ISE['openid']!='') $s.="
+<div id='loginobr_unic11' style='padding: 2px; margin: 1px 10px 1px 10px; border: 1px dotted #B0B0B0;'>
+<div id='openidotvet' class=br style='color: green'></div>
+<p class=br><blink>стерлась авторизация!</blink></p>
+<b>".h($ISE['openid'])."</b><br><input type=button value='Восстановить!' onclick=\"majax('login.php',{action:'oldlogin_form',login:'".h($ISE['openid'])."'})\">
+</div>
+
+";
+//zabil('openidotvet','<div class=o>соединение...</div>');majax('login.php',{action:'openid_logpas',rpage:mypage,mylog:'".$ISE['openid']."',mypas:''});
+
+                else if($ISE['password']!=''&&$ISE['login']!='') $s.="
+
+<div id='loginobr_unic11' style='padding: 2px; margin: 1px 10px 1px 10px; border: 1px dotted #B0B0B0;'>
+<div id='openidotvet' class=br style='color: green'></div>
+<p class=br><blink>стерлась авторизация!</blink></p>
+<b>".h($ISE['login'])."</b>
+<br><input type=button value='Восстановить!' onclick=\"majax('login.php',{action:'oldlogin_form',login:'".h($ISE['login'])."'})\">
+</div>
+
+"; 
+
+// <p class=br>пароль:</p><input type=text size=10 id='loginobr_unic11p'>
+// <br><input type=button value='Восстановить!' onclick=\"zabil('openidotvet','<div class=o>соединение...</div>');majax('login.php',{action:'openid_logpas',rpage:mypage,mylog:'".$ISE['openid']."',mypas:idd('loginobr_unic11p').value});\">
+
+        }
+}
+*/
+//====================== restore unic 11 ================
+
+
+
+//	return $s;
 }
 
 //==============================================================================================
@@ -119,10 +200,14 @@ return '';
 
 // [Header] - заголовок на странице
 function HEAD($e) { global $article;
-	return "<div class='header'>".zamok($article['Access']).$article["Day"]." ".$GLOBALS['months_rod'][intval($article["Mon"])]." ".$article["Year"]
-."<div id=Header_".$article['num'].(($GLOBALS['admin']
-
-)?" class=l onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\"":'').">".($article["Header"]!=''?$article["Header"]:'(...)')."</div></div>";
+return "<div class='header'"
+.($article['Access']!='all'?" style=\"padding:10pt;background-color:".$GLOBALS['podzamcolor']."\">".zamok($article['Access'])
+:">")
+.$article["Day"]." ".$GLOBALS['months_rod'][intval($article["Mon"])]." ".$article["Year"]
+.(empty($e)?ADMINSET():$e)
+."<div id=Header_".$article['num'].($GLOBALS['admin']?" class=l onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\"":'').">"
+.($article["Header"]!=''?$article["Header"]:'(...)')
+."</div></div>";
 }
 
 
@@ -143,11 +228,10 @@ function HEAD_TXT($e) { return $GLOBALS["article"]["Header"]; }
 
 function MAY9() { global $article; //--- георгиевская ленточка ---
 	$m9=intval(date("md")); 
-	return (($m9>501 && $m9<515)?"<img src='".$GLOBALS['www_design']."img/9-may.jpg' align=right>":'');
+	return ($m9>501 && $m9<515)?"<img src='".$GLOBALS['www_design']."img/9-may.jpg' align=right>":'';
 //return (($m9>501 && $m9<515)?"<img style='position:absolute;right:4px;top:4px;z-index:0;'src='".$GLOBALS['www_design']."img/9-may.jpg'>":'');
 
 }
-
 
 //============
 /*
@@ -166,4 +250,7 @@ return $s;
 //        $l=$l['tag']; $t.="<span".(isset($tag[$l])?'':" class=l onclick='addtag(this)'").">$l</span>, "; } 
 //otprav("	return ($article["cat"]!='')?"<p style='font-size: 10pt; margin-top:4px;'>Рубрика: <a style='font-size: 10pt;' href='".$httphost."blog?cat=".$article["cat"]."'>".$article["cat"]."</a></p>":'';}
 */
+
+// function ADMINPANEL($e){}
+
 ?>

@@ -4,9 +4,9 @@
 
 .po { font: 90% sans-serif, Helvetica, Arial, Verdana; margin: 0 5% 0 10%; } /* общий блок */
 
-.pc { font: 90%; border: 1px solid #B0B0B0; margin-right: 5%; overflow: auto; padding: 5px; background-color: #FAFAFA; } /* new */
-.pcy { font: 90%; border: 1px solid #B0B0B0; margin-right: 5%; overflow: auto; padding: 5px; background-color: #DFFAFA; } /* submit */
-.pcn { font: 90%; border: 1px solid #B0B0B0; margin-right: 5%; overflow: auto; padding: 5px; background-color: #FADFFA; } /* discard */
+.pc { font-size: 90%; border: 1px solid #B0B0B0; margin-right: 5%; overflow: auto; padding: 5px; background-color: #FAFAFA; } /* new */
+.pcy { font-size: 90%; border: 1px solid #B0B0B0; margin-right: 5%; overflow: auto; padding: 5px; background-color: #DFFAFA; } /* submit */
+.pcn { font-size: 90%; border: 1px solid #B0B0B0; margin-right: 5%; overflow: auto; padding: 5px; background-color: #FADFFA; } /* discard */
 
 .pch { margin-left: 1%; font-weight: bold; } /* ник коментария */
 .pcc { padding: 5px; margin: 0 3% 0 3%; } /* текст комментария */

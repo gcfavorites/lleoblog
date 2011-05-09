@@ -1,3 +1,5 @@
+@charset "windows-1251";
+
 * {
 	margin: 0;
 	padding: 0;
@@ -29,7 +31,7 @@ border: 5px solid #000;
 
 #header {
 height: 160px;
-background: #554d42 url({www_design}beehives/header.jpg) no-repeat;
+background: #554d42 url(/blog/design/beehives/header.jpg) no-repeat;
 }
 #header h1 { 
 font-size: 50px;
@@ -174,10 +176,10 @@ overflow: auto; padding: 0 0 0 5px; margin-top: 5px; }
 .cplu,.cmin { font-size:6pt }
 .cplu {color:red} .cplu:before { content:'+'} .cplu:after { content:'  '}
 .cmin {color:blue} .cmin:before { content:'-'} .cmin:after { content:'  '}
-.kmail:after { content: ' 'url('{www_design}e2/kmail.png')' ' }
+.kmail:after { content: ' 'url(/blog/design/e2/kmail.png)' ' }
 
-.rul1:before {content:url('{www_design}e3/button_accept.png')}
-.rul0:before {content:url('{www_design}e3/list-remove.png')}
+.rul1:before {content:url(/blog/design/e3/button_accept.png)}
+.rul0:before {content:url(/blog/design/e3/list-remove.png)}
 
 /* кнопки */
 .kus,.kd,.ked,.ks0,.ks1,.ka { cursor: pointer; float:left; font-size: 6pt; color: blue; padding: 0 2pt 0 7pt; }
@@ -192,7 +194,7 @@ overflow: auto; padding: 0 0 0 5px; margin-top: 5px; }
 .cdel:before {content:'* комментарий удален'}
 
 .opc { font-size: 11px; }
-.opc:before {content:url('{www_design}e3/expand_plus.gif')'показать'}
+.opc:before {content:url(/blog/design/e3/expand_plus.gif)'показать'}
 
 
 .br { font-size: 10px; }
@@ -222,7 +224,7 @@ cursor:auto; user-select:auto; -moz-user-select:auto; -khtml-user-select:auto;
 
 /*
 .corners .inner { position:relative; overflow:hidden; padding:9px 9px 0 9px; margin:-9px -9px 0 -9px; width:100%; }
-.corners .tl, .corners .tr, .corners .bl, .corners .br { position:absolute; background:url({www_design}pravka/corners.png) no-repeat; left:-9px; z-index:-1; }
+.corners .tl, .corners .tr, .corners .bl, .corners .br { position:absolute; background:url(/blog/design/pravka/corners.png) no-repeat; left:-9px; z-index:-1; }
 .corners .tl, .corners .tr { top:-9px; height:500px; }
 .corners .tl, .corners .bl {width:100%}
 .corners .tr, .corners .br { margin-left:100%; width:9px; }
@@ -236,51 +238,51 @@ cursor:auto; user-select:auto; -moz-user-select:auto; -khtml-user-select:auto;
 
 */
 
-.corners{position:relative;height:1%;background:url({www_design}pravka/popup_l.png) repeat-y;margin:9px 0;padding:1px 9px;}
-.corners .inner{position:relative;z-index:1;margin-right:-9px;background:url({www_design}pravka/popup_r.png) 100% 0 repeat-y;padding:1px 9px 1px 0}
-.corners:before{display:block;height:9px;content:url({www_design}pravka/popup_lt.png);background:url({www_design}pravka/popup_rt.png) 100% 0 no-repeat;font-size:0;margin:-10px -9px 0}
-.corners .inner:before{display:block;height:9px;content:'';background:url({www_design}pravka/popup_t.png) repeat-x;font-size:0;margin:-10px 0 0}
-.corners:after{display:block;height:9px; content:url({www_design}pravka/popup_lb.png);
-background:url({www_design}pravka/popup_rb.png) 100% 10px no-repeat;
+.corners{position:relative;height:1%;background:url(/blog/design/pravka/popup_l.png) repeat-y;margin:9px 0;padding:1px 9px;}
+.corners .inner{position:relative;z-index:1;margin-right:-9px;background:url(/blog/design/pravka/popup_r.png) 100% 0 repeat-y;padding:1px 9px 1px 0}
+.corners:before{display:block;height:9px;content:url(/blog/design/pravka/popup_lt.png);background:url(/blog/design/pravka/popup_rt.png) 100% 0 no-repeat;font-size:0;margin:-10px -9px 0}
+.corners .inner:before{display:block;height:9px;content:'';background:url(/blog/design/pravka/popup_t.png) repeat-x;font-size:0;margin:-10px 0 0}
+.corners:after{display:block;height:9px; content:url(/blog/design/pravka/popup_lb.png);
+background:url(/blog/design/pravka/popup_rb.png) 100% 10px no-repeat;
 
 font-size:0;margin:0 -9px -10px}
-.corners .inner:after{display:block;height:9px;content:'';background:url({www_design}pravka/popup_b.png) repeat-x;font-size:0;margin:0 0 -10px}
+.corners .inner:after{display:block;height:9px;content:'';background:url(/blog/design/pravka/popup_b.png) repeat-x;font-size:0;margin:0 0 -10px}
 
 
 .can { position:absolute; top:1px; right:8px; width:16px; height:16px; cursor: pointer; }
-.can:after { content: url("{www_design}e3/button_cancel.png"); }
+.can:after { content: url(/blog/design/e3/button_cancel.png); }
 
 .canceledit,.fmedit,.fmn,.fmcopy,.fmmdash,.fmltgt { cursor: pointer; }
-.canceledit:after { content: url("{www_design}e/cancel1.png"); }
-.fmedit:after { content: url("{www_design}e/edit.gif"); }
-.fmn:after { content: url("{www_design}e/n.gif"); }
-.fmcopy:after { content: url("{www_design}e/copy.gif"); }
-.fmmdash:after { content: url("{www_design}e/mdash.gif"); }
-.fmltgt:after { content: url("{www_design}e/ltgt.gif"); }
+.canceledit:after { content: url(/blog/design/e/cancel1.png); }
+.fmedit:after { content: url(/blog/design/e/edit.gif); }
+.fmn:after { content: url(/blog/design/e/n.gif); }
+.fmcopy:after { content: url(/blog/design/e/copy.gif); }
+.fmmdash:after { content: url(/blog/design/e/mdash.gif); }
+.fmltgt:after { content: url(/blog/design/e/ltgt.gif); }
 
 /* (c)Миша http://pricol.nov.ru/lleo/2009/12/05.html */
 a[href *=".livejournal.com"] {
-	background: transparent url({www_design}ico/livejournal.com.gif) no-repeat center left;
+	background: transparent url(/blog/design/ico/livejournal.com.gif) no-repeat center left;
 	padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
 }
 a[href *="lleo.aha.ru"] {
-	background: transparent url({www_design}ico/lleo.aha.ru.gif) no-repeat center left;
+	background: transparent url(/blog/design/ico/lleo.aha.ru.gif) no-repeat center left;
 	padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
 }
 a[href *=".blogspot.com"] {
-	background: transparent url({www_design}ico/blogspot.com.gif) no-repeat center left;
+	background: transparent url(/blog/design/ico/blogspot.com.gif) no-repeat center left;
 	padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
 }
 a[href *=".moikrug.ru"] {
-	background: transparent url({www_design}ico/moikrug.ru.gif) no-repeat center left;
+	background: transparent url(/blog/design/ico/moikrug.ru.gif) no-repeat center left;
 	padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
 }
 a[href *=".myopenid.com"] {
-	background: transparent url({www_design}ico/myopenid.com.gif) no-repeat center left;
+	background: transparent url(/blog/design/ico/myopenid.com.gif) no-repeat center left;
 	padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
 }
 a[href *=".ya.ru"] {
-	background: transparent url({www_design}ico/ya.ru.gif) no-repeat center left;
+	background: transparent url(/blog/design/ico/ya.ru.gif) no-repeat center left;
 	padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
 }
 a[href *=".youtube.com"] {
@@ -301,3 +303,9 @@ color: #aaa;
 }
 #footer a { color: #aaa; }
 #footer a:hover { color: #111; }
+
+.qTip {
+padding: 5px; border: 1px solid #666; border-right-width: 2px; border-bottom-width: 2px;
+background: #999; color: #FFF; font: bold 11px Verdana, Arial, sans-serif;
+text-align: left; position: absolute; z-index: 1000; max-width: 30%;
+}

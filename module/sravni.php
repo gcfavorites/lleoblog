@@ -1,6 +1,5 @@
-<?php // сравни - чи срав, чи ни
-
-if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+<?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+// сравни - чи срав, чи ни
 
 $_PAGE = array('design'=>file_get_contents($GLOBALS['host_design']."plain.html"),
 'header'=>"Сравнить два текста",

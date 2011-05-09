@@ -1,6 +1,6 @@
-<?php
+<?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 
-logi("rssc.log","\n".date("Y-m-d H:i:s")." - ".$_SERVER["REMOTE_ADDR"]." ".$_SERVER["HTTP_USER_AGENT"]);
+// logi("rssc.log","\n".date("Y-m-d H:i:s")." - ".$_SERVER["REMOTE_ADDR"]." ".$_SERVER["HTTP_USER_AGENT"]);
 
 header("Content-Type: text/xml; charset=".$wwwcharset);
 

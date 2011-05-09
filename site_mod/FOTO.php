@@ -2,37 +2,20 @@
 
 Указываем относительный адрес фотки на сайте. Предполагается, что она залита средствами движка, поэтому там же есть папка pre/, где лежит для этой фотки одноименная превьюшка.
 
-<script>var bigfoto_onload=1;function bigfoto_pos(){ajaxoff();e=idd('bigfotoimg');posdiv('bigfoto',-1,-1);var H=(getWinH()-20); if(e.height>H && H>480) { e.height=H; posdiv('bigfoto',-1,-1); posdiv('bigfoto',-1,-1);}var W=(getWinW()-50); if(e.width>W && W>640) { e.width=W; posdiv('bigfoto',-1,-1); posdiv('bigfoto',-1,-1);}}function bigfoto(e){ajaxon();bigfoto_onload=1;setTimeout(\"if(bigfoto_onload) bigfoto_pos();\", 2000);helps('bigfoto',\"<img id='bigfotoimg' onclick=\\\"clean('bigfoto')\\\" onload=\\\"bigfoto_onload=0;bigfoto_pos()\\\" src='\"+e.href+\"'>\",1);return false;}</script>
-
 {_FOTO: /blog/2010/05/LLeo_Vysotsky.jpg _}
 */
 
-SCRIPTS("bigfoto","
+if(!isset($GLOBALS['bigfoto'])) $GLOBALS['bigfoto']=0;
+if(!isset($GLOBALS['bigfotopart'])) $GLOBALS['bigfotopart']=0;
 
-var bigfoto_onload=1;
+function FOTO($e) { global $bigfoto,$bigfotopart;
+                list($img,$txt)=explode(" ",$e,2); $img=c($img); $txt=c($txt);
 
-function bigfoto_pos(){
-	ajaxoff();
-	e=idd('bigfotoimg');
-	posdiv('bigfoto',-1,-1);
-	var H=(getWinH()-20); if(e.height>H && H>480) { e.height=H; posdiv('bigfoto',-1,-1); posdiv('bigfoto',-1,-1);}
-	var W=(getWinW()-50); if(e.width>W && W>640) { e.width=W; posdiv('bigfoto',-1,-1); posdiv('bigfoto',-1,-1);}
-}
-
-function bigfoto(e) {
-	ajaxon();
-	bigfoto_onload=1;
-	setTimeout(\"if(bigfoto_onload) bigfoto_pos();\", 2000);
-	helps('bigfoto',\"<img id='bigfotoimg' onclick=\\\"clean('bigfoto')\\\" onload=\\\"bigfoto_onload=0;bigfoto_pos()\\\" src='\"+e.href+\"'>\",1);
-	return false;
-}
-");
-
-// posdiv('bigfoto',-1,-1);
-
-function FOTO($e) { // list($e,$s)=explode(':',$e,2); $e=c($e);
-	$epre=preg_replace("/^(.*?)\/([^\/]+)$/si","$1/pre/$2",$e);
-	return "<a href='".$e."' onclick='return bigfoto(this)'><img src='".h($epre)."' border=0></a>";
+                if(!strstr($img,',')) $epre=preg_replace("/^(.*?)\/([^\/]+)$/si","$1/pre/$2",$img);
+                else list($img,$epre)=explode(',',$img);
+	return "<a id='bigfot".$bigfotopart."_".$bigfoto."' href=\"".h($img)."\" onclick='return bigfoto(".$bigfoto.",".$bigfotopart.")'><img src=\"".h($epre)."\" border=0></a>"
+	.($GLOBALS['admin']?"<div style='display:none' id='bigfotnum".$bigfotopart."'>".$GLOBALS['article']['num']."</div>":'')
+	."<div class=r id='bigfott".($bigfotopart++)."_".($bigfoto++)."'>".($txt!=''?$txt:'')."</div>";
 }
 
 ?>

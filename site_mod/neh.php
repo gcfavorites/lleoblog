@@ -6,6 +6,6 @@
 
 */
 
-function neh($e) { return h($e); }
+function neh($e) { return str_replace(array('{@','@}','{','}'),array('{_','_}','&#123;','&#125;'),h($e)); }
 
 ?>

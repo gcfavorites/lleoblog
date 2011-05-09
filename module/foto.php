@@ -1,6 +1,6 @@
-<?php // Правки
+<?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+// Правки
 
-if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 if(!$admin) redirect($wwwhost."login/"); // посторонних - нахуй
 
 blogpage();

@@ -13,10 +13,16 @@ function MP3($e) { global $www_design;
 	$e=c($e);
 	$eu=urlencode($e);
 
+$pl=$www_design."mp3playerns.swf?file=".$eu; // autoplay=yes& блять не работает
+
 return "<center>"
 .($f=='mp3'?"<table><tr valign=center><td>":'')
-."<object type='application/x-shockwave-flash' data='".$www_design."mp3player.swf?src=".$eu."' align='middle' height='18' width='125'>"
-."<param name='movie' value='".$www_design."mp3player.swf?src=".$eu."'></object>"
+."<object classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' type='application/x-shockwave-flash' data='$pl' wmode='transparent' align='middle' height='20' width='300'>"
+."<param name='movie' value='$pl' />"
+."<param name='wmode' value='transparent' />"
+."<param name='flashvars' value='file=".$eu."' />"
+."<embed type='application/x-shockwave-flash' src='$pl' wmode='transparent' height='20' width='300' loop='false'></embed>"
+."</object>"
 .($f=='mp3'?"</td><td><a class=br href='".$e."'>mp3</a></td></tr></table>":'')
 ."</center>";
 

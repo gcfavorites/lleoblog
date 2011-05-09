@@ -1,7 +1,9 @@
+@charset "windows-1251";
+
 html{ height: 100%; width:100%; }
 
 body { font: 100% sans-serif, Helvetica, Arial, Verdana;
-background-image: url({www_design}fon1.jpg);
+background-image: url(/blog/design/fon1.jpg);
 margin: 0; padding: 0;
 text-align: center; /* хак для IE 5* */
 color: #000000; position:relative;
@@ -47,10 +49,10 @@ overflow: auto; padding: 0 0 0 5px; margin-top: 5px; }
 .cplu,.cmin { font-size:8pt }
 .cplu {color:red;cursor:n-resize} .cplu:before { content:'+'} .cplu:after { content:'  '}
 .cmin {color:blue;cursor:s-resize} .cmin:before { content:'-'} .cmin:after { content:'  '}
-.kmail:after { content: ' 'url('{www_design}e2/kmail.png')' ' }
+.kmail:after { content: ' 'url(/blog/design/e2/kmail.png)' ' }
 
-.rul1:before {content:url('{www_design}e3/button_accept.png')}
-.rul0:before {content:url('{www_design}e3/list-remove.png')}
+.rul1:before {content:url(/blog/design/e3/button_accept.png)}
+.rul0:before {content:url(/blog/design/e3/list-remove.png)}
 
 /* кнопки */
 .kus,.kd,.ked,.ks0,.ks1,.ka,.ko1,.ko0,.kou { cursor: pointer; float:left; font-size: 6pt; color: blue; padding: 0 2pt 0 7pt; }
@@ -74,7 +76,7 @@ overflow: auto; padding: 0 0 0 5px; margin-top: 5px; }
 .cdel:before {content:'* комментарий удален'}
 
 .opc { font-size: 11px; }
-.opc:before {content:url('{www_design}e3/expand_plus.gif')'показать'}
+.opc:before {content:url(/blog/design/e3/expand_plus.gif)'показать'}
 
 
 .br { font-size: 10px; }
@@ -93,48 +95,48 @@ p.epigrafp {text-indent:0pt;text-align:right;margin-top:0pt;margin-bottom:4%;mar
 
 .popup { overflow:auto; top:100px;left:100px;position:absolute;z-index:999; }
 .popup .content{padding:4px 4px; background:#F3F1E0}
-.corners{position:relative;height:1%;background:url({www_design}pravka/popup_l.png) repeat-y;margin:9px 0;padding:1px 9px;}
-.corners .inner{position:relative;z-index:1;margin-right:-9px;background:url({www_design}pravka/popup_r.png) 100% 0 repeat-y;padding:1px 9px 1px 0}
-.corners:before{display:block;height:9px;content:url({www_design}pravka/popup_lt.png);background:url({www_design}pravka/popup_rt.png) 100% 0 no-repeat;font-size:0;margin:-10px -9px 0}
-.corners .inner:before{display:block;height:9px;content:'';background:url({www_design}pravka/popup_t.png) repeat-x;font-size:0;margin:-10px 0 0}
-.corners:after{display:block;height:9px; content:url({www_design}pravka/popup_lb.png); background:url({www_design}pravka/popup_rb.png) 100% 10px no-repeat; font-size:0;margin:0 -9px -10px}
-.corners .inner:after{display:block;height:9px;content:'';background:url({www_design}pravka/popup_b.png) repeat-x;font-size:0;margin:0 0 -10px}
+.corners{position:relative;height:1%;background:url(/blog/design/pravka/popup_l.png) repeat-y;margin:9px 0;padding:1px 9px;}
+.corners .inner{position:relative;z-index:1;margin-right:-9px;background:url(/blog/design/pravka/popup_r.png) 100% 0 repeat-y;padding:1px 9px 1px 0}
+.corners:before{display:block;height:9px;content:url(/blog/design/pravka/popup_lt.png);background:url(/blog/design/pravka/popup_rt.png) 100% 0 no-repeat;font-size:0;margin:-10px -9px 0}
+.corners .inner:before{display:block;height:9px;content:'';background:url(/blog/design/pravka/popup_t.png) repeat-x;font-size:0;margin:-10px 0 0}
+.corners:after{display:block;height:9px; content:url(/blog/design/pravka/popup_lb.png); background:url(/blog/design/pravka/popup_rb.png) 100% 10px no-repeat; font-size:0;margin:0 -9px -10px}
+.corners .inner:after{display:block;height:9px;content:'';background:url(/blog/design/pravka/popup_b.png) repeat-x;font-size:0;margin:0 0 -10px}
 
 .can { position:absolute; top:1px; right:8px; width:16px; height:16px; cursor: pointer; }
-.can:after { content: url("{www_design}e3/button_cancel.png"); }
+.can:after { content: url(/blog/design/e3/button_cancel.png); }
 
 .canceledit,.fmedit,.fmn,.fmcopy,.fmmdash,.fmltgt { cursor: pointer; }
-.canceledit:after { content: url("{www_design}e/cancel1.png"); }
-.fmedit:after { content: url("{www_design}e/edit.gif"); }
-.fmn:after { content: url("{www_design}e/n.gif"); }
-.fmcopy:after { content: url("{www_design}e/copy.gif"); }
-.fmmdash:after { content: url("{www_design}e/mdash.gif"); }
-.fmltgt:after { content: url("{www_design}e/ltgt.gif"); }
+.canceledit:after { content: url(/blog/design/e/cancel1.png); }
+.fmedit:after { content: url(/blog/design/e/edit.gif); }
+.fmn:after { content: url(/blog/design/e/n.gif); }
+.fmcopy:after { content: url(/blog/design/e/copy.gif); }
+.fmmdash:after { content: url(/blog/design/e/mdash.gif); }
+.fmltgt:after { content: url(/blog/design/e/ltgt.gif); }
 
 
 /* (c)Миша http://pricol.nov.ru/lleo/2009/12/05.html */
 a[href *=".livejournal.com"] {
-	background: transparent url({www_design}ico/livejournal.com.gif) no-repeat center left;
+	background: transparent url(/blog/design/ico/livejournal.com.gif) no-repeat center left;
 	padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
 }
 a[href *="lleo.aha.ru"] {
-	background: transparent url({www_design}ico/lleo.aha.ru.gif) no-repeat center left;
+	background: transparent url(/blog/design/ico/lleo.aha.ru.gif) no-repeat center left;
 	padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
 }
 a[href *=".blogspot.com"] {
-	background: transparent url({www_design}ico/blogspot.com.gif) no-repeat center left;
+	background: transparent url(/blog/design/ico/blogspot.com.gif) no-repeat center left;
 	padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
 }
 a[href *=".moikrug.ru"] {
-	background: transparent url({www_design}ico/moikrug.ru.gif) no-repeat center left;
+	background: transparent url(/blog/design/ico/moikrug.ru.gif) no-repeat center left;
 	padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
 }
 a[href *=".myopenid.com"] {
-	background: transparent url({www_design}ico/myopenid.com.gif) no-repeat center left;
+	background: transparent url(/blog/design/ico/myopenid.com.gif) no-repeat center left;
 	padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
 }
 a[href *=".ya.ru"] {
-	background: transparent url({www_design}ico/ya.ru.gif) no-repeat center left;
+	background: transparent url(/blog/design/ico/ya.ru.gif) no-repeat center left;
 	padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
 }
 a[href *=".youtube.com"] {
@@ -147,3 +149,9 @@ a[href *=".youtube.com"] {
 .q { clear:both; height:0; font-size: 1px; line-height: 0px; }
 
 LEGEND { font-weight: bold; color: #FF6200; font-size: 10px; text-align: left; }
+
+.qTip {
+padding: 5px; border: 1px solid #666; border-right-width: 2px; border-bottom-width: 2px;
+background: #999; color: #FFF; font: bold 11px Verdana, Arial, sans-serif;
+text-align: left; position: absolute; z-index: 1000; max-width: 30%;
+}

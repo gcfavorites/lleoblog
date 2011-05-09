@@ -22,14 +22,19 @@
  * И ЭТИ СРАННЫЕ ОБЪЕКТНЫЕ КЛАССЫ, БЕЗ НИХ МИР ЧИЩЕ!
 */
 
-function antibot_make() { global $antibot_pic, $antibot_H, $antibot_W, $antibot_C, $antibot_add2hash, $antibot_file, $antibot_hash;
-	$bgs=glob($antibot_pic."bg-*"); $im=imagecreatefromjpeg($bgs[rand(0,count($bgs)-1)]); // Выбор случайной подложки
-	$h = round((ImageSY($im)-$antibot_H)/2); // Средняя высота
-	$w = round(ImageSX($im)/$antibot_C); // Средняя ширина
+function antibot_make($antibot_C=0) { global $antibot_pic, $antibot_H, $antibot_W, $antibot_add2hash, $antibot_file, $antibot_hash;
+	if(!$antibot_C) $antibot_C=$GLOBALS['antibot_C'];
+
+	$bgs=glob($antibot_pic."bg-*"); $um=imagecreatefromjpeg($bgs[rand(0,count($bgs)-1)]); // Выбор случайной подложки
+	$iml=$antibot_C*(imagesx($um)/5); $im=imagecreate($iml,imagesy($um));
+	for($x=0;$x<$iml;$x+=imagesx($um)) imagecopy($im,$um,$x,0,0,0,imagesx($um),imagesy($um));
+
+	$h = round((imagesy($im)-$antibot_H)/2); // Средняя высота
+	$w = round(imagesx($im)/$antibot_C); // Средняя ширина
 
 	// Придумать строку символов и разместить их на лужайке
 	$path=$antibot_pic."sum_"; $lpath=strlen($path); $files=glob($path."*.png"); $n=count($files)-1; // узнать, какие символы есть
-	$imS=array(); $sums=''; for($i=0; $i<$GLOBALS['antibot_C']; $i++) {
+	$imS=array(); $sums=''; for($i=0; $i<$antibot_C; $i++) {
 		$f=$files[rand(0,$n)]; // выбираем случайный символьный файл
 		$l=substr($f,$lpath,1); // выясняем, что это за символ
 		if(!isset($imS[$l])) $imS[$l]=imagecreatefrompng($f); // если не было - подгружаем его картинку
@@ -42,10 +47,10 @@ function antibot_make() { global $antibot_pic, $antibot_H, $antibot_W, $antibot_
 //	for($i=0; $i<=round(ImageSX($im)/7); $i++) { $x = $i*7; ImageLine($im, $x, 0, $x-ImageSY($im), ImageSY($im), $color); }
 
 //	// Заштрихуёвываем полосочкой - горизонталь
-	$imT=ImageCreate(1,1); ImageFill($imT,1,1,ImageColorAllocate($imT,0,0,0));
+	$imT=imagecreate(1,1); imagefill($imT,1,1,imagecolorallocate($imT,0,0,0));
 	// штриховка по горизонтали и вертикали
-	$t=rand(4,15); for($i=round(ImageSY($im)/$t);$i>=0;$i--) ImageCopyMerge($im,$imT,0,$i*$t,0,0,ImageSX($im),1,20);
-	$t=rand(4,15); for($i=round(ImageSX($im)/$t);$i>=0;$i--) ImageCopyMerge($im,$imT,$i*$t,0,0,0,1,ImageSY($im),20);
+	$t=rand(4,15); for($i=round(imagesy($im)/$t);$i>=0;$i--) imagecopymerge($im,$imT,0,$i*$t,0,0,imagesx($im),1,20);
+	$t=rand(4,15); for($i=round(imagesx($im)/$t);$i>=0;$i--) imagecopymerge($im,$imT,$i*$t,0,0,0,1,imagesy($im),20);
 
 	$antibot_hash = md5($sums.$antibot_add2hash);
 
@@ -58,9 +63,9 @@ function antibot_make() { global $antibot_pic, $antibot_H, $antibot_W, $antibot_
 	idie("Ошибка! Не могу сохранить картинку в директорию \"".$antibot_file."\", проверьте, создана ли она, и установлены ли права записи?");
 	}
 
-	$GLOBALS['antibot_imW'] = ImageSX($im);
-	$GLOBALS['antibot_imH'] = ImageSY($im);
-	ImageDestroy($im);
+	$GLOBALS['antibot_imW'] = imagesx($im);
+	$GLOBALS['antibot_imH'] = imagesy($im);
+	imagedestroy($im);
 	return $antibot_hash;
 }
 
