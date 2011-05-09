@@ -411,7 +411,7 @@ if($a=='edit_text') {
 otprav("
 save_and_close=function(){save_no_close();clean('fotoset')};
 save_no_close=function(){ if(idd('edit_text').value==idd('edit_text').defaultValue) return salert('".LL('save_not_need')."',500);
-majax('foto.php',{a:'save_file',file:'".h($file)."',text:idd('edit_text').value})
+majax('foto.php',{a:'save_file',file:'".h($file)."',text:idd('edit_text').value});
 idd('edit_text').defaultValue=idd('edit_text').value;
 };
 helpc('fotoset',\"<fieldset><legend>Edit: ".h($wwwhost.$file)."</legend><table><tr><td>"

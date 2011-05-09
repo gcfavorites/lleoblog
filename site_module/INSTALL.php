@@ -173,9 +173,30 @@ if(z) posdiv('percent',-1,-1);
 dodo('$m',$allwork,$time,$r);";
 }
 
+
+//------------ для формы editfile ------------------
+if($a=='edit_file'){ $file=RE('file'); return "save_and_close=function(){save_no_close();clean('editor')};
+save_no_close=function(){ if(idd('edit_text').value==idd('edit_text').defaultValue) return salert('save_not_need',500);
+majax('module.php',{mod:'INSTALL',a:'save_file',file:\"".njs($file)."\",text:idd('edit_text').value});
+idd('edit_text').defaultValue=idd('edit_text').value;
+};
+
+ohelpc('editor','Edit: ".h($file)."',\"<table><tr><td>"
+."<textarea style='width:\"+(getWinW()-100)+\"px;height:\"+(getWinH()-100)+\"px;' id='edit_text'>"
+.h(njsn(file_get_contents($file)))."</textarea>"
+."<br><input title='ctrl+Enter' type='button' value='Save+exit' onclick='save_and_close()'> <input title='shift+Enter' type='button' value='Save' onclick='save_no_close()'>"
+."</td></tr></table>\");
+idd('edit_text').focus();
+
+setkey('esc','',function(e){ if(idd('edit_text').value==idd('edit_text').defaultValue || confirm('exit no save?')) clean('editor'); },false);
+setkey('enter','ctrl',save_and_close,false);
+setkey('enter','shift',save_no_close,false);
+setkey('tab','shift',function(){ti('edit_text','\\t{select}')},false);
+";
+}
+if($a=='save_file'){ fileput(RE('file'),RE('text')); return "salert('saved',500)"; }
+
 //------------ login ------------------
-
-
 if($a=='logout') { // разлогиниться
 	return "c_save('adm2',''); c_save('adm',''); window.location='".$GLOBALS['$mypage']."?reboot='+Math.random();";
 }
@@ -254,46 +275,49 @@ ohelpc('install','Select server',\"".njsn($s)."\");";
 //	return "zabil('mesto_otvet',\"<div class=r>".njs(nl2br(print_r($r,1)))."</div>\");";
 }
 
-if($a=='install_edit_pack') { // форма редактирования пакета или создания нового
+if($a=='install_edit_pack') { // форма редактирования пакета или создания нового (name='')
 	$name=RE('name'); $s=''; $otstup=''; $lastdir='';
 
-	// $r=get_dfiles(); dier($r,$name);
+	$p=array(); if($name!='' && ($r=file($dir."instpack/".$name.".pack"))!==false) {
+		foreach($r as $l) { $m=explode(' ',$l); $p[$m[0]]=array($m[1],$m[2]); } // [0] => template/adminpanel.htm 1303587256 d866bd70d3d53450fd3b82243d32fe36
+	}
 
 	foreach(get_dfiles() as $l) { list($file,$ftime,$fkey)=explode(' ',$l,3);
 		$ff=$GLOBALS['filehost'].$file;
 		$filename=basename($file);
 		$dirname=dirname($file).'/';
 		$otstup=str_repeat(' ',substr_count($file,'/')*10);
-		// if($name=='')
-		$ac='iia'; // add
+		if($name=='') $ac='iia'; // add
+		else $ac=(isset($p[$file])?'iia':'iia ii0');
 		
 		if($dirname!=$lastdir) { $s.="<div class=\"$dirname ii1\" onclick='i_d(this)'>".$dirname."</div>"; $lastdir=$dirname; }
 		$s.="<div>".str_repeat(' ',strlen($dirname))
 		."<span id='e_$file' class=\"$dirname $ac\" onclick='i_f(this)'>".$filename."</span></div>";
 	}
 
-$subm="<input type='button' value='Save' onclick='packsave()'> <span class='ll' onclick=\"i_all()\">select all</span>";
+$subm="<input type='button' value='Save' onclick='packsave()'>"
+."&nbsp; &nbsp; <span class='ll' onclick=\"i_all()\">select</span>"
+."&nbsp; &nbsp; <span class='ll' onclick=\"packdel()\">delete</span>";
 
 	return $GLOBALS['selectjs']."
 
+packdel=function(){ if(confirm('Delete pack `".$name.".pack`?')) majax('module.php',{mod:'INSTALL',a:'install_pack_del',name:idd('newpack_name').value}); };
 packsave=function(){ var p=idd('packs').getElementsByTagName('span'); var s='';
 for(var i=0;i<p.length;i++){ if(p[i].className.split(' ').length<=2) s=s+'\\n'+p[i].id.substring(2); }
 majax('module.php',{mod:'INSTALL',a:'install_pack_save',s:s,name:idd('newpack_name').value});
 };
 
-ohelpc('pack','Create pack',\"".njsn(
+ohelpc('pack','Edit pack',\"".njsn(
 ($name==''?"<b>name: </b><input type='text' value='' size='10' maxlength='20' id='newpack_name'>":
 "<input type='hidden' value='$name' id='newpack_name'>")
 .$subm
 ."<div id='packs'><tt>$s</tt></div>$subm")."\");";
 }
 
-
-if($a=='install_edit_system') { // форма редактирования файла системных папок
-eeeeeeeeeeeeeee
+if($a=='install_pack_del') { // удаление пакета
+	$name=RE('name'); unlink($dir."instpack/".$name.".pack");
+	return "clean('pack'); zabil('mypacks',\"".njsn(get_my_pack($dir))."\"); salert('Pack <b>$name</b> deleted!',1000);";
 }
-
-
 
 if($a=='install_pack_save') { // приемка создания нового пакета
 // majax('module.php',{mod:'INSTALL',a:'install_pack_save',s:s,name:idd('newpack_name').value});
@@ -717,31 +741,11 @@ function POST_file($filePath,$urla,$ara,$port=80,$scheme='http',$charset='Window
 
 function get_my_pack($dir) { $s="my: "; // если есть своя папка с пакетами
 	if(is_dir($dir.'instpack')) foreach(glob($dir.'instpack/*.pack') as $l) { $w=basename($l); $s.="<span class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:'".preg_replace("/\.pack$/s",'',$w)."'})\" style='margin-left:20px'>$w</span>&nbsp; "; }
-	$s.="<span title='Create my inctallpack!' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:''})\" style='margin-left:20px'>new</span>";
+	$s.="<span title='Create my inctallpack!' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:''})\" style='margin-left:20px'>new</span>"
+."<span title='System dir' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'edit_file',file:'".$dir."system_dir.txt'})\" style='margin-left:20px'>system_dir</span>";
 	return $s;
 }
 
-
-//=================================== editpanel ===================================================================
-function editfile($file) {
-return "save_and_close=function(){save_no_close();clean('editor')};
-save_no_close=function(){ if(idd('edit_text').value==idd('edit_text').defaultValue) return salert('save_not_need',500);
-majax('foto.php',{a:'save_file',file:\"".njs($file)."\",text:idd('edit_text').value})
-idd('edit_text').defaultValue=idd('edit_text').value;
-};
-
-helpc('editor',\"<fieldset><legend>Edit: ".h($file)."</legend><table><tr><td>"
-."<textarea style='width:\"+(getWinW()-100)+\"px;height:\"+(getWinH()-100)+\"px;' id='edit_text'>"
-.h(njsn(file_get_contents($file)))."</textarea>"
-."<br><input title='ctrl+Enter' type='button' value='Save+exit' onclick='save_and_close()'> <input title='shift+Enter' type='button' value='Save' onclick='save_no_close()'>"
-."</td></tr></table></fieldset>\");
-idd('edit_text').focus();
-setkey('esc','',function(e){ if(idd('edit_text').value==idd('edit_text').defaultValue || confirm('exit no save?') clean('editor'); },false);
-setkey('enter','ctrl',save_and_close,false);
-setkey('enter','shift',save_no_close,false);
-setkey('tab','shift',function(){ti('edit_text','\\t{select}')},false);
-");
-}
 
 
 ?>
