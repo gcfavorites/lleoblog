@@ -1,3 +1,5 @@
+@charset "windows-1251";
+
 #commentform .in, #commentform .l1, #commentform .l2, #commentform .e, #commentform .o, #commentform .txt
 { font-size: 10px; text-align: left; }
 

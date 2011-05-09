@@ -20,7 +20,7 @@ if($template=='plain') $GLOBALS['_PAGE'] = array('design'=>file_get_contents($GL
 
 function blogpage($title='') { global $IS,$_PAGE,$wwwhost,$login,$podzamok;
 
-	STYLE_ADD($GLOBALS['file_css']."blog.css");
+	STYLE_ADD($GLOBALS['www_css']."blog.css");
 
 	if(isset($IS['user']) and isset($IS['obr'])) $loginobr=$GLOBALS['imgicourl'];
 	else $loginobr='login&nbsp;'.$GLOBALS['unic'];
@@ -69,13 +69,5 @@ SCRIPTS_mine();
 SCRIPT_ADD($GLOBALS['www_design']."JsHttpRequest.js"); // ОНДЦПСГХРЭ БМЕЬМХИ ЯЙПХОР
 
 }
-
-
-function mk_prevnest($prev,$next) { // акхрэ хдхре бяе мюуси!!! ме онксвюеряъ с лемъ я бюьхлх инаюммшлх CSS!!! цнперэ хл б юдс!!!
-$prev=($prev==''?'&nbsp;':"<font size=1>".$prev."</font>");
-$next=($next==''?'&nbsp;':"<font size=1>".$next."</font>");
-return "<center><table width=98% cellspacing=0 cellpadding=0><tr valign=top><td width=50%>$prev</td><td width=50% align=right>$next</td></tr></table></center>";
-}
-
 
 ?>

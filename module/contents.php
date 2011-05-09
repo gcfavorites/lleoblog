@@ -1,12 +1,9 @@
-<?php
+<?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 
 // include $include_sys."_onecomment.php";
 
 include_once $include_sys."_onecomm.php";
 
-
-
-if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 blogpage();
 
 $_PAGE["title"] = $_PAGE["header"] = "Содержание дневника";
@@ -65,13 +62,16 @@ $s="<FORM METHOD=get ACTION='".$wwwhost."contents/'>
 
 //===========================================================
 $se=$_GET['search'];
+
+$sss="SELECT `num`,`Date`,`Header`,`view_counter`,`Access` FROM `dnevnik_zapisi` ";
+
 if($se!='') {
 	$se=str_replace('_','\_',$se); $se="LIKE '%".e($se)."%'";
 
 $a=$_GET['smode'];
 
-if($a=='hed') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE("`Header` $se")." ORDER BY `Date` DESC");
-if($a=='zam') pr_zapisi("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE("(`Body` $se OR `Header` $se OR `Comment` $se".($admin?" OR `include` $se":'').")")." ORDER BY `Date` DESC");
+if($a=='hed') pr_zapisi($sss.WHERE("`Header` $se")." ORDER BY `Date` DESC");
+if($a=='zam') pr_zapisi($sss.WHERE("(`Body` $se OR `Header` $se OR `Comment` $se".($admin?" OR `include` $se":'').")")." ORDER BY `Date` DESC");
 
 $WHERECOM1="SELECT * FROM `dnevnik_comm` WHERE (";
 $WHERECOM2=")".($podzamok?'':" AND `scr`='0'")." ORDER BY `Time` DESC";
@@ -82,12 +82,11 @@ if($a=='name') pr_comments($WHERECOM1."`Name` $se".$WHERECOM2);
 if($a=='comans') pr_comments($WHERECOM1."`Text` $se `Name` $se".$WHERECOM2);
 if($podzamok && $a=='namescr') { $onecomment_info=true; pr_comments($WHERECOM1."`Name` $se OR `lju` $se OR `mail` $se OR `IP` $se".$WHERECOM2); }
 
-if($a=='') pr_zapisi_comments("SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ".WHERE("(`Body` $se OR `Header` $se OR `Comment` $se)")." ORDER BY `Date` DESC",$WHERECOM1."`Text` $se OR `Name` $se".$WHERECOM2);
+if($a=='') pr_zapisi_comments($sss.WHERE("(`Body` $se OR `Header` $se OR `Comment` $se)")." ORDER BY `Date` DESC",$WHERECOM1."`Text` $se OR `Name` $se".$WHERECOM2);
 
 }
 
 $g=$_GET['mode'];
-$sss="SELECT `num`,`Date`,`Header`".($old_counter?",`view_counter`":'').",`Access` FROM `dnevnik_zapisi` ";
 
   if($g=='') pr_zapisi($sss.WHERE()." ORDER BY `Date` DESC LIMIT ".$SIZEDEFAULT,true);
   if($g=='more') pr_zapisi($sss.WHERE()." ORDER BY `Date` DESC");
@@ -230,9 +229,11 @@ function pr_comments_($sq) {
 	return $s;
 }
 
-function getget() {
-	if(!sizeof($_GET)) return '';
-	$s="?"; foreach($_GET as $a=>$b) $s.=urlencode($a)."=".urlencode($b)."&"; return trim($s,"&");
+function getget() { $ge=$_GET;
+	if(isset($ge['mode']) && $ge['mode']=='more') unset($ge['mode']);
+		if(!sizeof($ge)) return '';
+		$s="?"; foreach($ge as $a=>$b) $s.=urlencode($a)."=".urlencode($b)."&";
+	return trim($s,"&");
 }
 
 ?>

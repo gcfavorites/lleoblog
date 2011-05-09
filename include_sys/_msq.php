@@ -1,9 +1,11 @@
-<?php
+<?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 
-if(!$admin) { $ttl=60; } else {
+if(!$admin) { $ttl=60; } else { if($jaajax) $ttl=0;
+else {
 	$MYPAGE_MD5 = md5($MYPAGE);
 	$ttl=(isset($_COOKIE['MYPAGE']) and $MYPAGE_MD5==$_COOKIE['MYPAGE']?0:60); 
-	set_cookie('MYPAGE', $MYPAGE_MD5, time(), "/", "", 0, true);
+	setcoo('MYPAGE',$MYPAGE_MD5,time()+20);
+}
 }
 
 /*
@@ -35,11 +37,15 @@ ms_connect(); // соединиться с базой - эта процедура в _autorize.php
 
 function ms_connect() { if(isset($GLOBALS['ms_connected'])) return;
 
-   mysql_connect($GLOBALS['msq_host'], $GLOBALS['msq_login'], $GLOBALS['msq_pass']) or idie("<p>Ошибка соединения с MySQL!
-Исправьте в config.php строки:<ul> \$msq_host = '".$GLOBALS['msq_host']."';
-<br>\$msq_login = '".$GLOBALS['msq_login']."';
-<br>\$msq_pass = [...]
-</ul>");
+if(!mysql_connect($GLOBALS['msq_host'], $GLOBALS['msq_login'], $GLOBALS['msq_pass'])) {
+	logi("MySQL_ERRORS.txt","\n".date("Y-m-d H:i:s")." error");
+	idie("<p>Ошибка соединения с MySQL!"
+.($GLOBALS['admin']?"Исправьте в config.php строки:<ul> \$msq_host = '".$GLOBALS['msq_host']."';
+<br>\$msq_login = '".$GLOBALS['msq_login']."';<br>\$msq_pass = [...]":"
+Скорее всего, это временный сбой - зайдите через пару минут.
+В любом случае эта информация записана в логи сервера и сообщена админу.")
+);
+}
    mysql_select_db($GLOBALS['msq_basa']) or idie("<p>Хорошие новости! Во-первых, движок поднялся. Что уже чудо. Во-вторых, что еще
 чудеснее, обнаружен MySQL и с ним установлено успешное соединение!
 Теперь плохая новость: отсутствует база&nbsp;<b>`".$GLOBALS['msq_basa']."`</b>. Это не проблема, подойдет любая другая, лишь бы движку
@@ -134,8 +140,12 @@ function ms($query,$mode='_a',$ttl=666) { $s = false; $magic='@'.$GLOBALS['blogd
 
 //function my_memcache_connect() {}
 
-// function cache_init() { global $memcache; $memcache = new Memcache; $memcache->connect('localhost', 11211) or $memcache=false; }
-function cache_set($k,$v,$e) { global $memcache; if(!$memcache) return false; return $memcache->set($k,$v,0,$e); }
-function cache_get($k) { global $memcache; if(!$memcache) return false; return $memcache->get($k); }
-function cache_rm($k) { global $memcache; if(!$memcache) return false; return $memcache->delete($k); }
+// function cache_init() { global $memcache; $memcache=memcache_connect('memcache_host', 11211); }
+function cache_set($k,$v,$e) { global $memcache; if(!$memcache) return false; return memcache_set($memcache,$k,$v,0,$e); }
+function cache_get($k) { global $memcache; if(!$memcache) return false; return memcache_get($memcache,$k); }
+function cache_rm($k) { global $memcache; if(!$memcache) return false; return memcache_delete($memcache,$k); }
+
+
+function arae($ara){ $p=array(); foreach($ara as $n=>$l) $p[e($n)]=e($l); return $p; }
+
 ?>

@@ -1,6 +1,6 @@
 <?php // ќтображение статьи с каментами - дата передана в $Date
 
-function onetext($p) { global $wwwhost,$unic;
+function onetext($p,$q=1) { global $wwwhost,$unic;
 
 	$GLOBALS['article']=$p;
 
@@ -8,21 +8,18 @@ function onetext($p) { global $wwwhost,$unic;
 
 //	// ѕосчитать юзера
 
-//	старый счетчик отключен:
-//	mysql_query("UPDATE `dnevnik_zapisi` SET view_counter=view_counter+1, last_view_ip='".e($IP)."' WHERE `num`='".e($p['num'])."' AND last_view_ip!='".e($IP)."'");
-
-	if($unic) {
+	if($q&&$unic) {
 		$msqe_old=$GLOBALS['msqe']; // запомним накопленные ошибки
-		msq_add("dnevnik_posetil",array('unic'=>$unic,'url'=>e($p['num']))); // если есть - не внесет, а даст ошибку, нам не важно
+		msq_add("dnevnik_posetil",array('unic'=>$unic,'url'=>$p['num'],'date'=>time())); // если есть - не внесет, а даст ошибку, нам не важно
 		$GLOBALS['msqe']=$msqe_old; // восстановим ошибки (без учета последней)
 	}
 
 	$s=modules($s); // процедуры site
 
-	if($_GET['search']) $s=search_podsveti_body($s); // подсветка выделенных слов
+	if(isset($_GET['search'])) $s=search_podsveti_body($s); // подсветка выделенных слов
 
 
-if(isset($_GET['mode']) and $_GET['mode']=='mudoslov' or $_GET['mode']=='mudoslov_rating') {
+if(isset($_GET['mode']) and ($_GET['mode']=='mudoslov' or $_GET['mode']=='mudoslov_rating')) {
         $ara=explode("\n",file_get_contents($GLOBALS['host_design'].'mudoslov.txt'));
         foreach($ara as $m) { $m=trim($m); if($m!='') { $_GET['search']=$m; $s=search_podsveti_body($s); }}
 }
@@ -37,39 +34,14 @@ if(isset($_GET['mode']) and $_GET['mode']=='mudoslov' or $_GET['mode']=='mudoslo
 */
 
 // произвести автоформатирование
-if($p['autoformat']=='no') return $s;
-return str_replace(array("\n\n","\n"),($p['autoformat']=='p'?array("<p>","<br>"):array("<p class=pd>","<p class=d>")),"\n\n"
-.str_replace("\n ","\n<p class=z>","\n".$s)
+if($p['autoformat']!='no') $s=str_replace(array("\n\n","\n"),($p['autoformat']=='p'?array("<p>","<br>"):array("<p class=pd>","<p class=d>")),"\n\n"
+.str_replace("\n ","\n<p class=z>","\n".$s));
 
-);
+// return "<div id='Body_".$article['num']."'".
 
-}
+if($p['Access']=='all') return $s;
+return "<div style=\"background-color:".$GLOBALS['podzamcolor'].";\">".zamok($p['Access']).$s."</div>";
 
-
-
-function search_podsveti_body($a) {
-        $a=preg_replace_callback("/>([^<]+)</si","search_p_body",'>'.$a.'<');
-        $a=ltrim($a,'>'); $a=rtrim($a,'<');
-        return $a;
-} function search_p_body($r) { return '>'.str_ireplace2_body($_GET['search'],"<span class=search>","</span>",$r[1]).'<'; }
-
-
-function str_ireplace2_body($search,$rep1,$rep2,$s){ $c=chr(1); $nashlo=array(); $x=strlen($search);
-        $SEARCH=strtolower2_body($search);
-        $S=strtolower2_body($s);
-        while (($i=strpos($S,$SEARCH))!==false){
-                $nashlo[]=substr($s,$i,$x);
-                $s=substr_replace($s,$c,$i,$x);
-                $S=substr_replace($S,$c,$i,$x);
-        } foreach($nashlo as $l) $s=substr_replace($s,$rep1.$l.$rep2,strpos($s,$c),1);
-        return $s;
-}
-
-function strtolower2_body($s){
-        $s=strtr($s,'јЅ¬√ƒ≈®∆«»… ЋћЌќѕ–—“”‘’÷„Ўўџ№ЏЁёя','абвгдеЄжзийклмнопрстуфхцчшщыьъэю€'); // русские в строчные
-        $s=strtr($s,'авсенкмортху','abcehkmoptxy'); // русские какие похожи - в латинские
-        $s=strtolower($s); // латинские в строчные
-        return $s;
 }
 
 ?>

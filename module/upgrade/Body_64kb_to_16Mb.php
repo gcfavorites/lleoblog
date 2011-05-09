@@ -1,4 +1,4 @@
-<?php
+<?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 
 if(msq_pole('dnevnik_zapisi','Body')=="text") {
 

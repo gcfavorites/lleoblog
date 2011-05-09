@@ -1,6 +1,5 @@
-<?php // перевод цвета из rgb в 16-ричное
-
-if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+<?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+// перевод цвета из rgb в 16-ричное
 
 $_PAGE = array('design'=>file_get_contents($GLOBALS['host_design']."plain.html"),
 'header'=>"Перевод цвета из RGB в 16-ричное представление",

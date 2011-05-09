@@ -30,4 +30,23 @@ text='".$headers."'
 mail($to, $subj, $text, $headers);
 
 }
+
+function send_mail_confirm($mail,$realname) {
+        global $include_sys,$httphost,$unic,$hashlogin,$newhash_user,$admin_name,$admin_mail;
+        if(!mail_validate($mail)) idie("Неверный формат ".h($mail).".
+<p>По крайней мере, роботу так кажется.
+<br>Если вы считаете, что это глюк сайта,
+<br>сообщите мне на lleo@aha.ru Спасибо.");
+
+$link=$httphost."ajax/login.php?action=mailconfirm&mail=".urlencode($mail)."&pass=".md5($mail.$unic.$hashlogin.$newhash_user);
+//$link=$httphost."ajax/login.php?action=mailconfirm&mail=".urlencode($mail)."&pass=".md5($mail.$hashlogin.$newhash_user);
+$c="<p>Этот адрес был указан при регистрации на сайте <b>$httphost</b>, который ведет ".$admin_name
+.". Чтобы подтвердить, пройдите по ссылке:
+<p><a href='$link'>$link</a>
+<p>В дальнейшем вы сможете получать ответы, присланные на ваши комментарии.
+<p>Если это ошибка, просто игнорируйте письмо.";
+   sendmail(h($admin_name),h($admin_mail),h($realname!=''?$realname:$mail),h($mail),$admin_name.": email confirm",$c);
+   return;
+}
+
 ?>

@@ -1,12 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
 <meta http-equiv="Content-Type" content="text/html; charset={wwwcharset}" />
-{_SNAPSHOT:_}{_MAIN:_}{_PRAVKA:_}
-
-{_STYLE_ADD: {www_css}blog.css _}
-{_SCRIPT_ADD: {www_design}pravka_blog.js _}
-{_SCRIPT_ADD: {www_design}pins.js _}
-
+{_SNAPSHOT:_}{_MAIN:_}{_PRAVKA:_}{_STYLE_ADD: {www_css}blog.css _}
 <title>{admin_name}: {_TITLE:_}</title>
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
 <!-- link href="{www_design}styles.css" rel="stylesheet" type="text/css" / -->
@@ -15,10 +10,6 @@
 <link rel="next" href="{nextlink}" id="NextLink" />
 <link rel="UpLink" href="{uplink}" id="UpLink" />
 <link rel="DownLink" href="{downlink}" id="DownLink" />
-
-{mystyle}
-{myscript}
-
 </head>
 
 <body class="twoCol">
@@ -54,7 +45,7 @@ next = <small><a href={nextpage}>&lt;&lt;&nbsp;предыдущие {n}</a></small>
 prev = <small><a href={prevpage}>следующие {n}</a>&nbsp;&gt;&gt;</small>
 prevnext = <table width=100%><tr><td align=left>{next}</td><td align=right>{prev}</td></tr></table><p>
 comment = <div style='text-align: right; font-size:10pt; margin-right: 5px'><a href={link}#comments>комментариев {ncomm}</a> | <a href="javascript:majax('comment.php',{a:'comform',id:0,lev:0,comnu:comnum,dat:{num}});">оставить комментарий</a></div>
-template = <div style='text-align:justify;padding:0 15px;'><div class='header' id='Header_{num}' style='text-align:left'>{edit}<a href='{link}'>{Y}-{M}-{D}: {Header}</a></div>{zamok}<div id='Body_{num}'>{Body}</div>{comment}</div><hr width=100% color=green>
+template = <div style='text-align:justify;padding:0 15px;'><div class='header' id='Header_{num}' style='text-align:left'>{edit}<a href='{link}'>{Y}-{M}-{D}: {Header}</a></div><div id='Body_{num}'>{Body}</div>{comment}</div><hr width=100% color=green>
 _}
 
 <div id="copyright">{signature}</div><!--

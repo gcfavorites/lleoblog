@@ -1,6 +1,6 @@
 loadCSS('commentstyle.css');
 
-function kus(unic) { if(unic) majax('login.php',{action:'getinfo',unic:unic}); }// лична€ карточка автора
+function kus(u) { if(u) majax('login.php',{action:'getinfo',unic:u}); }// лична€ карточка автора
 function kd(e) { if(confirm('“очно удалить?')) majax('comment.php',{a:'del',id:ecom(e).id}); } // удалить комментарий
 function ked(e) { majax('comment.php',{a:'edit',id:ecom(e).id}); } // редактировать комментарий
 function ksc(e) { majax('comment.php',{a:'scr',id:ecom(e).id}); } // скрыть-раскрыть

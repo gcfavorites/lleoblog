@@ -1,6 +1,5 @@
-<?php // rss заметок дневника
-
-if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+<?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+// rss заметок дневника
 
 include_once $include_sys."_onetext.php"; // обработка заметки
 

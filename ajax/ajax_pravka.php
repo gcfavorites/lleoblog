@@ -1,22 +1,15 @@
 <?php
+
+// $GLOBALS['rdonly']=1;
+
 include "../config.php";
+require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpRequest($wwwcharset);
 include $include_sys."_autorize.php";
-require_once $include_sys."/JsHttpRequest.php"; $JsHttpRequest =& new JsHttpRequest('UTF-8'); // библиотека AJAX
-// JsHttpRequest($wwwcharset); // библиотека AJAX
+if(isset($_REQUEST['onload'])) otprav('');
 
-$_REQUEST['answer']=uw($_REQUEST['answer']); // сразу переведем в 1251 из UTF-8
+// list($a,$b)=explode('-',$_REQUEST['hash']); if(substr(broi dent($b.$hashinput),0,6)!=$a)
+// pravka_otvet("Ошибка авторизации. Вы чем-то не тем заняты, идите работать.");
 
-
-
-
-
-
-// logi('ajax',"\n\n\n\n".$_REQUEST['text']."\n".$_REQUEST['textnew']);
-
-list($a,$b)=explode('-',$_REQUEST['hash']); if(substr(broident($b.$hashinput),0,6)!=$a)
-pravka_otvet("Ошибка авторизации. Вы чем-то не тем заняты, идите работать.");
-
-// include_once $include_sys."_msq.php";
 include_once $include_sys."/_podsveti.php"; // процедура Diff - кривая сука, страшная, но работает
 include_once $include_sys."/_one_pravka.php"; // процедура вывода окошка с одной правкой
 
@@ -32,17 +25,18 @@ $id=intval($_REQUEST['id']); $a=$_REQUEST['action'];
 	if($a=='edit_c') pravka_edit_c($id); // edit запрос формы редактирования коммента
 	if($a=='edit_c_txt') pravka_edit_c_txt($id); // принять отредактированный answer
 
-	if($a=='del') { if($GLOBALS['admin']) msq_del($GLOBALS['db_pravka'],array('id'=>$id)); pravka_otvet(' '); } // удалить говно из базы
+	if($a=='del') { if($GLOBALS['admin']) msq_del($GLOBALS['db_pravka'],array('id'=>$id)); pravka_otvet_e(); } // удалить говно из базы
 
-	if($a == 'opechatka') // прием опечаток от населения!
-	{
+	if($a == 'opechatka') { // прием опечаток от населения!
+//idie('Извините, временно не работает.'); 
 		$text=pravka_valitext($_REQUEST['text']); // чтоб было в глобале!
 		$textnew=pravka_valitext($_REQUEST['textnew']); // чтоб было в глобале!
 		pravka_priem($_REQUEST['data'],$text,$textnew);
 	}
 
-	if($a == 'create') pravka_basa_create(); // впервые: создать новую базу!
-exit;
+	if($a == 'create') { idie('создать базу?!'); pravka_basa_create(); } // впервые: создать новую базу!
+
+idie('Неясная команда');
 
 //===================== важные процедуры работы с архивом ===============
 /*
@@ -54,13 +48,19 @@ function pravka_validata($data) {
 
 function filename_valid($f) { return str_replace('..','',$f); } // на всякий случай шоб выше батьки по директориям не лезли
 
-function pravka_valitext($txt) {
-	$txt=uw(htmlspecialchars(urldecode($txt)));
-//	if( !$GLOBALS['admin'] && ( $GLOBALS['arhbasa']=='dnevnik_zapisi' || isset($GLOBALS['hashpresent']) ) ) $txt=strtr($txt,'ABCEHKMOPTXaceopxy','АВСЕНКМОРТХасеорху'); // это мои личные беды
-	return $txt;
+function pravka_valitext($s) {
+//	$s=uw(h(urldecode($s)));
+	$s=h(urldecode($s));
+	//if( !$GLOBALS['admin'] && ( $GLOBALS['arhbasa']=='dnevnik_zapisi' || isset($GLOBALS['hashpresent']) || $_REQUEST['hashpresent']==2) ) 
+	if($_REQUEST['hashpresent']==2)	$s=strtr($s,'ABCEHKMOPTXaceopxy','АВСЕНКМОРТХасеорху'); // это мои личные беды
+	return $s;
 }
 
 function pravka_basa_replace($data,$txt) { if(!$GLOBALS['admin']) return; // от кулхацкеров // global $_REQUEST;
+
+if(isset($GLOBALS['rdonly'])) return;
+
+
         list($base,$table,$bodyname,$wherename,$whereid)=explode('@',$data);
 	if($base=='file#') { // если правка предназначалась для файла, то $table - это его имя
 		$i=file_put_contents($GLOBALS['host'].filename_valid($table),$txt); // записать исправления в файл
@@ -122,6 +122,7 @@ function pravka_basa_p($id) {
 }
 
 function pravka_basa_metka($id,$metka,$answer) { if(!$GLOBALS['admin']) return;
+if(isset($GLOBALS['rdonly'])) return;
 	msq_update($GLOBALS['db_pravka'],array('metka'=>$metka,'Answer'=>$answer),"WHERE `id`='$id'");
 }
 
@@ -134,52 +135,49 @@ function pravka_basa_getmetka($data,$stdprav) { // получить метку для такого слу
 //======================================================================================================
 function pravka_edit_c($id) { // editor комментариев
 	$p=pravka_basa_p($id); // взять данные из базы правок
-	if($p['Answer']=='') pravka_otvet(_one_pravka($p));
-	pravka_otvet(_one_pravka($p,pravka_textarea($id,$p['Answer'],'edit_c_txt')));
+	if($p['Answer']=='') pravka_otvet_e($p);
+	pravka_otvet_e($p,pravka_textarea($id,$p['Answer'],'edit_c_txt'));
 }
 
 function pravka_edit_c_txt($id) { // editor комментариев
 	$p=pravka_basa_p($id);
 	$p['Answer']=$_REQUEST['answer'];
 	pravka_basa_metka($id,$p['metka'],e($p['Answer']));
-	pravka_otvet(_one_pravka($p));
+	pravka_otvet_e($p);
 }
 
 function pravka_edit($id) { // editor
 	$p=pravka_basa_p($id); // взять данные из базы правок
 	$p['oldtxt'] = pravka_oldtxt($p['Date']); // взять исконный файл
-
 	$stdprav = pravka_stdprav($p,200); // взять большой кусок
-	if($p['metka']=='submit') $text=pravka_stalo($stdprav); else $text=pravka_bylo($stdprav);
-
+	$text = $p['metka']=='submit' ? pravka_stalo($stdprav) : pravka_bylo($stdprav);
 	$n=substr_count($p['oldtxt'],$text); if($n != 1) {
 unset($p['oldtxt']);
-pravka_otvet(_one_pravka($p,"
+pravka_otvet_e($p,"
 Не удается найти место: оно встречается ".intval($n)." раз.
-<p>stdprav='".htmlspecialchars($stdprav)."'
-<p>text='".htmlspecialchars($text)."'
-<p>p='".nl2br(htmlspecialchars(print_r($p,1)))."'
-")); }
+<p>stdprav='".h($stdprav)."'
+<p>text='".h($text)."'
+<p>p='".nl2br(h(print_r($p,1)))."'
+"); }
 	pravka_textarea($id,$text,'edit_txt');
-	pravka_otvet(_one_pravka($p,pravka_textarea($id,$text,'edit_txt')));
+	pravka_otvet_e($p,pravka_textarea($id,$text,'edit_txt'));
 }
 
-function pravka_edit_txt($id) { // editor
-	$textnew=str_replace("\r","",$_REQUEST['answer']);
 
+function pravka_edit_txt($id) { // editor
+	$textnew=str_replace('\r','',$_REQUEST['answer']);
 	$p=pravka_basa_p($id); // взять данные из базы правок
 	$p['oldtxt'] = pravka_oldtxt($p['Date']); // взять исконный файл
 	$stdprav = pravka_stdprav($p,200); // взять большой кусок
 	if($p['metka']=='submit') $text=pravka_stalo($stdprav); else $text=pravka_bylo($stdprav);
-	if(substr_count($p['oldtxt'],$text) != 1) pravka_otvet(_one_pravka($p,'Не удается найти это место редактирования.'));
-
-	if($text == $textnew) pravka_otvet(_one_pravka($p,"Не, ну а смысл? Предложите исправление."));
+	if(substr_count($p['oldtxt'],$text) != 1) pravka_otvet_e($p,'Не удается найти это место редактирования.');
+	if($text == $textnew) pravka_otvet_e($p,"Не, ну а смысл? Предложите исправление.");
 	$stdprav=std_pravka($textnew,$text,$p['oldtxt']); // вычислить стандартный кусок около правки
 	if($GLOBALS['pravka_paranoid']) pravka_basa_add($p['Date'],$stdprav,'submit'); // параноидально записывать свои
 	pravka_basa_replace($p['Date'],str_replace($text,$textnew,$p['oldtxt'])); // ПРИМЕНИТЬ ПРАВКУ ОТ АДМИНА
 	$p['Answer'] .= '<i>Это место я отредактировал иначе:</i><p>'.str_replace("\n","\n<br>",$stdprav); $p['metka'] = 'discard';
 	pravka_basa_metka($id,$p['metka'],$p['Answer']); // пометить как discard
-	pravka_otvet(_one_pravka($p)); // выдать ответ
+	pravka_otvet_e($p); // выдать ответ
 }
 
 
@@ -187,7 +185,7 @@ function pravka_showmore($id) { // показать больше
 	$p=pravka_basa_p($id); // взять данные из базы правок
 	$p['oldtxt'] = pravka_oldtxt($p['Date']); // взять исконный файл
 	$p['stdprav'] = pravka_stdprav($p,500); // взять большой кусок
-	pravka_otvet(_one_pravka($p));
+	pravka_otvet_e($p);
 }
 
 ####################################################
@@ -200,7 +198,7 @@ function pravka_submit($id,$answer) { // принять правку
 	else pravka_basa_replace($p['Date'],str_replace($p['text'],$p['textnew'],$oldtxt)); // СДЕЛАТЬ ПРАВКУ
 	$p['Answer'] .= pravka_answer_n($answer,1); $p['metka'] = 'submit';
 	pravka_basa_metka($id,$p['metka'],$p['Answer']); // пометить как submit
-	pravka_otvet(_one_pravka($p)); // выдать ответ
+	pravka_otvet_e($p); // выдать ответ
 }
 
 function pravka_discard($id,$answer) { // отклонить правку
@@ -217,25 +215,24 @@ function pravka_discard($id,$answer) { // отклонить правку
 	$p['Answer'] .= pravka_answer_n($answer,0);
 	$p['metka'] = $metkanew;
 	pravka_basa_metka($id,$p['metka'],$p['Answer']);
-	pravka_otvet(_one_pravka($p)); // выдать ответ
+	pravka_otvet_e($p); // выдать ответ
 }
 
 ###################################################
 
-function pravka_priem($data,$text,$textnew) { global $_RESULT; // прием опечаток от населения!
+function pravka_priem($data,$text,$textnew) { // global $_RESULT; // прием опечаток от населения!
 
-
+	$text=str_ireplace('&quot;','"',$text);
+	$textnew=str_ireplace('&quot;','"',$textnew);
 
 	$oldtxt=pravka_oldtxt($data); // взять исконный файл
-
-
 	$nzamen=substr_count($oldtxt,$text); // сколько раз встречается этот фрагмент в тексте (надо, чтобы 1)
 if($oldtxt == '') pravka_otvet("Ошибка какая-то. Нет такой записи в базе.");
 if($text == $textnew) pravka_otvet("Не, ну а смысл? Предложите исправление.");
 if($text == '') pravka_otvet("Выделите что-нибудь и исправьте.\nИначе какой смысл?");
 if($nzamen == 0) {
 if($GLOBALS['admin']) {
-pravka_otvet("Ошибка. old:<p>".h($text)."<hr>new:<p>'".h($oldtxt)."'");
+	pravka_otvet("Ошибка. old:<p>'".h($text)."'<hr>new:<p>'".h($oldtxt)."'");
 	if(preg_match("/\&[a-z0-9\#]+\;/si",$oldtxt,$m))
 	pravka_otvet("Ошибка, словосочетание не найдено.\n\nАдмин! А попробуй-ка убрать из исходника значки типа '".h($m[0])."'
 ".(preg_match("/^[^@]*@site@[^@]+@[^@]+@(\d+)$/",$data,$m)?" в <a href='".$wwwhost."adminsite/?mode=one&edit=".$m[1]."'>записи базы номер #".$m[1]."</a>":'') );
@@ -248,27 +245,32 @@ if($nzamen > 1) pravka_otvet("Не, такое словосочетание встречается несколько раз
 #	$stdprav=std_pravka(pravka_stalo($stdprav),pravka_bylo($stdprav),$oldtxt); // и еще раз вычислить, теперь с точностью до слова
 # НЕ НАДО ВТОРОЙ РАЗ ВЫЧИСЛЯТЬ! ТЭГИ БЬЮТСЯ
 
-
-
-
 	if(!$GLOBALS['admin']) {
 	$metka=pravka_basa_getmetka($data,$stdprav); // получить метку, если был такой случай
 if($metka=='new') pravka_otvet("Такая правка уже записана\nи ждёт рассмотрения.");
 if($metka=='discard') pravka_otvet("Такая правка уже предлагалась,\nно автор решил ее отклонить.\n\nФиг знает, почему он так решил.\nТупой наверно. И упёртый.");
 if($metka=='submit') pravka_otvet("Хм... Такая правка уже предлагалась,\nи даже была благополучно принята.\nНепонятно, почему вы ее не видите на экране.\nМожет, это произошло секунду назад?\nПерегрузите-ка страницу...");
 	pravka_basa_add1($data,$stdprav,'new');
-	$_RESULT['newbody']=wu(podsvetih(podsveti($textnew,$text))); pravka_otvet();
+	pravka_otvet_nbody(podsvetih(podsveti($textnew,$text)));
 	}
+
 	if($GLOBALS['pravka_paranoid']) pravka_basa_add($data,$stdprav,'submit'); // параноидально записывать свои
 	pravka_basa_replace($data,str_replace($text,$textnew,$oldtxt)); // ПРИМЕНИТЬ ПРАВКУ ОТ АДМИНА
-	$_RESULT['newbody']=wu($textnew); pravka_otvet();
+	pravka_otvet_nbody($textnew);
 }
 
-
-
 //=============================== разные вспомогашки ==========================
+function pravka_otvet_nbody($s) { otprav("
+var body=stripp(vzyal('".$_REQUEST['opecha_id_go']."'));
+zabil(opecha_id_go,body.substring(0,".$_REQUEST['ss'].")+nl2brp('".njsn($s)."')+body.substring(".$_REQUEST['es'].",body.length));
+window.onload();");
+}
 
-function pravka_otvet($otvet='') { global $_RESULT; if($otvet!='') $_RESULT['otvet']=wu($otvet); $_RESULT['status']=true; exit; }
+function pravka_otvet_e($p=0,$ext=''){
+	otprav("zabil('".$GLOBALS['id']."',\"".($p===0?'':njsn(_one_pravka($p,$ext)))."\")");
+}
+
+function pravka_otvet($s) { idie($s); }
 
 ##############################################################################################################
 
@@ -288,18 +290,17 @@ return $answer;
 
 function pravka_answer_n($answer,$n) { if($answer!='') return '<div class='.($n?'y':'n').'>'.e(htmlspecialchars($answer)).'</div>'; }
 
-function pravka_textarea($id,$text,$modescript) { $texth=htmlspecialchars($text); $ide=$id."_e";
+function pravka_textarea($id,$text,$modescript) { $texth=h($text); $ide=$id."_e";
 return "<table><tr>
 <td><TEXTAREA id='$ide' class='t' cols='50' rows='".max(page($texth),3)."'>".$texth."</TEXTAREA></td>
 <td valign=top>
-<input value='SEND >>' class='t' onclick=\"javascript:pravka($id,'$modescript',document.getElementById('$ide').value)\" type='button'>
+<input value='SEND' class='t' onclick=\"pravka($id,'$modescript',idd('$ide').value)\" type='button'>
 </td></tr></table>";
 }
  
 // тип работы с текстами - одну из этих переменных надо закомментировать!
 //$arhdir=$_SERVER['DOCUMENT_ROOT'].'arhive/'; // имя директории, где тексты, если они в файлах (кодировка windows-1251)
 //$arhbasa='dnevnik_zapisi'; // имя таблицы, где тексты, если они в MySQL (у меня - в поле 'Body' по ключу 'Data' вида 2004-01-14
-
 //require_once $_SERVER['DOCUMENT_ROOT'].'/sys/JsHttpRequest.php'; $JsHttpRequest =& new JsHttpRequest('windows-1251'); // библиотека AJAX
 //include_once($_SERVER['DOCUMENT_ROOT'].'/dnevnik/_msq.php'); msq_open('lleo','windows-1251'); // библиотека MySQL
 //include_once($_SERVER['DOCUMENT_ROOT'].'/dnevnik/_autorize.php'); // библиотека авторизации админа $IS_EDITOR=true если админ

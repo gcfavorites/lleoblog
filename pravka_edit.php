@@ -32,7 +32,7 @@ if($admin && $p['metka']!='submit') {
 
 return ''; // простор для обработки
 //if($GLOBALS['admin']) { if($textnew=='undеfinеd' || $textnew=='null') { $s .= "<br>ошибка: undеfinеd/null"; discard_pravka($id); }
-//$pp=ms("SELECT `Body` FROM `dnevnik_zapisi` WHERE `Date`='$data'",'_1',0); $oldtxt=$pp['Body']; $n=substr_count($oldtxt,$text);if($n==0)
+//$pp=ms("SELECT `Body` FROM `dnevnik  _zapisi` WHERE `Date`='$data'",'_1',0); $oldtxt=$pp['Body']; $n=substr_count($oldtxt,$text);if($n==0)
 }
 */
 

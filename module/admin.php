@@ -1,7 +1,10 @@
-<?php // Авторизация пользователей
-if(!isset($admin_name)) die("Error 404"); // неправильно запрошенный скрипт - нахуй
-if(isset($_GET['version'])) die("lleoblog 2.0\n".$admin_name ); // показать версию и владельца
+<?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+// Авторизация пользователей
+
+if(isset($_GET['version'])) die("lleoblog 3.0\n".$admin_name); // показать версию и владельца
 // if(!$admin) redirect($wwwhost."login/"); // посторонних - нахуй
+
+if($admin && isset($_GET['hash'])) die("<b>".broident($_GET['hash'])."</b>");
 
 DESIGN('plain',"<a href=$mypage>СТРАНИЦА АДМИНА</a>");
 
@@ -18,27 +21,57 @@ $o="<center><form method='POST' action='".$mypage."'>";
 $skip=intval($PEST['skip']);
 //if($skip) $o.="<input type='hidden' name='skip' value='$skip'>";
 
-$o .= "<div class=adminc><fieldset><legend>Логин админа</legend>".admin_login()."</fieldset></div>";
+	$log = "<div class=adminc><fieldset><legend>Логин админа</legend>".admin_login()."</fieldset></div>";
 
-if($admin) { $admin_upgrade=0;
-	$e .= "<div class=adminc><fieldset><legend>Таблицы MySQL</legend>".admin_tables()."</fieldset></div>";
-	if($admin_upgrade) $o .= $e;
-	if(!$admin_upgrade) $o .= "<div class=adminc><fieldset><legend>Апгрейды</legend>".admin_upgrade()."</fieldset></div>";
-	if(!$admin_upgrade) $o .= "<div class=adminc><fieldset><legend>Успешно установилось?</legend>".admin_pohvast()."</fieldset></div>";
-	if(!$admin_upgrade) $o .= $e;
+if($admin) { $admin_upgrade=0; $tab=$upg=$poh='';
+	$upg = "<div class=adminc><fieldset><legend>Апгрейды</legend>".admin_upgrade()."</fieldset></div>";
+	if(!$admin_upgrade) {
+		$tab = "<div class=adminc><fieldset><legend>Таблицы MySQL</legend>".admin_tables()."</fieldset></div>";
+		$poh = "<div class=adminc><fieldset><legend>Успешно установилось?</legend>".admin_pohvast()."</fieldset></div>";
+	} else $log='';
+	$o.=$log.$upg.$tab.$poh;
+} else {
+	install_module_name('install','INSTALL');
+	$o.=$log;
 }
 
-$o .= "</form></center>";
 
-die($o);
-
+die($o."</form></center>");
 
 
 //======================================================================================
+// Проинсталлировать модули
+function install_module_name($page,$module) {
+
+$namepage=ms("SELECT `Body` FROM `dnevnik_zapisi` WHERE `Date`='".e($page)."'","_l");
+
+$p="{_".$module.":";
+if($namepage!=false && strstr($namepage,e($p)) or
+false!==ms("SELECT `Date` FROM `dnevnik_zapisi` WHERE `DateDate`='0' AND `Body` LIKE '%".e($p)."%'","_l")
+) return;
+
+$ara=array(
+'Date'=>e($page),
+'Header'=>'',
+'Body'=>e($p."_}"),
+'Access'=>'all',
+'DateUpdate'=>time(),
+'DateDatetime'=>0,
+'DateDate'=>0
+//,'opt'=>e(ser(array('Comment'=>'disabled','autoformat'=>'no','autokaw'=>'no','template'=>'blank')))
+);
+
+
+if($namepage===false) msq_add('dnevnik_zapisi',$ara);
+else msq_update('dnevnik_zapisi',$ara,"WHERE `Date`='".e($page)."'");
+
+$GLOBALS['o'].='Page_added: /install';
+}
+
 // модули апгрейдов
-function admin_upgrade() { global $PEST,$host_module,$admin,$mypage,$skip,$msqe,$admin_upgrade; $s='';
+function admin_upgrade() { global $PEST,$host_module,$admin,$mypage,$skip,$msqe,$admin_upgrade;	$s='';
 	$upgrade=glob($host_module."upgrade/*.php");
-	foreach($upgrade as $l) { include_once $l; }
+	foreach($upgrade as $l) include_once $l;
 	return $s;
 }
 
@@ -61,12 +94,23 @@ function admin_redirect($path,$timesec) { return "<noscript><meta http-equiv=ref
 
 
 
+// изменить поле в базе
+function msq_change_pole($table,$pole,$znachenie,$text) {
+	$name=$table."_".$pole; $kom='Change Field';
+        if(msq_pole($table,$pole)!==false) {
+		if($GLOBALS['PEST'][$name]==$kom) {
+                	$s=msq("ALTER TABLE `".$table."` CHANGE `$pole` `$pole` $znachenie");
+			return admin_kletka($name,"<font color=green>в `$table` изменено поле `$pole`</font>".$GLOBALS['msqe']);
+        	} else { return admin_kletka($name,"необходимо изменить: `$name` <b>$znachenie</b> ".$text,$kom); }
+	} else { return admin_kletka($name," апгрейд не требуется"); }
+}
+
 
 
 
 // добавить поле в базу
 function msq_add_pole($table,$pole,$znachenie,$text) {
-	$name=$table."-".$pole;
+	$name=$table."_".$pole;
 	$kom='Add Field';
 	if(msq_pole($table,$pole)===false) {
 		if($GLOBALS['PEST'][$name]==$kom) {
@@ -78,7 +122,7 @@ function msq_add_pole($table,$pole,$znachenie,$text) {
 
 // удалить поле из базы
 function msq_del_pole($table,$pole,$text) {
-	$name=$table."-".$pole;
+	$name=$table."_".$pole;
 	$kom='Delete Field';
         if(msq_pole($table,$pole)!==false) {
 		if($GLOBALS['PEST'][$name]==$kom) {
@@ -89,9 +133,9 @@ function msq_del_pole($table,$pole,$text) {
 }
 
 
-// добавить поле в базу
+// добавить ИНДЕКС в базу
 function msq_add_index($table,$pole,$znachenie,$text) { if(msq_pole($table,$pole)===false) return;
-	$name=$table."-".$pole;
+	$name=$table."_".$pole;
 	$kom='Add Index';
 	if(!msq_index($table,$pole)) {
 		if($GLOBALS['PEST'][$name]==$kom) {
@@ -101,9 +145,9 @@ function msq_add_index($table,$pole,$znachenie,$text) { if(msq_pole($table,$pole
 	} // else { return admin_kletka($name," апгрейд не требуется"); }
 }
 
-// удалить поле из базы
+// удалить ИНДЕКС из базы
 function msq_del_index($table,$pole,$text) {
-	$name=$table."-".$pole;
+	$name=$table."_".$pole;
 	$kom='Delete Index';
         if(msq_index($table,$pole)) {
 		if($GLOBALS['PEST'][$name]==$kom) {
@@ -186,7 +230,9 @@ $o .= admin_kletka($table,"<font color=green>создана</font>"); }
 		if(!isset($lma[$p['Field']])) { $oo.=msq_del_pole($table,$p['Field'],"удалить поле"); }
 
 		elseif($lma[$p['Field']]==$lt2) { /*$oo.="\n<br>$lt2 <font color=green>ok</font>";*/ unset($lma[$p['Field']]); }
-		else $oo.="<p>\n$lt2<br><font color=red>\n".$lma[$p['Field']]."</font>";
+		else { $oo.="<p>\n$lt2<br><font color=red>\n".$lma[$p['Field']]."</font>";
+		$oo .= msq_change_pole($table,$p['Field'],substr($lma[$p['Field']],strlen($p['Field'])+3),"");
+		}
 
 			}
 			if(sizeof($lma)) { foreach($lma as $lt=>$lt0) $oo.=msq_add_pole($table,$lt,preg_replace("/^\s*`".$lt."`\s*/si","",$lt0),"добавить поле"); }
@@ -243,15 +289,17 @@ $s.="<p>В файле config.conf переменная \$admin_hash пустая или задана неверно. П
 
 	if($admin) { // залогинен?
 		if(isset($GLOBALS['PEST']['logout'])) { // просил разлогинить?
-			set_cookie("adm","logoff", time()-100, "/", "", 0, true); $admin=false; 
-			$s .= "<font color=green>Разлогинились!</font> &nbsp; ".$f_login;
+			setcoo("adm","", time()-100); setcoo("adm2","", time()-100); $admin=false; 
+			$s .= "<script>c_save('adm',''); c_save('adm2','');</script>
+<font color=green>Разлогинились!</font> &nbsp; ".$f_login;
 			} else { $s.= $f_logout; }
 	} else { // разлогинен?
 		if(isset($GLOBALS['PEST']['login'])) { // пытается логиниться?
 			if(md5($GLOBALS['PEST']['login'].$koldunstvo) == $admin_hash) { // пароль верный?
 				$admin=true;
-				set_cookie("adm", broident($admin_hash.$koldunstvo), time()+86400*365, "/", "", 0, true);
-				$s .= "<center><font color=green>Залогинились!</font> &nbsp; ".$f_logout."</center>";
+				setcoo("adm",broident($admin_hash.$koldunstvo));
+				$s .= "<script>c_save('adm','".broident($admin_hash.$koldunstvo)."')</script>
+<center><font color=green>Залогинились!</font> &nbsp; ".$f_logout."</center>";
 			} else { // пароль неверный?
 				logi("login.log","\n".date("Y/m/d h:i:s").": (".$lju." ".$sc." ".$IP." ".$BRO.")"); sleep(5);
 				$s .= "<font color=red>Неверный пароль!</font>

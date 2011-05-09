@@ -1,13 +1,19 @@
-<?php
+<?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 
 include_once $include_sys."_sendmail.php";
 
 function mail_answer($id,$ara) { //------------------- коммент по емайл
 
+// if(!mail_validate($ara["Mail"])) return false; // если mail отправителян неверный
+
 $p = ms("SELECT zapisi.`Header`, zapisi.`Date`, parent.* FROM `dnevnik_zapisi` AS zapisi, `dnevnik_comm` AS parent 
 WHERE zapisi.`num`='".$ara['DateID']."' AND parent.`id`='".intval($id)."'","_1",0);
 
-if($ara['unic']==$p['unic'] or !mail_validate($p['Mail'])) return false;
+if($ara['unic']==$p['unic'] // если это сам себе
+or !mail_validate($p['Mail']) // или у него неверный емайл
+or $p['mail_checked']!=1 // или у того человека не подтвержден пока email
+or $p['mail_comment']!=1 // или тот человек запретил себе посылку ответов
+) return false;
 
 $head=strtr($p['Date'],'/','-')." ".$p['Header'];
 

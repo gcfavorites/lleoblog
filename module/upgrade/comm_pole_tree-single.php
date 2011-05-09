@@ -1,4 +1,5 @@
-<?php
+<?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
+
 
 //$s .= msq_add_pole("dnevnik_zapisi","Comment_tree","enum('1','0') default '1'","настройка: комментарии древовидные/линейные");
 

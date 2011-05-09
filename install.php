@@ -1,5 +1,7 @@
 <?php // update
 
+// exit;
+
 idebug("PHP working, congratulations :) - ok");
 
 // включить сообщения об ошибках
@@ -15,7 +17,8 @@ $s='curl_init'; if(function_exists($s)) idebug("CURL module - ok"); else die("<p
 $s='iconv'; if(function_exists($s)) idebug("ICONV module - ok"); else die("<p>Fatal error: ICONV not found! Install ICONV-module in Apache/PHP.");
 $s='ImageCreateFromJpeg'; if(function_exists($s)) idebug("GB module - ok"); else idebug("Warning: GD not found, install GD-module in Apache/PHP (for working with photoalbum).");
 
-$MYPAGE=$_SERVER["REQUEST_URI"]; list($mypage) = explode('?',$MYPAGE.'?',2);
+$MYPAGE=str_replace(array('<','>',"'",'"'),array('%3C','%3E','%27','%22'),$_SERVER["REQUEST_URI"]);
+list($mypage) = explode('?',$MYPAGE.'?',2);
 
 $filehost_s=rtrim($_SERVER["DOCUMENT_ROOT"],'/').'/blog/';
 $vetoserver=$filehost_s."update_veto_files.txt";
@@ -121,11 +124,15 @@ if(!is_file('.htaccess') and is_file('htaccess') and $msq_host!='') {
 }
 
 //  разберемся с админом
-if(!empty($admin_hash) and !empty($koldunstvo)) {
+if(!empty($admin_hash1) and !empty($koldunstvo1)
+or !empty($admin_hash) and !empty($koldunstvo)) {
 
-	if(md5($_SERVER["HTTP_USER_AGENT"].$_SERVER["HTTP_ACCEPT"].$_SERVER["HTTP_ACCEPT_LANGUAGE"]
-	.$_SERVER["HTTP_ACCEPT_ENCODING"].$_SERVER["HTTP_ACCEPT_CHARSET"].$admin_hash.$koldunstvo)==$_COOKIE["adm"])
-	{ $admin=1; idebug("Admin login - succsess"); }
+//	if(md5($_SERVER["HTTP_USER_AGENT"].$_SERVER["HTTP_ACCEPT_LANGUAGE"]
+//	.$_SERVER["HTTP_ACCEPT_ENCODING"].$_SERVER["HTTP_ACCEPT_CHARSET"].$admin_hash.$koldunstvo)==$_COOKIE["adm "])
+
+if(isset($_COOKIE["adm2"]) && $_COOKIE["adm2"]==$admin_hash1
+|| isset($_COOKIE["adm"]) && $_COOKIE["adm"]==md5($_SERVER["HTTP_USER_AGENT"].$_SERVER["HTTP_ACCEPT_LANGUAGE"].$_SERVER["HTTP_ACCEPT_ENCODING"].$_SERVER["HTTP_ACCEPT_CHARSET"].$admin_hash.$koldunstvo
+) ) { $admin=1; idebug("Admin login - succsess"); }
 	else { $admin=0; idebug("You are not admin! What are you doing here?"); }
 
 } else { $admin=1; idebug("Admin passworis d not define: admin is anybody, who open this page - ok"); }
@@ -159,10 +166,15 @@ function load_fileblog($l) { global $filehost;
 		return false; }
 
 	mkdir_fileblog($l);
-
+//---------------------------- если чо надо поменять -------------
+if(!empty($GLOBALS['www_design']) && preg_match("/\.css$/si",$l)) {
+        $s=preg_replace("/url\([\'\"]*\/blog\/design\/(.*?)[\'\"]*\)/si",'url('.$GLOBALS['www_design']."$1)",$s);
+        $s=preg_replace("/\@charset\s[\'\"]*windows-1251[\'\"]*/si",'@charset "'.$GLOBALS['wwwcharset'].'"',$s);
+        $s=str_replace('{www_design}',$GLOBALS['www_design'],$s);
+}
+//----------------------------------------------------------------
 	if(file_put_contents($filehost.$l,$s)===false) 	print "<font color=red>ERROR WRITE FILE '".htmlspecialchars($l)."'</font>";
 	else chmod($filehost.$l,0666);
-
 	return true;
 }
 
@@ -173,30 +185,32 @@ if( isset($_POST['action']) ) { unset($_POST['action']);
 	$veto='';
 	$conf='';
 
-	foreach($_POST as $n=>$l) { list($n,)=explode('_',$n,2); $l=urldecode($l);
+foreach($_POST as $n=>$l) { list($n,)=explode('_',$n,2); $l=urldecode($l);
 	
 //	print "<br>".htmlspecialchars($l)." = ".htmlspecialchars($n);
 
-	if(substr($l,0,3)=='no:') { list($l,)=explode(' ',substr($l,3),2); $veto.="$l\n";} else {
+	if(substr($l,0,3)=='no:') { list($l,)=explode(' ',substr($l,3),2); $veto.="$l\n"; continue; }
 
 	if(substr($l,0,7)=='config:') {	$l=substr($l,7); // с конфигом
 		if($conf=='') $conf=file_get_contents('config.php');
-		if($n=='add') $conf=preg_replace("/\n\s*\?>\s*$/s","\n\n\$".$l."\n?>\n",$conf);
-		if($n=='del') $conf=preg_replace("/\n(\s*[\$]".$l."\s*=[^\n]+)/s","// delete this: $1",$conf);
-	} else { // с файлами
-
-		$file=$filehost.$l;
-
-		if($n=='del') {
-			if(!is_file($file)) print "<br><font color=red>DELETE: file not found '".htmlspecialchars($file)."'</font>";
-			else { copy($file,$file.'.old'); chmod($file.'.old',0666); unlink($file); }
+		if($n=='add') {
+			$l=str_replace('_md5_',md5(rand(0,1000000)).md5(time()),$l); // хэши автоматом создать
+			$conf=preg_replace("/\n\s*\?>\s*$/s","\n\n\$".$l."\n?>\n",$conf);
 		}
+		if($n=='del') $conf=preg_replace("/\n(\s*[\$]".$l."\s*=[^\n]+)/s","// delete this: $1",$conf);
+	continue; }
+	
+	// с файлами
+	$file=$filehost.$l;
 
-		if($n=='add') {	load_fileblog($l); }
-		if($n=='upd') {	copy($file,$file.'.old'); chmod($file.'.old',0666); load_fileblog($l); }
-		if($n=='mkdir') { mkdir_fileblog($l); }
+	if($n=='del') {
+		if(!is_file($file)) print "<br><font color=red>DELETE: file not found '".htmlspecialchars($file)."'</font>";
+		else { copy($file,$file.'.old'); chmod($file.'.old',0666); unlink($file); }
 	}
-	}
+
+	if($n=='add') {	load_fileblog($l); }
+	if($n=='upd') {	copy($file,$file.'.old'); chmod($file.'.old',0666); load_fileblog($l); }
+	if($n=='mkdir') { mkdir_fileblog($l); }
 }
 	if($conf!='' && file_put_contents('config.php',$conf)===false) die('Write error: config.php'); else chmod('config.php',0666);
 	if(file_put_contents($vetomyfiles,$veto)===false) die('Write error: '.$vetomyfiles); else chmod($vetomyfiles,0666);
@@ -342,7 +356,10 @@ function get_config_data() {
 function get_dvijok_files($files,$filehostn) { global $stop,$veto_dir;
 $stop=(intval($stop)?intval($stop):1000); if(!--$stop) die('stop error');
         $a=glob($files); $r=array();
-        foreach($a as $n=>$l) if(!is_dir($l)){ if(!in_array($l,$veto_dir) and substr($l,strlen($l)-4,4)!='.old' ) {
+        foreach($a as $n=>$l) if(!is_dir($l)){ if(!in_array($l,$veto_dir) and substr($l,strlen($l)-4,4)!='.old'
+and substr($l,strlen($l)-4,4)!='.off'
+and !preg_match("/\/pre\/[^\/]+$/si",$l)
+) {
 
         $txt=file_get_contents($l);
         if(preg_match("/\.php$/si",$l)) $txt=preg_replace("/[\n\r]+\/\*\s*lleo\s*\*\/[^\n\r]+/si","\n",$txt);
@@ -396,16 +413,24 @@ function idebug($s) { if(sizeof($_GET) or sizeof($_POST)) return; else print "<b
 
 function setconf() { global $mypage;
 
-if(isset($_POST['action']) and $_POST['action']=='Setconfig') { unset($_POST['action']);
+if(isset($_POST['action']) and $_POST['action']=='Setconfig') {
+ /* аварийно отключим 
+
+unset($_POST['action']);
 	$f='config.php'; $s=file_get_contents($f);
 	if(empty($_POST['blog_name']) and empty($blog_name)) $_POST['blog_name']=$_SERVER["SERVER_NAME"];
 	if(empty($_POST['admin_site']) and empty($admin_site)) $_POST['admin_site']=$_SERVER["SERVER_NAME"];
 	foreach($_POST as $n=>$v) {
 		unset($_POST[$n]);
-		$s=preg_replace("/([\n\r]+\s*[\$]".$n."\s*=\s*)[\'\"][^\'\"]*[\'\"]/si",'$1"'.$v.'"$2',$s);
+		if(!preg_match("/[\n\r]+\s*[\$]".$n."\s*=\s*[\'\"][^\'\"]*[\'\"]/si",$s))
+		$s=str_replace('?'.'>',"\n\$".$n."='".$v."';\n".'?'.'>',$s);
+		else $s=preg_replace("/([\n\r]+\s*[\$]".$n."\s*=\s*)[\'\"][^\'\"]*[\'\"]/si",'$1"'.$v.'"$2',$s);
 	}
+//	die("<p><hr>".nl2br(htmlspecialchars($s)));
 	file_put_contents($f,$s); chmod($f,0666);
 	return 1;
+*/
+
 }
 
 $e=0;
@@ -413,7 +438,7 @@ $s="<h1>config.php</h1>
 <form action='".$GLOBALS['mypage']."' method='post'>";
 $s.="<p><b>Hosting:</b>";
 if(empty($GLOBALS['httpsite'])) { $e++; $s.="<br><input type=text size=30 name='httpsite' value='http://".$_SERVER["HTTP_HOST"]."'> server name (without folders, like 'http://lleo.aha.ru')"; }
-if(empty($GLOBALS['blogdir'])) { $s.="<br><input type=text size=30 name='blogdir' value='".substr(str_replace(strstr_true($mypage,'/'),'',$mypage),1)."'> folder ('blog/' or '' for root in site)"; }
+if(empty($GLOBALS['blogdir']) and $GLOBALS['blogdir']!=='') { $s.="<br><input type=text size=30 name='blogdir' value='".substr(str_replace(strstr_true($mypage,'/'),'',$mypage),1)."'> folder ('blog/' or '' for root in site)"; }
 
 $s.="<p><b>MySQL:</b>";
 if(empty($GLOBALS['msq_host'])) { $e++; $s.="<br><input type=text size=30 name='msq_host' value='localhost'> MySQL-host (mysql.baze.lleo.aha.ru:64256)"; }
@@ -427,9 +452,11 @@ if(empty($GLOBALS['admin_mail'])) { $e++; $s.="<p><input type=text size=30 name=
 if(empty($GLOBALS['admin_ljuser'])) { $s.="<p><input type=text size=30 name='admin_ljuser' value='lleo_run'> ljuser (если собираетесь качать копию ЖЖ)"; }
 
 $s.="<p><b>Хэшики. Здесь наберите просто три любых строки:</b>";
-if(empty($GLOBALS['koldunstvo'])) { $e++; $s.="<p><input type=text size=30 name='koldunstvo' value='".md5(time().rand(0,time()))."'> ('у опушки продала лиса волнушки')"; }
-if(empty($GLOBALS['hashinput'])) { $e++; $s.="<p><input type=text size=30 name='hashinput' value='".md5(time().rand(0,time()))."'> ('всякая дурь всякая дурь')"; }
-if(empty($GLOBALS['hashlogin'])) { $e++; $s.="<p><input type=text size=30 name='hashlogin' value='".md5(time().rand(0,time()))."'> ('прамамамамама фантазия исчерпа')"; }
+if(empty($GLOBALS['koldunstvo'])) { $e++; $s.="<p><input type=text size=30 name='koldunstvo' value='".md5(rand(0,1000000)).md5(time())."'> ('у опушки продала лиса волнушки')"; }
+if(empty($GLOBALS['hashinput'])) { $e++; $s.="<p><input type=text size=30 name='hashinput' value='".md5(rand(0,1000000)).md5(time())."'> ('всякая дурь всякая дурь')"; }
+if(empty($GLOBALS['hashlogin'])) { $e++; $s.="<p><input type=text size=30 name='hashlogin' value='".md5(rand(0,1000000)).md5(time())."'> ('прамамамамама фантазия исчерпа')"; }
+if(empty($GLOBALS['newhash_user'])) { $e++; $s.="<p><input type=text size=30 name='newhash_user' value='".md5(rand(0,1000000)).md5(time())."'> ('фантазия вконец исчерпа')"; }
+
 $s.="
 <input type=hidden name='action' value='Setconfig'>
 

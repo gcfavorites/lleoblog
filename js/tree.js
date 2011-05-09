@@ -1,70 +1,36 @@
-function tree(id) { var element = idd(id);
+//function basename(path) { return path.replace(/^.*[\/\\]/g,''); }
 
-    function hasClass(elem, className) { return new RegExp("(^|\\s)"+className+"(\\s|$)").test(elem.className); }
+var treeselected={};
+var treeicon=50;
+var treefolder='/';
 
-    function toggleNode(node) { // определить новый класс для узла
-        var newClass = hasClass(node, 'ExpandOpen') ? 'ExpandClosed' : 'ExpandOpen'
-        // заменить текущий класс на newClass
-	// регексп находит отдельно стоящий open|close и меняет на newClass
-        var re =  /(^|\s)(ExpandOpen|ExpandClosed)(\s|$)/;
-        node.className = node.className.replace(re, '$1'+newClass+'$3');
-	zabil('albumdir',node.id);
-    }
+function treehasClass(elem,className){ return new RegExp("(^|\\s)"+className+"(\\s|$)").test(elem.className); }
+function treeshowLoading(on,id){ idd(id).getElementsByTagName('DIV')[0].className=on?'ExpandLoading':'Expand'; }
 
-function load(node) {
-
-	function showLoading(on) { var expand = node.getElementsByTagName('DIV')[0]; expand.className = on ? 'ExpandLoading' : 'Expand'; }
-	function onLoadError(error) { var msg = "Ошибка "+error.errcode; if(error.message) msg = msg + ' :'+error.message; alert(msg); }
-
-    function onLoaded(data) {
-
-	for(var i=0; i<data.length; i++) {
-	    var li = document.createElement('LI');
-	    li.id = data[i]['i'];
-	    li.className = "Node Expand" + (data[i]['f']==1 ? 'Closed' : 'Leaf');
-	    if(i == data.length-1) li.className += ' IsLast';
-	    li.innerHTML = '<div class="Expand"></div><div class="Content">'+data[i]['t']+'</div>';
-	    if(data[i]['f']==1) { li.innerHTML += '<ul class="Container"></ul>'; }
-	    node.getElementsByTagName('UL')[0].appendChild(li);
+function treeonLoaded(data,id) { var node=idd(id);
+	for(var i=0;i<data.length;i++) {
+		var li=document.createElement('LI');
+		li.className="Node Expand"+(data[i][2]==1?'Closed':'Leaf');
+			if(i==data.length-1) li.className+=' IsLast';
+		li.innerHTML='\n\t<div class=Expand></div><div class=Con3>'+data[i][1]+'</div>';
+		if(data[i][2]==1) {
+			li.innerHTML+='\n\t<ul class=Container></ul>';
+			li.id=data[i][0];
+		}
+		node.getElementsByTagName('UL')[0].appendChild(li);
 	}
-	node.isLoaded = true;
-	toggleNode(node);
-    }
-
-    showLoading(true);
-
-	JsHttpRequest.query('/blog/ajax/foto.php', { a: 'albumgo', id: node.id },
-	function(responseJS, responseText) {
-		if(responseJS.status) { onLoaded(responseJS.data); showLoading(false);
-// zabil('albumdir',responseJS.albumdir);
-}
-	},true);
+	node.isLoaded=true;
+	treetoggleNode(node);
 }
 
-element.onclick = function(event) {
-    event = event || window.event
-    var clickedElem = event.target || event.srcElement;
-    if(!hasClass(clickedElem, 'Expand')) return; // клик не там
+function treeload(id) { treeshowLoading(true,id); majax('foto.php',{a:'albumgo',id:id}); }
 
-    // Node, на который кликнули
-    var node = clickedElem.parentNode;
-
-    if(hasClass(node, 'ExpandLeaf')) return; // клик на листе
-    if(node.isLoaded || node.getElementsByTagName('LI').length) { toggleNode(node); return; } // Узел уже загружен через AJAX(возможно он пуст)
-
-    if(node.getElementsByTagName('LI').length) {
-	    // Узел не был загружен при помощи AJAX, но у него почему-то есть потомки
-	    // Например, эти узлы были в DOM дерева до вызова tree()
-	    // Как правило, это "структурные" узлы
-	    // ничего подгружать не надо
-	    toggleNode(node); return;
-    }
-
-    // загрузить узел
-    load(node);
+function treetoggleNode(node) { // ГЮЛЕМХРЭ ЙКЮЯЯ
+	treefolder=node.id;
+	var newClass=treehasClass(node,'ExpandOpen')?'ExpandClosed':'ExpandOpen';
+	node.className=node.className.replace(/(^|\s)(ExpandOpen|ExpandClosed)(\s|$)/,'$1'+newClass+'$3');
+//	zabil('albumdir',node.id);
 }
 
-// load(idd('/'));
-}
-
-tree('root');
+// ============================  ОНЯКЕДМЪЪ ЯРПНЙЮ ЯЙПХОРЮ ДНКФМЮ АШРЭ БЯЕЦДЮ РЮЙНИ: ========================
+var src='tree.js'; ajaxoff(); var r=JSload[src]; JSload[src]='load'; if(r && r!='load') eval(r);

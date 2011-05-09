@@ -1,5 +1,4 @@
-<?php
-
+<?php if(!function_exists('h')) die("Error 404"); // ОЕРТБЧЙМШОП ЪБРТПЫЕООЩК УЛТЙРФ - ОБИХК
 
 // =============================== cron =========================================
 $name='cron'; $$name='RUN_NOW';
@@ -12,7 +11,7 @@ if($PEST[$name]==$$name) {
 	$mt=(is_file($cronfile)?(time()-filemtime($cronfile)):9999999);
 	if($mt > 60*60) { $s .= admin_kletka($name,"<font color=red>cron последний раз запускался ".floor($mt/60)." минут назад!
 Настрой crontab или запусти вручную!</font>",$$name); }
-	else $s .= admin_kletka($name,"последний раз запускался ".floor($mt/60)." минут назад",$$name);
+	else if($mt > 60*30) $s .= admin_kletka($name,"последний раз запускался ".floor($mt/60)." минут назад",$$name);
 }
 // =============================== memcache =========================================
 
@@ -28,7 +27,7 @@ if($PEST[$name]==$$name) {
 } else {
         $a=glob($GLOBALS['antibot_file']."*.jpg"); $abot=sizeof($a); unset($a); // сколько антиботовых картинок?
         if($abot>5000) $s .= admin_kletka($name,"<font color=red>картинок в кэше накопилось критическое число: $abot!</font>",$$name);
-	else $s .= admin_kletka($name,"всего картинок в кэше $abot",$$name);
+	else if($abot) $s .= admin_kletka($name,"всего картинок в кэше $abot",$$name);
 }
 
 
