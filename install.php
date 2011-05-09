@@ -40,7 +40,13 @@ if(isset($_GET['probe'])) { die("".($_GET['probe']+12345)); } // показать, что с
 
 if(isset($_GET['load'])) { // отдать одиночный файл
 	$filehost=rtrim($_SERVER["DOCUMENT_ROOT"],'/').'/blog/';
-	$f=$_GET['load']; $f=preg_replace("/(\.{2,}|[^0-9a-z\-\_\.\!\/]+)/si",'{хуй в нос}',$f);
+	$f=$_GET['load'];
+	$f=str_replace('..','#',$f);
+	$f=str_replace('./','#',$f);
+	$f=str_replace(chr(0),'#',$f);
+	$f=preg_replace("/(\.{2,}|[^0-9a-z\-\_\.\!\/]+)/si",'#',$f);
+	if(strstr($f,'#')) die('’юй в нос');
+
 	$veto=get_veto_files($vetoserver,0);
 	$a=explode('/',$f);
 
