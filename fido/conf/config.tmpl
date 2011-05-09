@@ -1,0 +1,69 @@
+Address 2:5020/313
+Route msgtous 2:5020/313.*
+#Route 2:5020/12345 2:5020/12345.*
+Route 2:5020/1519 *
+
+System Phfito Station
+Location The Internet
+SysOp SysOp Name
+
+set sqluser=lleo
+set sqlpass=K2k5fIReN
+set sqlhost=mysql.baze.lleo.aha.ru:64256
+set sqldb=fido
+
+db_fido         fidoecho
+db_fido_num     fidoecho_num
+db_fidopoints   fidopoints
+db_fidopodpiska fidopodpiska
+db_fidomy       fidomy
+
+mysqlhost [sqlhost]
+mysqluser [sqluser]
+mysqlpass [sqlpass]
+sqlbase SQL1 host=[sqlhost] user=[sqluser] pass=[sqlpass] db=[sqldb]
+msgbase [sqldb]/fidoecho
+dupebase sql SQL1/dupes
+
+# --- lleo ---
+# что разрешено новым поинтам? read - только читать, write - писать в эхи
+fido_dostup_default     write
+
+# размеры окна для написания сообщений
+fido_msg_rows   20
+fido_msg_cols   80
+
+# число строк, отображаемых в списке сообщений
+fido_nmes       6
+
+######################################
+## дальше править не рекомендуется ###
+######################################
+
+includeareas conf/areas
+includelinks conf/links
+
+LogFile log/phfito.flog.txt QWERTYUIOPASDFGHJKLZXCVBNMqwertyuioplkjhgfdsazxcvbnm1234567890
+LogFile log/phfito.log.txt QWERTYUIOPASDFGHJKLMNBVCXZ1234567890
+LogFile stdout QWERTYUIOPLKJHGFDSAZXCVBNM1234567890
+ErrLogFile log/phfito.err.txt -h
+lockfile phfito.lock
+
+AutoAreaCreate 1
+AutoAreaCreateFile conf/areas
+AutoAreaCreateTable conf/areas
+AutoAreaCreateGroup A
+
+CreateAreasCase mixed
+AreasFileNameCase lower
+#AreasFileNameCase upper
+#AreasFileNameCase mixed
+TempDir tmp
+
+Inbound in
+Outbound out
+LocalInbound in/local
+TempInbound in/tmp
+TempOutbound out/tmp
+
+OutBundleBase full

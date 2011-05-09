@@ -1,0 +1,59 @@
+# Здесь список конференций, в которые по умолчанию запрещено писать поинтам
+# Взято отсюда: http://lleo.aha.ru/fido#area:n5020.bone|id:1208
+
+# 1. Сюда писать запрещено!
+
+1072.COMPNEWS
+BOCHAROFF.MUST.DIE
+BOCHAROFF.UNPLUGGED
+DIG.LINUX
+JET.PHRASES
+HUMOR.FILTERED
+GUITAR.SONGS.FILTERED
+MINDO.ANNOUNCE.ANTISEX
+OBEC.FILTERED
+PVT.HUMOR
+RU.ANEKDOT.FILTERED
+RU.ANEKDOT.THE.BEST
+RU.AUTOSTOP.INFO
+RU.PICKUP.FILTERED
+RU.SPACE.NEWS
+RU.UFO.THEORY
+RU.WINDOWS.NT.NEWS
+SPB.HUMOR
+SPB.SYSOP.FILTERED
+SU.FORMULA1.INFO
+SU.OS2.FAQ
+SU.WIN95.NEWS
+
+# 2. Сюда запрещено писать поинтам и юзерам BBS.
+
+N5020.SYSOP
+N5020.SYSOP.CLUB
+N5020.SYSOP.INFO
+N5020.SYSOP.TALK
+MO.SYSOP
+R50.SYSOP
+R50.SYSOP.INFO
+R50.SYSOP.TALK
+
+# 3. Эта конференция ограниченного доступа (см.правила)
+
+N5020.COORD (только для нетмейл-хабов 5020)
+N5020.HUBS (только для эхохабов 5020)
+N5020.NODEMAKER
+R50.COORD (только для сетевых координаторов)
+R50.BONE
+RU.PRIKOL
+
+# 4. Эта конфеpенция только для постинга текстов. Разговоpы - offtopic!
+
+#PVT.OCTPOB
+#RU.RPG.TEXT
+#RU.SEX.TEXT
+#SU.MUSIC.NEWS
+#SU.TOLKIEN.TEXTS
+
+# 5. Разpешены только объявления (т.е. ответы запpещены)
+#MO.JOB
+#RU.SEX.ADV
