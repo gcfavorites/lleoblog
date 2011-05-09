@@ -256,7 +256,10 @@ ohelpc('install','Select server',\"".njsn($s)."\");";
 
 if($a=='install_edit_pack') { // форма редактирования пакета или создания нового
 	$name=RE('name'); $s=''; $otstup=''; $lastdir='';
-	foreach(get_dfiles($name) as $l) { list($file,$ftime,$fkey)=explode(' ',$l,3);
+
+	// $r=get_dfiles(); dier($r,$name);
+
+	foreach(get_dfiles() as $l) { list($file,$ftime,$fkey)=explode(' ',$l,3);
 		$ff=$GLOBALS['filehost'].$file;
 		$filename=basename($file);
 		$dirname=dirname($file).'/';
@@ -286,6 +289,12 @@ ohelpc('pack','Create pack',\"".njsn(
 }
 
 
+if($a=='install_edit_system') { // форма редактирования файла системных папок
+eeeeeeeeeeeeeee
+}
+
+
+
 if($a=='install_pack_save') { // приемка создания нового пакета
 // majax('module.php',{mod:'INSTALL',a:'install_pack_save',s:s,name:idd('newpack_name').value});
 $name=preg_replace("/[^0-9a-z\_\-\.]+/s",'',strtolower(RE('name')));
@@ -296,7 +305,7 @@ if($s=='') return "salert('Empty pack!',1000);";
 
 //idie("$name<p>$s");
 
-file_put_contents($dir."instpack/".$name.".md5",$s);
+file_put_contents($dir."instpack/".$name.".pack",$s);
 return "clean('pack');
 zabil('mypacks',\"".njsn(get_my_pack($dir))."\");
 salert('Pack <b>$name</b> saved!',1000);
@@ -305,7 +314,7 @@ salert('Pack <b>$name</b> saved!',1000);
 
 // прислать по-бырому список доступных пакетов на этой станции
 if($a=='install_get_packs') { // выслать список пакетов
-	$s=''; foreach(glob($dir."instpack/*.md5") as $l) { $l=basename($l,'.md5');
+	$s=''; foreach(glob($dir."instpack/*.pack") as $l) { $l=basename($l,'.pack');
 		$s.="<div><input class='cb' name=\"$l\" type='checkbox'>$l</div>";
 	} return "zabil('epacks',\"".njsn($s)."\")";
 }
@@ -417,8 +426,8 @@ function calcfile_md5($l,$ras) {
 
 // взять данные по пакету (если basic - то просканировать)
 function getpack($pack,$e) {
-	if($pack=='basic') $r=get_dfiles($pack); // подсчитать суммы
-	else { $r=array(); $s=file($GLOBALS['filehost']."binoniq/instlog/instpack/".$pack.".md5");
+	if($pack=='basic') $r=get_dfiles(); // подсчитать суммы
+	else { $r=array(); $s=file($GLOBALS['filehost']."binoniq/instlog/instpack/".$pack.".pack");
 		foreach($s as $l) { list($name,$time,$md5)=explode(' ',trim($l));
 			$l=$GLOBALS['filehost'].$name; $tim=filemtime($l);
 			if($time!=$tim) $md5=calcfile_md5($l,getras($l));
@@ -427,35 +436,34 @@ function getpack($pack,$e) {
 	}
 	$s=implode("\n",$r);
 	$dir=$GLOBALS['filehost'].'binoniq/instlog/instpack/'; testdir($dir); // проверить папку для кэшиков
-	fileput($dir.$pack.".md5",$s); // сохранить список
+	fileput($dir.$pack.".pack",$s); // сохранить список
 
 	foreach($r as $n=>$l) { if(in_array($l,$e)) unset($r[$n]); } // выкинуть дубли
 	return array_merge($e,$r);
 }
 
-function get_dfiles($pack='') { global $stop,$veto_dir,$md5mas,$filehostn,$filehost;
+function get_dfiles() { global $stop,$veto_dir,$md5mas,$filehostn,$filehost,$allmd5change;
 	$stop=1000;
 	if(!isset($filehostn)) $filehostn=strlen($filehost);
 
 	$dir=$GLOBALS['filehost']."binoniq/instlog/"; testdir($dir);
 
-	if(!isset($md5mas)) {
-		$md5mas=array(); if(($s=file($dir."instpack/".$pack.".md5"))!==false) {
-		foreach($s as $l) { $l=trim($l); list($file,$time,$md5)=explode(' ',$l,3); $md5mas[$file]=array($time,$md5); }
-		}
-	}
+	$md5mas=array(); if(($s=file_get_contents($dir."all_md5.tmp"))===false) $allmd5change=1; // понадобится запись
+	else { $allmd5change=0; $md5mas=unserialize($s); }
 
 	if(!isset($basic)) {
-		$s=file($dir."basic.txt"); // unset($s[0]); unset($s[sizeof($s)]);
+		$s=file($dir."system_dir.txt"); // unset($s[0]); unset($s[sizeof($s)]);
 		$basic=array(); foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $basic[$l]=1; }
 	}
 
 	$r=array(); foreach($basic as $l=>$c) $r=array_merge($r,get_dfiles2($l));
+
+	if($allmd5change) fileput($dir."all_md5.tmp",serialize($md5mas)); // понадобилась запись
 	return $r;
 }
 
 
-function get_dfiles2($files) { global $stop,$veto_dir,$md5mas,$filehostn,$filehost;
+function get_dfiles2($files) { global $stop,$veto_dir,$md5mas,$filehostn,$filehost,$allmd5change;
 	if(!--$stop) die('stop error');
 	$r=array();
 	$a=$filehost.$files; if(is_file($a)) $a=array($a); else $a=glob($a."/*");
@@ -466,7 +474,10 @@ function get_dfiles2($files) { global $stop,$veto_dir,$md5mas,$filehostn,$fileho
 		if(!in_array($l,$veto_dir) and $ras!='old' and $ras!='off' and !preg_match("/($|\/)pre\//s",$name) ) {
 			$time=filemtime($l);
 			$name=c(substr($l,$filehostn));
-			$md5=((!isset($md5mas[$name]) || $md5mas[$name][0]!=$time)?calcfile_md5($l,$ras):$md5mas[$name][1]);
+			if(!isset($md5mas[$name]) || $md5mas[$name][0]!=$time) { $md5=calcfile_md5($l,$ras);
+				$md5mas[$name]=array($time,$md5); $allmd5change=1; // и понадобится перезапись
+			} else $md5=$md5mas[$name][1];
+
 			$r[]="$name $time $md5";
 		}
 	        unset($a[$n]); 
@@ -705,9 +716,32 @@ function POST_file($filePath,$urla,$ara,$port=80,$scheme='http',$charset='Window
 //==================================================================================================
 
 function get_my_pack($dir) { $s="my: "; // если есть своя папка с пакетами
-	if(is_dir($dir.'instpack')) foreach(glob($dir.'instpack/*.md5') as $l) { $w=basename($l); $s.="<span class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:'".preg_replace("/\.md5$/s",'',$w)."'})\" style='margin-left:20px'>$w</span>&nbsp; "; }
+	if(is_dir($dir.'instpack')) foreach(glob($dir.'instpack/*.pack') as $l) { $w=basename($l); $s.="<span class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:'".preg_replace("/\.pack$/s",'',$w)."'})\" style='margin-left:20px'>$w</span>&nbsp; "; }
 	$s.="<span title='Create my inctallpack!' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:''})\" style='margin-left:20px'>new</span>";
 	return $s;
 }
+
+
+//=================================== editpanel ===================================================================
+function editfile($file) {
+return "save_and_close=function(){save_no_close();clean('editor')};
+save_no_close=function(){ if(idd('edit_text').value==idd('edit_text').defaultValue) return salert('save_not_need',500);
+majax('foto.php',{a:'save_file',file:\"".njs($file)."\",text:idd('edit_text').value})
+idd('edit_text').defaultValue=idd('edit_text').value;
+};
+
+helpc('editor',\"<fieldset><legend>Edit: ".h($file)."</legend><table><tr><td>"
+."<textarea style='width:\"+(getWinW()-100)+\"px;height:\"+(getWinH()-100)+\"px;' id='edit_text'>"
+.h(njsn(file_get_contents($file)))."</textarea>"
+."<br><input title='ctrl+Enter' type='button' value='Save+exit' onclick='save_and_close()'> <input title='shift+Enter' type='button' value='Save' onclick='save_no_close()'>"
+."</td></tr></table></fieldset>\");
+idd('edit_text').focus();
+setkey('esc','',function(e){ if(idd('edit_text').value==idd('edit_text').defaultValue || confirm('exit no save?') clean('editor'); },false);
+setkey('enter','ctrl',save_and_close,false);
+setkey('enter','shift',save_no_close,false);
+setkey('tab','shift',function(){ti('edit_text','\\t{select}')},false);
+");
+}
+
 
 ?>
