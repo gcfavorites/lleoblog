@@ -268,11 +268,13 @@ $s.="</div>";
 servselect=function(e){ var s='',e=getElementsByClass('cb');
 	for(var i=0;i<e.length;i++) s+=' '+(e[i].checked?'+':'-')+e[i].name;
 	if(s=='') { alert('Select packet'); return; }
-	$maj'install_check',s:idd('servs').value,pack:s})
+	$maj'install_check',s:idd('servs').value,pack:s});
 };
-
 ohelpc('install','Select server',\"".njsn($s)."\");";
 //	return "zabil('mesto_otvet',\"<div class=r>".njs(nl2br(print_r($r,1)))."</div>\");";
+//	mijax(idd('servs').value+'/ajax/midule.php',{mod:'INSTALL',a:'install_check',s:idd('servs').value,pack:s});
+//	alert(idd('servs').value+'/ajax/midule.php?mod=INSTALL&a=install_check&s='+idd('servs').value+'&pack='+encodeURIComponent(s));
+//
 }
 
 if($a=='install_edit_pack') { // форма редактировани€ пакета или создани€ нового (name='')
@@ -329,7 +331,7 @@ if($s=='') return "salert('Empty pack!',1000);";
 
 //idie("$name<p>$s");
 
-file_put_contents($dir."instpack/".$name.".pack",$s);
+testdir($dir."instpack"); file_put_contents($dir."instpack/".$name.".pack",$s);
 return "clean('pack');
 zabil('mypacks',\"".njsn(get_my_pack($dir))."\");
 salert('Pack <b>$name</b> saved!',1000);
@@ -350,8 +352,8 @@ if($a=='install_check') { // инсталл€ци€
 	fileput($dir."my_server.txt",$ser.strtr($pack,' ',"\n"));
 	$key=sha1(hash_generate()); // сформировать ключ
 	fileput($dir."install_key.php",'<?php die("Error 404"); $key="'.$key.'"; ?>');
-	return "
-majax('".$ser."/ajax/module.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'$key'})";
+// return "majax('".$ser."/ajax/module.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'$key'})";
+return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'$key'})";
 }
 
 // обработка конфига

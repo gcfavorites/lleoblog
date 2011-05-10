@@ -24,6 +24,14 @@ $ajax=2;
 // die('ss<>fs');
 // die('eee');
 
+// header('Content-Type: text/html; charset='.$wwwcharset);
+header('Content-Type: text/html; charset=windows-1251');
+
+$_REQUEST=array();
+foreach($_GET as $n=>$l) $_REQUEST[$n]=$l;
+
+// die(print_r($_REQUEST,1));
+
 $mod=preg_replace("/[^a-z]/si",'',RE('mod'));
 
 $file=$site_mod.$mod.'.php'; if(!file_exists($file)) {

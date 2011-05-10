@@ -203,7 +203,8 @@ function dier($a,$t='') { idie($t."<pre>".nl2br(h(print_r($a,1)))."</pre>"); } /
 function idie($s,$h='') { // если это был аякс - выдать аякс-окно
 	if(!empty($GLOBALS['ajax'])) {
 		if($h=='') $h="Fatal error: ".h($GLOBALS['mypage']);
-		otprav("helpc('idie',\"<fieldset><legend>".$h."</legend><div style='text-align: left;'><small>".njs($s)."</small></div></fieldset>\")");
+		if($ajax==1) otprav("helpc('idie',\"<fieldset><legend>".$h."</legend><div style='text-align: left;'><small>".njs($s)."</small></div></fieldset>\")");
+		die("helpc('idie',\"<fieldset><legend>".$h."</legend><div style='text-align: left;'><small>".njs($s)."</small></div></fieldset>\")");
 	}
 	ob_end_clean(); 
 	if($h) header($h);
