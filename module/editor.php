@@ -28,25 +28,23 @@ if($_POST["action"] == "Move") {
 // Форма правки заметок
 if($_POST["action"] == "Save") {
 			// предварительная полезная обработка
+			$s=$_POST["Body"]; $s=str_replace("\r",'',$s); // вот это сразу, потому что ненавижу
 
-			$s=$_POST["Body"];
-			$s=str_replace("\r",'',$s); // вот это сразу, потому что ненавижу
-
-		if($_POST["autokaw"]!="no") $s=ispravkawa($s); // если разрешено обработать кавычки и тире
+//		if($_POST["autokaw"]!="no") $s=ispravkawa($s); // если разрешено обработать кавычки и тире
 
 	$t=getmaketime($_POST["Date"]);
 
 //	getCalendar_clear($_POST["Date"]); // сбросить кэш календаря
 
-        $opt=makeopt($_POST);
+//        $opt=makeopt($_POST);
 
 	msq_add_update('dnevnik_zapisi',array(
 			'Date'=>e($_POST["Date"]),
 			'Header'=>e($_POST["Header"]),
-			'template'=>e($_POST["template"]),
+//			'template'=>e($_POST["template"]),
 			'Body'=>e($s),
 			'Access'=>e($_POST["Access"]),
-			'opt'=> e(ser($opt)),
+//			'opt'=> e(ser($opt)),
 			'DateDate'=>$t[0],
 			'DateDatetime'=>$t[1],
 			'DateUpdate'=>time()

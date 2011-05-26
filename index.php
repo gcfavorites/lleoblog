@@ -144,7 +144,7 @@ ARTICLE();
 
 
 //===============================================================================================================================
-function SCRIPTS_mine() {
+function SCRIPTS_mine() { global $BRO;
 
 SCRIPTS("main","
 var hashpage='".$GLOBALS['hashpage']."';
@@ -167,6 +167,7 @@ var page_onstart=[];
 // ".($GLOBALS['admin']?"setTimeout(\"inject('counter.php?num=".$GLOBALS['article']['num']."&ask=1&old=0');\",5000);":'')."
 
 SCRIPT_ADD($GLOBALS['www_js']."main.js");
+SCRIPT_ADD($GLOBALS['www_js']."ipad.js");
 
 }
 //===============================================================================================================================

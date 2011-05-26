@@ -7,7 +7,7 @@
 
 */
 
-function IFBRO($e) {
+function IFBRO($e) { if($e=='') return $GLOBALS['BRO'];
 	list($l,$a,$b)=explode('|',$e);
 	$p=explode(',',$l);
 	foreach($p as $l) if(stristr($GLOBALS['BRO'],c($l))) return c($a);
