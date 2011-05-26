@@ -197,7 +197,6 @@ function removeEvent(e,evType,fn){
 	if(e.detachEvent) { e.detachEvent('on'+evType, fn) };
 }
 
-
 function helps_cancel(id,f) { getElementsByClass('can',idd(id))[0].onclick=f; }
 function helpc(id,s) { helps(id,s); posdiv(id,-1,-1); }
 function ohelpc(id,z,s) { helpc(id,"<fieldset><legend>"+z+"</legend>"+s+"</fieldset"); }
