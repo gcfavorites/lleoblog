@@ -1,21 +1,24 @@
 // TOUCH-EVENTS SINGLE-FINGER SWIPE-SENSING JAVASCRIPT
 // Courtesy of PADILICIOUS.COM and MACOSXAUTOMATION.COM
 
+function pre_redirect(){document.body.style.left=(curX-startX)+'px'; setOpacity(document.body,0.5);}
+
 function ipad_init() {
 	document.body.id='body';
-	ipadset(document.body,function(){ // alert(swipeDirection);
-
-document.body.width='100%';
-
-	if(swipeDirection=='right') {
-//document.body.innerHTML='';
-delete(mHelps['Wscroll']); rel_redirect('PrevLink'); }
-	if(swipeDirection=='left') {
-//document.body.innerHTML='';
-delete(mHelps['Wscroll']); rel_redirect('NextLink'); }
-	// if(swipeDirection=='up') if(swipeDirection=='down')
+	ipadset(document.body,function(){ delete(mHelps['Wscroll']); ipadkeydo();
+//	if(swipeDirection=='right') { rel_redirect('PrevLink',pre_redirect); }
+//	if(swipeDirection=='left') { rel_redirect('NextLink',pre_redirect); }
+// if(swipeDirection=='up') if(swipeDirection=='down')
 });
 }
+
+
+
+function ipadkeydo(){ if(typeof mHelps['nonav'] !== 'undefined') return true;
+	alert(swipeDirection);
+        for(var i in hotkey) { alert(hotkey[i][0]); if(hotkey[i][0]==swipeDirection && hotkey[i][1]==0) return hotkey[i][2](); }
+}
+
 
 function ipadset(e,fun){ // инициализация объекта
 	addEvent(e,'touchstart',function(){touchStart(event,e.id)});

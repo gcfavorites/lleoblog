@@ -42,7 +42,7 @@ function setkey0(k,v,f,o){ // повесть функцию на нажатие клавиши
 	if(e) hotkey.push([k,e,f,o]); else hotkey.unshift([k,e,f,o]); // иначе - задать
 }
 
-function rel_redirect(id){ var e=idd(id); if(e && e.href && !isHelps()) document.location.href=e.href; }
+function rel_redirect(id,fun){ var e=idd(id); if(e && e.href && !isHelps()) { if(typeof fun == 'function') fun(); document.location.href=e.href; } }
 function hotkey_reset() { hotkey=[];
 if(admin) {
 
@@ -450,6 +450,12 @@ function bigfoto(i,p){ var Z=(typeof p == 'undefined');
 	if(!Z) {
 		setkey(['left','4'],'',function(){bigfoto(bigtoti-1,bigtotp)},false);
 		setkey(['right','7'],'',function(){bigfoto(bigtoti+1,bigtotp)},false);
+		// ipad
+//	        ipadset(idd('bigfoto'),function(){
+//		        if(swipeDirection=='right') return bigfoto(bigtoti-1,bigtotp);
+//	        	if(swipeDirection=='left') return bigfoto(bigtoti+1,bigtotp);
+//		});
+		// ipad
 	}
 	return false;
 }
