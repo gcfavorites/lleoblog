@@ -1,9 +1,32 @@
 // TOUCH-EVENTS SINGLE-FINGER SWIPE-SENSING JAVASCRIPT
 // Courtesy of PADILICIOUS.COM and MACOSXAUTOMATION.COM
 
-function ipad_init() { alert('#'); }
+function ipad_init() {
+	document.body.id='body';
+	ipadset(document.body,function(){ // alert(swipeDirection);
+
+document.body.width='100%';
+
+	if(swipeDirection=='right') {
+//document.body.innerHTML='';
+delete(mHelps['Wscroll']); rel_redirect('PrevLink'); }
+	if(swipeDirection=='left') {
+//document.body.innerHTML='';
+delete(mHelps['Wscroll']); rel_redirect('NextLink'); }
+	// if(swipeDirection=='up') if(swipeDirection=='down')
+});
+}
+
+function ipadset(e,fun){ // инициализация объекта
+	addEvent(e,'touchstart',function(){touchStart(event,e.id)});
+	addEvent(e,'touchend',function(){touchEnd(event,fun)});
+	addEvent(e,'touchmove',function(){touchMove(event)});
+	addEvent(e,'touchcancel',function(){touchCancel(event)});
+}
 
 page_onstart.push("ipad_init()");
+
+//================================================
 
 // this script can be used with one or more page elements to perform actions based on them being swiped with a single finger
 
@@ -22,7 +45,7 @@ var swipeLength = 0;
 var swipeAngle = null;
 var swipeDirection = null;
 
-function touchStart(e,passedName){ e.preventDefault(); // disable the standard ability to select the touched object
+function touchStart(e,passedName){ if(0 && typeof e.ipaddis == 'undefined') e.preventDefault(); // disable the standard ability to select the touched object
 	fingerCount=e.touches.length; // get the total number of fingers touching the screen
 	// since we're looking for a swipe (single finger) and not a gesture (multiple fingers),
 	// check that only one finger was used
@@ -32,12 +55,12 @@ function touchStart(e,passedName){ e.preventDefault(); // disable the standard a
 	} else touchCancel(e); // more than one finger touched so cancel
 }
 
-function touchMove(e){ e.preventDefault();
+function touchMove(e){ if(0 && typeof e.ipaddis == 'undefined') e.preventDefault();
 	if(e.touches.length == 1) { curX=e.touches[0].pageX; curY=e.touches[0].pageY; }
 	else touchCancel(e);
 }
 
-function touchEnd(e){ e.preventDefault();
+function touchEnd(e,fun){ if(0 && typeof e.ipaddis == 'undefined') e.preventDefault();
 	// check to see if more than one finger was used and that there is an ending coordinate
 	if(fingerCount == 1 && curX != 0){
 		// use the Distance Formula to determine the length of the swipe
@@ -46,7 +69,7 @@ function touchEnd(e){ e.preventDefault();
 		if( swipeLength >= minLength ) {
 			caluculateAngle();
 			determineSwipeDirection();
-			processingRoutine();
+			fun(); // processingRoutine();
 			touchCancel(e); // reset the variables
 		} else touchCancel(e);
 	} else touchCancel(e);
@@ -86,8 +109,12 @@ function determineSwipeDirection(){
 	else swipeDirection='up';
 }
 
+/*
 function processingRoutine(){
-	var s=document.getElementById(triggerElementID).style;
+	alert(swipeDirection); return;
+//	alert(triggerElementID);
+//	var s=document.getElementById(triggerElementID).style;
+	var s=idd(triggerElementID).style;
 	if(swipeDirection=='left'){ // REPLACE WITH YOUR ROUTINES
 		s.backgroundColor = 'orange';
 	}else if(swipeDirection=='right'){ // REPLACE WITH YOUR ROUTINES
@@ -97,4 +124,8 @@ function processingRoutine(){
 	}else if(swipeDirection=='down'){ // REPLACE WITH YOUR ROUTINES
 		s.backgroundColor = 'purple';
 	}
+//	alert(4+' '+triggerElementID);
+//	idd(triggerElementID).style.backgroundColor = 'orange';
+//	document.body.style.backgroundColor = 'orange';
 }
+*/

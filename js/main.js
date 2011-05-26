@@ -309,7 +309,7 @@ function mijax(u,a) { a['up']=up; if(u.indexOf('://')<0) u=www_ajax+u; u+='?minj
 	loadScr(u);
 }
 
-function setOpacity(e, n) { var o=getOpacityProperty(); if(!e || !o) return;
+function setOpacity(e,n) { var o=getOpacityProperty(); if(!e || !o) return;
 	if(o=='filter') { n *= 100; // Internet Exploder 5.5+
 	// Если уже установлена прозрачность, то меняем её через коллекцию filters, иначе добавляем прозрачность через style.filter
 		var oAlpha = e.filters['DXImageTransform.Microsoft.alpha'] || e.filters.alpha;
