@@ -5,8 +5,14 @@ function ipad_init(){ document.body.id='body'; delete(mHelps['Wscroll']);
 	ipadset(document.body,ipadkeydo);
 }
 
-function ipadkeydo(){ if(typeof mHelps['nonav'] !== 'undefined') return true; /*&& hotkey[i][1]==0*/
-	var s=keycodes[swipeDirection]; for(var i in hotkey) { if(hotkey[i][0]==s) return hotkey[i][2](); }
+function ipadkeydo(){
+	if(typeof mHelps['nonav'] !== 'undefined') return true; /*&& hotkey[i][1]==0*/
+	var s=swipeDirection,i;
+		if(s=='left'||s=='right') i=startX-curX; else i=startY-curY;
+		if(i<0) i=-i;
+		// alert('s: '+s+' i: '+i+'  W: '+getWinW()/2);
+		if(i<getWinW()/2) return; // размашистый штрих должен быть
+	s=keycodes[s]; for(var i in hotkey) { if(hotkey[i][0]==s) return hotkey[i][2](); }
 }
 
 function ipadset(e,fun){ // инициализация объекта
