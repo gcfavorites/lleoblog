@@ -1,24 +1,13 @@
 // TOUCH-EVENTS SINGLE-FINGER SWIPE-SENSING JAVASCRIPT
 // Courtesy of PADILICIOUS.COM and MACOSXAUTOMATION.COM
 
-function pre_redirect(){document.body.style.left=(curX-startX)+'px'; setOpacity(document.body,0.5);}
-
-function ipad_init() {
-	document.body.id='body';
-	ipadset(document.body,function(){ delete(mHelps['Wscroll']); ipadkeydo();
-//	if(swipeDirection=='right') { rel_redirect('PrevLink',pre_redirect); }
-//	if(swipeDirection=='left') { rel_redirect('NextLink',pre_redirect); }
-// if(swipeDirection=='up') if(swipeDirection=='down')
-});
+function ipad_init(){ document.body.id='body'; delete(mHelps['Wscroll']); 
+	ipadset(document.body,ipadkeydo);
 }
 
-
-
-function ipadkeydo(){ if(typeof mHelps['nonav'] !== 'undefined') return true;
-	alert(swipeDirection);
-        for(var i in hotkey) { alert(hotkey[i][0]); if(hotkey[i][0]==swipeDirection && hotkey[i][1]==0) return hotkey[i][2](); }
+function ipadkeydo(){ if(typeof mHelps['nonav'] !== 'undefined') return true; /*&& hotkey[i][1]==0*/
+	var s=keycodes[swipeDirection]; for(var i in hotkey) { if(hotkey[i][0]==s) return hotkey[i][2](); }
 }
-
 
 function ipadset(e,fun){ // инициализация объекта
 	addEvent(e,'touchstart',function(){touchStart(event,e.id)});
@@ -37,7 +26,7 @@ var triggerElementID = null; // this variable is used to identity the triggering
 var fingerCount = 0;
 var startX = 0;
 var startY = 0;
-var curX = 0;
+var curX = 300;
 var curY = 0;
 var deltaX = 0;
 var deltaY = 0;
@@ -105,30 +94,9 @@ function caluculateAngle(){
 }
 
 function determineSwipeDirection(){
-	if((swipeAngle <= 45)&&(swipeAngle >= 0)) swipeDirection='left';
-	else if((swipeAngle <= 360)&&(swipeAngle >= 315)) swipeDirection='left';
-	else if((swipeAngle >= 135)&&(swipeAngle <= 225)) swipeDirection='right';
+	if((swipeAngle <= 45)&&(swipeAngle >= 0)) swipeDirection='right'; // 'left';
+	else if((swipeAngle <= 360)&&(swipeAngle >= 315)) swipeDirection='right'; // 'left';
+	else if((swipeAngle >= 135)&&(swipeAngle <= 225)) swipeDirection='left'; // 'right';
 	else if((swipeAngle > 45)&&(swipeAngle < 135)) swipeDirection='down';
 	else swipeDirection='up';
 }
-
-/*
-function processingRoutine(){
-	alert(swipeDirection); return;
-//	alert(triggerElementID);
-//	var s=document.getElementById(triggerElementID).style;
-	var s=idd(triggerElementID).style;
-	if(swipeDirection=='left'){ // REPLACE WITH YOUR ROUTINES
-		s.backgroundColor = 'orange';
-	}else if(swipeDirection=='right'){ // REPLACE WITH YOUR ROUTINES
-		s.backgroundColor = 'green';
-	}else if(swipeDirection=='up'){ // REPLACE WITH YOUR ROUTINES
-		s.backgroundColor = 'maroon';
-	}else if(swipeDirection=='down'){ // REPLACE WITH YOUR ROUTINES
-		s.backgroundColor = 'purple';
-	}
-//	alert(4+' '+triggerElementID);
-//	idd(triggerElementID).style.backgroundColor = 'orange';
-//	document.body.style.backgroundColor = 'orange';
-}
-*/
