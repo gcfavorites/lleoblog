@@ -42,7 +42,14 @@ function setkey0(k,v,f,o){ // повесть функцию на нажатие клавиши
 	if(e) hotkey.push([k,e,f,o]); else hotkey.unshift([k,e,f,o]); // иначе - задать
 }
 
-function rel_redirect(id,fun){ var e=idd(id); if(e && e.href && !isHelps()) { if(typeof fun == 'function') fun(); document.location.href=e.href; } }
+function rel_redirect(id){ var e=idd(id); if(e && e.href && !isHelps()) { 
+if(id=='PrevLink'){ var b=document.body,i=curX-startX; if(i<0)i=-i; b.style.left=i+'px'; setOpacity(b,0.5); }
+else if(id=='NextLink'){ var b=document.body,i=curX-startX; if(i<0)i=-i; b.style.right=i+'px'; setOpacity(b,0.5); }
+// function pre_redirect(){document.body.style.left=(curX-startX)+'px'; setOpacity(document.body,0.5);}
+//      if(swipeDirection=='right') { rel_redirect('PrevLink',pre_redirect); }
+//      if(swipeDirection=='left') { rel_redirect('NextLink',pre_redirect); }
+// if(swipeDirection=='up') if(swipeDirection=='down')
+document.location.href=e.href; } }
 function hotkey_reset() { hotkey=[];
 if(admin) {
 
@@ -202,7 +209,7 @@ function helpc(id,s) { helps(id,s); posdiv(id,-1,-1); }
 function ohelpc(id,z,s) { helpc(id,"<fieldset><legend>"+z+"</legend>"+s+"</fieldset"); }
 function idie(s) { ohelpc('idie','Error',s) }
 
-function helps(id,s,pos) { 
+function helps(id,s,pos) {
 s=s+"<div onclick=\"clean('"+id+"')\" class='can' title='cancel'></div>";
 /*
 s=s+"<div style='position:absolute;bottom:0px;right:8px;cursor:pointer;'><a href='?module="+encodeURIComponent(majax_lastu.replace('.php',''));
