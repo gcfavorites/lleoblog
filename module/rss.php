@@ -100,7 +100,8 @@ function RSS_zaban($s) { global $admin,$IP,$BRO; 	// если это забаненные мудаки,
 
 function RSSZ_mode1($s,$link) { global $admin,$BRO,$IP;
 	$sim=strip_tags(html_entity_decode($s)); // удалить все теги
-	$sim=ereg_replace("{_[^}]*_}",'',$sim); // удалить все модули в фигурных скобках
+	// $sim=ereg_replace("{_[^}]*_}",'',$sim); // удалить все модули в фигурных скобках
+        $sim=preg_replace("/\{_[^\}]+_\}/si",'',$sim); // удалить все модули в фигурных скобках
 	$bukv=round(((strlen($sim))+99 )/100)*100;
 	$sim=trim(preg_replace("/^(.{260}[^\.\?\!]*[\.\!\?]).*$/si","$1",$sim))
 	."... [<a href='$link'>читать полностью: примерно $bukv символов</a>]\n\n";

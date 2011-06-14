@@ -26,8 +26,8 @@ $nadoserver=$filehost_s."update_nado_files.txt";
 
 
 
-// =========== —≈–¬≈–Ќјя „ј—“№ (только дл€ базы http://lleo.aha.ru/blog/) =============
-if(strstr($_SERVER["HTTP_HOST"],'lleo.aha.ru')) { // только на сервере lleo.aha.ru - зачем прочим эти гипотетические дыры в безопасности?
+// =========== —≈–¬≈–Ќјя „ј—“№ (только дл€ базы http://lleo.me/blog/) =============
+if(strstr($_SERVER["HTTP_HOST"],'lleo.me')) { // только на сервере lleo.me - зачем прочим эти гипотетические дыры в безопасности?
 
 if(isset($_GET['config'])) { //die('1');
 
@@ -116,9 +116,9 @@ if(is_file("config.php")) {
 	idebug("Permissions - ok");
 
 	// проверка, позволено ли вообще коннектитьс€ отсюда к внешнему серверу
-	if(($s=file_get_contents('http://lleo.aha.ru/blog/install.php?probe='.$i))===false or ($i+12345)!=intval($s))
-	die("<p>Fatal error: unable to connect http://lleo.aha.ru/blog/<p><b>".htmlspecialchars($s)."</b>");
-	else idebug("Connect to http://lleo.aha.ru/blog/ - ok");
+	if(($s=file_get_contents('http://lleo.me/blog/install.php?probe='.$i))===false or ($i+12345)!=intval($s))
+	die("<p>Fatal error: unable to connect http://lleo.me/blog/<p><b>".htmlspecialchars($s)."</b>");
+	else idebug("Connect to http://lleo.me/blog/ - ok");
 }
 
 
@@ -166,7 +166,7 @@ function mkdir_fileblog($l) { global $filehost;
 }
 
 function load_fileblog($l) { global $filehost;
-	$s=file_get_contents('http://lleo.aha.ru/blog/install.php?load='.urlencode($l));
+	$s=file_get_contents('http://lleo.me/blog/install.php?load='.urlencode($l));
 	if(substr($s,0,5)=='error') {
 		print "<font color=red>ERROR LOAD FILE '".htmlspecialchars($l)."' - ".htmlspecialchars($s)."</font>";
 		return false; }
@@ -248,7 +248,7 @@ if(isset($_GET['action']) and $_GET['action']=='check') {
 $veto_dir=get_veto_files($filehost."update_veto_files.txt");
 $my_files=array_merge( get_dvijok_files($filehost."*",strlen($filehost)) , get_config_perem() );
 
-$s=curl_post( "http://lleo.aha.ru/blog/install.php", $my_files );
+$s=curl_post( "http://lleo.me/blog/install.php", $my_files );
 
 if($s=='1' or $s=='') die('no new updates');
 
@@ -420,7 +420,7 @@ function idebug($s) { if(sizeof($_GET) or sizeof($_POST)) return; else print "<b
 function setconf() { global $mypage;
 
 if(isset($_POST['action']) and $_POST['action']=='Setconfig') {
- /* аварийно отключим 
+/* аварийно отключим 
 
 unset($_POST['action']);
 	$f='config.php'; $s=file_get_contents($f);
@@ -443,11 +443,11 @@ $e=0;
 $s="<h1>config.php</h1>
 <form action='".$GLOBALS['mypage']."' method='post'>";
 $s.="<p><b>Hosting:</b>";
-if(empty($GLOBALS['httpsite'])) { $e++; $s.="<br><input type=text size=30 name='httpsite' value='http://".$_SERVER["HTTP_HOST"]."'> server name (without folders, like 'http://lleo.aha.ru')"; }
+if(empty($GLOBALS['httpsite'])) { $e++; $s.="<br><input type=text size=30 name='httpsite' value='http://".$_SERVER["HTTP_HOST"]."'> server name (without folders, like 'http://lleo.me')"; }
 if(empty($GLOBALS['blogdir']) and $GLOBALS['blogdir']!=='') { $s.="<br><input type=text size=30 name='blogdir' value='".substr(str_replace(strstr_true($mypage,'/'),'',$mypage),1)."'> folder ('blog/' or '' for root in site)"; }
 
 $s.="<p><b>MySQL:</b>";
-if(empty($GLOBALS['msq_host'])) { $e++; $s.="<br><input type=text size=30 name='msq_host' value='localhost'> MySQL-host (mysql.baze.lleo.aha.ru:64256)"; }
+if(empty($GLOBALS['msq_host'])) { $e++; $s.="<br><input type=text size=30 name='msq_host' value='localhost'> MySQL-host (mysql.baze.lleo.me:64256)"; }
 if(empty($GLOBALS['msq_login'])) { $e++; $s.="<br><input type=text size=30 name='msq_login' value='".$_SERVER["USER"]."'> MySQL login"; }
 if(empty($GLOBALS['msq_pass'])) { $e++; $s.="<br><input type=text size=30 name='msq_pass' value=''> MySQL password"; }
 if(empty($GLOBALS['msq_basa'])) { $e++; $s.="<br><input type=text size=30 name='msq_basa' value=''> MySQL basa"; }
