@@ -18,10 +18,10 @@ SCRIPTS("logout","function logout2() {
 
 
 // восстановление кук с lleo.aha.ru
-if(isset($_GET['redirect']) && isset($_GET['uc'])) {
-	$uz=$_GET['uc']; $uzn=intval(substr($uz,0,strpos($uz,'-')));
-	$un=$GLOBALS['unic'];
-	if(upcheck($uz) && $uzn!=$un && getis_global($un)!==false) {
+if(isset($_GET['redirect']) && isset($_GET['uc']) && isset($_GET['ip'])) {
+        $uz=$_GET['uc']; $uzn=intval(substr($uz,0,strpos($uz,'-')));
+        $un=$GLOBALS['unic'];
+        if($_GET['ip']==$_SERVER["REMOTE_ADDR"] && upcheck($uz) && $uzn!=$un && getis_global($un)!==false) {
 
 	setcoo($GLOBALS['uc'],$uz);
 	logi('restore_lleo.aha.ru_unic.txt',"\n ".$GLOBALS['num']." restore:".$GLOBALS['unic']
