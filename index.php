@@ -1,6 +1,6 @@
 <?php
 
-// die('REMONT');
+die('REMONT');
 
 include "config.php";
 include $include_sys."_autorize.php";
