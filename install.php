@@ -11,7 +11,8 @@ ini_set('error_reporting', E_ALL);
 set_time_limit(0);
 
 // проверка, есть ли библиотека curl (извините, у меня работает через нее, заебался с этими fsockopen) и другие
-if(!function_exists('file_put_contents')) { function file_put_contents($url,$s) { $f=fopen($url,"w"); fputs($f,$s); fclose($f); chmod($url,0666); } }
+if(!function_exists('file_put_contents')) { function file_put_contents($url,$s) { $f=fopen($url,"w"); fputs($f,$s); fclose($f); } }
+
 //	die("<p>Fatal error: '$s' not found! Install in Apache/PHP!!!");
 $s='curl_init'; if(function_exists($s)) idebug("CURL module - ok"); else die("<p>Fatal error: CURL not found! Install CURL module in Apache/PHP.");
 $s='iconv'; if(function_exists($s)) idebug("ICONV module - ok"); else die("<p>Fatal error: ICONV not found! Install ICONV-module in Apache/PHP.");
@@ -99,8 +100,25 @@ if(is_file("config.php")) {
 	if(setconf()==1) require "config.php";
 } else if(is_file("config.php.tmpl")) {
 	idebug("Restore config.php from config.php.tmpl?");
-	copy("config.php.tmpl","config.php");
+		$s=file_get_contents("config.php.tmpl");
+		$s=preg_replace_callback("/_md5_/","md5rand",$s);
 
+/*
+function next_year($matches)
+{
+  // as usual: $matches[0] is the complete match
+  // $matches[1] the match for the first subpattern
+  // enclosed in '(...)' and so on
+  return $matches[1].($matches[2]+1);
+}
+echo preg_replace_callback(
+            "|(\d{2}/\d{2}/)(\d{4})|",
+            "next_year",
+            $text);
+
+*/
+
+		fileput("config.php",$s);
 	setconf();
 	exit;
 } else {
@@ -109,7 +127,7 @@ if(is_file("config.php")) {
 	$f='_temp_test.0';
 	$e=0; $i=rand(0,100);	
 	if(is_file($f)) { if(unlink($f)===false) $e=1; } // если есть (странно, откуда бы?), но не удаляется - ошибка
-	if(file_put_contents($f,$i)===false) $e=2; else chmod($f,0666); // если не удается создать - ошибка
+	if(fileput($f,$i)===false) $e=2; // если не удается создать - ошибка
 	if(($s=file_get_contents($f))===false or $s!=$i) $e=3; // если не удалось записать - ошибка
 	if(unlink($f)===false) $e=4; // если не удалось за собой удалить - ошибка
 	if($e) die("<p>Fatal error #$e: wrong permissions. You can allow to write in all this folder!");
@@ -117,7 +135,7 @@ if(is_file("config.php")) {
 
 	// проверка, позволено ли вообще коннектиться отсюда к внешнему серверу
 	if(($s=file_get_contents('http://lleo.me/blog/install.php?probe='.$i))===false or ($i+12345)!=intval($s))
-	die("<p>Fatal error: unable to connect http://lleo.me/blog/<p><b>".htmlspecialchars($s)."</b>");
+	die("<p>Fatal error: unable to connect http://lleo.me/blog/<p><b>".h($s)."</b>");
 	else idebug("Connect to http://lleo.me/blog/ - ok");
 }
 
@@ -125,7 +143,7 @@ if(is_file("config.php")) {
 if(!is_file('.htaccess') and is_file('htaccess') and $msq_host!='') {
 	$s=file_get_contents("htaccess");
 	$s=str_replace('RewriteBase /blog/','RewriteBase /'.$blogdir,$s);
-	if(file_put_contents(".htaccess",$s)===false) die("<p>Fatal error: can't write '.htaccess'"); // else chmod(".htaccess",0666); 
+	if(fileput(".htaccess",$s)===false) die("<p>Fatal error: can't write '.htaccess'");
 	idebug("Create .htaccess - ok");
 }
 
@@ -160,15 +178,15 @@ function mkdir_fileblog($l) { global $filehost;
 	foreach($a as $d) { if($d!='') {
 		$dir.=$d.'/';
 		if(!is_dir($dir)) {
-			if(mkdir($dir)===false) die("<font color=red>ERROR mkdir '".htmlspecialchars($dir)."'</font>");
-		} chmod($dir,0777);
+			if(dirput($dir)===false) die("<font color=red>ERROR mkdir '".h($dir)."'</font>");
+		}
 	}}
 }
 
 function load_fileblog($l) { global $filehost;
 	$s=file_get_contents('http://lleo.me/blog/install.php?load='.urlencode($l));
 	if(substr($s,0,5)=='error') {
-		print "<font color=red>ERROR LOAD FILE '".htmlspecialchars($l)."' - ".htmlspecialchars($s)."</font>";
+		print "<font color=red>ERROR LOAD FILE '".h($l)."' - ".h($s)."</font>";
 		return false; }
 
 	mkdir_fileblog($l);
@@ -179,8 +197,7 @@ if(!empty($GLOBALS['www_design']) && preg_match("/\.css$/si",$l)) {
         $s=str_replace('{www_design}',$GLOBALS['www_design'],$s);
 }
 //----------------------------------------------------------------
-	if(file_put_contents($filehost.$l,$s)===false) 	print "<font color=red>ERROR WRITE FILE '".htmlspecialchars($l)."'</font>";
-	else chmod($filehost.$l,0666);
+	if(fileput($filehost.$l,$s)===false) print "<font color=red>ERROR WRITE FILE '".h($l)."'</font>";
 	return true;
 }
 
@@ -193,14 +210,14 @@ if( isset($_POST['action']) ) { unset($_POST['action']);
 
 foreach($_POST as $n=>$l) { list($n,)=explode('_',$n,2); $l=urldecode($l);
 	
-//	print "<br>".htmlspecialchars($l)." = ".htmlspecialchars($n);
+//	print "<br>".h($l)." = ".h($n);
 
 	if(substr($l,0,3)=='no:') { list($l,)=explode(' ',substr($l,3),2); $veto.="$l\n"; continue; }
 
 	if(substr($l,0,7)=='config:') {	$l=substr($l,7); // с конфигом
 		if($conf=='') $conf=file_get_contents('config.php');
 		if($n=='add') {
-			$l=str_replace('_md5_',md5(rand(0,1000000)).md5(time()),$l); // хэши автоматом создать
+			$l=str_replace('_md5_',md5rand(),$l); // хэши автоматом создать
 			$conf=preg_replace("/\n\s*\?>\s*$/s","\n\n\$".$l."\n?>\n",$conf);
 		}
 		if($n=='del') $conf=preg_replace("/\n(\s*[\$]".$l."\s*=[^\n]+)/s","// delete this: $1",$conf);
@@ -210,16 +227,16 @@ foreach($_POST as $n=>$l) { list($n,)=explode('_',$n,2); $l=urldecode($l);
 	$file=$filehost.$l;
 
 	if($n=='del') {
-		if(!is_file($file)) print "<br><font color=red>DELETE: file not found '".htmlspecialchars($file)."'</font>";
-		else { copy($file,$file.'.old'); chmod($file.'.old',0666); unlink($file); }
+		if(!is_file($file)) print "<br><font color=red>DELETE: file not found '".h($file)."'</font>";
+		else { copyf($file,$file.'.old'); unlink($file); }
 	}
 
 	if($n=='add') {	load_fileblog($l); }
-	if($n=='upd') {	copy($file,$file.'.old'); chmod($file.'.old',0666); load_fileblog($l); }
+	if($n=='upd') {	copyf($file,$file.'.old'); load_fileblog($l); }
 	if($n=='mkdir') { mkdir_fileblog($l); }
 }
-	if($conf!='' && file_put_contents('config.php',$conf)===false) die('Write error: config.php'); else chmod('config.php',0666);
-	if(file_put_contents($vetomyfiles,$veto)===false) die('Write error: '.$vetomyfiles); else chmod($vetomyfiles,0666);
+	if($conf!='' && fileput('config.php',$conf)===false) die('Write error: config.php');
+	if(fileput($vetomyfiles,$veto)===false) die('Write error: '.$vetomyfiles);
 }
 
 // ==================== back ===================================
@@ -269,12 +286,18 @@ if(sizeof($nado)) foreach($nado as $l) if($l!='') {
 $veto_my=get_veto_files($vetomyfiles,0);
 
 $s='';
+
 $s.=print_oo($all);
+
+// die("<pre>".print_r($all,1));
+
 //$c=print_o($add,'add','green'); if($c!='') $s.="<h1>Add new files:</h1>$c";
 //$c=print_o($del,'del','red'); if($c!='') $s.="<h1>Delete files:</h1>$c";
 //$c=print_o($upd,'upd','blue'); if($c!='') $s.="<h1>Update files:</h1>$c";
 //$c=print_o($mkdir,'mkdir','magenta'); if($c!='') $s.="<h1>Make folder:</h1>$c";
 //$c=print_o($addconfig,'add_config','pink'); if($c!='') $s.="<h1>Add to config.php:</h1>$c";
+
+
 if($s!='') {
 print "<form method=post action='$mypage'>".$s."<p>
 <input type=hidden name='action' value='Update'>
@@ -303,7 +326,6 @@ function print_oo($a) { global $filehost,$veto_my; $rez=strlen($filehost);
 	$s='';
 	$lastdir='';
 	foreach($a as $ll=>$l) { $act=$l['act']; $color=$l['color'];
-
 		if(strstr($ll,'config:')) { if(!is_file('config.php')) continue;
 			$otstup=''; $dirname='config:'; $filename=' $'.substr($ll,strlen('config:'));
 		} else {
@@ -311,7 +333,7 @@ function print_oo($a) { global $filehost,$veto_my; $rez=strlen($filehost);
 			$dirname=substr($ll,0,strlen($ll)-strlen($filename));
 			$otstup=str_repeat("&nbsp;",substr_count($ll, '/')*10);
 		}
-		if($dirname!=$lastdir) $s.="<p><b>".htmlspecialchars($dirname)."</b>";
+		if($dirname!=$lastdir) $s.="<p><b>".h($dirname)."</b>";
 		$lastdir=$dirname;
 
 	list($lvet,)=explode(' ',$ll,2);
@@ -319,7 +341,7 @@ function print_oo($a) { global $filehost,$veto_my; $rez=strlen($filehost);
 
 		$s.="<br>$otstup"
 ."<select name='".$act."_".(++$k)."'><option value='".urlencode($ll)."'$s1>$act<option value='".urlencode("no:".$ll)."'$s2>no</select>"
-."<font color='$col'>".htmlspecialchars($filename)."</font>";
+."<font color='$col'>".h($filename)."</font>";
 	}
 	return $s;
 }
@@ -332,14 +354,14 @@ function print_o($a,$act,$color) { global $filehost,$veto_my; $rez=strlen($fileh
 		$filename=strstr_true($ll,'/');
 		$dirname=substr($ll,0,strlen($ll)-strlen($filename));
 		$otstup=str_repeat("&nbsp;",substr_count($ll, '/')*10);
-		if($dirname!=$lastdir) $s.="<p><b>".htmlspecialchars($dirname)."</b>";
+		if($dirname!=$lastdir) $s.="<p><b>".h($dirname)."</b>";
 		$lastdir=$dirname;
 
 	if(in_array($ll,$veto_my)) { $s2=' selected'; $s1=''; $col='black'; } else { $s1=' selected'; $s2=''; $col=$color; }
 
 		$s.="<br>$otstup"
-."<select name='".htmlspecialchars(strtr($ll,'.','#'))."'><option value='$act'$s1>$act<option value='no'$s2>no</select>"
-."<font color='$col'>".htmlspecialchars($filename)."</font>";
+."<select name='".h(strtr($ll,'.','#'))."'><option value='$act'$s1>$act<option value='no'$s2>no</select>"
+."<font color='$col'>".h($filename)."</font>";
 	}
 	return $s;
 }
@@ -420,23 +442,21 @@ function idebug($s) { if(sizeof($_GET) or sizeof($_POST)) return; else print "<b
 function setconf() { global $mypage;
 
 if(isset($_POST['action']) and $_POST['action']=='Setconfig') {
-/* аварийно отключим 
+// аварийно отключим 
 
 unset($_POST['action']);
 	$f='config.php'; $s=file_get_contents($f);
 	if(empty($_POST['blog_name']) and empty($blog_name)) $_POST['blog_name']=$_SERVER["SERVER_NAME"];
 	if(empty($_POST['admin_site']) and empty($admin_site)) $_POST['admin_site']=$_SERVER["SERVER_NAME"];
-	foreach($_POST as $n=>$v) {
+	foreach($_POST as $n=>$v) { // if($v=='_md5_') $v=md5(rand(0,32565).time().rand(0,32565));
 		unset($_POST[$n]);
 		if(!preg_match("/[\n\r]+\s*[\$]".$n."\s*=\s*[\'\"][^\'\"]*[\'\"]/si",$s))
 		$s=str_replace('?'.'>',"\n\$".$n."='".$v."';\n".'?'.'>',$s);
 		else $s=preg_replace("/([\n\r]+\s*[\$]".$n."\s*=\s*)[\'\"][^\'\"]*[\'\"]/si",'$1"'.$v.'"$2',$s);
 	}
-//	die("<p><hr>".nl2br(htmlspecialchars($s)));
-	file_put_contents($f,$s); chmod($f,0666);
+//	die("<p><hr>".nl2br(h($s)));
+	if(is_file('editconfig.flag')); { fileput($f,$s); unlink('editconfig.flag'); }
 	return 1;
-*/
-
 }
 
 $e=0;
@@ -458,10 +478,11 @@ if(empty($GLOBALS['admin_mail'])) { $e++; $s.="<p><input type=text size=30 name=
 if(empty($GLOBALS['admin_ljuser'])) { $s.="<p><input type=text size=30 name='admin_ljuser' value='lleo_run'> ljuser (если собираетесь качать копию ЖЖ)"; }
 
 $s.="<p><b>Хэшики. Здесь наберите просто три любых строки:</b>";
-if(empty($GLOBALS['koldunstvo'])) { $e++; $s.="<p><input type=text size=30 name='koldunstvo' value='".md5(rand(0,1000000)).md5(time())."'> ('у опушки продала лиса волнушки')"; }
-if(empty($GLOBALS['hashinput'])) { $e++; $s.="<p><input type=text size=30 name='hashinput' value='".md5(rand(0,1000000)).md5(time())."'> ('всякая дурь всякая дурь')"; }
-if(empty($GLOBALS['hashlogin'])) { $e++; $s.="<p><input type=text size=30 name='hashlogin' value='".md5(rand(0,1000000)).md5(time())."'> ('прамамамамама фантазия исчерпа')"; }
-if(empty($GLOBALS['newhash_user'])) { $e++; $s.="<p><input type=text size=30 name='newhash_user' value='".md5(rand(0,1000000)).md5(time())."'> ('фантазия вконец исчерпа')"; }
+if(empty($GLOBALS['koldunstvo'])) { $e++; $s.="<p><input type=text size=30 name='koldunstvo' value='".md5rand()."'> ('у опушки продала лиса волнушки')"; }
+if(empty($GLOBALS['hashinput'])) { $e++; $s.="<p><input type=text size=30 name='hashinput' value='".md5rand()."'> ('всякая дурь всякая дурь')"; }
+if(empty($GLOBALS['hashlogin'])) { $e++; $s.="<p><input type=text size=30 name='hashlogin' value='".md5rand()."'> ('прамамамамама фантазия исчерпа')"; }
+if(empty($GLOBALS['newhash_user'])) { $e++; $s.="<p><input type=text size=30 name='newhash_user' value='".md5rand()."'> ('фантазия вконец исчерпа')"; }
+
 
 $s.="
 <input type=hidden name='action' value='Setconfig'>
@@ -470,7 +491,38 @@ $s.="
 
 if(!$e) return 0;
 
+fileput('editconfig.flag','1');
+
 die($s);
 }
+
+
+//----------------------------------------------------------------------
+function filechmod($f,$p=0664){ chmod($f,$p); }
+function dirchmod($d,$p=0775){ chmod($d,$p); }
+function fileput($f,$s) { $o=file_put_contents($f,$s); filechmod($f); return $o; }
+function dirput($d) { $o=mkdir($d); dirchmod($d); return $o; }
+function copyf($a,$b) { $o=copy($a,$b); filechmod($b); return $o; }
+function h($s) { return htmlspecialchars($s); }
+
+
+function md5rand() { return hash_generate(); }
+// md5(rand(0,32000).time().rand(0,32000));
+
+// сгенерировать hash-строку
+function rando($x,$y){ $s='';
+// die(exec("uname -a"));
+// $k=10; while((--$k)&&!strlen($s)){ if(($g=fopen("/dev/random","rb"))===false) break; $s=fgets($g); fclose($g); }
+        if(!strlen($s)) { // /dev/random не сработал, вернуть традиционным образом
+                list($t,)=explode(" ",microtime()); mt_srand($t+mt_rand()); $a=mt_rand(0,$y)+$t;
+        } else { for($f=1,$a=$j=0;$j<min(strlen($s),3);$j++,$f*=256) $a+=ord($s[$j])*$f; }
+        return $x+$a%($y-$x);
+}
+
+function hash_generate(){
+        $A='ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz01234567890';
+        for($s='',$i=0,$n=strlen($A);$i<128;$i++) $s.=$A[rando(0,$n)]; return $s; //convert_uuencode($s);
+}
+
 
 ?>
