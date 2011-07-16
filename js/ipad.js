@@ -50,7 +50,11 @@ function touchStart(e,passedName){ if(0 && typeof e.ipaddis == 'undefined') e.pr
 	if(fingerCount==1){
 		startX=e.touches[0].pageX; startY=e.touches[0].pageY; // get the coordinates of the touch
 		triggerElementID=passedName; // store the triggering element ID
-	} else touchCancel(e); // more than one finger touched so cancel
+	} else { // more than one finger touched so cancel
+		try{ eval("ipadfinger"+fingerCount+"()"); } catch(e){}
+		// if(admin) alert(fingerCount);
+		touchCancel(e);
+	}
 }
 
 function touchMove(e){ if(0 && typeof e.ipaddis == 'undefined') e.preventDefault();

@@ -1,5 +1,6 @@
 <?php
 
+
 // die('REMONT');
 
 include "config.php";
@@ -7,6 +8,9 @@ include $include_sys."_autorize.php";
 $_SCRIPT=$_SCRIPT_ADD=$_STYLE=$_HEADD=array(); include $include_sys."_modules.php";
 include_once $include_sys."blogpage.php"; // потом удалить!!!
 mystart();
+
+// if($admin) idie('#<pre>'.print_r($_SERVER,1));
+
 
 //SCRIPTS("jog_kuki",$jog_scripts." function setIsReady() { c_rest('".$uc."'); c_rest('lju'); } ");
 //SCRIPTS("jog_kuki","function setIsReady() { c_rest('".$uc."'); c_rest('lju'); }");
