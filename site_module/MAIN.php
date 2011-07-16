@@ -16,6 +16,7 @@ SCRIPTS("logout","function logout2() {
 ");
 }
 
+/*
 
 // восстановление кук с lleo.aha.ru
 if(isset($_GET['redirect']) && isset($_GET['uc']) && isset($_GET['ip'])) {
@@ -23,27 +24,26 @@ if(isset($_GET['redirect']) && isset($_GET['uc']) && isset($_GET['ip'])) {
         $un=$GLOBALS['unic'];
         if($_GET['ip']==$_SERVER["REMOTE_ADDR"] && upcheck($uz) && $uzn!=$un && getis_global($un)!==false) {
 
-	setcoo($GLOBALS['uc'],$uz);
-	logi('restore_lleo.aha.ru_unic.txt',"\n ".$GLOBALS['num']." restore:".$GLOBALS['unic']
+        setcoo($GLOBALS['uc'],$uz);
+        logi('restore_lleo.aha.ru_unic.txt',"\n ".$GLOBALS['num']." restore:".$GLOBALS['unic']
 ." (old:".$un.") realname: ".$GLOBALS['realname']);
 
 SCRIPTS("restore lleo.aha.ru","
 var unic_rest_flag=1;
 function restore_lleoaharu() {
-	unic_rest_flag=1;
-	up='".$uz."'; var upz=up;
-	fc_save('up',upz); f5_save('up',upz); c_save(uc,upz);
-	realname=\"".$GLOBALS['imgicourl']."\";
-	helpc('work',\"<fieldset>ѕоздравл€ю!<p>”далось восстановить вашу авторизацию: <b>".$GLOBALS['imgicourl']
+        unic_rest_flag=1;
+        up='".$uz."'; var upz=up;
+        fc_save('up',upz); f5_save('up',upz); c_save(uc,upz);
+        realname=\"".$GLOBALS['imgicourl']."\";
+        helpc('work',\"<fieldset>ѕоздравл€ю!<p>”далось восстановить вашу авторизацию: <b>".$GLOBALS['imgicourl']
 ."</b><br>(она слетела в момент переезда сайта).<p>“еперь сайт снова будет вас узнавать.</fieldset>\");
-	zabil('myunic',realname);
-	setTimeout(\"clean('work'); up=\"+upz+\"; fc_save('up',up); window.location='".$GLOBALS['mypage']."';\", 5000);
+        zabil('myunic',realname);
+        setTimeout(\"clean('work'); up=\"+upz+\"; fc_save('up',up); window.location='".$GLOBALS['mypage']."';\", 5000);
 } page_onstart.push('restore_lleoaharu()');
 ");
 }}
 
-
-
+*/
 
 
 function MAIN($e) { global $article;

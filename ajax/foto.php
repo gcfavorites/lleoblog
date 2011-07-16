@@ -200,11 +200,11 @@ if($a=='saveset') {
 	$dir=trim(RE('dir'),'/');
 
 	// создать директории
-	$m=explode('/',$dir); $a=$filehost; foreach($m as $l) { $l=str_replace("..","_",$l); $a.=$l."/"; if(!is_dir($a)) { mkdir($a); chmod($a,0777); } }
+	$m=explode('/',$dir); $a=$filehost; foreach($m as $l) { $l=str_replace("..","_",$l); $a.=$l."/"; if(!is_dir($a)) dirput($a); }
 
 	$logo=$_REQUEST['logo'];
 
-	if(file_put_contents($fileset,serialize(array('X'=>$X,'x'=>$x,'q'=>$q,'Q'=>$Q,'dir'=>$dir,'logo'=>$logo))) ===false)
+	if(fileput($fileset,serialize(array('X'=>$X,'x'=>$x,'q'=>$q,'Q'=>$Q,'dir'=>$dir,'logo'=>$logo))) ===false)
 	idie("Ошибка записи $fileset!");
 
 	otprav("clean('fotoset')");

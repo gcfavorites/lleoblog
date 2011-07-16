@@ -143,8 +143,9 @@ function ms($query,$mode='_a',$ttl=666) { $s = false; $magic='@'.$GLOBALS['blogd
 // function cache_init() { global $memcache; $memcache=memcache_connect('memcache_host', 11211); }
 function cache_set($k,$v,$e) { global $memcache; if(!$memcache) return false; return memcache_set($memcache,$k,$v,0,$e); }
 function cache_get($k) { global $memcache; if(!$memcache) return false; return memcache_get($memcache,$k); }
-function cache_rm($k) { global $memcache; if(!$memcache) return false; return memcache_delete($memcache,$k); }
-
+function cache_rm($k) { global $memcache; if(!$memcache) return false;
+memcache_set($memcache,$k,false,0,1);
+return memcache_delete($memcache,$k); }
 
 function arae($ara){ $p=array(); foreach($ara as $n=>$l) $p[e($n)]=e($l); return $p; }
 

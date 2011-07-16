@@ -271,7 +271,7 @@ zabil(\"u".$u."\",\"".njs($s)."\");
 function pr_unics($pp){ global $admin,$podzamok; $s="<table style='border-bottom: 1px dotted #ccc;'>";
 
 $s.="<tr style='background-color:#CED;text-align:center;font-size:10px;'>".($podzamok?"<td><img src='".$GLOBALS['www_design']."e/podzamok.gif'></td>":'')
-.($admin?"<td>N</td>":'')."<td>login</td><td>openid</td><td>lju</td><td>realname</td>"
+.($admin?"<td>N</td>":'')."<td>unic</td><td>login</td><td>openid</td><td>lju</td><td>realname</td>"
 .($podzamok?"<td>email</td><td>site</td>":'')."</tr>";
 
 $k=0; foreach($pp as $p) { $k++; $s.="<tr bgcolor='"
@@ -291,6 +291,7 @@ $p['N']=ms("SELECT COUNT(*) FROM `dnevnik_posetil` WHERE `unic`='".$p['id']."'",
 
 return ($podzamok?"<td style='cursor:pointer;border:1ps dotted red;' onclick=\"chzamok(this,'".$p['admin']."')\">".zamok($p['admin'])."&nbsp;</td>":'')
 .($admin?"<td class=br>".h($p['N'])."</td>":'')
+."<td class=ll onclick=\"majax('login.php',{action:'getinfo',unic:".$p['id']."})\">".$p['id']."</td>"
 ."<td>".h($p['login'])."</td>"
 ."<td>".($p['openid']!=''?"<a href='http://".h(strtr($p['openid'],'@','.'))."'>".h($p['openid'])."</a>":'&nbsp;')."</td>"
 ."<td>".($p['lju']!=''?"<a class=br href=http://".h($p['lju']).".livejournal.com>".h($p['lju'])."</a>":"")."</td>"

@@ -244,7 +244,8 @@ $s.=njsn("
 <div>
 <input id='".$idhelp."_head' onchange='ch_edit_pole(this,$num)' class='t' type='text' name='Header' value='".h($p['Header'])."' maxlength='255'")
 ." style='width:\"+(getWinW()-100)+\"px'>"
-."<br><textarea onkeydown=\\\"keydownc(this,$num)\\\" class='t' id='".$idhelp."_Body' name='Body' style='width:\"+(getWinW()-100)+\"px; height:\"+(getWinH()-200)+\"px'>"
+."<br><textarea onkeydown=\\\"keydownc(this,$num)\\\" class='t' id='".$idhelp."_Body' name='Body' "
+."style='width:\"+Math.floor(95*getWinW()/100)+\"px; height:\"+Math.floor(90*getWinH()/100)+\"px'>"
 .njsn(h($p["Body"])."</textarea>
 </div>
 
@@ -271,7 +272,6 @@ $s.=njsn("<div class=r>"
 //-----------------------
 
 $s.=njsn("<div><input title='".LL('shift+Enter')."' type='button' value='".LL('Save')."' onclick='save_and_close()'></div>");
-
 
 $s="
 if(f5s||jog) {
@@ -419,7 +419,8 @@ if($a=='polesend') { AD(); $val=RE('val'); $name=RE('name');
 		include_once $include_sys."_onetext.php";
 		include_once $include_sys."_modules.php";
 		$p['Body']=$val; $s=onetext($p);
-		$s="idd('Body_$num').innerHTML=\"".njs($s)."\"; salert('".LL('saved')."',500);";
+		$s="idd('Body_$num').innerHTML=\"".njs($s)."\"; salert('".LL('saved')."',500);
+idd('Body".$num."_Body').focus();";
 		// if(RE('clo')==0) $s.="clean('".$idhelp."');";
 		otprav($s);
 	}

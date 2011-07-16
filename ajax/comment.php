@@ -14,6 +14,10 @@ $erorrs=array();
 
 $a=RE('a');
 
+
+// idie('!!!');
+
+
 if(!$unic) {
 //	logi('unic0.txt',"\n\n".date("Y-m-d H:i:s")."\n\n".print_r($_REQUEST,1));
 idie("<b>Ошибка авторизации: unic=0</b>
