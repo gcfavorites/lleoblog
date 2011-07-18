@@ -1,8 +1,8 @@
 <?php // Отображение всего фотоальбома или избранных
 
-STYLE_ADD("/slimbox/slimbox2.css");
+STYLE_ADD($GLOBALS['wwwhost']."slimbox/slimbox2.css");
 SCRIPT_ADD("http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js");
-SCRIPT_ADD("/slimbox/slimbox2.js");
+SCRIPT_ADD($GLOBALS['wwwhost']."slimbox/slimbox2.js");
 
 function FOTOS2($e) {
 	$e=str_replace('WIDTH ','WIDTH=',$e); // для совместимости со старым говном
