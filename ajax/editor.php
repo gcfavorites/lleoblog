@@ -208,6 +208,79 @@ $s="
 otprav($s);
 }
 
+
+
+
+
+
+//=================================== fileimport ===================================================================
+
+if($a=='fileimport') { AD(); $file=RE('id');$Date=$file;
+
+	// взять файл
+	if(!is_file($filehost.$file)) otprav('');
+	$s=file_get_contents($filehost.$file);
+	
+
+
+	// подогнать кодировку
+	$cp=preg_replace("/^.*<meta\shttp-equiv=[\'\"]Content-Type[\'\"][^>]+charset=([0-9a-z\-]+).*$/si","$1",$s);
+	if($cp!=$s && $cp!=$wwwcharset) $s=iconv($cp,$wwwcharset."//IGNORE",$s);
+
+	// убрать говны
+	$s=trim(str_replace("\r","",$s));
+	$s=preg_replace("/<html.*?>/si","",$s);
+	$s=preg_replace("/<body.*?>/si","",$s);
+
+	// попробовать найти заголовок
+	if(($Header=preg_replace("/^.*<title>([^<>\n]+)<\/title>.*$/si","$1",$s))==$s) $Header=$wwwhost;
+	$s=preg_replace("/<title>.*?<\/title>/si","",$s);
+
+	$s=str_ireplace(array("</html>","</body>","</head>","<head>"),"",$s);
+
+	$opt=array("autoformat"=>"no","template"=>"blank");
+
+// своя обработка
+
+
+
+
+
+
+
+
+
+//	idie("codepage='$cp'");
+//    [Access] => all
+//    [opt] => a:5:{s:12:"Comment_view";s:3:"off";s:7:"autokaw";s:2:"no";s:10:"autoformat";s:2:"no";s:8:"template";s:5:"blank";s:13:"Comment_media";s:3:"all";}
+
+	if(($c=ms("SELECT `count` FROM `lleo`.`site_count` WHERE `lang`='".e($wwwhost.$file)."'",'_l',0))===false) $c=0;
+
+	$p=array(
+		'view_counter'=>$c,
+		'Date'=>$Date,
+		'Header'=>$Header,
+		'Body'=>$s,
+//		'num'=>0,
+		'opt'=>ser($opt)
+	);
+
+	msq_add('dnevnik_zapisi',arae($p));
+	$num=ms("SELECT `num` FROM `dnevnik_zapisi` WHERE `Date`='".e($Date)."'","_l",0);
+	if(!$num) idie("Error!");
+	$p['num']=$num; $idhelp='editor'.$num; 
+	// переименовать файл в *.old
+	rename($filehost.$file,$filehost.$file.'.old');
+
+        edit_textarea($p,RE("clo")===false?'':"clean('".e(RE("clo"))."');");
+}
+//=================================== новую заметку ===================================================================
+#if($a=='createform') { AD(); $num=0; $idhelp='editor0'; $Date=h(RE('Date'));
+#	edit_textarea(
+#		array('Header'=>RE('header'),'Body'=>RE('body'),'num'=>0),
+#		RE("clo")===false?'':"clean('".e(RE("clo"))."');"
+#	);
+#} 
 //=================================== новую заметку ===================================================================
 if($a=='newform') { AD();
 	$i=0; while(ms("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date`='".e($Date)."'","_l",0)!=0) { $Date=date("Y/m/d").'_'.sprintf("%02d", ++$i); }
@@ -222,14 +295,15 @@ if($a=='newform') { AD();
 if($a=='editform') { AD();
 	$p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0); if($p===false) idie("Отсутствует заметка #$num");
 	// $p=mkzopt($p);
+	// dier($p);
 	edit_textarea($p,$s);
 }
 //====================================
 
-function edit_textarea($p,$majax='') { global $www_design,$idhelp,$filehost,$autosave_count,$num,$zopt_a; $s='';
+function edit_textarea($p,$majax='') { global $Date, $www_design,$idhelp,$filehost,$autosave_count,$num,$zopt_a; $s='';
 
 if(!$num) {
-	$Date=RE('Date'); if(empty($Date)) $Date=date("Y/m/d");
+	if(empty($Date)) { $Date=RE('Date'); if(empty($Date)) $Date=date("Y/m/d"); }
 	$s.="<input class='t' type='text' name='Date' id='".$idhelp."_Date' value='".h($Date)."' maxlength='128' size='20'><br>";
 }
 

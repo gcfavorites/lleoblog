@@ -105,13 +105,14 @@ treeadd=function(){
 	
 	}
 
-for(var v in se) { var i=se[v]; if(folderclo || v.indexOf('/')!=-1) {
-		idd(v).style.border='2px dotted red'; if(!treeselected[v]) treeselected[v]=i;
+for(var v in se) { var i=se[v]; if(folderclo || v.indexOf('/')!=-1) { idd(v).style.border='2px dotted red';
+if(!treeselected[v]) treeselected[v]=i;
 }}
 treepr();
 };
 
-treepr=function(){ var i=0; for(var k in treeselected) i++; zabil('treese',i); };
+treen=function(){ var i=0; for(var k in treeselected) i++; return i; };
+treepr=function(){ zabil('treese',treen()); };
 
 function treeonclick(event,dbl){ event=event||window.event; var e=event.target||event.srcElement;
 	if(treehasClass(e,'Expand')) e=e.parentNode;
@@ -120,8 +121,36 @@ function treeonclick(event,dbl){ event=event||window.event; var e=event.target||
 		if(treehasClass(e,'ExpandClosed')) { treeload(e.id); return; }
 		if(dbl==2 || event.shiftKey) { majax('foto.php',{a:'treeact',id:e.id}); return; }
 
-		if(!treeselected[e.id]) { treeselected[e.id]=(e.tagName=='IMG'?'img':1); e.style.border='2px dotted red'; }
-			else { delete(treeselected[e.id]); e.style.border='2px solid transparent'; }
+		if(!treeselected[e.id]) { treeselected[e.id]=(e.tagName=='IMG'?'img':1); e.style.border='2px dotted red'; 
+if(admin && treen()==1) { treeid=e.id;
+
+if(e.tagName=='IMG') var t=\"".njsn("
+<img title='Удалить' src='".$www_design."e3/remove.png' class=knop onclick=\"if(treen()==1 && confirm('Delete?')) majax('foto.php',{a:'albumdel',sel:treeselected})\">&nbsp;
+<img title='Повернуть на 270' src='".$www_design."e3/rotate_left.png' class=knop onclick=\"if(treen()==1 && confirm('Повернуть на 270?')){ openwait(); majax('foto.php',{a:'rotate',degree:270,sel:treeselected}); }\">&nbsp;
+<img title='Повернуть на 90' src='".$www_design."e3/rotate_right.png' class=knop onclick=\"if(treen()==1 && confirm('Повернуть на 90?')){ openwait(); majax('foto.php',{a:'rotate',degree:90,sel:treeselected}); }\">&nbsp;
+<img title='Повернуть на 180' src='".$www_design."e3/blend.png' class=knop onclick=\"if(treen()==1 && confirm('Повернуть на 180?')){ openwait(); majax('foto.php',{a:'rotate',degree:180,sel:treeselected}); }\">&nbsp;
+<img title='Вставить в заметку' src='".$www_design."e3/finish.png' class=knop onclick='if(treen()==1) treefinish()'>&nbsp;
+")."\";
+
+else { var t=\"".njsn("
+<img title='Delete' src='".$www_design."e3/remove.png' class=knop onclick=\"if(treen()==1 && confirm('Delete?')) majax('foto.php',{a:'albumdel',sel:treeselected})\">&nbsp;
+<img title='View' src='".$www_design."e3/blend.png' class=knop onclick=\"majax('foto.php',{a:'treeact',id:treeid});\">&nbsp;
+<img title='Edit' src='".$www_design."e3/kontact_journal.png' class=knop onclick=\"majax('foto.php',{a:'edit_text',file:treeid});\">&nbsp;
+")."\";
+
+if(treeid.replace(/\.s*html*$/g)!=treeid) t=t+\"".njsn("
+<img title='Import from file to blog' src='".$www_design."e3/finish.png' class=knop onclick=\"if(treen()==1 && confirm('Import file and rename to *.old?')) majax('editor.php',{a:'fileimport',id:treeid})\">&nbsp;
+")."\";
+
+}
+
+
+helps('fotooper',\"<fieldset><legend>/\"+treeid+\"</legend>\"+t+\"</fieldset>\");
+
+} else clean('fotooper');
+
+}
+			else { delete(treeselected[e.id]); e.style.border='2px solid transparent'; clean('fotooper'); }
 	treepr();
 }
 ");
@@ -290,19 +319,9 @@ if($a=='lostfoto') {
 
 
 
-
-
-
-
-
-
 // Далее - процедуры фотообработки
 
 require_once $include_sys."_fotolib.php";
-
-
-
-
 
 
 
@@ -399,7 +418,7 @@ if(is_ras_image($l)) {
 else otprav("
 starteditor=function(){majax('foto.php',{a:'edit_text',file:'".h($l)."'})};
 setkey('esc','');
-helpc('fotoset',\"<fieldset><legend><img class='knop' src='".$www_design."e3/pre/kontact_journal.png' title='Edit this (press `E`)'"
+helpc('fotoset',\"<fieldset><legend><img class='knop' src='".$www_design."e3/kontact_journal.png' title='Edit this (press `E`)'"
 ." onclick='starteditor()'> ".h($wwwhost.$l)."</legend><table id='fotoset_c' style='width:\"+(getWinW()-100)+\"px'><tr><td>".njsn(str_replace('&nbsp;',' ',highlight_file($filehost.$l,1)))."</td></tr></table></fieldset>\");
 setkey(['E','У','у'],'',starteditor,false);
 /*idd('fotoset_c').onclick=function(e){ e=e||window.event;clean('fotoset'); }*/
@@ -427,6 +446,7 @@ setkey('tab','shift',function(){ti('edit_text','\\t{select}')},false);
 }
 
 if($a=='save_file'){ AD(); fileput($filehost.RE('file'),RE('text')); otprav("salert('".LL('saved')."',500)"); }
+
 //=================================== editpanel ===================================================================
 if($a=='upload') {
 

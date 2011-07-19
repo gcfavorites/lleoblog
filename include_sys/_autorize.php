@@ -201,10 +201,10 @@ function otprav_sb($scr,$s) { otprav("loadScriptBefore('$scr',\"".njs($s)."\");"
 function dier($a,$t='') { idie($t."<pre>".nl2br(h(print_r($a,1)))."</pre>"); } // отладочная процедурка
 
 function idie($s,$h='') { // если это был аякс - выдать аякс-окно
+
 	if(!empty($GLOBALS['ajax'])) {
 		if($h=='') $h="Fatal error: ".h($GLOBALS['mypage']);
-		if($ajax==1) otprav("helpc('idie',\"<fieldset><legend>".$h."</legend><div style='text-align: left;'><small>".njs($s)."</small></div></fieldset>\")");
-		die("helpc('idie',\"<fieldset><legend>".$h."</legend><div style='text-align: left;'><small>".njs($s)."</small></div></fieldset>\")");
+		otprav("helpc('idie',\"<fieldset><legend>".$h."</legend><div style='text-align: left;'><small>".njs($s)."</small></div></fieldset>\")");
 	}
 	ob_end_clean(); 
 	if($h) header($h);
@@ -444,6 +444,8 @@ function get_idzan($num) { return intval(ms("SELECT COUNT(*) FROM `dnevnik_comm`
 function get_idzan1($num) { return intval(ms("SELECT COUNT(*) FROM `dnevnik_comm` WHERE `DateID`='$num' AND `Parent`='0'"
 .($GLOBALS['podzamok']?'':" AND `scr`='0'"),'_l')); }
 
+
+// ======================= zopt ==========================
 $zopt_a=array(
         // 'comments_order'=>array('','normal rating allrating'),
         'include'=>array('','s',40),
@@ -466,23 +468,23 @@ $zopt_a=array(
 
 foreach($zopt_a as $n=>$l) if(isset(${'zopt_'.$n})) $zopt_a[$n][0]=${'zopt_'.$n};
 
-function mkzopt($p) { global $zopt_a;
-	$o=unser($p['opt']);
-	foreach($zopt_a as $n=>$l) { if(!isset($o[$n])) $o[$n]=$l[0]; }
-	return array_merge($p,$o);
-}
-
-function makeopt($r) { // создать массив opt
-	$opt=array(); foreach($zopt_a as $n=>$l) { if(isset($r[$n]) && $r[$n]!='default') $opt[$n]=$r[$n]; }
-	return $opt;
-}
-
 $admincolors=array(array('admin','ledred.png'),array('podzamok','ledyellow.png'),array('all','ledgreen.png'));
+// ======================= zopt ==========================
 
 function ADMINSET($p='') { if(!$GLOBALS['admin']) return '';
 	if(gettype($p)!='array') $p=$GLOBALS['article'];
         foreach($GLOBALS['admincolors'] as $l) if($l[0]==$p['Access']) break;
         return "<img alt='".LL('Editor:dostup')."' onclick=\"majax('editor.php',{a:'ch_dostup',d:this.src,num:".$p['num']."})\" class='".$p['num']."_adostup' src='".$GLOBALS['www_design']."e3/".$l[1]."'>";
+}
+
+function mkzopt($p) { $o=unser($p['opt']); // сделать из $p массив опций и вернуть его
+	foreach($GLOBALS['zopt_a'] as $n=>$l) { if(!isset($o[$n])) $o[$n]=$l[0]; }
+	return array_merge($p,$o);
+}
+
+function makeopt($r) { // создать массив opt из заданного массива и дефолта
+	$opt=array(); foreach($zopt_a as $n=>$l) { if(isset($r[$n]) && $r[$n]!='default') $opt[$n]=$r[$n]; }
+	return $opt;
 }
 
 function unser($p){ return empty($p)?array():unserialize($p); }
