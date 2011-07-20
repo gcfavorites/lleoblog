@@ -96,14 +96,25 @@ if($path."/" == $wwwhost) {
 			$article=ms("SELECT * FROM `dnevnik_zapisi` ".WHERE("`Date`='".e($rootpage)."'")." LIMIT 1","_1");
 			if($article!==false) ARTICLE();
 		}
-		redirect($wwwhost.$rootpage); // если в конфиге установлен адрес заметки по умолчанию
+		redirect($httphost.$rootpage); // если в конфиге установлен адрес заметки по умолчанию
 	}
 
 	$last=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`!=0")." ORDER BY `Date` DESC LIMIT 1","_l",$ttl);
 	if($last=='') {
-	if(!msq_table('site') and !msq_table('dnevnik_zapisi')) redirect($wwwhost."admin"); // в админку, если по первому разу
-	redirect($wwwhost."editor"); // в редактор, если записей нет
-	} redirect($wwwhost.$last.".html"); // на последнюю
+	if(!msq_table('site') and !msq_table('dnevnik_zapisi')) redirect($httphost."admin",307); // в админку, если по первому разу
+	redirect($httphost."editor",307); // в редактор, если записей нет
+	} redirect($httphost.$last.".html",307); // на последнюю
+	/*
+	300 Multiple Choices (Множество выборов).
+	301 Moved Permanently (Перемещено окончательно).
+	302 Found (Найдено).
+	303 See Other (Смотреть другое).
+	304 Not Modified (Не изменялось).
+	305 Use Proxy (Использовать прокси).
+	306 (зарезервировано).
+	307 Temporary Redirect (Временное перенаправление).
+	*/
+
 }
 
 // Старый стиль именования

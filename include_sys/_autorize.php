@@ -240,11 +240,11 @@ function onPostPage($buffer) { global $_PAGE,$_SCRIPT,$_SCRIPT_ADD,$_STYLE,$_HEA
 	return $s;
 }
 
-function redirect($path = "/") {
-	if($GLOBALS['ajax']) otprav("window.location='$path'");
+function redirect($path='/',$code=301) {
+	if($GLOBALS['ajax']) otprav("window.location='$path';");
         if(!headers_sent()) {
                 header("HTTP/1.1 301 Moved Permanently");
-                header("Location: ".$path,TRUE,301); // навсегда!
+                header("Location: ".$path,TRUE,$code); // навсегда: 301
                 exit;
         }
 	die("<noscript><meta http-equiv=refresh content=\"0;url=\"".$path."\"></noscript><script>location.replace(\"".$path."\")</script>");
