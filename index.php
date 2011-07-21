@@ -101,9 +101,9 @@ if($path."/" == $wwwhost) {
 
 	$last=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`!=0")." ORDER BY `Date` DESC LIMIT 1","_l",$ttl);
 	if($last=='') {
-	if(!msq_table('site') and !msq_table('dnevnik_zapisi')) redirect($httphost."admin",307); // в админку, если по первому разу
-	redirect($httphost."editor",307); // в редактор, если записей нет
-	} redirect($httphost.$last.".html",307); // на последнюю
+	if(!msq_table('site') and !msq_table('dnevnik_zapisi')) redirect($httphost."admin",302); // в админку, если по первому разу
+	redirect($httphost."editor",302); // в редактор, если записей нет
+	} redirect($httphost.$last.".html",302); // на последнюю
 	/*
 	300 Multiple Choices (Множество выборов).
 	301 Moved Permanently (Перемещено окончательно).
