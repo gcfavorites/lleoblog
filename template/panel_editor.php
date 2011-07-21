@@ -30,7 +30,7 @@ $panel = strtr("
 <img class=knop onClick=\"ti('$id','<s>{select}</s>')\" src=".$www_design."e2/strikethrough.gif>
 <img class=knop onClick=\"ti('$id','<u>{select}</u>')\" src=".$www_design."e2/underline.gif>
 <img class=knop onClick=\"ti('$id','<center>{select}</center>')\" src=".$www_design."e2/justifycenter.gif>
-<img class=knop onClick=\"ti('$id','<img src=".$www_design."e2/lj.gif style=\'vertical-align: middle;\'><a href=http://{select}.livejournal.com>{select}</a>')\" src=".$www_design."e2/ljuser.gif>
+<img class=knop onClick=\"ti('$id','<a href=http://{select}.livejournal.com>{select}</a>')\" src=".$www_design."e2/ljuser.gif>
 <img class=knop onClick=\"ti('$id','<center><img src={select} border=1></center>')\" src=".$www_design."e2/image.gif>
 <img class=knop onClick=\"ti('$id','<a href=\'{select}\'>{select}</a>')\" src=".$www_design."e2/link.gif>
 <img class=knop onClick=\"ti('$id','<center><object width=320 height=240><param name=movie value=\'{select}.swf\'></param><param name=wmode value=transparent></param><embed src=\'{select}.swf\' type=\'application/x-shockwave-flash\' wmode=transparent width=320 height=240></embed></object></center>')\" src=".$www_design."e2/ljvideo.gif>
