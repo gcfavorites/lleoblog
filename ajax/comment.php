@@ -239,7 +239,7 @@ if($a=='rul') { // установить/снять особую метку на этот комментарий
 //========================================================================================================================
 
 if($a=='comsend') { razreshi_comm();
-$text=str_replace("\r",'',c(RE('text'))); if($text=='') $erorrs[]=LL('Comments:empty_comm');
+$text=str_replace("\r",'',trim(RE('text'),"\r\n\t ")); if($text=='') $erorrs[]=LL('Comments:empty_comm');
 $name=($IS['user']!=''&&$IS['user_noname']!='noname'?$IS['user']:$_REQUEST["name"]); if($name=='') $erorrs[]=LL('Comments:empty_name');
 $mail=mail_validate(RE('mail'));
 
