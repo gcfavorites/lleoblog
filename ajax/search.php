@@ -35,9 +35,8 @@ otprav("helps('search',\"<fieldset id='commentform'><legend>Записи с тэгом <a on
 
 //=================================== alltag ===================================================================
 if($a=='alltag') {
-$mm=ms("SELECT DISTINCT `tag` FROM `dnevnik_tags` ORDER BY COUNT(`tag`)","_a");
-$a=array(); foreach($mm as $m) $a[$m['tag']]=ms("SELECT COUNT(*) FROM `dnevnik_tags` WHERE `tag`='".e($m['tag'])."'","_l"); arsort($a);
-$o=''; foreach($a as $l=>$n) $o.="<tr><td><div class=ll onclick=\"majax('search.php',{a:'tag',tag:'".h($l)."'})\">".h($l)."</div></td><td> &nbsp; $n</td></tr>";
+$m=ms("SELECT `tag`, count(*) AS `n` FROM `dnevnik_tags` GROUP BY `tag` ORDER BY `n` DESC","_a");
+$o=''; foreach($m as $n) $o.="<tr><td><div class=ll onclick=\"majax('search.php',{a:'tag',tag:'".h($n['tag'])."'})\">".h($n['tag'])."</div></td><td> &nbsp; ".$n['n']."</td></tr>";
 otprav("helps('search',\"<fieldset id='commentform'><legend>Все тэги</legend><table>".njsn($o)."</table></fieldset>\"); posdiv('search',-1,-1);");
 }
 
