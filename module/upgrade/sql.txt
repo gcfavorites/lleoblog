@@ -314,11 +314,12 @@ CREATE TABLE IF NOT EXISTS `golosovanie_result` (
 --
 -- Структура таблицы `dnevnik_tags`
 --
+-- ,`tag`(128)
 
 CREATE TABLE IF NOT EXISTS `dnevnik_tags` (
   `num` int(10) unsigned NOT NULL COMMENT 'id заметки',
   `tag` varchar(128) NOT NULL COMMENT 'имя тэга',
-  PRIMARY KEY  (`num`,`tag`(128)),
+  PRIMARY KEY  (`num`),
   KEY `tag` (`tag`(128))
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251;
 
