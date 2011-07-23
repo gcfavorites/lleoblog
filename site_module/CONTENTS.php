@@ -24,7 +24,13 @@ $o="<p><center><p>Найти: <INPUT type='text' style='color: #777777' size='7' valu
 //===========================================================
 $g=$_GET['mode'];
 
-$sss="SELECT z.`num`,z.`Date`,z.`Header`,z.`view_counter` as `count`,z.`Access` FROM `dnevnik_zapisi` as z ";
+// $sss="SELECT z.`num`,z.`Date`,z.`Header`,z.`view_counter` as `count`,z.`Access` FROM `dnevnik_zapisi` as z ";
+
+$whe=''; $sss="SELECT z.`num`,z.`Date`,z.`Header`,z.`view_counter` as `count`,z.`Access`,count(*) as `count2`
+FROM `dnevnik_zapisi` as z
+left join `dnevnik_posetil` as r on z.num = r.url
+{whe}
+group by z.`num` ";
 
 
 // ,r.`count_new`  WHERE r.`url`=z.`num` 	SELECT COUNT(*) as `count_new` FROM `dnevnik_posetil` as r
@@ -91,18 +97,17 @@ LEFT JOIN `POSETIL` as P ON P.num = Z.num
 
 */
 
+function swhe($sss,$s) { return str_replace("{whe}",$s,$sss); }
 
-if($g=='') $o.=pr_zapisi($sss.WHERE()." ORDER BY z.`Date` DESC LIMIT ".$SIZEDEFAULT,true);
-// if($g=='') $o.=pr_zapisi($sss.WHERE(),true);
-
-if($g=='more') $o.=pr_zapisi($sss.WHERE()." ORDER BY z.`Date` DESC");
-if($g=='rating') $o.=pr_zapisi_rating($sss." ".WHERE()." ORDER BY z.`count` DESC");
-if($admin && $g=='invis_adm') $o.=pr_zapisi($sss."WHERE `Access`='admin' ORDER BY z.`Date` DESC");
-if($podzamok && $g=='invis') $o.=pr_zapisi($sss."WHERE `Access`='podzamok' ORDER BY z.`Date` DESC");
-if($g=='mudoslov') $o.=pr_zapisi($sss.WHERE(mudos('LIKE','OR'))." ORDER BY z.`DATE` DESC");
-if($g=='mudoslov_rating') $o.=pr_zapisi_rating($sss.WHERE(mudos('LIKE','OR')) );
-if($g=='nemudoslov') $o.=pr_zapisi($sss.WHERE(mudos('NOT LIKE','AND'))." ORDER BY z.`DATE` DESC");
-if($g=='nemudoslov_rating') $o.=pr_zapisi_rating($sss.WHERE(mudos('NOT LIKE','AND')));
+if($g=='') $o.=pr_zapisi(swhe($sss,WHERE())."ORDER BY z.`Date` DESC LIMIT ".$SIZEDEFAULT,true);
+if($g=='more') $o.=pr_zapisi(swhe($sss,WHERE())."ORDER BY z.`Date` DESC");
+if($g=='rating') $o.=pr_zapisi_rating(swhe($sss,WHERE())."ORDER BY z.`count` DESC");
+if($admin && $g=='invis_adm') $o.=pr_zapisi(swhe($sss,"WHERE `Access`='admin'")."ORDER BY z.`Date` DESC");
+if($podzamok && $g=='invis') $o.=pr_zapisi(swhe($sss,"WHERE `Access`='podzamok'")."ORDER BY z.`Date` DESC");
+if($g=='mudoslov') $o.=pr_zapisi(swhe($sss,WHERE(mudos('LIKE','OR')))." ORDER BY z.`DATE` DESC");
+if($g=='mudoslov_rating') $o.=pr_zapisi_rating(swhe($sss,WHERE(mudos('LIKE','OR'))) );
+if($g=='nemudoslov') $o.=pr_zapisi(swhe($sss,WHERE(mudos('NOT LIKE','AND')))." ORDER BY z.`DATE` DESC");
+if($g=='nemudoslov_rating') $o.=pr_zapisi_rating(swhe($sss,WHERE(mudos('NOT LIKE','AND'))));
 // if(substr($g,0,3)=='st:') { $o.=pr_zapisi($sss."WHERE `Header` LIKE '".e(substr($g,3))."%' ORDER BY `Date` DESC"); }
 return $o;
 }
@@ -129,6 +134,7 @@ function pr_zapisi_($sq) { global $numos,$colnewcom;
 	$get=getget();
 
 	foreach($sql as $p) {
+			$p["count"]+=$p['count2'];
 			// $p["counter"]=get_counter($p);
 			$Date=$p["Date"];
 			$head=($p["Header"]?" - ".h($p["Header"]):"");
@@ -153,7 +159,7 @@ function pr_zapisi_($sq) { global $numos,$colnewcom;
 
 //=========================================================================================================
 function pr_zapisi_rating($l) {	$pp=ms($l,"_a");
-	$ray=array(); foreach($pp as $n=>$p) { $c=get_counter($p); $pp[$n]["counter"]=$c; $ray[$n]=$c; } arsort($ray);
+	$ray=array(); foreach($pp as $n=>$p) { $c=$p['count']+$p['count2']; $pp[$n]["counter"]=$c; $ray[$n]=$c; } arsort($ray);
 	
 	$s = $GLOBALS['msqe'];
 	$s .= "<h2>Записей ".sizeof($pp)." (сортировка по числу посетителей)</h2>";
@@ -168,7 +174,7 @@ function pr_zapisi_rating($l) {	$pp=ms($l,"_a");
 	}
 
 	$s.="</table>";
-	die($s);
+	return $s;
 }
 
 //=========================================================================================================
