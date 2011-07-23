@@ -7,6 +7,7 @@ foreach(array(
 	'pravki'=>'PRAVKI',
 	'comm'=>'PAGE_COMM',
 	'imbload'=>'IMBLOAD',
+	'contents'=>'CONTENTS',
 	'fido'=>'FIDO'
 
 ) as $n=>$l) { $action='createmodule_'.$n;
