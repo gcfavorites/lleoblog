@@ -26,88 +26,22 @@ $g=$_GET['mode'];
 
 // $sss="SELECT z.`num`,z.`Date`,z.`Header`,z.`view_counter` as `count`,z.`Access` FROM `dnevnik_zapisi` as z ";
 
-$whe=''; $sss="SELECT z.`num`,z.`Date`,z.`Header`,z.`view_counter` as `count`,z.`Access`,count(*) as `count2`
+function swhe($s) { return str_replace("{whe}",$s,
+"SELECT z.`num`,z.`Date`,z.`Header`,z.`view_counter` as `count`,z.`Access`,count(*) as `count2`
 FROM `dnevnik_zapisi` as z
-left join `dnevnik_posetil` as r on z.num = r.url
+left join `dnevnik_posetil` as r on z.`num`=r.`url`
 {whe}
-group by z.`num` ";
+group by z.`num` "); }
 
-
-// ,r.`count_new`  WHERE r.`url`=z.`num` 	SELECT COUNT(*) as `count_new` FROM `dnevnik_posetil` as r
-
-//$sss="SELECT z.`num`,z.`Date`,z.`Header`,z.`Access`,z.`view_counter` as `count`, r.COUNT(*) as `count2`
-//FROM `dnevnik_zapisi` as z
-//LEFT JOIN `dnevnik_zapisi` as r USING (`num`)
-// "; // 
-
-// dier(ms($sss));
-
-/*
-, COUNT(*) as `cnt`
-
-SELECT t.*,GROUP_CONCAT(CONCAT_WS('=',o.name,o.value) SEPARATOR ';') as opt
-FROM `ZAPISI` as z
-LEFT JOIN `OPT` as o USING (`num`)
-WHERE `num`='123'
-
-$sss="SELECT z.`num`,z.`Date`,z.`Header`,z.`Access`,sum(t1.cnt) as `count` FROM `dnevnik_zapisi` as z
-LEFT JOIN (
-SELECT r.`num`,r.`view_counter` as `cnt` FROM `dnevnik_zapisi` as r
-UNION ALL
-SELECT p.`num`, COUNT(*) as `cnt` FROM `dnevnik_posetil` as p GROUP BY P.`num`
-) as t1
-WHERE z.`num`=t0.`num`";
-
-
-$sss="SELECT z.`num`,z.`Date`,z.`Header`,z.`Access`,sum(t1.cnt) as `count` FROM `dnevnik_zapisi` as t0
-LEFT JOIN (
-SELECT z.`view_counter` as `cnt` FROM `dnevnik_posetil` as z WHERE z.`url`=t0.`num`
-UNION ALL
-SELECT COUNT(*) as `cnt` FROM `dnevnik_posetil` as p WHERE p.`url`=t0.`num`
-) as t1";
-
-$sss="SELECT z.`num`,z.`Date`,z.`Header`,z.`Access`,z.`view_counter` as `count`, count(p.*) as `count_new`
-FROM `dnevnik_zapisi` as z
-LEFT JOIN `dnevnik_posetil` as p on p.`url`=z.`num`";
-
-
---------------------------------------
-SELECT Z.num, Z.text, sum(t1.cnt) FROM `ZAMETKI` as t0
-LEFT JOIN (
-SELECT Z.coun_old as cnt FROM `ZAMETKI` as Z WHERE Z.num = t0.num
-UNION ALL
-SELECT COUNT(*) as cnt FROM `POSETIL` as P WHERE P.num = t0.num
-) as t1
-
-
----------------------------------------
-SELECT t0.num, t0.text, sum(t1.cnt)
-FROM `ZAMETKI` as t0
-LEFT JOIN (
-SELECT Z.num, Z.coun_old as cnt FROM `ZAMETKI` as Z
-UNION ALL
-SELECT P.num, COUNT(*) as cnt FROM `POSETIL` as P GROUP BY P.nom
-) as t1
-WHERE t1.num = t0.num
-
----------------------------------------
-SELECT Z.num, Z.text, Z.coun_old, count(P.*) as count_new
-FROM `ZAMETKI` as Z,
-LEFT JOIN `POSETIL` as P ON P.num = Z.num
-
-*/
-
-function swhe($sss,$s) { return str_replace("{whe}",$s,$sss); }
-
-if($g=='') $o.=pr_zapisi(swhe($sss,WHERE())."ORDER BY z.`Date` DESC LIMIT ".$SIZEDEFAULT,true);
-if($g=='more') $o.=pr_zapisi(swhe($sss,WHERE())."ORDER BY z.`Date` DESC");
-if($g=='rating') $o.=pr_zapisi_rating(swhe($sss,WHERE())."ORDER BY z.`count` DESC");
-if($admin && $g=='invis_adm') $o.=pr_zapisi(swhe($sss,"WHERE `Access`='admin'")."ORDER BY z.`Date` DESC");
-if($podzamok && $g=='invis') $o.=pr_zapisi(swhe($sss,"WHERE `Access`='podzamok'")."ORDER BY z.`Date` DESC");
-if($g=='mudoslov') $o.=pr_zapisi(swhe($sss,WHERE(mudos('LIKE','OR')))." ORDER BY z.`DATE` DESC");
-if($g=='mudoslov_rating') $o.=pr_zapisi_rating(swhe($sss,WHERE(mudos('LIKE','OR'))) );
-if($g=='nemudoslov') $o.=pr_zapisi(swhe($sss,WHERE(mudos('NOT LIKE','AND')))." ORDER BY z.`DATE` DESC");
-if($g=='nemudoslov_rating') $o.=pr_zapisi_rating(swhe($sss,WHERE(mudos('NOT LIKE','AND'))));
+if($g=='') $o.=pr_zapisi(swhe(WHERE())."ORDER BY z.`Date` DESC LIMIT ".$SIZEDEFAULT,true);
+if($g=='more') $o.=pr_zapisi(swhe(WHERE())."ORDER BY z.`Date` DESC");
+if($g=='rating') $o.=pr_zapisi_rating(swhe(WHERE())."ORDER BY z.`count` DESC");
+if($admin && $g=='invis_adm') $o.=pr_zapisi(swhe("WHERE `Access`='admin'")."ORDER BY z.`Date` DESC");
+if($podzamok && $g=='invis') $o.=pr_zapisi(swhe("WHERE `Access`='podzamok'")."ORDER BY z.`Date` DESC");
+if($g=='mudoslov') $o.=pr_zapisi(swhe(WHERE(mudos('LIKE','OR')))." ORDER BY z.`DATE` DESC");
+if($g=='mudoslov_rating') $o.=pr_zapisi_rating(swhe(WHERE(mudos('LIKE','OR'))) );
+if($g=='nemudoslov') $o.=pr_zapisi(swhe(WHERE(mudos('NOT LIKE','AND')))." ORDER BY z.`DATE` DESC");
+if($g=='nemudoslov_rating') $o.=pr_zapisi_rating(swhe(WHERE(mudos('NOT LIKE','AND'))));
 // if(substr($g,0,3)=='st:') { $o.=pr_zapisi($sss."WHERE `Header` LIKE '".e(substr($g,3))."%' ORDER BY `Date` DESC"); }
 return $o;
 }
