@@ -32,11 +32,30 @@ JsHttpRequest.dataReady(
     header("Content-Type: text/plain; charset=".$wwwcharset);
     header('Etag: '.$_COOKIE["ec_etag"]);
 //    echo $_COOKIE["ec_etag"];
-	die("// BEGIN JsHttpRequest
+die("// BEGIN JsHttpRequest
 JsHttpRequest.dataReady(
   '0', // this ID is passed from JavaScript frontend
   '',
   { 'data': '".$_COOKIE["ec_etag"]."', 'status': true }
+)
+// END JsHttpRequest
+");
+
+} else if($_GET['m']=='cache') {
+
+// we don't have a cookie, user probably deleted it, force cache
+if(!$_COOKIE["ec_cache"]) { header("HTTP/1.1 304 Not Modified"); exit; }
+
+header('Content-Type: text/html');
+header('Last-Modified: Wed, 30 Jun 2010 21:36:48 GMT');
+header('Expires: Tue, 31 Dec 2030 23:30:45 GMT');
+header('Cache-Control: private, max-age=630720000');
+
+die("// BEGIN JsHttpRequest
+JsHttpRequest.dataReady(
+  '0', // this ID is passed from JavaScript frontend
+  '',
+  { 'data': '".$_COOKIE["ec_cache"]."', 'status': true }
 )
 // END JsHttpRequest
 ");
@@ -68,15 +87,14 @@ JsHttpRequest.dataReady(
 if(!$_COOKIE["ec_png"]) { header("HTTP/1.1 304 Not Modified"); exit; }
 
 // width of 200 means 600 bytes (3 RGB bytes per pixel)
-$x = 200;
-$y = 1;
+$x=200; $y=1;
 
 $gd=imagecreatetruecolor($x,$y);
 
-$data_arr = str_split($_COOKIE["evercookie_png"]);
+$data_arr=str_split($_COOKIE["ec_png"]);
 
-$x = 0;
-$y = 0;
+$x=0; $y=0;
+
 for($i=0;$i<count($data_arr);$i+=3) {
 	$color=imagecolorallocate($gd,ord($data_arr[$i]),ord($data_arr[$i+1]),ord($data_arr[$i+2]));
 	imagesetpixel($gd,$x++,$y,$color);
