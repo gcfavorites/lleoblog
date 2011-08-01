@@ -63,8 +63,8 @@ $sql=ms("SELECT `search`,`poiskovik`,`count`,`n` FROM `dnevnik_search` WHERE `Da
 $nstatsearch=sizeof($sql);
 
 foreach($sql as $p) {
-        $dlink=$p['search']; if(strlen($dlink)>60) $dlink=substr($dlink,0,60-3)."...";
-	$bloksearch .= "<br>".$p['count']." <b>'".$dlink."'</b> (".$p['poiskovik'].")";
+        $dlink=hh($p['search']); if(strlen($dlink)>60) $dlink=substr($dlink,0,60-3)."...";
+	$bloksearch .= "<br>".$p['count']." <b>'".$dlink."'</b> (".hh($p['poiskovik']).")";
 	}
 
 $bloklink='';
@@ -73,7 +73,7 @@ $sql=ms("SELECT `link`,`count`,`n` FROM `dnevnik_link` WHERE `DateID`=$data ORDE
 $nstatlink=sizeof($sql);
 
 foreach($sql as $p) {
-        $dlink=maybelink($p['link']); if(strlen($dlink)>60) $dlink=substr($dlink,0,60-3)."...";
+        $dlink=hh(maybelink($p['link'])); if(strlen($dlink)>60) $dlink=substr($dlink,0,60-3)."...";
 	$bloklink .= "<br>".$p['count']." <a href='".$p['link']."'>".$dlink."</a>";
 }
 

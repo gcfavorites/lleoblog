@@ -163,7 +163,7 @@ if($admin) {
 // ---- браузер ----
 
 	$x=''; foreach($GLOBALS['browsers'] as $a=>$b) if(stristr($p['BRO'],$a)) $x.=($x?' ':'').$b;
-	$c['BRO']=search_podsveti(h($x));
+	$c['BRO']=search_podsveti(hh($x));
 
 // ---- имя автора ----
 
