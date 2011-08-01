@@ -9,7 +9,25 @@ $_GET['search']=c(ifu($_REQUEST["search"]));
 
 
 
+// =========== шо € не видел =============================
+if($a=='notseen') { 
 
+idie('rr');
+
+/*$day=RE0('day'); if(!$day) $day=30;
+$o='';
+
+$pp=ms("SELECT `Date`,`Header` FROM `dnevnik_zapisi` as d ".WHERE("`DateDate`>'".(time()-$day*86400)."' AND NOT EXISTS (SELECT `url` FROM `dnevnik_posetil` AS p WHERE `unic`='".($GLOBALS['unic']+1)."' AND d.`num`=p.`url`)")." ORDER BY `Date` DESC");
+
+if($pp) {
+$m=array(); foreach($pp as $p) $m[]=$p['Date']." - <a href='".get_link_($p['Date'])."'>".($p['Header']!=''?$p['Header']:'(...)')."</a>";
+$o=implode('<br>',$m);
+otprav("helpc('notseen',\"<fieldset><legend>Ќовые заметки</legend>".njs($o)."</fieldset>\");");
+}
+
+otprav("salert('нет записей',3);");
+*/
+}
 // ======== rekomenda - листать базу rekomenda ===========
 if($a=='rekomenda') {
 	$nskip=intval($_REQUEST["nskip"]);
