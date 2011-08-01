@@ -1,8 +1,9 @@
 <?php
 
-function PHPEVAL($e) { if(!$GLOBALS['admin']) return " SYSTEM ERROR! ";
+function PHPEVAL($e) {
 	$o='';
 	eval($e);
 	return $o;
 }
+
 ?> 
