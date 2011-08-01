@@ -11,9 +11,9 @@ $_GET['search']=c(ifu($_REQUEST["search"]));
 
 // =========== шо я не видел ============================= majax('okno.php',{a:'notseen',[day:30]})
 if($a=='notseen') {  $day=RE0('day'); if(!$day) $day=30; $o='';
-$pp=ms("SELECT `Date`,`Header` FROM `dnevnik_zapisi` as d ".WHERE("`DateDate`>'".(time()-$day*86400)."' AND NOT EXISTS (SELECT `url` FROM `dnevnik_posetil` AS p WHERE `unic`='".$GLOBALS['unic']."' AND d.`num`=p.`url`)")." ORDER BY `Date` DESC");
+$pp=ms("SELECT `Access`,`Date`,`Header` FROM `dnevnik_zapisi` as d ".WHERE("`DateDate`>'".(time()-$day*86400)."' AND NOT EXISTS (SELECT `url` FROM `dnevnik_posetil` AS p WHERE `unic`='".$GLOBALS['unic']."' AND d.`num`=p.`url`)")." ORDER BY `Date` DESC");
 if($pp) {
-$m=array(); foreach($pp as $p) $m[]=$p['Date']." - <a href='".get_link_($p['Date'])."'>".($p['Header']!=''?$p['Header']:'(...)')."</a>";
+$m=array(); foreach($pp as $p) $m[]=zamok($p['Access']).$p['Date']." - <a href='".get_link_($p['Date'])."'>".($p['Header']!=''?$p['Header']:'(...)')."</a>";
 $o=implode('<br>',$m);
 otprav("helpc('notseen',\"<fieldset><legend>мои непрочитанные заметки</legend>".njs($o)."</fieldset>\");");
 }

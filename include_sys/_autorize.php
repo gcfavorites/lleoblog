@@ -59,8 +59,8 @@ ini_set("display_errors","1"); ini_set("display_startup_errors","1"); ini_set('e
 $podzamok = ($admin?true:false);
 $aharu = (strstr($_SERVER["HTTP_HOST"],'lleo.aha.ru')?true:false);
 $lju=getlj(); if($lju!==false) setcoo("lju",base64_encode($lju));
-$IP=$_SERVER["REMOTE_ADDR"]; $IPN=ip2ipn($IP); $BRO=$_SERVER["HTTP_USER_AGENT"];
-$REF=(isset($_SERVER["HTTP_REFERER"])?$_SERVER["HTTP_REFERER"]:'');
+$IP=$_SERVER["REMOTE_ADDR"]; $IPN=ip2ipn($IP); $BRO=hh($_SERVER["HTTP_USER_AGENT"]);
+$REF=hh(isset($_SERVER["HTTP_REFERER"])?$_SERVER["HTTP_REFERER"]:'');
 $MYPAGE=str_replace(array('<','>',"'",'"'),array('%3C','%3E','%27','%22'),$_SERVER["REQUEST_URI"]); list($mypage) = explode('?',$MYPAGE.'?',2);
 include $include_sys."_msq.php"; // все процедуры работы с MySQL
 $months = explode(" ", " €нварь февраль март апрель май июнь июль август сент€брь окт€брь но€брь декабрь");
