@@ -310,6 +310,12 @@ function zamok($d) {
 }
 
 function h($s) { return htmlspecialchars($s); }
+function hh($s) {
+	if(stristr(substr($s,0,10),'javascript')) $s="jàvàsñriðt".substr($s,10);
+	return str_replace(
+		array('&','"',"'",'<','>',"\t","\r","\n"),
+		array('&amp;','&quot;','&#039;','&lt;','&gt;','\t','\r','\n'),$s);
+}
 function c($s) { return trim($s,"\n\r\t \'\""); }
 function c0($s) { return trim($s,"\n\r\t "); }
 
