@@ -24,20 +24,18 @@ logintxt = login&nbsp;
 template = <div id='loginobr' style='cursor:pointer; padding:2px; margin: 1px 10px 1px 10px; border:1px dotted #B0B0B0;' onclick="majax('login.php',{action:'openid_form'})"><span style='font-size:7px;'>ваш логин:</span><div id='myunic' style='font-weight: bold; color: blue; font-size: 8px;'>{name}</div></div>{kuki}
 _}
 
-<p class=r><a href={wwwhost}contents>содержание</a>
-<p class=r><a href=http://lleo.aha.ru/blog/lleoblog>ДВИЖОК БЛОГА</a>
-
+<p class=r><a title='Перейти на страницу со списком всех заметок.' href={wwwhost}contents>содержание</a>
+<p class=r><a title='Перейти на страницу, где рассказывается, как можно установить себе этот движок блога (он открытый).' href=http://lleo.aha.ru/blog/lleoblog>движок</a>
+<p class=r><a title='Всплывает окошко со списком заметок,<br>которые ваш браузер ещё не открывал.' href="javascript:majax('okno.php',{a:'notseen',day:30})">моё непрочитанное</a>
 <p><INPUT type='text' size='7' style="color: #777777" value="поиск" onclick="majax('okno.php',{a:'search'})">
 
 {_CALENDAR:_}
 
 {_COUNTER:_}
 
-{_STATISTIC: template = <div class=l onclick="{majax}">статистика</div> _}
+{_STATISTIC: template = <p class=r><a title='Заходы на эту страницу по ссылкам<br>и через поисковики.' href="javascript:{majax}">статистика</a> _}
 
-{_KTOPOSETIL: podzamok , short , <small>посетители</small> _}
-
-<p><a title='Всплывет окно со списком заметок,<br>которые твой браузер еще не открывал.' class=br href="javascript:majax('okno.php',{a:'notseen',day:30})">ты не видел эти заметки</a>
+{_KTOPOSETIL: podzamok , short , <p class=r><span title='Кто посещал эту страницу поименно?'>посетители</span> _}
 
 <p><a href={wwwhost}rss><img src="{www_design}rss.gif" width=36 height=14 border=0 alt="RSS вход" title='Мой дневник поддерживает RSS'></a>
 

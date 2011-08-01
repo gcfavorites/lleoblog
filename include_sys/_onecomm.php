@@ -121,7 +121,7 @@ function comment_prep($p,$mojno_comm,$level) { global $admin,$unic,$podzamok,$ge
 
 // ---- город и страна ----
 	list($gorod,$strana)=explode("\001",$p['whois'],2);
-	$c['whois'] = ($strana?search_podsveti(h($strana)):'').($gorod?($strana?", ":'').search_podsveti(h($gorod)):'');
+	$c['whois'] = ($strana?search_podsveti(hh($strana)):'').($gorod?($strana?", ":'').search_podsveti(hh($gorod)):'');
 
 // ---- время ----
 
@@ -167,7 +167,7 @@ if($admin) {
 
 // ---- имя автора ----
 
-	$c['Name']=search_podsveti(h($p['Name']));
+	$c['Name']=search_podsveti(hh($p['Name']));
 	if($c['unic']==0) $c['Name']="<i>".$c['Name']."</i>";
 //	$is=();
 
