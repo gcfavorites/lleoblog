@@ -99,7 +99,7 @@ if($path."/" == $wwwhost) {
 		redirect($httphost.$rootpage); // если в конфиге установлен адрес заметки по умолчанию
 	}
 
-	$last=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`!=0")." ORDER BY `Date` DESC LIMIT 1","_l",$ttl);
+	$last=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`!=0")." ORDER BY `Date` DESC LIMIT 1","_l");
 	if($last=='') {
 	if(!msq_table('site') and !msq_table('dnevnik_zapisi')) redirect($httphost."admin",302); // в админку, если по первому разу
 	redirect($httphost."editor",302); // в редактор, если записей нет
