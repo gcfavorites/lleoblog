@@ -1,5 +1,11 @@
 <script>
 function ipadfinger4(){	if(idd('adminpanel').style.display=='none') { otkryl('adminpanel'); posdiv('adminpanel',-1,-1); } else zakryl('adminpanel'); }
+
+function admin_go_redir(){
+	var RHR=document.location.href,RDat=RHR.replace(/.*?\?redir\=([^&]+?)/,"$1");
+	if(RHR!=RDat) zabil('adminpanel',vzyal('adminpanel')+"<p>заметка редиректа:<br><a href=\"javascript:majax('editor.php',{a:'editform',Date:'"+RDat+"',comments:(idd('commpresent')?1:0)})\">редактировать</a> <a href='{wwwhost}editor?Date="+RDat+"'>#</a>");
+} page_onstart.push("admin_go_redir()");
+
 </script>
 
 

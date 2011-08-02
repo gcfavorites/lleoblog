@@ -293,7 +293,9 @@ if($a=='newform') { AD();
 } 
 //=================================== запросили форму ===================================================================
 if($a=='editform') { AD();
-	$p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0); if($p===false) idie("Отсутствует заметка #$num");
+	if($num) $p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0);
+	else { $p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `Date`='".e(RE('Date'))."'","_1",0); $num=$p['num']; }
+	if($p===false) idie("Отсутствует заметка #$num ".RE('Date'));
 	// $p=mkzopt($p);
 	// dier($p);
 	edit_textarea($p,$s);

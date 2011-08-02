@@ -27,11 +27,24 @@ if($conf['redirect']!==false) {
 if(empty($conf['redirect'])) { // если не указан тэг
 	$Date=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`!=0")." ORDER BY `Date` DESC LIMIT 1","_l");
 } else {
+/*
 	$Date=ms("SELECT d.`Date` FROM `dnevnik_tags` AS t JOIN `dnevnik_zapisi` AS d ON t.`num`=d.`num`
 ".WHERE("`DateDatetime`!=0 AND t.`tag`='".e($conf['redirect'])."'")." ORDER BY `Date` DESC LIMIT 1","_l");
+*/
+
+	$Date=ms("SELECT d.`Date` FROM `dnevnik_zapisi` AS d
+INNER JOIN `dnevnik_tags` AS t
+ON t.`num`=d.`num` AND t.`tag`='".e($conf['redirect'])."'
+".WHERE("d.`DateDatetime`!=0")." ORDER BY d.`Date` DESC LIMIT 1","_l");
+
 }
+
+	if(!empty($GLOBALS['msqe'])) die($GLOBALS['msqe']);
+
 	if($GLOBALS['article']['Date']==$Date) return "<font color=red> error: last-redirect </font>"; // защита от саморедиректа
-	redirect($GLOBALS['httphost'].$Date.".html".($GLOBALS['admin']?"?redir=".urlencode($Date):''),302); // на последнюю
+	redirect($GLOBALS['httphost'].$Date.".html".($GLOBALS['admin']?"?redir=".$GLOBALS['article']['Date']:''),302); // на последнюю
+
+// select d.date from d inner join t on t.num=d.num and t.tag='движок ' order by d.date desc limit 1
 
 return '###'.$Date.' - '.$conf['redirect']." # ".$GLOBALS['msqe'];
 
