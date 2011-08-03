@@ -62,7 +62,7 @@ $n=''; foreach($all as $a=>$b) $n.=" ".$a; $n=md5($n);
 // остановиться если
 if( sizeof($arsyandex)==0 // ничего в этот раз не прочлось
 or $n==$_GET['lastmd5'] // ничего нового не легло в базу по сравнению с прошлыми разом
-or !strstr($syandex,'<a id="next_page" href="') // Яндекс не показал поле "следующая страница"
+// or !strstr($syandex,'<a id="next_page" href="') // Яндекс не показал поле "следующая страница"
 ) {
 
 die("<p>С заметками закончили! Теперь будем качать комментарии.".admin_redirect("$mypage?mode=comments",10) );
