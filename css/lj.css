@@ -1,0 +1,26 @@
+@charset "windows-1251";
+
+HTML BODY { padding: 50px 0 0 0; margin-right: 0; margin-left: 0; }
+
+.w-cs {position:absolute;top:0;left:0;z-index:1;overflow:hidden;width:100%;min-width:941px;height:50px;padding:0;margin:0;background:#22292D;font:10px/10px 'Arial', 'Helvetica', sans-serif;color:#FFF;padding:0;margin:0;}
+
+.w-cs-ne {position:absolute;top:50px;left:0;z-index:1;overflow:hidden;width:100%;min-width:941px;
+height:10px;padding:0;margin:0;background:#6666cc;color:#6666cc;}
+
+.w-cs DIV { float: none; background: none;  }
+.w-cs A:link,.w-cs A:visited,.w-cs A:hover,.w-cs A:active { background: none !important; border: none !important; text-decoration: none; font: 10px 'Arial', 'Helvetica', sans-serif !important; color: #FFF !important; }
+
+.w-cs A:hover { color: #C7E0F6 !important; }
+.w-cs FIELDSET { float: left; display: block; border: none; }
+.w-cs INPUT { display: block; float: left; }
+.w-cs INPUT.text { padding: 2px 0 3px 5px; margin: 0; background: #4C585D; border: none; -moz-border-radius: 2px;-webkit-border-radius: 2px;border-radius: 2px;vertical-align: top;line-height: 14px;font-size: 11px;color: #FFF !important;}
+
+.w-cs INPUT.submit {height: 16px;padding: 0 5px 2px 50px;margin: 0;background: url(/blog/design/lj/submit-bg.gif) repeat-x;border: 1px solid #8A8D8F;-webkit-border-radius: 2px;-moz-border-radius: 2px;border-radius: 2px;-moz-box-shadow: 1px 1px 7px #2B3338;-webkit-box-shadow: 1px 1px 7px #2B3338;box-shadow: 1px 1px 7px #2B3338;text-shadow: 0 1px 0 #666;line-height: 10px;font-size: 10px;color: #FFF !important;cursor: pointer;}
+
+.w-cs FORM.w-cs-search { position: relative; float: right; }
+.w-cs FORM.w-cs-search INPUT.text { width: 150px; border-right: 25px solid #4C585D; }
+.w-cs .w-cs-options { margin: 5px 0 0 0; }
+
+.w-cs .w-cs-options .login-with {float: left;display: inline;padding: 2px;margin: 0 0 0 5px;background: #22292D;-webkit-border-radius: 3px;-moz-border-radius: 3px;border-radius: 3px;}
+
+.w-cs .w-cs-user-controls {position: relative;min-width: 519px;height: 45px;padding: 0 22px 0 18px;margin: 5px 0 0 40%;}
