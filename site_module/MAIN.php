@@ -238,6 +238,29 @@ return "<div class='header'"
 }
 
 
+function HEADERS($e) { global $article,$admin;
+$conf=array_merge(array(
+'adminlink'=>1, // делать линк админу на редактор заметки
+'zamok_template'=>"{zamok}&nbsp;", // темплейт замка
+'onclick_editor'=>'',
+'guga'=>"<pre>".print_r($article,1)."</pre>",
+'MONTH'=>$GLOBALS['months_rod'][intval($article["Mon"])],
+'M'=>$article["Mon"],
+'D'=>$article["Day"],
+'Y'=>$article["Year"],
+'num'=>$article["num"],
+'DateTime'=>$article['DateDatetime'],
+'aDateTime'=>date("H:i:s",$article['DateDatetime']),
+'template'=>"<div{onclick_editor} class='header' id='Header_{num}'>{Y}-{MONTH}-{D} {H}:{i}:{s}"
+),parse_e_conf($e));
+
+list($conf['H'],$conf['i'],$conf['s'])=explode(":",date("H:i:s",$article['DateDatetime']));
+$conf['zamok_template']=mper($conf['zamok_template'],array('zamok'=>zamok($article['Access'])));
+if($admin) $conf['onclick_editor']=" onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\"";
+
+return mper($conf['template'],$conf);
+}
+
 function HEAD_D($e) { global $article;
 	$s="<div class='header'>".zamok($article['Access']).$article["Day"]." ".$GLOBALS['months_rod'][intval($article["Mon"])]." ".$article["Year"]."</div>";
 	if(!$GLOBALS['admin'] or $e!='1') return $s;
