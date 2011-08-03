@@ -1,0 +1,32 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru">
+<head>
+<title>{_article_get:Header_}</title>
+<meta http-equiv="Content-Type" content="text/html; charset={wwwcharset}" />
+<meta http-equiv="Content-Language" content="ru-ru" />
+<meta name="author" content="Leonid Kaganov" />
+{_MAIN:_}{_PRAVKA:_}{_STYLE_ADD: {www_css}blank.css _}
+</head><body bgcolor="#6666CC" text="#000000" link="#000050" vlink="#500050" alink="#FF00C0">
+
+{_PREWORD:_}{_ANOTHER_DATE:_}
+{_PREVNEXT:
+prev = <a href='{prevlink}'>&lt;&lt; предыдущая заметка</a>
+next = <a href='{nextlink}'>следующая заметка &gt;&gt;</a>
+no = &nbsp;
+template = <center><table width=98% cellspacing=0 cellpadding=0><tr valign=top><td width=50%><font size=1>{prev}</font></td><td width=50% align=right><font size=1>
+{next}</font></td></tr></table></center>
+_}
+
+<div id="post">{_MAY9:_}{_HEAD:_}<div id="bodyz" style="margin:20px;">{_TEXT:_}<p>&nbsp;</div></div>
+
+<div id="copyright">{signature}
+{_TAGS: template = <div style='font-size: 10pt; text-align:right;'><div class=ll onclick="majax('search.php',{a:'alltag'})">тэги записи:</div> {tags}</div> _}
+<div>{_YANDEXCOUNT:_}&nbsp;&nbsp;&nbsp;{_ADDTHIS:_}</div>
+</div>
+
+{_PREVNEXT:_}
+<div id="comments">
+{_REKOMENDA:_}
+{_COMENTS:_}
+</div>
+
+</body></html>
