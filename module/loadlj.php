@@ -62,10 +62,19 @@ $n=''; foreach($all as $a=>$b) $n.=" ".$a; $n=md5($n);
 // остановитьс€ если
 if( sizeof($arsyandex)==0 // ничего в этот раз не прочлось
 or $n==$_GET['lastmd5'] // ничего нового не легло в базу по сравнению с прошлыми разом
-// or !strstr($syandex,'<a id="next_page" href="') // яндекс не показал поле "следующа€ страница"
+or !strstr($syandex,'<a id="next_page" href="') // яндекс не показал поле "следующа€ страница"
 ) {
 
-die("<p>— заметками закончили! “еперь будем качать комментарии.".admin_redirect("$mypage?mode=comments",10) );
+// .admin_redirect("$mypage?mode=comments",10).
+
+die("<p>— заметками закончили? —ейчас легло в базу: $n<br><a href='$url'>$url</a>
+
+<p>Ќачать качать комментарии: <a href='$mypage?mode=comments'>$mypage?mode=comments</a>
+
+<p>»ли попробовать подолбитьс€ еще за заметками: <a href='$mypage?into=$into&lastmd5=".$n."'>$mypage?into=$into&lastmd5=".$n."</a>
+<br><a href='$path'>$into</a></b> (скачано ".sizeof($all).")
+
+");
 
 } else {
 
