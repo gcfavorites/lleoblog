@@ -315,7 +315,7 @@ $s.=njsn("
 <img alt='".LL('Editor:delz')."' class=l onclick=\"if(confirm('".LL('confirm_del')."')) majax('editor.php',{a:'delete',num:$num});\" src='".$www_design."e3/remove.png' alt='delete'>
 <div id='".$idhelp."p' style='display:inline'><img alt='".LL('Editor:show_panel')."' class=l onclick=\"majax('editor.php',{a:'loadpanel',idhelp:'".$idhelp."'})\" src='".$www_design."e3/finish.png' alt='panel'></div>
 
-<div class='br'>".strlen($p['Body'])." букв</div>
+<div class='br'>".LL('Editor:sym',"<span id='".$idhelp."_nsym'>".strlen($p['Body'])."</span>")."</div>
 
 <div>
 <input id='".$idhelp."_head' onchange='ch_edit_pole(this,$num)' class='t' type='text' name='Header' value='".h($p['Header'])."' maxlength='255'")
@@ -333,11 +333,11 @@ $s.=njsn("
 $s.=njsn(ADMINSET($p));
 
 $opt=unser($p['opt']); ksort($opt);
-if(sizeof($opt)<sizeof($zopt_a)) $s.="<div id='".$idhelp."_extopt' style='display:inline'><img src='".$www_design."e3/system.png' alt='".LL('Editor:settings')."'"
+if(sizeof($opt)<sizeof($zopt_a)) $s.="<div id='".$idhelp."_extopt' style='margin-left:32px;display:inline;margin-right:32px'><img src='".$www_design."e3/system.png' alt='".LL('Editor:settings')."'"
 ." onclick=\\\"majax('editor.php',{a:'settings_panel',num:$num})\\\"></div>";
 
-$s.="<div id='".$idhelp."_autopost' style='display:inline;margin-left:50px'><img src='".$www_design."e3/system.png' alt='".LL('Editor:settings')."'"
-." onclick=\\\"majax('editor.php',{a:'settings_panel',num:$num})\\\"></div>";
+$s.="<div id='".$idhelp."_extautopost' style='display:inline'><img src='".$www_design."e3/mail_forward.png' alt='".LL('Editor:autopost')."'"
+." onclick=\\\"majax('editor.php',{a:'autopost_panel',num:$num})\\\"></div>";
 
 $s.=pokaji_opt($opt,0);
  
@@ -386,7 +386,8 @@ var keydowncount=0;
 
 ch_edit_pole=function(e,num){ if(typeof e.defaultValue=='undefined' || e.value!=e.defaultValue){ edit_polesend(e.name,e.value,num,0); e.defaultValue=e.value;}};
 edit_polesend=function(n,v,num,clo){ majax('editor.php',{a:'polesend',name:n,val:v,num:num,clo:clo}); };
-keydownc=function(e,num){ keydowncount++; if(keydowncount>".$autosave_count."){ keydowncount=0; edit_polesend(e.name,e.value,num,1); } };
+keydownc=function(e,num){ zabil('".$idhelp."_nsym',idd('".$idhelp."_Body').value.length);
+keydowncount++; if(keydowncount>".$autosave_count."){ keydowncount=0; edit_polesend(e.name,e.value,num,1); } };
 
 /*majax_err=1;*/
 helpc('".$idhelp."',\"<fieldset id='commentform'><legend>Заметка ".h($p['Date'])."</legend>".$s."</fieldset>\");
@@ -400,12 +401,24 @@ otprav($s);
 }
 
 
+//----------- autopost panel --------------
+if($a=='autopost_panel') { AD();
+//	$opt=unser(ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='$num'","_l",0));
+//	$opt2=mkzopt($opt); ksort($opt2);
+//	foreach($opt as $n=>$l) unset($opt2[$n]);
+	otprav("zabil('".$idhelp."_extautopost',\"<br><fieldset><legend>autopost</legend>Under constructions</fieldset><p>\");");
+}
+
+
+
+
+
 //----------- setting panel --------------
 if($a=='settings_panel') { AD();
 	$opt=unser(ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='$num'","_l",0));
 	$opt2=mkzopt($opt); ksort($opt2);
 	foreach($opt as $n=>$l) unset($opt2[$n]);
-	otprav("zabil('".$idhelp."_extopt',\"".pokaji_opt($opt2)."\");");
+	otprav("zabil('".$idhelp."_extopt',\"<br><fieldset><legend>options</legend>".pokaji_opt($opt2)."</fieldset><p>\");");
 }
 //----------- setting panel --------------
 
@@ -531,15 +544,16 @@ or $zopt_a[$name][1]=='s' && ( c($val)=='' or $val==$zopt_a[$name][0]) // дефолт
 }
 // -------------------
 function save_tags($val) { global $msqe,$num;
+	if(!$num) return; // не записывать для нулевой заметки
 	msq("DELETE FROM `dnevnik_tags` WHERE `num`='$num'"); // удалить все тэги этой заметки
 	$p=explode(',',$val); foreach($p as $l) { $l=c($l); if($l!='') msq_add('dnevnik_tags',array('num'=>$num,'tag'=>e(h($l)))); }
 	if(stristr($msqe,'Duplicate')) $msqe=''; // ошибка дублей - не ошибка
 }
 
-function pokaji_opt($opt,$def=1) { global $num,$zopt_a; $s='';
+function pokaji_opt($opt,$def=1) { global $num,$zopt_a; $s=''; $i=0;
 	foreach($opt as $n=>$v) { if(!isset($zopt_a[$n])) continue; $l=$zopt_a[$n];
 		if($def) $val=($v!=$l[0]?$v:'default'); else $val=$v;
-	$s.="<br>".LL('zopt:'.$n)." : ";
+	$s.=($i++?"<br>":'').LL('zopt:'.$n)." : ";
 
 	if($n=='template') {
 		// выяснить о модулях
