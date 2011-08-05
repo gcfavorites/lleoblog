@@ -319,14 +319,9 @@ $s.=njsn("
 
 <div>
 <input id='".$idhelp."_head' onchange='ch_edit_pole(this,$num)' class='t' type='text' name='Header' value='".h($p['Header'])."' maxlength='255'")
-." style='width:\"+Math.min((getWinW()-100),".(isset($editor_width)?$editor_width:999999).")+\"px'>"
+." style='width:\"+get_edit_width()+\"px'>"
 ."<br><textarea onkeydown=\\\"keydownc(this,$num)\\\" class='t' id='".$idhelp."_Body' name='Body' "
-."style='width:\"+Math.min(Math.floor(95*getWinW()/100),".(isset($editor_width)?$editor_width:999999).")+\"px;"
-."height:\"+Math.min(Math.floor(90*getWinH()/100),".(isset($editor_height)?$editor_height:999999).")+\"px'>"
-
-// "style='width:\"+Math.floor(95*getWinW()/100)+\"px; height:\"+Math.floor(90*getWinH()/100)+\"px'>"
-// $editor_width,$editor_height
-
+."style='width:\"+get_edit_width()+\"px; height:\"+get_edit_height()+\"px'>"
 .njsn(h($p["Body"])."</textarea>
 </div>
 
@@ -340,21 +335,29 @@ $s.=njsn(ADMINSET($p));
 $opt=unser($p['opt']); ksort($opt);
 if(sizeof($opt)<sizeof($zopt_a)) $s.="<div id='".$idhelp."_extopt' style='display:inline'><img src='".$www_design."e3/system.png' alt='".LL('Editor:settings')."'"
 ." onclick=\\\"majax('editor.php',{a:'settings_panel',num:$num})\\\"></div>";
+
+$s.="<div id='".$idhelp."_autopost' style='display:inline;margin-left:50px'><img src='".$www_design."e3/system.png' alt='".LL('Editor:settings')."'"
+." onclick=\\\"majax('editor.php',{a:'settings_panel',num:$num})\\\"></div>";
+
 $s.=pokaji_opt($opt,0);
  
 // -- тэги --------------
 $tt=ms("SELECT `tag` FROM `dnevnik_tags` WHERE `num`='$num' ORDER BY `tag`","_a",0);
 $t=''; foreach($tt as $l) $t.=$l['tag'].', '; $t=trim($t,', ');
 $s.=njsn("<div class=r>"
-."<span alt='Тэги заметки по первому разу перечисляем через запятую, а если они уже использовались - кликаем сюда и просто выбираем из списка.'"
-." class=l onclick=\"majax('editor.php',{a:'tags',num:$num,mytags:idd('tags_".$idhelp."').value})\">Тэги:</span>&nbsp;"
+."<span alt='".LL('Editor:tags_alt')."'"
+." class=l onclick=\"majax('editor.php',{a:'tags',num:$num,mytags:idd('tags_".$idhelp."').value})\">".LL('Editor:tags')."</span>&nbsp;"
 ."<input onchange='ch_edit_pole(this,$num)' class='t' type='text' name='tags' id='tags_".$idhelp."' value='".h($t)."' ")
-." style='width:\"+(getWinW()-150)+\"px'></div>";
+."style='width:\"+get_edit_width()+\"px'></div>";
 //-----------------------
 
 $s.=njsn("<div><input title='".LL('shift+Enter')."' type='button' value='".LL('Save')."' onclick='save_and_close()'></div>");
 
+// спасибо iland_slc за советы
 $s="
+get_edit_width=function(){ return Math.min(Math.floor(95*getWinW()/100),".(isset($editor_width)?$editor_width:999999)."); };
+get_edit_height=function(){ return Math.min(Math.floor(90*getWinH()/100),".(isset($editor_height)?$editor_height:999999)."); };
+
 if(f5s||jog) {
 interval_clipboard=function(e){
 	if(!idd(e+'_Body')) { eval('clearInterval(intervalID_'+e+')'); return; }
