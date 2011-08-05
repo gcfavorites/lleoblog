@@ -213,6 +213,25 @@ CREATE TABLE IF NOT EXISTS `dnevnik_zapisi` (
 
 -- --------------------------------------------------------
 --
+-- Структура таблицы `dnevnik_autopost`
+
+CREATE TABLE IF NOT EXISTS `dnevnik_autopost` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `Header` varchar(255) NOT NULL default '',
+  `Body` mediumtext NOT NULL,
+  `tag` varchar(64) NOT NULL default '',
+  `postmode` enum('is_date','silent','silent_priority','day','tag_interval') NOT NULL,
+  `randmode` enum('num','random') NOT NULL,
+  `dat` int(11) NOT NULL default '0',
+  `opt` text NOT NULL,
+  UNIQUE KEY `id` (`id`),
+  KEY `dat` (`dat`),
+  KEY `postmode` (`postmode`),
+  KEY `randmode` (`randmode`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Для автопостинга' AUTO_INCREMENT=0 ;
+
+-- --------------------------------------------------------
+--
 -- Структура таблицы `pravki`
 --
 

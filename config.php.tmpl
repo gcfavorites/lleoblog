@@ -54,8 +54,8 @@ $readru_partner='';
 $memcache=function_exists('memcache_connect'); if($memcache) $memcache=memcache_connect('localhost',ini_get('memcache.default_port'));
 
 $ttl_longsite = 10000; // длинное хранение данных
-$editor_cols = 80; // количество символов по ширине в окне редактора заметки
-$editor_rows = 20; // количество строк по высоте в окне редактора заметки
+$editor_width = 1000; // количество пикселей по ширине в окне редактора заметки
+$editor_height = 900; // количество пикселей по высоте в окне редактора заметки
 $old_counter = 0; // 1 - учитывать данные счетчика посещений старой версии блога, 0 - не учитывать, работать по новому
 
 # настройки RSS блога
@@ -154,18 +154,18 @@ $foto_www_preview=$wwwhost.$foto_preview;
 $foto_res_preview=100;
 $foto_qality_preview=70;
 
-#$zopt_include='';
-#$zopt_Comment_foto_logo=chr(169)." ".chr(171)."{name}: ".$httpsite.chr(187);
-#$zopt_Comment_foto_x=600;
-#$zopt_Comment_foto_q=75;
-#$zopt_Comment_media='all';
-#$zopt_Comment_view='on';
-#$zopt_Comment_write='on';
-#$zopt_Comment_screen='open';
-#$zopt_Comment_tree='1';
-#$zopt_autoformat='p';
-#$zopt_template='blog';
-#$zopt_autokaw='auto';
+$zopt_include='';
+$zopt_Comment_foto_logo=chr(169)." ".chr(171)."{name}: ".$httpsite.chr(187);
+$zopt_Comment_foto_x=600;
+$zopt_Comment_foto_q=75;
+$zopt_Comment_media='all';
+$zopt_Comment_view='on';
+$zopt_Comment_write='on';
+$zopt_Comment_screen='open';
+$zopt_Comment_tree='1';
+$zopt_autoformat='p';
+$zopt_template='blog';
+$zopt_autokaw='auto';
 
 $foto_ttf=$host_design."ttf/PTC55F.ttf";
 $foto_logo=chr(169)." ".chr(171).$admin_name." ".$httpsite.chr(187); // автоматическая подпись фоток
