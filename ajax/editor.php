@@ -302,7 +302,7 @@ if($a=='editform') { AD();
 }
 //====================================
 
-function edit_textarea($p,$majax='') { global $Date, $www_design,$idhelp,$filehost,$autosave_count,$num,$zopt_a; $s='';
+function edit_textarea($p,$majax='') { global $Date, $www_design,$idhelp,$filehost,$autosave_count,$num,$zopt_a,$editor_width,$editor_height; $s='';
 
 if(!$num) {
 	if(empty($Date)) { $Date=RE('Date'); if(empty($Date)) $Date=date("Y/m/d"); }
@@ -319,9 +319,14 @@ $s.=njsn("
 
 <div>
 <input id='".$idhelp."_head' onchange='ch_edit_pole(this,$num)' class='t' type='text' name='Header' value='".h($p['Header'])."' maxlength='255'")
-." style='width:\"+(getWinW()-100)+\"px'>"
+." style='width:\"+Math.min((getWinW()-100),".(isset($editor_width)?$editor_width:999999).")+\"px'>"
 ."<br><textarea onkeydown=\\\"keydownc(this,$num)\\\" class='t' id='".$idhelp."_Body' name='Body' "
-."style='width:\"+Math.floor(95*getWinW()/100)+\"px; height:\"+Math.floor(90*getWinH()/100)+\"px'>"
+."style='width:\"+Math.min(Math.floor(95*getWinW()/100),".(isset($editor_width)?$editor_width:999999).")+\"px;"
+."height:\"+Math.min(Math.floor(90*getWinH()/100),".(isset($editor_height)?$editor_height:999999).")+\"px'>"
+
+// "style='width:\"+Math.floor(95*getWinW()/100)+\"px; height:\"+Math.floor(90*getWinH()/100)+\"px'>"
+// $editor_width,$editor_height
+
 .njsn(h($p["Body"])."</textarea>
 </div>
 
