@@ -29,7 +29,7 @@ function parse_e_conf($e) { $a=array('body'=>''); $dalee=0; $p=explode("\n",$e);
 // ==============================================================================================
 // повызывать все процедуры в цикле
 
-$GLOBALS['mainmod']=array('ADMINSET','ADMINPANEL','PRAVKA','PREVNEXT','TITLE','STATISTIC','TEXT','OEMBED','COUNTER','UNIC','ANOTHER_DATE','HEAD','HEAD_D','HEAD_N','HEAD_TXT','MAY9');
+$GLOBALS['mainmod']=array('ADMINSET','ADMINPANEL','PRAVKA','PREVNEXT','TITLE','STATISTIC','TEXT','OEMBED','COUNTER','UNIC','ANOTHER_DATE','HEAD','HEAD_D','HEAD_N','HEAD_TXT','MAY9','HEADERS');
 $GLOBALS['norepeat_modules']=array('CONTENTER','ADMIN','PRAVKA','UNIC','LAST','FIDO','INSTALL');
 $GLOBALS['repeat_modules']=array();
 
