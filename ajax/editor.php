@@ -386,8 +386,11 @@ var keydowncount=0;
 
 ch_edit_pole=function(e,num){ if(typeof e.defaultValue=='undefined' || e.value!=e.defaultValue){ edit_polesend(e.name,e.value,num,0); e.defaultValue=e.value;}};
 edit_polesend=function(n,v,num,clo){ majax('editor.php',{a:'polesend',name:n,val:v,num:num,clo:clo}); };
-keydownc=function(e,num){ zabil('".$idhelp."_nsym',idd('".$idhelp."_Body').value.length);
-keydowncount++; if(keydowncount>".$autosave_count."){ keydowncount=0; edit_polesend(e.name,e.value,num,1); } };
+
+keydownc=function(e,num){
+keydowncount++; if(keydowncount>".$autosave_count."){ 
+	zabil('".$idhelp."_nsym',idd('".$idhelp."_Body').value.length);
+keydowncount=0; edit_polesend(e.name,e.value,num,1); } };
 
 /*majax_err=1;*/
 helpc('".$idhelp."',\"<fieldset id='commentform'><legend>Заметка ".h($p['Date'])."</legend>".$s."</fieldset>\");
