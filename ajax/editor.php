@@ -11,28 +11,47 @@ $num=RE0('num'); $idhelp='editor'.$num; $a=RE('a');
 
 //=================================== ljpost ===================================================================
 if($a=='ljpost') { AD();
-	if(!$num) otprav("salert(\"".LL('Editor:ljpost:err0')."\",1000)"); // Сперва надо заметку сохранить!
-	if(($p=ms("SELECT `Body`,`Header` FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0))===false)
-		idie(LL('Editor:ljpost:notfound')); // Такой заметки нет!
 
-	if(empty($admin_ljuser) or empty($admin_ljpass))
-		idie(LL('Editor:ljpost:notlogpas'));
-// В config.php пропишите логин и пароль LJ:<br>$admin_ljuser='lleo-kaganov';<br>$admin_ljpass='vd1gTH6s';
+	if(empty($admin_ljuser) or empty($admin_ljpass)) idie(LL('ljpost:notlogpas'));
+	if(!$num) otprav("salert(\"".LL('ljpost:err0')."\",1000)"); // Сперва надо заметку сохранить!
 
-	include $include_sys."ljpost.php"; // ето моя библиотечка ljpost
-	$ans=LJ_post($admin_ljuser,$admin_ljpass,wu($p['Header']),wu($p['Body']),array('prop_opt_noemail'=>1));
+	if(($p=ms("SELECT `Date`,`Body`,`Header`,`opt` FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0))===false)
+		idie(LL('ljpost:notfound')); // Такой заметки нет!
+	$p=mkzopt($p);
 
-	dier($ans);
+	include_once $include_sys."_modules.php";
+        $s=modules($p['Body']); // процедуры site
+	// произвести автоформатирование
+	if($p['autoformat']!='no') $s=str_replace(array("\n\n","\n"),($p['autoformat']=='p'?array("<p>","<br>"):array("<p class=pd>","<p class=d>")),"\n\n".str_replace("\n ","\n<p class=z>","\n".$s));
 
-//	otprav("salert(\"".LL('Editor:ljpost:err0')."\",1000)");
-//	file_put_contents('otvet',$ans['itemid']);
-//	die('');
+$s=str_ireplace(array( // заменить классы на стили
+'<p class=d>',
+'<p class=pd>',
+'<p class=name>',
+'<p class=podp>',
+'<p class=z>',   
+'<p class=epigraf>',
+'<p class=epigrafp>'
+),array(
+'<p style="text-align:justify;text-indent:5%;margin-top:0pt;margin-bottom:0pt;">',
+'<p style="text-align:justify;text-indent:5%;margin-top:2%;margin-bottom:0pt;">',
+'<p style="text-indent:0pt;margin-top:4%;margin-bottom:6%;text-align:center;font-weight:bold;font-size:150%;">',
+'<p style="text-indent:0pt;margin-top:30pt;margin-bottom:12%;text-align:right;font-style:italic;">',
+'<p style="text-indent:0pt;margin-top:4%;margin-bottom:4%;text-align:center;font-weight:bold;font-size:100%;">',
+'<p style="text-indent:0pt;text-align:justify;margin-top:10pt;margin-bottom:0pt;margin-right:4%;margin-left:60%;font-size:80%;">',
+'<p style="text-indent:0pt;text-align:right;margin-top:0pt;margin-bottom:4%;margin-right:4%;margin-left:60%;font-size:80%;font-style:italic;">'
+),$s);
 
+	$mydir=$httphost.substr($p['Date'],0,(strlen($p['Date'])-strlen(strrchr($p['Date'],"/")))+1);
+	$s=preg_replace("/(<img[^>]+src\=[\'\"]*)([^\/\:]{4,})/si","$1".$mydir."$2",$s); // картинки поставить на места
+
+	include_once $include_sys."ljpost.php"; // ето моя библиотечка ljpost
+ 	$lj=LJ_post($admin_ljuser,$admin_ljpass,wu($p['Header']),wu($p['Body']),array('prop_opt_noemail'=>1));
+
+	if($lj['success']!='OK') dier($lj."<p><br>",LL('ljpost:error')); // Ошибка!
+
+	idie(LL('ljpost:postdone',$lj['url']),LL('ljpost:hsuccess'));
 }
-
-
-include $include_sys."_autorize.php"; // сперва JsHttpRequest, затем autorize
-
 //=================================== nocomment ===================================================================
 if($a=='nocomment') { AD();
 	if(($po=ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0))===false) idie('false');
@@ -361,9 +380,10 @@ if(sizeof($opt)<sizeof($zopt_a)) $s.="<div id='".$idhelp."_extopt' style='margin
 $s.="<div id='".$idhelp."_extautopost' style='display:inline;margin-right:16px'><img src='".$www_design."e3/mail_forward.png' alt='".LL('Editor:autopost')."'"
 ." onclick=\\\"majax('editor.php',{a:'autopost_panel',num:$num})\\\"></div>"
 
-."<div style='display:inline;vertical-align:top;' class='br'>".LL('Editor:sym',"<span id='".$idhelp."_nsym'>".strlen($p['Body'])."</span>")."</div>"
+."<div style='display:inline;vertical-align:top;' class='br'>".LL('Editor:sym',"<span id='".$idhelp."_nsym'>".strlen($p['Body'])."</span>")."</div>";
 
-."<div style='display:inline;margin-right:16px;margin-left:16px'><img src='".$www_design."e3/post-entry.gif' alt='".LL('Editor:ljpost')."'"
+if(!empty($GLOBALS['admin_ljuser'])&&!empty($GLOBALS['admin_ljpass'])) $s.=
+"<div style='display:inline;margin-right:16px;margin-left:16px'><img src='".$www_design."e3/post-entry.gif' alt='".LL('Editor:ljpost')."'"
 ." onclick=\\\"majax('editor.php',{a:'ljpost',num:$num})\\\"></div>";
 
 $s.=pokaji_opt($opt,0);
