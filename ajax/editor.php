@@ -9,6 +9,30 @@ $autosave_count = 200; // 128; // через сколько нажатий кнопки автозапись
 
 $num=RE0('num'); $idhelp='editor'.$num; $a=RE('a');
 
+//=================================== ljpost ===================================================================
+if($a=='ljpost') { AD();
+	if(!$num) otprav("salert(\"".LL('Editor:ljpost:err0')."\",1000)"); // Сперва надо заметку сохранить!
+	if(($p=ms("SELECT `Body`,`Header` FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0))===false)
+		idie(LL('Editor:ljpost:notfound')); // Такой заметки нет!
+
+	if(empty($admin_ljuser) or empty($admin_ljpass))
+		idie(LL('Editor:ljpost:notlogpas'));
+// В config.php пропишите логин и пароль LJ:<br>$admin_ljuser='lleo-kaganov';<br>$admin_ljpass='vd1gTH6s';
+
+	include $include_sys."ljpost.php"; // ето моя библиотечка ljpost
+	$ans=LJ_post($admin_ljuser,$admin_ljpass,wu($p['Header']),wu($p['Body']),array('prop_opt_noemail'=>1));
+
+	dier($ans);
+
+//	otprav("salert(\"".LL('Editor:ljpost:err0')."\",1000)");
+//	file_put_contents('otvet',$ans['itemid']);
+//	die('');
+
+}
+
+
+include $include_sys."_autorize.php"; // сперва JsHttpRequest, затем autorize
+
 //=================================== nocomment ===================================================================
 if($a=='nocomment') { AD();
 	if(($po=ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0))===false) idie('false');
@@ -337,10 +361,13 @@ if(sizeof($opt)<sizeof($zopt_a)) $s.="<div id='".$idhelp."_extopt' style='margin
 $s.="<div id='".$idhelp."_extautopost' style='display:inline;margin-right:16px'><img src='".$www_design."e3/mail_forward.png' alt='".LL('Editor:autopost')."'"
 ." onclick=\\\"majax('editor.php',{a:'autopost_panel',num:$num})\\\"></div>"
 
-."<div style='display:inline;vertical-align:top;' class='br'>".LL('Editor:sym',"<span id='".$idhelp."_nsym'>".strlen($p['Body'])."</span>")."</div>";
+."<div style='display:inline;vertical-align:top;' class='br'>".LL('Editor:sym',"<span id='".$idhelp."_nsym'>".strlen($p['Body'])."</span>")."</div>"
+
+."<div style='display:inline;margin-right:16px;margin-left:16px'><img src='".$www_design."e3/post-entry.gif' alt='".LL('Editor:ljpost')."'"
+." onclick=\\\"majax('editor.php',{a:'ljpost',num:$num})\\\"></div>";
 
 $s.=pokaji_opt($opt,0);
- 
+
 // -- тэги --------------
 $tt=ms("SELECT `tag` FROM `dnevnik_tags` WHERE `num`='$num' ORDER BY `tag`","_a",0);
 $t=''; foreach($tt as $l) $t.=$l['tag'].', '; $t=trim($t,', ');

@@ -40,7 +40,7 @@ $panel = strtr("
 <img class=knop onClick=\"ti('$id','<table bgcolor=#f0ffff border=1 cellpadding=50 cellspacing=0 width=80%><td><div align=justify>{select}</td></table>')\" src=".$www_design."e2/tableb2.gif>
 <img class=knop onClick=\"ti('$id','<table bgcolor=#fffff0 border=1 cellpadding=50 cellspacing=0 width=80%><td><div align=justify>{select}</td></table>')\" src=".$www_design."e2/tableb3.gif>
 <img class=knop onClick=\"ti('$id','<pre style=\'border: 0.01mm solid rgb(0,0,0); padding: 4px; line-height: 100%; font-family: monospace; background-color: rgb(255,255,255);\'>{select}</pre>')\" src=".$www_design."e2/tableb_pre.gif>
-<img class=knop onClick=\"majax('module.php',{mod:'fido',a:'fidopost',area:'OBEC.PACTET',subj:idd('".$idhelp."_head').value,text:'".njsn('\|/'."\n\n")."'+vzyal('".$idhelp."_textarea')})\" src=".$www_design."e3/fido.png>
+<img class=knop onClick=\"majax('module.php',{mod:'fido',a:'fidopost',area:'OBEC.PACTET',subj:idd('".$idhelp."_head').value,text:'".njsn('\|/'."\n\n")."'+vzyal('".$idhelp."_textarea')})\" src='".$www_design."e3/fido.png' alt='".LL('Editor:fidopost')."'>
 
 ","\n","");
 ?>

@@ -6,6 +6,8 @@ binoniq/
 design/userpick.jpg.lleo 
 module/install/no/
 
+ljpost.php
+
 fido/conf/areas
 fido/conf/config
 fido/conf/links

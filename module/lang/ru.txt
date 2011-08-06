@@ -77,6 +77,8 @@ Editor:show_panel	панель инструментов
 Editor:settings		все опции
 Editor:autopost		опции автопостинга
 Editor:dostup		Доступ заметки:<dd>красный - админ<dd>желтый - друзья<dd>зеленый - все
+Editor:ljpost		Запостить в LiveJournal
+Editor:fidopost		Запостить в FIDO
 
 comm:ostalnye		 остальные
 comm:off		<p>Комментарии к этой заметке сейчас отключены, надеюсь на понимание.
