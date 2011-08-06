@@ -315,8 +315,6 @@ $s.=njsn("
 <img alt='".LL('Editor:delz')."' class=l onclick=\"if(confirm('".LL('confirm_del')."')) majax('editor.php',{a:'delete',num:$num});\" src='".$www_design."e3/remove.png' alt='delete'>
 <div id='".$idhelp."p' style='display:inline'><img alt='".LL('Editor:show_panel')."' class=l onclick=\"majax('editor.php',{a:'loadpanel',idhelp:'".$idhelp."'})\" src='".$www_design."e3/finish.png' alt='panel'></div>
 
-<div class='br'>".LL('Editor:sym',"<span id='".$idhelp."_nsym'>".strlen($p['Body'])."</span>")."</div>
-
 <div>
 <input id='".$idhelp."_head' onchange='ch_edit_pole(this,$num)' class='t' type='text' name='Header' value='".h($p['Header'])."' maxlength='255'")
 ." style='width:\"+get_edit_width()+\"px'>"
@@ -333,11 +331,13 @@ $s.=njsn("
 $s.=njsn(ADMINSET($p));
 
 $opt=unser($p['opt']); ksort($opt);
-if(sizeof($opt)<sizeof($zopt_a)) $s.="<div id='".$idhelp."_extopt' style='margin-left:32px;display:inline;margin-right:32px'><img src='".$www_design."e3/system.png' alt='".LL('Editor:settings')."'"
+if(sizeof($opt)<sizeof($zopt_a)) $s.="<div id='".$idhelp."_extopt' style='margin-left:16px;display:inline;margin-right:16px'><img src='".$www_design."e3/system.png' alt='".LL('Editor:settings')."'"
 ." onclick=\\\"majax('editor.php',{a:'settings_panel',num:$num})\\\"></div>";
 
-$s.="<div id='".$idhelp."_extautopost' style='display:inline'><img src='".$www_design."e3/mail_forward.png' alt='".LL('Editor:autopost')."'"
-." onclick=\\\"majax('editor.php',{a:'autopost_panel',num:$num})\\\"></div>";
+$s.="<div id='".$idhelp."_extautopost' style='display:inline;margin-right:16px'><img src='".$www_design."e3/mail_forward.png' alt='".LL('Editor:autopost')."'"
+." onclick=\\\"majax('editor.php',{a:'autopost_panel',num:$num})\\\"></div>"
+
+."<div style='display:inline;vertical-align:top;' class='br'>".LL('Editor:sym',"<span id='".$idhelp."_nsym'>".strlen($p['Body'])."</span>")."</div>";
 
 $s.=pokaji_opt($opt,0);
  
@@ -506,7 +506,7 @@ salert(\"".LL('Editor:new_exist',get_link($d))."\");
 if($a=='polesend') { AD(); $val=RE('val'); $name=RE('name');
 	$val=str_replace("\r",'',$val);
 
-	if($name=='tags') { settags($val); otprav(''); }
+	if($name=='tags') { save_tags($val); otprav(''); }
 
 	if($name=='Body') {
 		if($num==0) { put_last_tmp($val); otprav(''); } else { del_last_tmp(); } // сохранять в tmp текст для новых
