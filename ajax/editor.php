@@ -421,7 +421,7 @@ if($a=='settings_panel') { AD();
 	$opt=unser(ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='$num'","_l",0));
 	$opt2=mkzopt($opt); ksort($opt2);
 	foreach($opt as $n=>$l) unset($opt2[$n]);
-	otprav("zabil('".$idhelp."_extopt',\"<br><fieldset><legend>options</legend>".pokaji_opt($opt2)."</fieldset><p>\");");
+	otprav("zabil('".$idhelp."_extopt',\"".pokaji_opt($opt2)."\");");
 }
 //----------- setting panel --------------
 
@@ -558,6 +558,7 @@ function pokaji_opt($opt,$def=1) { global $num,$zopt_a; $s=''; $i=0;
 		if($def) $val=($v!=$l[0]?$v:'default'); else $val=$v;
 	$s.=($i++?"<br>":'').LL('zopt:'.$n)." : ";
 
+
 	if($n=='template') {
 		// вы€снить о модул€х
 		$inc=glob($GLOBALS['filehost']."template/*.html"); $ainc=array('default'=>'&mdash;'); foreach($inc as $l) { $l=preg_replace("/^.*?\/([^\/]+)\.html$/si","$1",$l); $ainc[$l]=$l; }
@@ -571,7 +572,8 @@ function pokaji_opt($opt,$def=1) { global $num,$zopt_a; $s=''; $i=0;
 		}
 	}
 	}
-return $s;
+
+return ($s==''?'':"<br><fieldset><legend>options</legend>$s</fieldset><p>");
 }
 
 ?>
