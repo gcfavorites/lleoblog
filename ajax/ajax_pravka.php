@@ -111,7 +111,7 @@ global $text,$textnew,$login;
 }
 
 function pravka_basa_p($id) { 
-	$p=ms("SELECT * FROM `".$GLOBALS['db_pravka']."` WHERE `id`='$id'",'_1',0);
+	$p=ms("SELECT * FROM `".$GLOBALS['db_pravka']."` WHERE `id`='".e($id)."'",'_1',0);
 	if($p['id']!=$id) pravka_otvet("ошибка номера!!!");
 
 	if(!$GLOBALS['pravshort']) {
@@ -123,12 +123,11 @@ function pravka_basa_p($id) {
 
 function pravka_basa_metka($id,$metka,$answer) { if(!$GLOBALS['admin']) return;
 if(isset($GLOBALS['rdonly'])) return;
-	msq_update($GLOBALS['db_pravka'],array('metka'=>$metka,'Answer'=>$answer),"WHERE `id`='$id'");
+	msq_update($GLOBALS['db_pravka'],array('metka'=>e($metka),'Answer'=>e($answer)),"WHERE `id`='".e($id)."'");
 }
 
 function pravka_basa_getmetka($data,$stdprav) { // получить метку дл€ такого случа€
-	$p=ms("SELECT `metka` FROM `".$GLOBALS['db_pravka']."` WHERE `Date`='$data' AND `stdprav`='$stdprav'",'_1',0);
-	return $p['metka'];
+	return ms("SELECT `metka` FROM `".$GLOBALS['db_pravka']."` WHERE `Date`='".e($data)."' AND `stdprav`='".e($stdprav)."'",'_l',0);
 }
 
 
