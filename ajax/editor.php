@@ -1,4 +1,4 @@
-<?php // Авторизация пользователей
+<?php // Редактор заметки
 
 include "../config.php";
 require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpRequest($wwwcharset);
@@ -46,7 +46,7 @@ $s=str_ireplace(array( // заменить классы на стили
 	$s=preg_replace("/(<img[^>]+src\=[\'\"]*)([^\/\:]{4,})/si","$1".$mydir."$2",$s); // картинки поставить на места
 
 	include_once $include_sys."ljpost.php"; // ето моя библиотечка ljpost
- 	$lj=LJ_post($admin_ljuser,$admin_ljpass,wu($p['Header']),wu($p['Body']),array('prop_opt_noemail'=>1));
+ 	$lj=LJ_post($admin_ljuser,$admin_ljpass,wu($p['Header']),wu($s),array('prop_opt_noemail'=>1));
 
 	if($lj['success']!='OK') dier($lj."<p><br>",LL('ljpost:error')); // Ошибка!
 
