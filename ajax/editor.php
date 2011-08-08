@@ -9,6 +9,9 @@ $autosave_count = 200; // 128; // через сколько нажатий кнопки автозапись
 
 $num=RE0('num'); $idhelp='editor'.$num; $a=RE('a');
 
+
+
+
 //=================================== ljpost ===================================================================
 if($a=='ljpost') { AD();
 
@@ -44,6 +47,10 @@ $s=str_ireplace(array( // заменить классы на стили
 
 	$mydir=$httphost.substr($p['Date'],0,(strlen($p['Date'])-strlen(strrchr($p['Date'],"/")))+1);
 	$s=preg_replace("/(<img[^>]+src\=[\'\"]*)([^\/\:]{4,})/si","$1".$mydir."$2",$s); // картинки поставить на места
+
+	// применить шаблон
+	if(($t=ms("SELECT `text` FROM `site` WHERE `name`='ljpost_template'","_l"))!==false)
+		$s=str_replace(array('{text}','{url}'),array($s,get_link($p['Date'])),$t);
 
 	include_once $include_sys."ljpost.php"; // ето моя библиотечка ljpost
  	$lj=LJ_post($admin_ljuser,$admin_ljpass,wu($p['Header']),wu($s),array('prop_opt_noemail'=>1));

@@ -79,7 +79,7 @@ if($_GET['a']=='create') {
 // $text=htmlspecialchars($_POST['text']);
 $s .= "<center><div id=0><li><a href=\"javascript:l(0)\">создать новую</a></li></div></center>";
 
-$s .= ms("SELECT `text` FROM `".$db_site."` WHERE `name`='fotoload'",'_l',0); // подстыковать модуль fotoload
+//$s .= ms("SELECT `text` FROM `".$db_site."` WHERE `name`='fotoload'",'_l',0); // подстыковать модуль fotoload
 
 
 //die("<pre>".htmlspecialchars(print_r($_PAGE,1)));
@@ -141,7 +141,7 @@ if(intval($_GET['edit'])) { $s.="<script>l('".intval($_GET['edit'])."')</script>
 
 
 
-if($_GET['foto']!='on') $s.="<p><a href=$mypage?foto=on>показать фото</a>";
+// if($_GET['foto']!='on') $s.="<p><a href=$mypage?foto=on>показать фото</a>";
 
 die($s);
 

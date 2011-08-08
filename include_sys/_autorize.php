@@ -496,4 +496,6 @@ function makeopt($r) { // создать массив opt из заданного массива и дефолта
 function unser($p){ return empty($p)?array():unserialize($p); }
 function ser($p){ return sizeof($p)?serialize($p):''; }
 
+// function getsite($s) { return ($s=ms("SELECT `text` FROM `site` WHERE `name`='".e($s)."'","_l"))!==false?$s:'{text}'; }
+
 ?>
