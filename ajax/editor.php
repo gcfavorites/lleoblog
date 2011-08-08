@@ -391,7 +391,7 @@ $s.="<div id='".$idhelp."_extautopost' style='display:inline;margin-right:16px'>
 
 if(!empty($GLOBALS['admin_ljuser'])&&!empty($GLOBALS['admin_ljpass'])) $s.=
 "<div style='display:inline;margin-right:16px;margin-left:16px'><img src='".$www_design."e3/post-entry.gif' alt='".LL('Editor:ljpost')."'"
-." onclick=\\\"majax('editor.php',{a:'ljpost',num:$num})\\\"></div>";
+." onclick=\\\"if(confirm('".LL('ljpost:confirm')."')) majax('editor.php',{a:'ljpost',num:$num})\\\"></div>";
 
 $s.=pokaji_opt($opt,0);
 

@@ -87,6 +87,7 @@ ljpost:notlogpas	В config.php пропишите логин и пароль LJ:<br>$admin_ljuser='lle
 ljpost:error	При постинге в LiveJournal произошла ошибка:
 ljpost:hsuccess		готово
 ljpost:postdone		Заметка доступна в LiveJournal по адресу:<br><a href='{0}'>{0}</a>
+ljpost:confirm		Запостить эту заметку в LiveJournal?
 
 comm:ostalnye		 остальные
 comm:off		<p>Комментарии к этой заметке сейчас отключены, надеюсь на понимание.
