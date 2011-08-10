@@ -148,8 +148,17 @@ function url_present($p) { global $httpsite,$opt,$media_id,$site_mod;
 	list($r,)=explode('?',$p[7],2); $r=strtolower(array_pop(explode('.',$r)));
 
 	if($r=='mp3') { // вставка mp3
-		if($o){ include_once $site_mod."MP3.php"; return $p[1].MP3($p[2]." | mp3").$p[7]; }
+		if($o){ include_once $site_mod."MP3.php"; return $p[1].MP3($p[2]." | mp3").$p[8]; }
 		else return url_click($p,'mp3');
+	}
+
+	if($r=='flv') { // вставка flv
+		if($o) return $p[1].'<center><object type="application/x-shockwave-flash" wmode="transparent" data="'
+.$GLOBALS['www_design'].'flvplayer.swf?file='.$p[2].'&amp;autostart=false" height="240" width="320">'
+.'<param name="movie" value="'
+.$GLOBALS['www_design'].'flvplayer.swf?file='.$p[2].'&amp;autostart=false" height="240" width="320">'
+.'<param name="wmode" value="transparent"></object></center>'.$p[8];
+		else return url_click($p,'flv');
 	}
 
 	if($p[5]=='www.youtube.com') { // вставка роликов с ютуба
