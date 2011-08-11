@@ -8,6 +8,7 @@ foreach(array(
 	'comm'=>'PAGE_COMM',
 	'imbload'=>'IMBLOAD',
 	'contents'=>'CONTENTS',
+	'haship'=>'HASHIP',
 	'fido'=>'FIDO'
 
 ) as $n=>$l) { $action='createmodule_'.$n;
