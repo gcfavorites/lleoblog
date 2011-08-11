@@ -225,12 +225,16 @@ function parse_mytables($ta='') { $o=''; $i="<img src='".$GLOBALS['www_design'].
 			if(!isset($arr[$pole])) { $arr_del[$pole]=$str2; }
 			elseif($arr[$pole]==$str) { $arr_ok[$pole]=$str2; unset($arr[$pole]); } // равно
 
-//			elseif(preg_replace("/ *NOT NULL/si","",$arr[$pole])==$str){ $arr_ok[$pole]=$str2; unset($arr[$pole]); } // равно
+			elseif(preg_replace("/ NOT NULL/si","",$arr[$pole])==$str){ $arr_ok[$pole]=$str2; unset($arr[$pole]); } // равно
 
-			elseif(preg_replace("/ *default '[^']+'/si","",$arr[$pole])==$str)
+			elseif(preg_replace("/ default '[^']+'/si"," NOT NULL",$str)==$arr[$pole])
+					{ $arr_ok[$pole]=$str2; unset($arr[$pole]); } // равно
+
+			elseif(preg_match("/^`.+` text$/si",$str) && preg_match("/^`.+` varchar\(\d+\)/si",$arr[$pole]))
 					{ $arr_ok[$pole]=$str2; unset($arr[$pole]); } // равно
 
 			else {  // изменить
+//				idie("str=$str<br>\$arr[\$pole]=".$arr[$pole]);
 				$arr_change[$pole]=array($str2,substr($arr[$pole],strlen($pole)+3));
 				unset($arr[$pole]);
 			}
