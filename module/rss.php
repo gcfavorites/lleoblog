@@ -25,7 +25,7 @@ $s1="<?xml version='1.0' encoding='".$wwwcharset."'?>
 $s="</lastBuildDate>
   <link>".$httphost."</link>
   <description>".$admin_name.": блог</description>
-  <generator>LLeoBlog 3.0</generator>
+  <generator>Binoniq 3.0</generator>
   <wfw:commentRss>".$httphost."rssc"."</wfw:commentRss>
   <ya:more>".$httpsite.$mypage."?skip=".($skip+$RSSZ_skip)."</ya:more>
   <image>
@@ -50,7 +50,7 @@ $lastupdate=0; foreach($pp as $p) {
 
 $s .= "\n<item>
 	<guid isPermaLink='true'>".$link."</guid>
-	<author>http://lleo.aha.ru</author>
+	<author>".$httphost."</author>
 	<pubDate>".date("r", $p["DateUpdate"])."</pubDate>
 	<link>".$link."</link>
 	<description>".h($Body)."</description>
@@ -129,7 +129,7 @@ function RSSZ_mode1($s,$link) { global $admin,$BRO,$IP;
 function mkna($name,$prichina,$delat) { // создать ссылку посыла нахуй
 	$stroka=$name."%".$prichina."%".$delat;	$stroka=base64_encode($stroka);
 	$stroka=str_replace("=","",$stroka); $stroka=str_replace("/","-",$stroka);
-	return "http://lleo.aha.ru/na/?".$stroka;
+	return "http://natribu.org/?".$stroka;
 }
 
 ?>
