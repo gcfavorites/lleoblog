@@ -236,12 +236,12 @@ $maj="majax('module.php',{mod:'INSTALL',a:";
 $dir=$GLOBALS['filehost'].'binoniq/instlog/';
 
 if($a=='install') { // инсталляция
-	$serv=fileget_save($dir."servers.txt","http://lleo.aha.ru/blog Beta
-http://lleo.aha.ru/dnevnik Stable
-http://lleo.aha.ru Super Stable
+	$serv=fileget_save($dir."servers.txt","http://lleo.me/blog Beta
+http://lleo.me/dnevnik Stable
+http://lleo.me Super Stable
 http://binoniq.net Server Stable");
 
-	$select_serv=fileget_save($dir."my_server.txt","http://lleo.aha.ru/blog\n+basic");
+	$select_serv=fileget_save($dir."my_server.txt","http://lleo.me/blog\n+basic");
 	$select_serv=explode("\n",$select_serv);
 
 	$o=array(); foreach(explode("\n",$serv) as $l) { $l=trim($l,"\n\r\t "); if($l=='') continue;
@@ -400,7 +400,7 @@ if($a=='install_far_check') { // отправить запрос на проверку
 /*
 //	idie(nl2br("size: ".sizeof($r)."\n\n".implode("\n",$r)));
 //	$s=print_r(),1); // ''; foreach(glob($inst) as $l) $s.=$l;
-//	$select_serv=fileget_save($dir."my_server.txt","http://lleo.aha.ru/blog");
+//	$select_serv=fileget_save($dir."my_server.txt","http://lleo.me/blog");
 // fileput($dir.$file,$s);	
 
 	return "ohelpc('install','Select packets',\"".njsn($s)."\");";
@@ -423,8 +423,8 @@ $GLOBALS['filehost']."re.png",
 $GLOBALS['filehost']."re.php",
 $GLOBALS['filehost']."install.zip",
 $GLOBALS['filehost']."gg.zip"
-),'http://lleo.aha.ru/blog/install',array('post_act'=>'do','aaa'=>'123','key'=>'rrr'));
-//	sendFile('http://lleo.aha.ru/blog/install',,$path, $filePath, $fileName, $fileField, $fields = );
+),'http://lleo.me/blog/install',array('post_act'=>'do','aaa'=>'123','key'=>'rrr'));
+//	sendFile('http://lleo.me/blog/install',,$path, $filePath, $fileName, $fileField, $fields = );
 
 	idie($t);
 // eeeeeeeeeeeee
@@ -573,7 +573,7 @@ function msq_del_table($table){ if(msq_table($table)) msq("DROP TABLE `".$table.
 
 //======================================================================================
 // похвастаться успешной установкой
-function admin_pohvast() { return "<center><div id=soobshi><input type=button value='Похвастаться успешной установкой' onclick=\"document.getElementById('soobshi').innerHTML = '<img src=http://lleo.aha.ru/blog/stat?link={httphost}>';\"></div></center>"; }
+function admin_pohvast() { return "<center><div id=soobshi><input type=button value='Похвастаться успешной установкой' onclick=\"document.getElementById('soobshi').innerHTML = '<img src=http://lleo.me/blog/stat?link={httphost}>';\"></div></center>"; }
 
 //======================================================================================
 // логины админа
@@ -687,7 +687,7 @@ function testdir($s) { $a=explode('/',rtrim($s,'/')); $s=''; for($i=0;$i<sizeof(
 //==================================================================================================
 // процедура передачи данных и файлов через POST-запрос по старинке без всяких там уебищных CURL-библиотек
 // $filePath - полное имя (с путем) файла для передачи или массив имен файлов для передачи (если файлы не передаются - '')
-// $urla - адрес запроса, напр. http://lleo.aha.ru/blog/install
+// $urla - адрес запроса, напр. http://lleo.me/blog/install
 // $ara - массив переменных POST, напр: array('action'=>'do','key'=>'1','user'=>123)
 // возвравщает ответ сервера или, если ошибка, строку, начинающуюся с 'ERROR:'
 function POST_file($filePath,$urla,$ara,$port=80,$scheme='http',$charset='Windows-1251') {

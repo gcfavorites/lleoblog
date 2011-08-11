@@ -224,6 +224,12 @@ function parse_mytables($ta='') { $o=''; $i="<img src='".$GLOBALS['www_design'].
 			$str2 = substr($str,strlen($pole)+3);
 			if(!isset($arr[$pole])) { $arr_del[$pole]=$str2; }
 			elseif($arr[$pole]==$str) { $arr_ok[$pole]=$str2; unset($arr[$pole]); } // равно
+
+//			elseif(preg_replace("/ *NOT NULL/si","",$arr[$pole])==$str){ $arr_ok[$pole]=$str2; unset($arr[$pole]); } // равно
+
+			elseif(preg_replace("/ *default '[^']+'/si","",$arr[$pole])==$str)
+					{ $arr_ok[$pole]=$str2; unset($arr[$pole]); } // равно
+
 			else {  // изменить
 				$arr_change[$pole]=array($str2,substr($arr[$pole],strlen($pole)+3));
 				unset($arr[$pole]);
