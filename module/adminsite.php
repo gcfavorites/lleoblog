@@ -149,8 +149,8 @@ die($s);
 
 function print1($p) {
 	$name=htmlspecialchars($p['name']); $id=intval($p['id']);
-	return "\n<div id=".$id."><li><a href=\"javascript:l('".$id."')\">".(strlen($name)?$name:"&lt;...&gt;")."</a>
-&nbsp;(<a href=".$GLOBALS['wwwhost'].$p['name']." target=_blank>open</a>)</li></div>";
+	return "\n<div id=".$id."><li><a href=\"javascript:l('".$id."')\">".(strlen($name)?$name:"&lt;...&gt;")."</a>"
+.($p['type']=='page'?"&nbsp;(<a href=".$GLOBALS['wwwhost'].$p['name']." target=_blank>open</a>)</li></div>":'');
 }
 
 function print_foto($p) {
