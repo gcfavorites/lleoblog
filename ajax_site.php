@@ -103,9 +103,9 @@ otprav2("<li><a href=\"javascript:ajax_site('close',".$id.")\">закрыть</a>
 
 
 <br><TEXTAREA id='".$id_text."' class='t' cols='80' rows='".max(page($text,80),3)."'>".$text."</TEXTAREA></td>
-<td valign=top><a href=\"javascript:if(confirm('Точно удалить?')) ajax_site('delete',".$id.")\">del</a>
-<p><input value='SEND >>' class='t' onclick=\"javascript:ajax_site('send_edit',".$id.$jsvalue."\" type='button'>
-".($id?"<p><input value='SAVE >>' class='t' onclick=\"javascript:ajax_site('save_edit',".$id.$jsvalue."\" type='button'>":'')."
+<td valign=top><a title='Удалить запись' href=\"javascript:if(confirm('Точно удалить?')) ajax_site('delete',".$id.")\">del</a>
+<p><input title='Сохранить изменения, но не закрывать' value='SEND >>' class='t' onclick=\"javascript:ajax_site('send_edit',".$id.$jsvalue."\" type='button'>
+".($id?"<p><input title='Сохранить и выйти' value='SAVE >>' class='t' onclick=\"javascript:ajax_site('save_edit',".$id.$jsvalue."\" type='button'>":'')."
 </td></tr></table>
 </li>");
 }
