@@ -10,6 +10,7 @@ var wwwcharset='".$GLOBALS['wwwcharset']."';
 var www_design='".$GLOBALS['www_design']."';
 var www_ajax='".$GLOBALS['www_ajax']."';
 var page_onstart=[];
+function nokey(){ page_onstart.push("mHelps['nokey']=1;"); }
 */
 
 //function basename(path) { return path.replace(/^.*[\/\\]/g,''); }
@@ -53,8 +54,6 @@ else if(id=='NextLink'){ var b=document.body,i=curX-startX; if(i<0)i=-i; b.style
 document.location.href=e.href; } }
 function hotkey_reset() { hotkey=[];
 if(admin) {
-
-
 	setkey('x','alt',function(e){
 alert('\ngetScrollH()='+getScrollH()+'\ngetScrollW()='+getScrollW()+'\ngetWinW()='+getWinW()+'\ngetWinH()='+getWinH()+'\ngetDocH()='+getDocH()+'\ngetDocW()='+getDocW()+'\n\n = '+(getWinW()-getDocW()));
 },false);
@@ -171,7 +170,6 @@ else {
 // getElementsByClass('r');
 
 }
-
 
 // создать новый <DIV class='cls' id='id'>s</div> в элементе paren (если не указан - то просто в документе)
 // есть указан relative - то следующим за relative, инае - просто последним
@@ -662,6 +660,11 @@ function get_pole_ara(w) { var k=0,ara={names:''}; var el=['input','textarea','c
 
         return (k==0?false:ara);
 }
+
+function nokey(){ hotkey=[]; mHelps['nokey']=1; }
+
+// function nokey(){ page_onstart.push("mHelps['nokey']=1;"); }
+
 
 /*
 
