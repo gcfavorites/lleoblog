@@ -1,30 +1,27 @@
 <?php
 include "config.php";
 include $include_sys."_autorize.php";
-if(!$admin) die('Error autorize');
+if(!$admin) idie('Error autorize');
 // include $include_sys."_msq.php";
 // include $include_sys."_onecomment.php";
 require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpRequest("windows-1251");
 
 function otprav2($s) { global $_RESULT,$msqe; $_RESULT["otvet"] = $msqe.$s; $_RESULT["status"] = true; exit(); }
 
-$a=$_REQUEST["action"];
-$id=intval($_REQUEST["id"]);
-
+$a=RE("action");
+$id=RE0("id");
 
 function saveit() { global $db_site,$id; // $_REQUEST; // ?
 	$ara=array(
-		'name'=>e($_REQUEST["name"]),
-		'text'=>e($_REQUEST["text"]),
-		'type'=>e($_REQUEST["type"]),
-		'Access'=>e($_REQUEST["Access"])
+		'name'=>e(RE("name")),
+		'text'=>e(RE("text")),
+		'type'=>e(RE("type")),
+		'Access'=>e(RE("Access"))
 	);
 	if($id)	msq_update($db_site,$ara,"WHERE `id`=".$id); else msq_add($db_site,$ara);
 }
 
-
-
-if($a == "new") { edit_form(0,$_REQUEST['name'],$_REQUEST['text'],$_REQUEST['type'],$_REQUEST['Access']); } // новая
+if($a == "new") { edit_form(0,RE('name'),RE('text'),RE('type'),RE('Access')); } // новая
 
 if($a == "send_edit") { // сохранить изменения и закрыть
 	$_RESULT["reload"]=true;
@@ -45,27 +42,13 @@ if($a == "view") {
 if($a == "close") {
 	if($id)	{ $p=ms("SELECT * FROM `".$db_site."` WHERE `id`='".$id."'","_1",0); $name=$p['name']; }
 	else { $name="создать новую"; }
-
-	if($p['type']!='photo') {
-otprav2("<li><a href=\"javascript:l('".$id."')\">".h($name)."</a>"
-// ."&nbsp;(<a href=".$GLOBALS['wwwhost'].h($name)." target=_blank>open</a>)</li>"
-);
-	} else {
-
-otprav2("<li><table><tr valign=center>
-<td><img src=".$GLOBALS['foto_www_preview'].$p['text']."></td>
-<td><a href=\"javascript:l('".$id."')\">".(strlen($name)?$name:"&lt;...&gt;")."</a></td>
-</tr></table></li>");
-$_RESULT["reload"]=false;
-
-	}
-
+	otprav2("<li><a href=\"javascript:l('".$id."')\">".h($name)."</a>"
+	.($p['type']=='page'?"&nbsp;(<a href=".$GLOBALS['wwwhost'].h($name)." target=_blank>open</a>)</li>":''));
 }
 
 if($a == "delete") { msq_del($db_site,array('id'=>$id)); otprav2(""); }
 
 exit;
-
 
 
 function edit_form($id,$name,$text,$type,$Access) {
@@ -77,25 +60,22 @@ function edit_form($id,$name,$text,$type,$Access) {
 	$id_type=$id."y";
 	$id_access=$id."a";
 
-	$text=htmlspecialchars($text);
+	$text=h($text);
 
-$jsvalue=",document.getElementById('".$id_name."').value,"
-."document.getElementById('".$id_text."').value,"
-."document.getElementById('".$id_type."').value,"
-."document.getElementById('".$id_access."').value)";
+$jsvalue=",idd('$id_name').value,idd('$id_text').value,idd('$id_type').value,idd('$id_access').value)";
 
 otprav2("<li><a href=\"javascript:ajax_site('close',".$id.")\">закрыть</a>
 <p><center>
 <table><tr>
 ".($type!='photo'?'':"<td><img src=".$GLOBALS['foto_www_preview'].$text."></td>")."
-<td><input id='".$id_name."' type=text class='t' size=32 value='".htmlspecialchars($name)."'>
-".selecto($id_type,htmlspecialchars($type),array(
+<td><input id='".$id_name."' type=text class='t' size=32 value='".h($name)."'>
+".selecto($id_type,h($type),array(
 	'page'=>"page: загружаемая страница",
 	'design'=>"design: элемент дизайна",
 	'news'=>"news: новость",
 	'photo'=>"photo: фотография",
 ),'id')."
-доступ: ".selecto($id_access,htmlspecialchars($Access),array(
+доступ: ".selecto($id_access,h($Access),array(
 	'all'=>"всем",
 	'podzamok'=>"избранным",
 	'admin'=>"никому"
