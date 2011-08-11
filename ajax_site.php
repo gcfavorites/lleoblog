@@ -47,8 +47,9 @@ if($a == "close") {
 	else { $name="создать новую"; }
 
 	if($p['type']!='photo') {
-otprav2("<li><a href=\"javascript:l('".$id."')\">".htmlspecialchars($name)."</a>
-&nbsp;(<a href=".$GLOBALS['wwwhost'].htmlspecialchars($name)." target=_blank>open</a>)</li>");
+otprav2("<li><a href=\"javascript:l('".$id."')\">".h($name)."</a>"
+// ."&nbsp;(<a href=".$GLOBALS['wwwhost'].h($name)." target=_blank>open</a>)</li>"
+);
 	} else {
 
 otprav2("<li><table><tr valign=center>
