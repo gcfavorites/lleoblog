@@ -11,8 +11,29 @@ $skip=intval($_GET['skip']);
 $e=ms("SELECT `num`,`Date` FROM `dnevnik_zapisi`","_a",$ttl_longsite);
 	$d=array(); foreach($e as $l) $d[$l['num']]=get_link($l['Date']); unset($e);
 
+/*
 $pp=ms("SELECT `id`,`Text`,`Name`,`Parent`,`Time`,`DateID`
 FROM `dnevnik_comm` ".($podzamok?'':"WHERE `scr`='0' OR `unic`='$unic'")." ORDER BY `Time` DESC LIMIT ".$skip.",".$RSSC_skip."",'_a',0);
+*/
+
+$whe=array();
+if(!$podzamok) $whe[]="(c.`scr`='0' OR c.`unic`='$unic')";
+if(isset($_GET['unic'])) $whe[]="c.`unic`='".e($_GET['unic'])."'";
+if(isset($_GET['name'])) $whe[]="c.`Name`='".e($_GET['name'])."'";
+
+//dier(implode(' AND ',$whe));
+
+$pp=ms("SELECT c.`id`,c.`Text`,c.`Name`,c.`Parent`,c.`Time`,c.`DateID`
+FROM `dnevnik_comm` AS c LEFT JOIN `dnevnik_zapisi` AS z ON c.`DateID`=z.`num`
+".WHERE(implode(' AND ',$whe))." ORDER BY c.`Time` DESC LIMIT ".$skip.",".$RSSC_skip."",'_a',0);
+
+/*
+c.`unic`,c.`group`,,c.`whois`,c.`rul`,c.`ans`,
+c.`golos_plu`,c.`golos_min`,c.`scr`,c.`DateID`,c.`BRO`,
+u.`capchakarma`,u.`mail`,u.`admin`
+FROM `dnevnik_comm` AS c LEFT JOIN $db_unic AS u ON c.`unic`=u.`id` WHERE `DateID`='".e($num)."'
+ORDER BY `Time`","_a",0);
+*/
 
 $s="<?xml version='1.0' encoding='".$wwwcharset."'?>
 <rss version='2.0' xmlns:ya='http://blogs.yandex.ru/yarss/'>

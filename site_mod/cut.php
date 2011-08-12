@@ -20,6 +20,8 @@ STYLES("cut",".cut,.cutnc{cursor:pointer;color:blue;}.cut{text-align:center}.cut
 
 function cut($e) {
 
+// idie($e);
+
 	if(stristr($e,'#nocenter#')) { $cut='cutnc'; $e=str_ireplace('#nocenter#','',$e); }
 	else $cut='cut';
 
@@ -29,6 +31,7 @@ function cut($e) {
 	else { if(!isset($text)) $text="[...]"; $tag="span"; $display="inline";	}
 
 	return "<$tag class=".$cut." onclick=\"cut(this,'$display')\">$text</$tag><$tag style='display:none'>$e</$tag>";
+
 }
 
 ?>
