@@ -212,8 +212,8 @@ elseif($_REQUEST["type"]=='comm') { // поиск по комментариям
 
 // ======== hiscomment - все комментарии одного человека ===========
 if($a=='hiscomment') {
-	$id=intval($_REQUEST["id"]); if(!$id) idie("unic = null!");
-	$nskip=intval($_REQUEST["nskip"]);
+	$id=RE0("id"); if(!$id) idie("unic = null!");
+	$nskip=RE0("nskip");
 	$nlim=10;
 	include_once $include_sys."_onecomm.php";
 	$s=pr_comments_("SELECT * FROM `dnevnik_comm` WHERE `unic`='$id'".($podzamok?'':" AND `scr`='0'")." ORDER BY `Time` DESC LIMIT $nskip,".($nlim));
