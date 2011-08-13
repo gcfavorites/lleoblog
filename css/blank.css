@@ -59,12 +59,11 @@ overflow: auto; padding: 0.4em 0.4em 0.4em 0.4em; margin: 0.4em 0 0 0.4em; }
 .c2 { background-color: #FFFBDF; border: 1px solid red; }
 .c3 { background-color: #ffe; border: 1px solid red; }
 
-.ctxt { padding: 5pt; overflow: auto; text-align: justify; }
+.ctxt { padding: 5pt; text-align: justify; overflow: auto; }
 .cwho,.ctim,.cbro { font-size: 8pt; display:inline; margin-left: 10pt; top: 0px; position: relative; float: right; }
-/*.cwho { font-size: 8pt; display: inline; margin-left: 10pt; top: 0px;  }*/
 .kn { font-size: 8pt; position: relative; float: left; }
 
-.cnam,.cplu,.cmin { display:inline; }
+.ctim,.cbro,.cwho,.kr,.rul0,.rul1,.kmail,.cnam,.cplu,.cmin { display:inline; }
 .cnam { font-size: 12pt; font-weight: bold; }
 .cplu,.cmin { font-size:8pt; }
 .cplu {color:red;cursor:n-resize} .cplu:before { content:'+'} .cplu:after { content:'  '}
