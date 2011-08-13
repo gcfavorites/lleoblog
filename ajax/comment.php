@@ -135,6 +135,16 @@ otprav($r.$rr);
 
 }
 //========================================================================================================================
+if($a=='paren') { // показать коммент
+	if(!$id) otprav('');
+        $p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0);
+        $opt=ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='".$p['DateID']."'","_1"); $GLOBALS['opt']=mkzopt($opt);
+otprav("
+mkdiv('show_parent',\"".njs(comment_one($p, getmojno_comm($p['DateID']),0 ))."\",'popup');
+posdiv('show_parent',mouse_x+10,mouse_y);
+");
+}
+//========================================================================================================================
 if($a=='plus') { // поставить плюсик
 	if(!$unic) otprav("А у вас всегда куки отключены?");
         $p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0); if($p['unic']==$unic) idie("Не слишком ли самонадеянно?");
