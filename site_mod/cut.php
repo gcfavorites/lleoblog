@@ -27,7 +27,7 @@ function cut($e) {
 
 	if(preg_match("/^\s*\[(.*?)\]([^\]].*?)$/si",$e,$m)) { $e=c($m[2]); $text=$m[1]; }
 
-	if(strstr($e,"\n")||stristr($e,'<p')) { if(!isset($text)) $text="[показать&nbsp;спрятанное]"; $tag="div"; $display="block"; }
+	if(strstr($e,"\n")||stristr($e,'<p')||stristr($e,'<div')) { if(!isset($text)) $text="[показать&nbsp;спрятанное]"; $tag="div"; $display="block"; }
 	else { if(!isset($text)) $text="[...]"; $tag="span"; $display="inline";	}
 
 	return "<$tag class=".$cut." onclick=\"cut(this,'$display')\">$text</$tag><$tag style='display:none'>$e</$tag>";
