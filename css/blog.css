@@ -43,7 +43,7 @@ padding: 20px 0; border-left: green 2px solid; border-collapse:collapse; }
 /* рамка форм - мне так нравится */
 .t { border: 1px solid #330000; }
 .r { font-size: 12px; }
-.l,.ll { cursor: pointer; color: blue; text-decoration: underline; } .ll { display: inline; }
+.l,.ll { cursor: pointer; color: blue; text-decoration: underline; } .ll,.il { display: inline; }
 .l:hover,.ll:hover { color: violet; }
 .kr:hover,.kus:hover,.kd:hover,.ked:hover,.ks0:hover,.ks1:hover,.ka:hover,.ko1:hover,.ko0:hover,.kou:hover
  { color: violet; }
@@ -61,18 +61,25 @@ padding: 20px 0; border-left: green 2px solid; border-collapse:collapse; }
 .opc, .cnam, .rul1,.rul0 {cursor: pointer}
 .rul1,.rul0,.cplu,.cmin,.kmail {float:left}
 
-.c0, .c1, .c2, .c3 { font: 80% sans-serif, Helvetica, Arial, Verdana; max-width: 80%; border: 1px dotted #bbb;
-overflow: auto; padding: 0 0 0 5px; margin-top: 5px; }
+.c0, .c1, .c2, .c3 { font: 80% sans-serif, Helvetica, Arial, Verdana; max-width: 80%; border: 1px solid #bbb;
+-box-shadow: #888 5px 5px 5px;
+-moz-box-shadow: #888 5px 5px 5px;
+-webkit-box-shadow: #888 5px 5px 5px;
+-border-radius-topleft:0.8em;-moz-border-radius-topleft:0.8em;-webkit-border-radius-topleft:0.8em;
+-border-radius-topright:0.8em;-moz-border-radius-topright:0.8em;-webkit-border-radius-topright:0.8em;
+-border-radius-bottomleft:0.8em;-moz-border-radius-bottomleft:0.8em;-webkit-border-radius-bottomleft:0.8em;
+-border-radius-bottomright:0.8em;-moz-border-radius-bottomright:0.8em;-webkit-border-radius-bottomright:0.8em;
+overflow: auto; padding: 0.4em 0.4em 0.4em 0.4em; margin: 0.4em 0 0 0.4em; }
 
 .c0 { background-color: #AAFAFA; }
 .c1, .opc { background-color: #F1F1F1; }
-.c2 { background-color: #FFFBDF; border: 1px dotted red; }
-.c3 { background-color: #ffe; border: 1px dotted red; }
+.c2 { background-color: #FFFBDF; border: 1px solid red; }
+.c3 { background-color: #ffe; border: 1px solid red; }
 
 .ctxt { padding: 5pt; overflow: auto; text-align: justify; }
 
-
 .ctim, .cbro, .cwho { font-size: 8pt; position: relative; margin-left: 10pt; top: 0px; float: right; }
+
 .kn { font-size: 8pt; position: relative; float: left; }
 
 .cnam { font-size: 12pt; font-weight: bold; }

@@ -27,7 +27,7 @@ color: #000000; position:relative;
 .r { font-size: 12px; }
 .l,.ll,.l0,.ll0 { cursor: pointer; color: blue;}
 .l,.ll { text-decoration: underline; }
-.ll,.ll0 { display: inline; }
+.ll,.ll0,.il { display: inline; }
 .l:hover,.ll:hover,.l0:hover,.ll0:hover { color: #F0A0B0; }
 .kr:hover,.kus:hover,.kd:hover,.ked:hover,.ks0:hover,.ks1:hover,.ka:hover,.ko1:hover,.ko0:hover,.kou:hover
  { color: violet; }
@@ -44,22 +44,29 @@ color: #000000; position:relative;
 .opc, .cnam, .rul1,.rul0 {cursor: pointer}
 .rul1,.rul0,.cplu,.cmin,.kmail {float:left}
 
-.c0, .c1, .c2, .c3 { font: 80% sans-serif, Helvetica, Arial, Verdana; max-width: 80%; border: 1px dotted #bbb;
-overflow: auto; padding: 0 0 0 5px; margin-top: 5px; }
+.c0, .c1, .c2, .c3 { font: 80% sans-serif, Helvetica, Arial, Verdana; max-width: 80%; border: 1px solid #bbb;
+-box-shadow: #888 5px 5px 5px;
+-moz-box-shadow: #888 5px 5px 5px;
+-webkit-box-shadow: #888 5px 5px 5px;
+-border-radius-topleft:0.8em;-moz-border-radius-topleft:0.8em;-webkit-border-radius-topleft:0.8em;
+-border-radius-topright:0.8em;-moz-border-radius-topright:0.8em;-webkit-border-radius-topright:0.8em;
+-border-radius-bottomleft:0.8em;-moz-border-radius-bottomleft:0.8em;-webkit-border-radius-bottomleft:0.8em;
+-border-radius-bottomright:0.8em;-moz-border-radius-bottomright:0.8em;-webkit-border-radius-bottomright:0.8em;
+overflow: auto; padding: 0.4em 0.4em 0.4em 0.4em; margin: 0.4em 0 0 0.4em; }
 
 .c0 { background-color: #AAFAFA; }
 .c1, .opc { background-color: #F1F1F1; }
-.c2 { background-color: #FFFBDF; border: 1px dotted red; }
-.c3 { background-color: #ffe; border: 1px dotted red; }
+.c2 { background-color: #FFFBDF; border: 1px solid red; }
+.c3 { background-color: #ffe; border: 1px solid red; }
 
 .ctxt { padding: 5pt; overflow: auto; text-align: justify; }
-
-.ctim, .cbro, .cwho { font-size: 8pt; position: relative; margin-left: 10pt; top: 0px; float: right; }
+.cwho,.ctim,.cbro { font-size: 8pt; display:inline; margin-left: 10pt; top: 0px; position: relative; float: right; }
+/*.cwho { font-size: 8pt; display: inline; margin-left: 10pt; top: 0px;  }*/
 .kn { font-size: 8pt; position: relative; float: left; }
 
+.cnam,.cplu,.cmin { display:inline; }
 .cnam { font-size: 12pt; font-weight: bold; }
-
-.cplu,.cmin { font-size:8pt }
+.cplu,.cmin { font-size:8pt; }
 .cplu {color:red;cursor:n-resize} .cplu:before { content:'+'} .cplu:after { content:'  '}
 .cmin {color:blue;cursor:s-resize} .cmin:before { content:'-'} .cmin:after { content:'  '}
 .kmail:after { content: ' 'url(/blog/design/e2/kmail.png)' ' }
