@@ -143,6 +143,6 @@ function print_headerp($p) {
 }
 
 
-function print1($p) { $level=($p['Parent']!=0?'4':'0');	return comment_one($p,0,$level); }
+function print1($p) { $level=($p['Parent']!=0?'-4':'0'); return comment_one($p,0,$level); }
 
 ?>

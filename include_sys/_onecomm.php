@@ -7,7 +7,10 @@ if(!isset($GLOBALS['comments_on_page'])) $GLOBALS['comments_on_page']=0;
 $GLOBALS['comment_tmpl']=file_get_contents($GLOBALS['file_template'].(empty($template)?"comment_tmpl.htm":$template));
 $GLOBALS['browsers']=array('Linux'=>'Linux','Windows'=>'Windows','NokiaE90'=>'Nokia-E90','Mac OS X'=>'Mac','FreeBSD'=>'FreeBSD','Ubuntu'=>'Ubuntu','Debian'=>'Debian','Firefox'=>'Firefox','Opera'=>'Opera','Safari'=>'Safari','MSIE'=>'IE','Konqueror'=>'Konqueror','Chrome'=>'Chrome');
 
-function comment_one($p,$mojno_comm,$level=false) { $lev=$level*$GLOBALS['comment_otstup'];
+function comment_one($p,$mojno_comm,$level=false) {
+	if($level<0) { $level=-$level; $par=1; } else $par=0;
+
+	$lev=$level*$GLOBALS['comment_otstup'];
 
 	if($p['Time']==0 && $level!==false) // удаленный комментарий
 		return "<div id=".$p['id']." name=".$p['id']." class='cdel' style='margin-left:".$lev."px'></div>";
@@ -15,6 +18,7 @@ function comment_one($p,$mojno_comm,$level=false) { $lev=$level*$GLOBALS['commen
 	if(($c=comment_prep($p,$mojno_comm,$level))===false) return ''; // подготовить данные
 	
 	$tmpl=$GLOBALS['comment_tmpl'];
+	if($par) $tmpl="#".$tmpl;
 
 if($level!==false) $tmpl="<div id={id} name={id} class={commclass} style='margin-left:".$lev."px'>".$tmpl."</div>";
 
