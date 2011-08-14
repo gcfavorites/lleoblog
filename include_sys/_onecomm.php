@@ -19,8 +19,9 @@ function comment_one($p,$mojno_comm,$level=false) {
 	
 	$tmpl=$GLOBALS['comment_tmpl'];
 
-$c['paren']=($par?"<img onmouseout=\"clean('show_parent')\" onmouseover=\"majax('comment.php',{a:'paren',id:".$p['Parent']."})\" style='float:left;display:inline;margin-right:10pt;' src='".$GLOBALS['www_design']."e3/kontact_journal.png'>":'');
-//$c['paren']=($par?"<div style='float:left;display:inline;'>###&nbsp;</div>":'');
+$c['paren']=($par?
+"<img onmouseout=\"clean('show_parent')\" onmouseover=\"majax('comment.php',{a:'paren',id:".$p['Parent']."})\" style='float:left;display:inline;margin-right:10pt;' src='".$GLOBALS['www_design']."e3/kontact_journal.png'>"
+:'');
 
 if($level!==false) $tmpl="<div id={id} name={id} class={commclass} style='margin-left:".$lev."px'>".$tmpl."</div>";
 
