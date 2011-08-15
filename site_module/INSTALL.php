@@ -25,73 +25,15 @@
 // idie('#'.$GLOBALS['admin']);
 
 //----------------------------
-
-
-$GLOBALS['selectjs']="
-i_all=function(){
-var p=idd('packs').getElementsByTagName('div');
-for(var k=0,i=0;i<p.length;i++){ var dc=p[i].className.split(' ');
-	if(typeof dc[1] != 'undefined' && dc[1].substring(0,2)=='ii'){ if(k==0) k=dc[1]=='ii1'?'ii0':'ii1'; i_d(p[i],k); }
-	}
-};
-
-i_d=function(e,k){ var dc=e.className.split(' ');
-	if(typeof k == 'undefined') dc[1]=dc[1]=='ii1'?'ii0':'ii1'; else dc[1]=k;
-	e.className=dc.join(' ');
-	var p=getElementsByClass(dc[0]);
-	for(var i=1;i<p.length;i++) { var c=p[i].className.split(' ');
-		if(dc[1]=='ii0') c[2]='ii0';
-		else { if(c.length>2) { delete c[2]; c.length=2; } }
-		p[i].className=c.join(' ');
-	}
-};
-
-i_f=function(e){ var c=e.className.split(' ');
-	if(c.length>2) { delete c[2]; c.length=2; } else c[2]='ii0';
-	e.className=c.join(' ');
-};
-";
-//--------------------------------------------------------------------------------
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
 
 if(sizeof($_POST)!=0 && !empty($_POST['post_act'])) { $a=$_POST['post_act'];
+	include_once($GLOBALS['include_sys'].'install_update.php');
 
-	// безопасность: проверка ключа инсталл€ции
-	$key=file_get_contents($GLOBALS['filehost'].'binoniq/instlog/install_key.php');
-	$key=preg_replace("/^.+?\"([0-9a-z]{40})\".+?$/si","$1",$key);
-	if($key!=$_POST['key']) die("ohelpc('install2','post',\"error key\");");
+	if(!UPDATE_testkey($_POST['key'])) die("ohelpc('install2','post',\"error key\");"); // безопасность: ключ инсталл€ции
 
-if($a=='check_pack') {
-
-	$r=unserialize(urldecode($_POST['ara']));
-
-	$s=''; $otstup=''; $lastdir='';
-
-	foreach($r as $l) { list($file,$val)=explode(' ',$l,2);
-	$f=explode(':',$file,3);
-		if(sizeof($f)==1) { // это файл
-			$ff=$GLOBALS['filehost'].$file;
-			$filename=basename($file);
-                        $dirname=dirname($file).'/';
-			$otstup=str_repeat('†',substr_count($file,'/')*10);
-
-			if(!is_file($ff)) $ac='iia'; // add
-			else {
-				list($ftime,$fkey)=explode(' ',$val,2);
-//				if($ftime==filemtime($ff)) continue; // все с файлом нормалек
-				//else 
-				$ac='iiu'; // upgrade
-			}
-
-			if($dirname!=$lastdir) { $s.="<div class=\"$dirname ii1\" onclick='i_d(this)'>".$dirname."</div>"; $lastdir=$dirname; }
-
-			$s.="<div>".str_repeat('†',strlen($dirname))
-			."<span id='e_$file' class=\"$dirname $ac\" onclick='i_f(this)'>".$filename."</span></div>";
-
-		} elseif($f[0]=='config') { // это конфиг
-		} elseif($f[0]=='lang') { // это €зык
-		}
-	}
-
+if($a=='check_pack') { // выбор файлов дл€ инсталл€ции
+	$s=UPDATE_select(urldecode($_POST['ara']));
 	die($GLOBALS['selectjs']."ohelpc('install2','post',\"".njsn("<tt>$s</tt>")."\");");
 }
 
@@ -833,7 +775,5 @@ function get_my_pack($dir) { $s="my: "; // если есть сво€ папка с пакетами
 ."<span title='System dir' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'edit_file',file:'".$dir."system_dir.txt'})\" style='margin-left:20px'>system_dir</span>";
 	return $s;
 }
-
-
 
 ?>
