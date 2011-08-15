@@ -86,7 +86,7 @@ ljpost:notfound	Такой заметки нет!
 ljpost:notlogpas	В config.php пропишите логин и пароль LJ:<br>$admin_ljuser='lleo-kaganov';<br>$admin_ljpass='vd1gTH6s';
 ljpost:error	При постинге в LiveJournal произошла ошибка:
 ljpost:hsuccess		готово
-ljpost:postdone		Заметка доступна в LiveJournal по адресу:<br><a href='{0}'>{0}</a>
+ljpost:postdone		Заметка доступна в LiveJournal по адресу:<br><a href='{0}' target='_blank'>{0}</a>
 ljpost:confirm		Запостить эту заметку в LiveJournal?
 
 comm:ostalnye		 остальные

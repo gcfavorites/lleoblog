@@ -484,7 +484,7 @@ function POST_file($filePath,$urla,$ara,$port=80,$scheme='http',$charset='Window
                 $files[$l]=$fh;
         }
 
-        $headers="POST ".$urla." HTTP/1.0".$r
+        $headers="POST ".$url['path']." HTTP/1.0".$r
         ."Host: ".$url['host'].$r
         ."Referer: ".$url['host'].$r
         ."Content-type: multipart/form-data, boundary=".$bu.$r

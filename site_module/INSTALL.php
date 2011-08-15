@@ -61,6 +61,7 @@ if(sizeof($_POST)!=0 && !empty($_POST['post_act'])) { $a=$_POST['post_act'];
 	if($key!=$_POST['key']) die("ohelpc('install2','post',\"error key\");");
 
 if($a=='check_pack') {
+
 	$r=unserialize(urldecode($_POST['ara']));
 
 	$s=''; $otstup=''; $lastdir='';
@@ -241,7 +242,14 @@ http://lleo.me/dnevnik Stable
 http://lleo.me Super Stable
 http://binoniq.net Server Stable");
 
+
 	$select_serv=fileget_save($dir."my_server.txt","http://lleo.me/blog\n+basic");
+
+// ЗЕНОНЗАЕБАЛ!!!!!11
+if( ($l=str_replace('lleo.aha.ru','lleo.me',$serv)) != $serv) { fileput($dir."servers.txt",$l); $serv=$l; }
+if( ($l=str_replace('lleo.aha.ru','lleo.me',$select_serv)) != $select_serv) { fileput($dir."my_servers.txt",$l); $select_serv=$l; }
+// ЗЕНОНЗАЕБАЛ!!!!!11
+
 	$select_serv=explode("\n",$select_serv);
 
 	$o=array(); foreach(explode("\n",$serv) as $l) { $l=trim($l,"\n\r\t "); if($l=='') continue;
@@ -394,6 +402,7 @@ if($a=='install_far_check') { // отправить запрос на проверку
 		if($l=='config.php.tmpl') { $r=array_merge(getconf($url),$r); } // обрабюотать конфиг
 		if(getras($l)=='lang') { $r=array_merge(getlang($url),$r); unset($r[$n]); } // обрабюотать язык
 	}
+
 	return POST_file('',RE('url')."install",array('post_act'=>'check_pack','key'=>RE('key'),'ara'=>serialize($r)));
 }
 
@@ -541,15 +550,15 @@ function config_name(){ global $ajax,$filehost;
 }
 
 // сгенерировать hash-строку
-function rando($x,$y){ $s=''; $k=10;
-	while((--$k)&&!strlen($s)){ if(($g=fopen("/dev/random","rb"))===false) break; $s=fgets($g); fclose($g); }
+function rando($x,$y){ $s='';
+//	$k=10; while((--$k)&&!strlen($s)){ if(($g=fopen("/dev/random","rb"))===false) break; $s=fgets($g); fclose($g); }
 	if(!strlen($s)) { // /dev/random не сработал, вернуть традиционным образом
 		list($t,)=explode(" ",microtime()); mt_srand($t+mt_rand()); $a=mt_rand(0,$y)+$t;
 	} else { for($f=1,$a=$j=0;$j<min(strlen($s),3);$j++,$f*=256) $a+=ord($s[$j])*$f; }
 	return $x+$a%($y-$x);
 }
 
-function hash_generate(){
+function hash_generate(){ // idie('5');
 	$A='ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz01234567890';
 	for($s='',$i=0,$n=strlen($A);$i<128;$i++) $s.=$A[rando(0,$n)]; return $s; //convert_uuencode($s);
 }
@@ -683,7 +692,7 @@ function testdir($s) { $a=explode('/',rtrim($s,'/')); $s=''; for($i=0;$i<sizeof(
 
 // turn sendFile($url['host'],$url['port'],$to,$b,basename($b), "oo", $ara);
 
-
+/*
 //==================================================================================================
 // процедура передачи данных и файлов через POST-запрос по старинке без всяких там уебищных CURL-библиотек
 // $filePath - полное имя (с путем) файла для передачи или массив имен файлов для передачи (если файлы не передаются - '')
@@ -691,7 +700,11 @@ function testdir($s) { $a=explode('/',rtrim($s,'/')); $s=''; for($i=0;$i<sizeof(
 // $ara - массив переменных POST, напр: array('action'=>'do','key'=>'1','user'=>123)
 // возвравщает ответ сервера или, если ошибка, строку, начинающуюся с 'ERROR:'
 function POST_file($filePath,$urla,$ara,$port=80,$scheme='http',$charset='Windows-1251') {
-	if(gettype($filePath)!='array') $filePath=array($filePath);
+
+unset($ara['ara']);
+
+// return print_r($ara,1);
+
 	$url=array_merge(array('scheme'=>$scheme,'port'=>$port),parse_url($urla));
 	$bu="---------------------".substr(md5($filePath.rand(0,32000)),0,10); $r="\r\n"; $ft=$r.'--'.$bu.'--'.$r;
 
@@ -719,6 +732,8 @@ function POST_file($filePath,$urla,$ara,$port=80,$scheme='http',$charset='Window
 	.$r
 	.$dat;
 
+
+
 	// открыть хост
 	if(!$fp=fsockopen($url['host'],$url['port'])) return "ERROR: can't open url ".$url['host'].":".$url['port'];
 	// запихнуть заголовок и POST-массив
@@ -734,11 +749,82 @@ function POST_file($filePath,$urla,$ara,$port=80,$scheme='http',$charset='Window
 		if(fputs($fp,$ft)===false) return "ERROR: can't send #5";
 	}
 
+return '1234 '.$headers;
+
 	// и получить ответ
 	$s=''; while(!feof($fp)) $s.=fgets($fp,4096); fclose($fp);
 	if($s=='') return "ERROR: NO RESPONSE";
+
+return $s;
+
 	list($h,$t)=explode($r.$r,$s,2); return $t;
 }
+*/
+
+//==================================================================================================
+// процедура передачи данных и файлов через POST-запрос по старинке без всяких там уебищных CURL-библиотек
+// $filePath - полное имя (с путем) файла для передачи или массив имен файлов для передачи (если файлов нет - '')
+// $urla - адрес запроса, напр. http://lleo.aha.ru/blog/install
+// $ara - массив переменных POST, напр: array('action'=>'do','key'=>'1','user'=>123)
+// возвращает ответ сервера или, если ошибка, строку, начинающуюся с 'ERROR:'
+function POST_file($filePath,$urla,$ara,$port=80,$scheme='http',$charset='Windows-1251') {
+        if(gettype($filePath)!='array') $filePath=array($filePath);
+        $url=array_merge(array('scheme'=>$scheme,'port'=>$port),parse_url($urla));
+        $bu="---------------------".substr(md5($filePath.rand(0,32000)),0,10); $r="\r\n"; $ft=$r.'--'.$bu.'--'.$r;
+
+        // данные
+        $dat=''; if(count($ara)) foreach($ara as $n=>$v) $dat.='--'.$bu.$r.'Content-Disposition: form-data; name="'.$n
+.'"'.$r.$r.urlencode($v).$r;
+
+        $len=strlen($dat); // общая длина
+
+        $files=array(); $k=0; foreach($filePath as $l) { if(empty($l)) continue;
+                if(!is_file($l)) return "ERROR: file not found '$l'";
+                $fh='--'.$bu.$r
+                .'Content-Disposition: form-data; name="file'.(++$k).'"; filename="'.urlencode(basename($l)).'"'.$r
+                .'Content-Type: '.$charset.$r
+                .$r;
+
+                $len+=strlen($fh.$ft)+filesize($l);
+                $files[$l]=$fh;
+        }
+
+        $headers="POST ".$url['path']." HTTP/1.0".$r
+        ."Host: ".$url['host'].$r
+        ."Referer: ".$url['host'].$r
+        ."Content-type: multipart/form-data, boundary=".$bu.$r
+        ."Content-length: ".$len.$r
+        .$r
+        .$dat;
+
+        // открыть хост
+        if(!$fp=fsockopen($url['host'],$url['port'])) return "ERROR: can't open url ".$url['host'].":".$url['port'];
+        // запихнуть заголовок и POST-массив
+        if(fputs($fp,$headers)===false) return "ERROR: can't send #1";
+
+        if(count($files)) foreach($files as $l=>$fh) { // позапихивать файлы
+                if(fputs($fp,$fh)===false) return "ERROR: can't send #2";
+                // открыть файл и запихнуть его
+                if(($fp2=fopen($l,"rb"))===false) return "ERROR: can't open file '".$l."'";
+                while(!feof($fp2)) if(fputs($fp,fgets($fp2,1024*100))===false) return "ERROR: can't send #4";
+                fclose($fp2);
+                // запихнуть заключительный хедер
+                if(fputs($fp,$ft)===false) return "ERROR: can't send #5";
+        }
+
+        // и получить ответ
+        $s=''; while(!feof($fp)) $s.=fgets($fp,4096); fclose($fp);
+        if($s=='') return "ERROR: NO RESPONSE";
+        list($h,$t)=explode($r.$r,$s,2);
+
+        // обработка переноса
+        if(stristr($h,'301 Moved Permanently')) {
+                return POST_file($filePath,preg_replace("/^.+Location: ([^\s]+).*$/si","$1",$h),$ara);
+        }
+
+return $t;
+}
+//==================================================================================================
 //==================================================================================================
 
 function get_my_pack($dir) { $s="my: "; // если есть своя папка с пакетами
