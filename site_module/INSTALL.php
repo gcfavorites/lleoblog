@@ -228,35 +228,38 @@ ohelpc('install','Select server',\"".njsn($s)."\");";
 }
 
 if($a=='install_edit_pack') { // форма редактирования пакета или создания нового (name='')
-	$name=RE('name'); $s=''; $otstup=''; $lastdir='';
+	include_once($GLOBALS['include_sys'].'install_update.php');
+	$name=RE('name'); $s="<table><tr><td>edit:";
 
 	$p=array(); if($name!='' && ($r=file($dir."instpack/".$name.".pack"))!==false) {
 		foreach($r as $l) { $m=explode(' ',$l); $p[$m[0]]=array($m[1],$m[2]); } // [0] => template/adminpanel.htm 1303587256 d866bd70d3d53450fd3b82243d32fe36
 	}
 
-	foreach(get_dfiles() as $l) { list($file,$ftime,$fkey)=explode(' ',$l,3);
-		$ff=$GLOBALS['filehost'].$file;
-		$filename=basename($file);
-		$dirname=dirname($file).'/';
-		$otstup=str_repeat(' ',substr_count($file,'/')*10);
-		if($name=='') $ac='iia'; // add
-		else $ac=(isset($p[$file])?'iia':'iia ii0');
-		
-		if($dirname!=$lastdir) { $s.="<div class=\"$dirname ii1\" onclick='i_d(this)'>".$dirname."</div>"; $lastdir=$dirname; }
-		$s.="<div>".str_repeat(' ',strlen($dirname))
-		."<span id='e_$file' class=\"$dirname $ac\" onclick='i_f(this)'>".$filename."</span></div>";
-	}
+	//-----
+	$lastdir=''; foreach(get_dfiles() as $l) { list($file,$ftime,$fkey)=explode(' ',$l,3);
+	$fhost=$GLOBALS['filehost'].$file; // физический файл
+	$fname=basename($file); // его имя
+	$fdir=dirname($file).'/'; // имя папки
+	if($fdir!=$lastdir){ $s.="</td></tr></table><table><tr valign=top><td><b>$fdir</b></td><td>"; $lastdir=$fdir; }
 
-$subm="<input type='button' value='Save' onclick='packsave()'>"
-."&nbsp; &nbsp; <span class='ll' onclick=\"i_all()\">select</span>"
+	if(isset($p[$file])) $o='U'; else $o='D';
+	$s.="<div>".$o.$fname."</div>";
+	}
+	$s="<div id='i_selectfiles'>$s</td></tr></table></div>";
+	//-----
+
+$subm="<input type='button' value='Save' onclick='i_packsave()'>"
+."&nbsp; &nbsp; <span class='ll' onclick=\"i_selectall()\">select</span>"
 ."&nbsp; &nbsp; <span class='ll' onclick=\"packdel()\">delete</span>";
 
 	return $GLOBALS['selectjs']."
 
+i_selectmode='color';
+
 packdel=function(){ if(confirm('Delete pack `".$name.".pack`?')) majax('module.php',{mod:'INSTALL',a:'install_pack_del',name:idd('newpack_name').value}); };
-packsave=function(){ var p=idd('packs').getElementsByTagName('span'); var s='';
-for(var i=0;i<p.length;i++){ if(p[i].className.split(' ').length<=2) s=s+'\\n'+p[i].id.substring(2); }
-majax('module.php',{mod:'INSTALL',a:'install_pack_save',s:s,name:idd('newpack_name').value});
+
+i_packsave=function(){
+	majax('module.php',{mod:'INSTALL',a:'install_pack_save',s:i_get_selected(),name:idd('newpack_name').value});
 };
 
 ohelpc('pack','Edit pack',\"".njsn(
@@ -341,8 +344,8 @@ if($a=='install_far_check') { // отправить запрос на проверку
 	foreach(explode(' ',trim(RE('pack'))) as $l) $r=getpack($l,$r);
 	$o=$r;
 	foreach($o as $n=>$l) { list($l,)=explode(' ',$l,2); $url=$GLOBALS['filehost'].$l;
-		if($l=='config.php.tmpl') { $r=array_merge(getconf($url),$r); } // обрабюотать конфиг
-		if(getras($l)=='lang') { $r=array_merge(getlang($url),$r); unset($r[$n]); } // обрабюотать язык
+		if($l=='config.php.tmpl') { $r=array_merge(getconf($url),$r); } // обработать конфиг
+		if(getras($l)=='lang') { $r=array_merge(getlang($url),$r); unset($r[$n]); } // обработать язык
 	}
 
 	return POST_file('',RE('url')."install",array('post_act'=>'check_pack','key'=>RE('key'),'ara'=>serialize($r)));
