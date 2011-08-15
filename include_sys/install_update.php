@@ -3,6 +3,56 @@
 //--------------------------------------------------------------------------------
 // ФУНКЦИИ УПДЕЙТОВ
 
+$GLOBALS['selectjs']="
+
+i_submit=function(e){ var ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
+	for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue;
+	dir=td1.firstChild.innerHTML;
+	ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ e=ee[j];
+			var v=e.innerHTML.replace(/^<br>/g,'').replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1');
+			if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
+			s=s+'<br>'+dir+v+' | ';
+			if(e.style.textDecoration=='none') { s=s+e.style.color; }
+			else s=s+'------';
+		}
+	}
+	ohelpc('asd','sda',s);
+};
+
+i_sett=function(e,t){ e.style.cursor='pointer'; e.style.textDecoration='none'; e.setAttribute('tiptitle',t);
+	addEvent(e,'mouseover',function(){ idd('tip').innerHTML=this.getAttribute('tiptitle');
+	posdiv('tip',mouse_x+10,mouse_y+10); });
+	addEvent(e,'mouseout',function(){ zakryl('tip') } );
+	addEvent(e,'mousemove',function(){ posdiv('tip',mouse_x+10,mouse_y+10) } );
+}
+
+go_install=function(){ var t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
+	for(var i=0;i<tr.length;i++){ var p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue;
+		var dir=td1.firstChild; dir.onclick=function(){i_chand(this)}; i_sett(dir,'Invert selected files');
+		var ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ var x=ee[j];
+			var l=x.innerHTML; var O=l.substring(0,1); l=l.substring(1,l.length);
+			x.setAttribute('myl',l); x.setAttribute('myO',O);
+			x.innerHTML='<br>'+l; x.onclick=function(){i_chan(this)}; x.style.display='inline';
+				if(O=='U') { c='green'; t='update'; }
+				else if(O=='D') { c='red'; t='del'; }
+				else { c='magenta'; t='unk'; }
+			x.style.color=c; i_sett(x,t);
+}}};
+
+setTimeout(go_install,500);
+
+i_chand=function(e){ var p=e.parentNode.nextSibling.getElementsByTagName('DIV'); for(var i=0;i<p.length;i++) i_chan(p[i]) };
+
+i_chan=function(e){ 
+	if(e.style.textDecoration=='none'){ e.style.textDecoration='line-through';
+		e.innerHTML=e.innerHTML.replace(/^<br>(.+?)$/g,'<br>&nbsp;&nbsp;$1&nbsp;&nbsp;');
+	}else{ e.style.textDecoration='none';
+		e.innerHTML=e.innerHTML.replace(/\&nbsp;/g,' ').replace(/^<br> +(.+?) +$/g,'<br>$1');
+	}
+};
+";
+
+
 function UPDATE_testkey($key){ // безопасность: проверка ключа инсталляции
 	$k=file_get_contents($GLOBALS['filehost'].'binoniq/instlog/install_key.php');
 	$k=preg_replace("/^.+?\"([0-9a-z]{40})\".+?$/si","$1",$k);
@@ -75,54 +125,6 @@ function UPDATE_select($rrr) { $r=unserialize($rrr); // return "<pre>".print_r($
 	}
 //=========================================================
 
-$GLOBALS['selectjs']="
-
-i_submit=function(e){ var ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
-	for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue;
-	dir=td1.firstChild.innerHTML;
-	ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ e=ee[j];
-			var v=e.innerHTML.replace(/^<br>/g,'').replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1');
-			if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
-			s=s+'<br>'+dir+v+' | ';
-			if(e.style.textDecoration=='none') { s=s+e.style.color; }
-			else s=s+'------';
-		}
-	}
-	ohelpc('asd','sda',s);
-};
-
-i_sett=function(e,t){ e.style.cursor='pointer'; e.style.textDecoration='none'; e.setAttribute('tiptitle',t);
-	addEvent(e,'mouseover',function(){ idd('tip').innerHTML=this.getAttribute('tiptitle');
-	posdiv('tip',mouse_x+10,mouse_y+10); });
-	addEvent(e,'mouseout',function(){ zakryl('tip') } );
-	addEvent(e,'mousemove',function(){ posdiv('tip',mouse_x+10,mouse_y+10) } );
-}
-
-go_install=function(){ var t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
-	for(var i=0;i<tr.length;i++){ var p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue;
-		var dir=td1.firstChild; dir.onclick=function(){i_chand(this)}; i_sett(dir,'Select/Unselest all files');
-		var ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ var x=ee[j];
-			var l=x.innerHTML; var O=l.substring(0,1); l=l.substring(1,l.length);
-			x.setAttribute('myl',l); x.setAttribute('myO',O);
-			x.innerHTML='<br>'+l; x.onclick=function(){i_chan(this)}; x.style.display='inline';
-				if(O=='U') { c='green'; t='update'; }
-				else if(O=='D') { c='red'; t='del'; }
-				else { c='magenta'; t='unk'; }
-			x.style.color=c; i_sett(x,t);
-}}};
-
-setTimeout(go_install,500);
-
-i_chand=function(e){var p=e.parentNode.nextSibling.getElementsByTagName('DIV');for(var i=0;i<p.length;i++) i_change(p[i]) };
-
-i_chan=function(e){ 
-	if(e.style.textDecoration=='none'){ e.style.textDecoration='line-through';
-		e.innerHTML=e.innerHTML.replace(/^<br>(.+?)$/g,'<br>&nbsp;&nbsp;$1&nbsp;&nbsp;');
-	}else{ e.style.textDecoration='none';
-		e.innerHTML=e.innerHTML.replace(/\&nbsp;/g,' ').replace(/^<br> +(.+?) +$/g,'<br>$1');
-	}
-};
-";
 	return "<div id='i_selectfiles'>$s</td></tr></table></div>";
 }
 
