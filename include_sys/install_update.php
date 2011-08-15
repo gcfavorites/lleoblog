@@ -34,11 +34,13 @@ function UPDATE_select($rrr) { $r=unserialize($rrr);
 		$fdir=dirname($f).'/'; // имя папки
 
 		if($fdir!=$lastdir){
-			$s.="</td></tr></table><table><tr valign=top><td>$fdir</td><td>";
+			$s.="</td></tr></table><table><tr valign=top><td><b>$fdir</b></td><td>";
 			$lastdir=$fdir;
 			// <div class=\"$dirname ii1\" onclick='i_d(this)'>".$dirname."</div>";
 		}
-		$s.="<br>$fname";
+		if(is_file($fhost)) $o='A';
+		else $o='U';
+		$s.="<div>".$o.$fname."</div>";
 	}
 
 
@@ -72,11 +74,66 @@ function UPDATE_select($rrr) { $r=unserialize($rrr);
 
 */
 
+// nextSibling
+// previousSibling
+// firstChild
+// lastChild
+/*
+
+className.split(' ');
+        if(typeof dc[1] != 'undefined' && dc[1].substring(0,2)=='ii'){ if(k==0) k=dc[1]=='ii1'?'ii0':'ii1'; i_d(p[i],k); }
+        }
+
+alert(p.length);
+
+for(var k=0,i=0;i<p.length;i++){ var dc=p[i].className.split(' ');
+        if(typeof dc[1] != 'undefined' && dc[1].substring(0,2)=='ii'){ if(k==0) k=dc[1]=='ii1'?'ii0':'ii1'; i_d(p[i],k); }
+        }
+
+
+		td1.style.backgroundColor='#ccc';
+
+
+*/
+
 $GLOBALS['selectjs']="
 
 i_seldir=function(e){ alert(e.tagName); };
 
-go_install=function(){alert(2230);};
+go_install=function(){ var tr=idd('i_selectfiles').getElementsByTagName('TR');
+
+	for(var i=0;i<tr.length;i++){ var p=tr[i];
+		var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue;
+
+			var ee=td2.getElementsByTagName('DIV');
+			for(var j=0;j<ee.length;j++){ var pp=ee[j];
+				var l=pp.innerHTML; var O=l.substring(0,1);
+				pp.innerHTML=l.substring(1,l.length);
+				pp.onclick=function(){i_change(this)};
+				pp.style.display='inline';
+				pp.style.styleFloat='left';
+				if(O=='U') { pp.style.color='green'; var t='update'; }
+				else if(O=='A') { pp.style.color='red'; var t='del'; }
+				else { pp.style.color='magenta'; var t='unk'; }
+
+					pp.setAttribute('tiptitle',t);
+					addEvent(pp,'mouseover',function(){ idd('tip').innerHTML=this.getAttribute('tiptitle'); posdiv('tip',mouse_x+tip_x,mouse_y+tip_y); });
+					addEvent(pp,'mouseout',function(){ zakryl('tip') } );
+					addEvent(pp,'mousemove',function(){ posdiv('tip',mouse_x+10,mouse_y+10) } );
+				}
+
+			/* td1.style.fontWeight='bold'; td1.style.fontSize='28px;'; */
+	}
+	return;
+};
+
+setTimeout(go_install,500);
+
+i_getopt=function(e){ var c=e.style.color; return e.getAttribute('tiptitle'); };
+
+i_change=function(e){ alert(e.innerHTML+' '+i_getopt(e)); };
+
+
 
 i_all=function(){
 var p=idd('packs').getElementsByTagName('div');
