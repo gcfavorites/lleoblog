@@ -488,9 +488,10 @@ function mkzopt($p) { $o=unser($p['opt']); // сделать из $p массив опций и верну
 	return array_merge($p,$o);
 }
 
-function makeopt($r) { // создать массив opt из заданного массива и дефолта
-	$opt=array(); foreach($zopt_a as $n=>$l) { if(isset($r[$n]) && $r[$n]!='default') $opt[$n]=$r[$n]; }
-	return $opt;
+function makeopt($r,$i=0) { // создать массив opt из заданного массива и дефолта
+	$opt=array(); foreach($GLOBALS['zopt_a'] as $n=>$l) { if(isset($r[$n]) && $r[$n]!='default') $opt[$n]=$r[$n]; 
+	elseif($i) $opt[$n]=$l[0];
+	} return $opt;
 }
 
 function unser($p){ return empty($p)?array():unserialize($p); }

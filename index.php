@@ -89,7 +89,12 @@ if($path."/" == $wwwhost) {
  	redirect('http://natribu.org/?WWFuZGV4JSDy+yDt6PXz-yDt5SD36PLg5fj8IHJvYm90cy50eHQg6CDr5efl+Pwg6vPk4CDt5SDt4OTuLiDfIOTr-yDq7uPuIHJvYm90cy50eHQg7+jx4Os-JSDv8OXq8OD54Okg6O3k5erx6PDu4uDy-CDy6PLz6yDv5fDl4OTw5fHg9ujoIPLl7CDq7u3y5e3y7uwsIOru8u7w++kg7+4g7OXx8vMg7+Xw5eDk8OXx4Pbo6C4gx+Dl4eDrLCBZYW5kZXgsIPfl8fLt7uUg8evu4u4h');
  	}
 
-	if(isset($_GET['module'])) { $article=array('template'=>'module','num'=>0,'Date'=>h($mod_name)); ARTICLE(); }
+/*
+	if(isset($_GET['module'])) {
+		if(preg_match("/[^0-9a-z_\-\.\/]+/si",$mod_name)) idie("Error 404: wrong name \"<b>".h($mod_name)."</b>\"");
+		$mod_name=substr($path,strlen($wwwhost)); $mod_name=str_replace('..','.',$mod_name);
+		$article=array('template'=>'module','num'=>0,'Date'=>h($mod_name)); ARTICLE(); }
+*/
 
 	if(!empty($rootpage)) {
 		if(substr($rootpage,0,6)=='index.') { // index в базе дневника
@@ -151,8 +156,10 @@ OR `Date`='".e($mod_name)."/index.html'
 // и если совсем ничего не нашлось
 if(preg_match("/\.js/si",$mod_name)) die( ($admin?"alert('Admin $admin_name! Script not found:\\n".h($mypage)."')":"") ); // запрошен .js
 
+
 header("HTTP/1.1 404 Not Found");
 header("Status: 404 Not Found");
+
 $article=array('num'=>0,'Date'=>h($mod_name),'opt'=>ser(array('template'=>'error')));
 
 ARTICLE();

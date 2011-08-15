@@ -206,7 +206,7 @@ function removeEvent(e,evType,fn){
 
 function helps_cancel(id,f) { getElementsByClass('can',idd(id))[0].onclick=f; }
 function helpc(id,s) { helps(id,s); posdiv(id,-1,-1); }
-function ohelpc(id,z,s) { helpc(id,"<fieldset><legend>"+z+"</legend>"+s+"</fieldset"); }
+function ohelpc(id,z,s) { helpc(id,"<fieldset><legend>"+z+"</legend>"+s+"</fieldset>"); }
 function idie(s) { ohelpc('idie','Error',s) }
 
 function helps(id,s,pos) {
@@ -663,20 +663,27 @@ function get_pole_ara(w) { var k=0,ara={names:''}; var el=['input','textarea','c
 
 function nokey(){ hotkey=[]; mHelps['nokey']=1; }
 
-// function nokey(){ page_onstart.push("mHelps['nokey']=1;"); }
-
-
-/*
-
-function 
-
-
-var qara='\\\n\r\'\"';
-function q(s) { 
-
-return s.replace(/\\/g,'\\\\')
-.replace(/\\/g,'\\\\')
-.replace(/\\/g,'\\\\')
-.replace(/\n/g,'\\n')
-.replace(/\r/g,'')
-*/
+// ----------
+// функция постит объект-хэш content в виде формы с нужным action, target
+// напр. postToIframe({a:5,b:6}, '/count.php', 'frame1')
+function postToIframe(ara,url,iframeID){
+    if(typeof phonyForm == 'undefined'){ // временную форму создаем, если нет
+        phonyForm=document.createElement("form"); phonyForm.style.display="none";
+        phonyForm.enctype="application/x-www-form-urlencoded"; phonyForm.method="POST";
+        document.body.appendChild(phonyForm);
+    }
+    phonyForm.action=url; phonyForm.target=iframeID; phonyForm.setAttribute("target",iframeID);
+    // убить все содержание из временной формы
+    while(phonyForm.firstChild){ phonyForm.removeChild(phonyForm.firstChild); }
+    // заполнить форму данными из объекта
+    for(var x in ara){ var tn;
+        if(browser.isIE){
+	  tn=document.createElement("<input type='hidden' name='"+x+"' value='"+ara[x]+"'>"); phonyForm.appendChild(tn);
+        }else{
+            tn=document.createElement("input"); phonyForm.appendChild(tn);
+            tn.type="hidden"; tn.name=x; tn.value=ara[x];
+        }
+    }
+    phonyForm.submit();
+}
+// ----------

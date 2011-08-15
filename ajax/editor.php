@@ -1,6 +1,35 @@
 <?php // Редактор заметки
 
 include "../config.php";
+
+if(isset($_POST['a'])){ include $include_sys."_autorize.php";
+// - - -
+if($_POST['a']=='ljpost') { if(!$podzamok) idie("NE PODZAMOK!");
+	include_once $include_sys."ljpost.php"; // ето моя библиотечка ljpost
+ 	$lj=LJ_post($_POST['ljuser'],$_POST['ljpass'],wu($_POST['Header']),wu($_POST['s']),array('prop_opt_noemail'=>1));
+	if($lj['success']!='OK') dier($lj."<p><br>",LL('ljpost:error')); // Ошибка!
+	idie(LL('ljpost:postdone',$lj['url']),LL('ljpost:hsuccess'));
+
+/*
+	$p=$_POST; unset($p['a']); unset($p['names']); foreach($p as $n=>$l){ if($l=='default') unset($p[$n]); }
+	$p=array_merge(makeopt(array(),1),$p);
+	dier($p);
+
+	$s=prepare_Body($p);
+	// применить шаблон
+	if($p['ljpost_template']!='') $s=str_replace(array('{text}','{url}'),array($s,get_link($p['Date'])),$t);
+
+	include_once $include_sys."ljpost.php"; // ето моя библиотечка ljpost
+ 	$lj=LJ_post($admin_ljuser,$admin_ljpass,wu($p['Header']),wu($s),array('prop_opt_noemail'=>1));
+	if($lj['success']!='OK') dier($lj."<p><br>",LL('ljpost:error')); // Ошибка!
+	idie(LL('ljpost:postdone',$lj['url']),LL('ljpost:hsuccess'));
+*/
+
+}
+// - - -
+die('POST - end');
+}
+
 require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpRequest($wwwcharset);
 if(isset($_REQUEST['onload'])) otprav(''); // все дальнейшие опции будут запрещены для GET-запроса
 include $include_sys."_autorize.php"; // сперва JsHttpRequest, затем autorize
@@ -11,52 +40,31 @@ $num=RE0('num'); $idhelp='editor'.$num; $a=RE('a');
 
 
 
-
 //=================================== ljpost ===================================================================
+// - - - - -
 if($a=='ljpost') { AD();
-
 	if(empty($admin_ljuser) or empty($admin_ljpass)) idie(LL('ljpost:notlogpas'));
 	if(!$num) otprav("salert(\"".LL('ljpost:err0')."\",1000)"); // Сперва надо заметку сохранить!
-
 	if(($p=ms("SELECT `Date`,`Body`,`Header`,`opt` FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0))===false)
 		idie(LL('ljpost:notfound')); // Такой заметки нет!
 	$p=mkzopt($p);
-
-	include_once $include_sys."_modules.php";
-        $s=modules($p['Body']); // процедуры site
-	// произвести автоформатирование
-	if($p['autoformat']!='no') $s=str_replace(array("\n\n","\n"),($p['autoformat']=='p'?array("<p>","<br>"):array("<p class=pd>","<p class=d>")),"\n\n".str_replace("\n ","\n<p class=z>","\n".$s));
-
-$s=str_ireplace(array( // заменить классы на стили
-'<p class=d>',
-'<p class=pd>',
-'<p class=name>',
-'<p class=podp>',
-'<p class=z>',   
-'<p class=epigraf>',
-'<p class=epigrafp>'
-),array(
-'<p style="text-align:justify;text-indent:5%;margin-top:0pt;margin-bottom:0pt;">',
-'<p style="text-align:justify;text-indent:5%;margin-top:2%;margin-bottom:0pt;">',
-'<p style="text-indent:0pt;margin-top:4%;margin-bottom:6%;text-align:center;font-weight:bold;font-size:150%;">',
-'<p style="text-indent:0pt;margin-top:30pt;margin-bottom:12%;text-align:right;font-style:italic;">',
-'<p style="text-indent:0pt;margin-top:4%;margin-bottom:4%;text-align:center;font-weight:bold;font-size:100%;">',
-'<p style="text-indent:0pt;text-align:justify;margin-top:10pt;margin-bottom:0pt;margin-right:4%;margin-left:60%;font-size:80%;">',
-'<p style="text-indent:0pt;text-align:right;margin-top:0pt;margin-bottom:4%;margin-right:4%;margin-left:60%;font-size:80%;font-style:italic;">'
-),$s);
-
-	$mydir=$httphost.substr($p['Date'],0,(strlen($p['Date'])-strlen(strrchr($p['Date'],"/")))+1);
-	$s=preg_replace("/(<img[^>]+src\=[\'\"]*)([^\/\:]{4,})/si","$1".$mydir."$2",$s); // картинки поставить на места
+	$s=prepare_Body($p);
 
 	// применить шаблон
 	if(($t=ms("SELECT `text` FROM `site` WHERE `name`='ljpost_template'","_l"))!==false)
 		$s=str_replace(array('{text}','{url}'),array($s,get_link($p['Date'])),$t);
 
+	if(isset($server_matka)) {
+otprav("
+ohelpc('ljpost_post','LJ-post','<iframe width=500 height=200 id=iframeljpost name=iframeljpost></iframe>');
+postToIframe({a:'ljpost',ljuser:\"".$admin_ljuser."\",ljpass:\"".$admin_ljpass."\",Header:\"".njsn($p['Header'])
+."\",s:\"".njsn($s)."\"},'".$server_matka."/ajax/editor.php','iframeljpost');
+");
+}
+
 	include_once $include_sys."ljpost.php"; // ето моя библиотечка ljpost
  	$lj=LJ_post($admin_ljuser,$admin_ljpass,wu($p['Header']),wu($s),array('prop_opt_noemail'=>1));
-
 	if($lj['success']!='OK') dier($lj."<p><br>",LL('ljpost:error')); // Ошибка!
-
 	idie(LL('ljpost:postdone',$lj['url']),LL('ljpost:hsuccess'));
 }
 //=================================== nocomment ===================================================================
@@ -412,6 +420,13 @@ $s="
 get_edit_width=function(){ return Math.min(Math.floor(95*getWinW()/100),".(isset($editor_width)?$editor_width:999999)."); };
 get_edit_height=function(){ return Math.min(Math.floor(90*getWinH()/100),".(isset($editor_height)?$editor_height:999999)."); };
 
+ljpostpost=function(){
+	ohelpc('ljpost_post','LJ-post','<iframe width=500 height=200 id=iframeljpost name=iframeljpost></iframe>');
+	var ara=get_pole_ara('".$idhelp."'); if(ara===false) return ara;
+	ara['a']='ljpost';
+	postToIframe(ara,'http://lleo.me/blog/ajax/editor.php','iframeljpost');
+}
+
 if(f5s||jog) {
 interval_clipboard=function(e){
 	if(!idd(e+'_Body')) { eval('clearInterval(intervalID_'+e+')'); return; }
@@ -628,6 +643,37 @@ function pokaji_opt($opt,$def=1) { global $num,$zopt_a; $s=''; $i=0;
 	}
 
 return ($s==''?'':"<br><fieldset><legend>options</legend>$s</fieldset><p>");
+}
+
+
+//===============
+function prepare_Body($p) { global $httphost,$include_sys;
+	include_once $include_sys."_modules.php";
+        $s=modules($p['Body']); // процедуры site
+	// произвести автоформатирование
+	if($p['autoformat']!='no') $s=str_replace(array("\n\n","\n"),($p['autoformat']=='p'?array("<p>","<br>"):array("<p class=pd>","<p class=d>")),"\n\n".str_replace("\n ","\n<p class=z>","\n".$s));
+
+$s=str_ireplace(array( // заменить классы на стили
+'<p class=d>',
+'<p class=pd>',
+'<p class=name>',
+'<p class=podp>',
+'<p class=z>',   
+'<p class=epigraf>',
+'<p class=epigrafp>'
+),array(
+'<p style="text-align:justify;text-indent:5%;margin-top:0pt;margin-bottom:0pt;">',
+'<p style="text-align:justify;text-indent:5%;margin-top:2%;margin-bottom:0pt;">',
+'<p style="text-indent:0pt;margin-top:4%;margin-bottom:6%;text-align:center;font-weight:bold;font-size:150%;">',
+'<p style="text-indent:0pt;margin-top:30pt;margin-bottom:12%;text-align:right;font-style:italic;">',
+'<p style="text-indent:0pt;margin-top:4%;margin-bottom:4%;text-align:center;font-weight:bold;font-size:100%;">',
+'<p style="text-indent:0pt;text-align:justify;margin-top:10pt;margin-bottom:0pt;margin-right:4%;margin-left:60%;font-size:80%;">',
+'<p style="text-indent:0pt;text-align:right;margin-top:0pt;margin-bottom:4%;margin-right:4%;margin-left:60%;font-size:80%;font-style:italic;">'
+),$s);
+
+	$mydir=$httphost.substr($p['Date'],0,(strlen($p['Date'])-strlen(strrchr($p['Date'],"/")))+1);
+	$s=preg_replace("/(<img[^>]+src\=[\'\"]*)([^\/\:]{4,})/si","$1".$mydir."$2",$s); // картинки поставить на места
+return $s;
 }
 
 ?>
