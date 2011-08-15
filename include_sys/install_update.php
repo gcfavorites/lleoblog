@@ -27,6 +27,7 @@ function UPDATE_select($rrr) { $r=unserialize($rrr); // return "<pre>".print_r($
 		$Ufile[$file]=$val;
 	}
 
+/*
 	// 1. Что с конфигом?
 	// config:msq_login $msq_login = ""; // "lleo";
 	$con=file_get_contents('config.php'); preg_match_all("/\n\s*".'\$'."([0-9a-z\_\-]+)\s*\=\s*([^\n]+)/si",$con,$m);
@@ -35,8 +36,46 @@ function UPDATE_select($rrr) { $r=unserialize($rrr); // return "<pre>".print_r($
 	foreach($Uconf as $n=>$v) { if(isset($con[$n])) unset($con[$n]); else $s.="<div>".'A'.'$'.$n."</div>"; }
 	foreach($con as $n=>$l) { $s.="<div>".'D'.'$'.$n."=".h($l)."</div>"; } // предлагается удалить
 	unset($con);
+*/
+	// 2. Что с языком?
+	// lang:fido/ru:Comments:empty_comm Comments:empty_comm	А где же комментарий?
+	$lan=array();
+	foreach($Ulang as $n=>$v) { list($ll,$per)=explode(':',$n,2);
 
-	// 2. Что с файлами?
+		if(!isset($lanz[$ll])) { // закачать сразу язык шоб не париться
+		$nf=$GLOBALS['filehost'].'binoniq/lang/'.$ll.".lang";
+		if(is_file($nf)&&($li=file($nf))!='') { $lan[$ll]=array();
+		  foreach($li as $c) { list($cn,$cv)=explode("\t",$c,2);
+			if(($cn=trim($cn))=='') continue; $lan[$ll][$cn]=trim($cv);
+			}
+		}}
+
+		return "<pre>#########".print_r($lan[$ll],1);
+
+	}
+/*
+
+if(isset($con[$n])) unset($con[$n]); else $s.="<div>".'A'.'$'.$n."</div>"; }
+
+	$con=file_get_contents('config.php'); preg_match_all("/\n\s*".'\$'."([0-9a-z\_\-]+)\s*\=\s*([^\n]+)/si",$con,$m);
+	foreach($m[1] as $i=>$n) $con[$n]=$m[2][$i];
+	$s.="</td></tr></table><table><tr valign=top><td><b>config.php:</b></td><td>";
+	foreach($Uconf as $n=>$v) { if(isset($con[$n])) unset($con[$n]); else $s.="<div>".'A'.'$'.$n."</div>"; }
+	foreach($con as $n=>$l) { $s.="<div>".'D'.'$'.$n."=".h($l)."</div>"; } // предлагается удалить
+	unset($con);
+
+*/
+
+
+
+
+
+
+
+
+
+/*
+	// 3. Что с файлами?
 	foreach($Ufile as $f=>$d) {
 		$fhost=$GLOBALS['filehost'].$f; // физический файл
 		$fname=basename($f); // его имя
@@ -47,12 +86,15 @@ function UPDATE_select($rrr) { $r=unserialize($rrr); // return "<pre>".print_r($
 			$lastdir=$fdir;
 			// <div class=\"$dirname ii1\" onclick='i_d(this)'>".$dirname."</div>";
 		}
-		if(is_file($fhost)) $o='D';
-		else $o='U';
+
+		if(is_file($fhost)) {
+				$o='D';
+		} else $o='U';
 		$s.="<div>".$o.$fname."</div>";
 	}
+*/
 
-// lang:fido/ru:Comments:empty_comm Comments:empty_comm	А где же комментарий?
+
 
 
 /*
@@ -109,11 +151,13 @@ for(var k=0,i=0;i<p.length;i++){ var dc=p[i].className.split(' ');
 
 $GLOBALS['selectjs']="
 
-i_submit=function(e){ var ee,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
+i_submit=function(e){ var ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
 	for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue;
 	dir=td1.firstChild.innerHTML;
 	ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ e=ee[j];
-			s=s+'<br>'+dir+e.innerHTML.replace(/^<br>/g,'').replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1')+' | ';
+			var v=e.innerHTML.replace(/^<br>/g,'').replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1');
+			if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
+			s=s+'<br>'+dir+v+' | ';
 			if(e.style.textDecoration=='none') { s=s+e.style.color; }
 			else s=s+'------';
 		}

@@ -320,9 +320,9 @@ function getconf($l){ $r=array();
 // обработка языка
 function getlang($f){ $la=$GLOBALS['filehost'].'binoniq/lang/'; $nla=strlen($la); if(substr($f,0,$nla)!=$la) return array();
 		$la=substr($f,$nla); $la=substr($la,0,strlen($la)-5);
-		$r=array(); foreach(file($f) as $l) { $l=trim($l); if(!strstr($l,"\t")) continue;
+		$r=array(); foreach(file($f) as $l) { $l=trim($l,"\n\r\t "); if(!strstr($l,"\t")) continue;
 		list($per,$val)=explode("\t",$l,2);
-		$r[]="lang:".$la.":$per $l";
+		$r[]="lang:".$la.":$per ".trim($val,"\r\n\t ");
 	}
 	return $r;
 }
