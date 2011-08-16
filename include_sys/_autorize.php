@@ -21,8 +21,8 @@ if($AC=='www') {
 
 // Также надо прописать пермиссионс
 
-function filechmod($f,$p=0644){ chmod($f,$p); } // 666
-function dirchmod($d,$p=0755){ chmod($d,$p); } // 777
+function filechmod($f,$p=''){ if($p=='') $p=isset($GLOBALS['fchmod'])?$GLOBALS['fchmod']:0644; chmod($f,$p); }
+function dirchmod($d,$p=''){ if($p=='') $p=isset($GLOBALS['dchmod'])?$GLOBALS['dchmod']:0755; chmod($d,$p); }
 if(!function_exists('file_put_contents')) { function file_put_contents($url,$s) { $f=fopen($url,"w"); fputs($f,$s); fclose($f); } }
 function fileput($f,$s) { $o=file_put_contents($f,$s); filechmod($f); return $o; }
 function dirput($d) { $o=mkdir($d); dirchmod($d); return $o; }
