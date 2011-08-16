@@ -167,6 +167,15 @@ i_chan=function(e){ var s=0;
 };
 ";
 
+function UPDATE_file($name,$temp) {
+	$f=realpath($GLOBALS['filehost'].$name);
+	return $f;
+
+	$fileh=$GLOBALS['filehost']."binoniq/tmp/".basename($name);
+        move_uploaded_file($temp,$fileh); // filechmod($fileh);
+	return "name: $name data: ".strlen($data)." bytes";
+}
+
 
 function UPDATE_testkey($key){ // безопасность: проверка ключа инсталляции
 	$f=$GLOBALS['filehost'].'binoniq/instlog/install_key.php'; $k=file_get_contents($f); unlink($f);
@@ -316,9 +325,14 @@ if($a=='check_pack') { // выбор файлов для инсталляции
 }
 
 if($a=='update_file') { // выбор файлов для инсталляции
-//	die($p=strtr($_POST['pack'],'+',' ');
-//	$s=UPDATE_select(urldecode($_POST['ara']),$p);
-	$s=urldecode($_POST['file']);
+	$name=urldecode($_POST['file']);
+	if(count($_FILES)!=1) die("alert('Error transfer - files: ".count($_FILES)); // файлов не пришло
+	$s=''; foreach($_FILES as $f) {
+		if(!is_uploaded_file($f["tmp_name"])) die("alert('Error upload: `".h($f["name"])."` as `".h($f["tmp_name"])."`')"); // ошибка файла
+		if($f['error']!=0) die("alert('Error upload: ".h($f["error"])."')"); // ошибка файла
+		$s.=UPDATE_file($name,$f["tmp_name"]);
+	}
+	// $s="<pre>".print_r($_FILES,1);
 	die("ohelpc('file_install2','post',\"".njsn($s)."\");");
 }
 
@@ -610,11 +624,15 @@ if($a=='install_update_DEL') { // DEL - удалить 1 файл
 }
 
 if($a=='install_update_UPD') { // UPD - обновить 1 файл
-	$file=RE('file'); $ser=file($dir."my_server.txt"); $ser=$u[0]; // вычислить текущий сервер
+	$file=RE('file'); $ser=file($dir."my_server.txt"); $ser=trim($ser[0]); // вычислить текущий сервер
 	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'$file'})";
 } // А ВОТ И ОН - СЕРВЕР-МАТКА:
 if($a=='install_update_far') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
-	$file=RE('file');
+	return "alert(3)";
+
+	$file=RE('file'); $fhost=$GLOBALS['filehost'].$file;
+	if(!is_file($fhost)) return "alert('File not found: ".h($file)."')";
+
 	return POST_file($GLOBALS['filehost'].$file,RE('url')."install",array('post_act'=>'update_file','file'=>$file,'key'=>RE('key'),'ara'=>serialize($r)));
 }
 
@@ -645,7 +663,7 @@ function getlang($f){ $la=$GLOBALS['filehost'].'binoniq/lang/'; $nla=strlen($la)
 
 
 if($a=='install_test') { // инсталляция POST_file($filepath,$url,$fields,$port=80,$scheme='http');
-	return "mijax('http://lleo.me/blog/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'binoniq/testdir/FOTOM.php'})";
+	return "mijax('http://lleo.me/blog/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'binoniq/melok/mp3.swf'})";
 /*
 	$pack='';
 	dier(explode(' ',$pack));
