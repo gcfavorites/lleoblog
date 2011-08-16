@@ -131,6 +131,14 @@ go_install=function(id){ var t,c,tr=idd('i_selectfiles').getElementsByTagName('T
 		var ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ var x=ee[j];
 			var l=x.innerHTML; var O=l.substring(0,1); l=l.substring(1,l.length);
 			x.innerHTML='<br>'+l; x.onclick=function(){i_chan(this)}; x.style.display='inline';
+				if(O=='S') { c='red'; t='del';
+					i_sett(x,t);
+					x.style.textDecoration='line-through';
+					continue;
+				i_chan_chg(x,0);
+					x.style.background='#fc0';
+				}
+
 				if(O=='U') { c='green'; t='update'; }
 				else if(O=='A') { c='rgb(0, 255, 0)'; t='add new'; }
 				else if(O=='D') { c='red'; t='del'; }
@@ -182,8 +190,6 @@ function UPDATE_testkey($key){ // безопасность: проверка ключа инсталл€ции
 
 function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".print_r($r,1);
 
-//	$rp=get_pack_r($pack);	return "<pre>$pack<hr>".print_r($rp,1);
-
 	$s="<table><tr><td><input type='button' onclick='i_submit(this)' value='INSTALL'>";
 	$otstup=''; $lastdir='';
 
@@ -200,6 +206,7 @@ function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".pri
 		$Ufile[$file]=$val;
 	}
 
+$obnovle=0;
 /*
 //=========================================================
 	// 1. „то с конфигом?
@@ -242,10 +249,18 @@ function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".pri
 		$fdir=dirname($f).'/'; if($fdir=='./') $fdir='/'; // им€ папки
 		if(!isset($DDDIR[$fdir])) $DDDIR[$fdir]=array(); // создать такую папку
 
-		if(!isset($ruf[$f])) $o='A'; // если такого у нас не было - добавить
-		else {
-			if($ruf[$f]==$d) $o=''; // если тот же - ќ 
-			else $o='U (<br>'.$ruf[$f].'<br>'.$d.'<br>)'; // U если не тот - обновить
+		if(!isset($ruf[$f])) { // если такого у нас не было ¬ —ќќ“¬≈“—“¬”ёў≈ћ ѕј ≈“≈
+			$fh=$GLOBALS['filehost'].$f;
+			if(!is_file($fh)) $o='A'; // добавить
+			else { // если есть файл
+				list(,$d1)=explode(' ',$d,2);
+				if(calcfile_md5($fh,getras($f))!=$d1) $o='A'; // добавить
+				else $o='';
+			}
+		} else {
+			list(,$d1)=explode(' ',$d,2); list(,$d2)=explode(' ',$ruf[$f],2); // не сравнивать врем€!
+			if($d1==$d2) $o=''; // если тот же - ќ 
+			else $o='U'; // U если не тот - обновить
 			unset($ruf[$f]); // в любом случае удалить
 		}
 		if($o!='') $DDDIR[$fdir][basename($f)]=$o;
@@ -259,8 +274,12 @@ function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".pri
 	}
 
 	// и напечатать
+
+	// вз€ть мою ветошь
+	$veto=unserialize(file_get_contents($GLOBALS['filehost']."binoniq/instlog/my_veto.txt")); if(empty($veto)) $veto=array(); // на вс€кий случай
+
 	foreach($DDDIR as $dir=>$val) { $s.="</td></tr></table><table><tr valign=top><td><b>".h($dir)."</b></td><td>";
-		foreach($val as $n=>$o) $s.="<div>".$o.$n."</div>";
+		foreach($val as $n=>$o) { if(in_array($dir.$n,$veto)) $o='S'; $s.="<div>".$o.$n."</div>"; $obnovle++; }
 	}
 
 	// return "<pre>".print_r($DDDIR,1)."</pre>";
@@ -273,7 +292,7 @@ function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".pri
 
 
 //=========================================================
-
+	if(!$obnovle) return false;
 	return "<div id='i_selectfiles'>$s</td></tr></table></div>";
 }
 
@@ -318,6 +337,7 @@ if(sizeof($_POST)!=0 && !empty($_POST['post_act'])) { $a=$_POST['post_act'];
 if($a=='check_pack') { // выбор файлов дл€ инсталл€ции
 	$p=strtr($_POST['pack'],'+',' ');
 	$s=UPDATE_select(urldecode($_POST['ara']),$p);
+	if($s===false) die("salert('Nothing to do!',500);");
 	die($GLOBALS['selectjs']."ohelpc('install2','post',\"".njsn($s)."\"); i_pack='$p'; go_install('install2');");
 }
 
@@ -348,7 +368,7 @@ if($a=='update_file') { // выбор файлов дл€ инсталл€ции
 }
 
 
-function AD2() { if(!isset($_COOKIE["adm2"]) || $_COOKIE["adm2"]!=$GLOBALS['admin_hash1']) { idie('Admin only!'); } }
+function AD2() { if(!isset($_COOKIE["adm2"]) || $_COOKIE["adm2"]!=$GLOBALS['admin_hash1'] || $GLOBALS['unic']==18) { idie('Admin only!'); } }
 
 function INSTALL_ajax() { $a=RE('a');
 //=========================================================================

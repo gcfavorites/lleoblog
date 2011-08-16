@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset={wwwcharset}" />
+{_SNAPSHOT:_}{_MAIN:_}{_PRAVKA:_}{_STYLE_ADD: {www_css}blog.css _}
+<title>{admin_name}: {_TITLE:_}</title>
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+<!-- link href="{www_design}styles.css" rel="stylesheet" type="text/css" / -->
+<link rel="alternate" type="application/rss+xml" title="{admin_name}" href="{httphost}rss.xml" />
+{_OEMBED:_}
+<link rel="prev" href="{prevlink}" id="PrevLink" />
+<link rel="next" href="{nextlink}" id="NextLink" />
+<link rel="UpLink" href="{uplink}" id="UpLink" />
+<link rel="DownLink" href="{downlink}" id="DownLink" />
+</head>
+
+<body class="twoCol">
+<div id="container">
+<div id="sidebar1"><center>
+
+<a href="/"><img src="{www_design}up_.jpg" width=120 height=155 border=0></a><p class=r><b><a href={httphost}>{admin_name}</a></b>
+
+{_UNIC:
+logintxt = login&nbsp;
+template = <div id='loginobr' style='cursor:pointer; padding:2px; margin: 1px 10px 1px 10px; border:1px dotted #B0B0B0;' onclick="majax('login.php',{action:'openid_form'})"><span style='font-size:7px;'>ваш логин:</span><div id='myunic' style='font-weight: bold; color: blue; font-size: 8px;'>{name}</div></div>{kuki}
+_}
+
+<p class=r><a href={wwwhost}contents>содержание</a>
+<p class=r><a href=http://lleo.aha.ru/blog/lleoblog>ДВИЖОК БЛОГА</a>
+
+<p><INPUT type='text' size='7' style="color: #777777" value="поиск" onclick="majax('okno.php',{a:'search'})">
+
+{_CALENDAR:_}
+
+{_COUNTER:_}
+
+{_STATISTIC: template = <div class=l onclick="{majax}">статистика</div> _}
+
+{_KTOPOSETIL: podzamok , short , <small>посетители</small> _}
+
+
+<p><a href={wwwhost}rss><img src="{www_design}rss.gif" width=36 height=14 border=0 alt="RSS вход" title='Мой дневник поддерживает RSS'></a>
+
+{_KNIGA:_}
+
+{_MOIKNIGI_}
+
+</center></div><div id="mainContent">{_PREWORD:_}{_ANOTHER_DATE:_}
+{_PREVNEXT:
+prev = <a href='{prevlink}'>&lt;&lt; предыдущая заметка</a>
+next = <a href='{nextlink}'>следующая заметка &gt;&gt;</a>
+no = &nbsp;
+template = <center><table width=98% cellspacing=0 cellpadding=0><tr valign=top><td width=50%><font size=1>{prev}</font></td><td width=50% align=right><font size=1>{next}</font></td></tr></table></center>
+_}
+
+<div id="post">{_MAY9:_}{_HEAD:_}<div id="bodyz">{_TEXT:_}</div></div>
+
+<div id="copyright">{signature}
+{_TAGS: template = <div style='font-size: 10pt; text-align:right;'><div class=ll onclick="majax('search.php',{a:'alltag'})">тэги записи:</div> {tags}</div> _}
+<div>{_YANDEXCOUNT:_}&nbsp;&nbsp;&nbsp;{_ADDTHIS:_}</div>
+</div><!--
+Navig -->{_PREVNEXT:_}<!--
+Comments --><div id="comments">
+{_REKOMENDA:_}
+{_COMENTS:_}
+</div></div><!--
+/mainContent -->
+<!-- верстку :( --><br class=q />
+
+</div>
+</body></html>
