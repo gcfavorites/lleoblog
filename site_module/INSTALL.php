@@ -72,19 +72,54 @@ i_selectall=function(){ var ee,v,td1,td2,selo='',p,c,tr=idd('i_selectfiles').get
         }
 };
 
+inst_MAS_UPD=[];
+inst_MAS_DEL=[];
+inst_MAS_NON=[];
 
-i_submit=function(e){ var ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
+i_submit=function(e){ var ff,o,ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
+	e.style.display='none';
+	inst_MAS_DEL=[]; inst_MAS_UPD=[]; inst_MAS_NON=[];
 	for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue;
 	dir=td1.firstChild.innerHTML;
 	ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ e=ee[j];
 			var v=e.innerHTML.replace(/^<br>/g,'').replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1');
 			if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
-			s=s+'<br>'+(dir!='/'?dir:'')+v+' | ';
-			if(e.style.textDecoration=='none') { s=s+e.style.color; }
-			else s=s+'------';
+			ff=(dir!='/'?dir:'')+v;
+			if(e.style.textDecoration=='none') { o=e.style.color;
+				if(o=='green') inst_MAS_UPD.push(ff);
+				else if(o=='red') inst_MAS_DEL.push(ff);
+				else ohelpc('errError optino','Error option','Error option: '+o);
+			} else inst_MAS_NON.push(ff);
+		s=s+'<br>'+o+':'+(dir!='/'?dir:'')+v;
 		}
 	}
-	ohelpc('asd','sda',s);
+i_process();
+};
+
+i_process=function(){
+
+	if(inst_MAS_NON.length) {
+		for(var i in a) { i_find(a[i]).innerHTML='#'; }
+	}
+
+return;
+
+  if(inst_MAS_NON.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join(' '),pack:i_pack});
+  if(inst_MAS_DEL.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join(' '),pack:i_pack});
+  if(inst_MAS_UPD.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join(' '),pack:i_pack});
+	/*ohelpc('asd','sda',s);  majax('module.php',{mod:'INSTALL',a:'install_update_go',s:s,pack:i_pack});*/
+}
+
+i_hides=function(a){ if(!a.length) return; for(var i in a) { i_find(a[i]).innerHTML='#'; }};
+
+i_find=function(id){ var ff,o,ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
+	for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue; dir=td1.firstChild.innerHTML; ee=td2.getElementsByTagName('DIV');
+		for(var j=0;j<ee.length;j++){ e=ee[j];
+			var v=e.innerHTML.replace(/^<br>/g,'').replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1'); if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
+			if(v==id) return e;
+		}
+	}
+alert('not find: '+id);
 };
 
 i_sett=function(e,t){ e.style.cursor='pointer'; e.style.textDecoration='none'; e.setAttribute('tiptitle',t);
@@ -132,7 +167,7 @@ function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".pri
 
 //	$rp=get_pack_r($pack);	return "<pre>$pack<hr>".print_r($rp,1);
 
-	$s="<table><tr><td><input type='button' onclick='i_submit()' value='INSTALL'>";
+	$s="<table><tr><td><input type='button' onclick='i_submit(this)' value='INSTALL'>";
 	$otstup=''; $lastdir='';
 
 	// 1. рассортировать данные
@@ -245,8 +280,9 @@ if(sizeof($_POST)!=0 && !empty($_POST['post_act'])) { $a=$_POST['post_act'];
 	if(!UPDATE_testkey($_POST['key'])) die("ohelpc('install2','post',\"error key\");"); // безопасность: ключ инсталл€ции
 
 if($a=='check_pack') { // выбор файлов дл€ инсталл€ции
-	$s=UPDATE_select(urldecode($_POST['ara']),strtr($_POST['pack'],'+',' '));
-	die($GLOBALS['selectjs']."ohelpc('install2','post',\"".njsn("<tt>$s</tt>")."\"); go_install('install2');");
+	$p=strtr($_POST['pack'],'+',' ');
+	$s=UPDATE_select(urldecode($_POST['ara']),$p);
+	die($GLOBALS['selectjs']."ohelpc('install2','post',\"".njsn($s)."\"); i_pack='$p'; go_install('install2');");
 }
 
 // idie('1');
@@ -512,6 +548,30 @@ if($a=='install_check') { // инсталл€ци€
 	// return "majax('".$ser."/ajax/module.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'$key'})";
 	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'$key'})";
 }
+
+
+// подготовлено решение об инсталл€ции majax('module.php',{mod:'INSTALL',a:'update_go',s:s,pack:i_pack});
+if($a=='install_update_go') { // инсталл€ци€
+	$a=explode("\n".RE('s')); $pack=RE('pack');
+	$D=$U=$N=array();
+	foreach($a as $l) { list($x,$f)=explode(':',$l);
+		if($x=='U') $Udel[]=$f;
+		elseif($x=='D') $D[]=$f;
+		elseif($x=='N') $N[]=$f;
+		else idie("Error value: `".h($l)."`");
+	}
+	
+
+	idie(nl2br($s));
+
+//	$e=explode(' ',$pack); $w=array(); foreach($e as $l){ if($l[0]=='+') $w[]=substr($l,1); }
+//	fileput($dir."my_server.txt",$ser.strtr($pack,' ',"\n"));
+//	$key=createkey(); // сформировать ключ
+//	// return "majax('".$ser."/ajax/module.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'$key'})";
+//	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'$key'})";
+}
+
+
 
 // обработка конфига
 function getconf($l){ $r=array();
