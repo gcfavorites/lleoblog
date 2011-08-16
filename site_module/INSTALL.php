@@ -29,6 +29,19 @@
 
 $GLOBALS['selectjs']="
 i_selectmode='none';
+i_toggle_visible_d=0;
+
+i_toggle_visible=function(){ var g,ee,p,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
+	for(var i=0;i<tr.length;i++){ p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue; ee=td2.getElementsByTagName('DIV');
+		g=ee.length; for(var j=0;j<ee.length;j++){ var x=ee[j];
+			if(i_toggle_visible_d) { if(x.style.display=='none') x.style.display='inline'; }
+			else if(i_selectmode=='color' && x.style.color=='red' || i_selectmode!='color' && x.style.textDecoration!='none') { x.style.display='none'; g=g-1;}
+		} if(!i_toggle_visible_d && !g) p.style.display='none';
+	if(i_toggle_visible_d && p.style.display=='none') p.style.display='block';
+	}
+i_toggle_visible_d=i_toggle_visible_d?0:1;
+};
+
 
 i_get_selected=function(){ var ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
         for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue;
@@ -81,7 +94,7 @@ i_sett=function(e,t){ e.style.cursor='pointer'; e.style.textDecoration='none'; e
 	addEvent(e,'mousemove',function(){ posdiv('tip',mouse_x+10,mouse_y+10) } );
 }
 
-go_install=function(){ var t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
+go_install=function(id){ var t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
 	for(var i=0;i<tr.length;i++){ var p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue;
 		var dir=td1.firstChild; dir.onclick=function(){i_chand(this)}; i_sett(dir,'Invert selected files');
 		var ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ var x=ee[j];
@@ -92,9 +105,10 @@ go_install=function(){ var t,c,tr=idd('i_selectfiles').getElementsByTagName('TR'
 				else { c='magenta'; t='unk'; }
 			x.style.color=c; i_sett(x,t);
 			if(i_selectmode=='color') x.style.textDecoration=(c=='red'?'line-through':'none');
-}}};
-
-setTimeout(go_install,500);
+}}
+i_toggle_visible();
+posdiv(id,-1,-1);
+};
 
 i_chand=function(e){ var p=e.parentNode.nextSibling.getElementsByTagName('DIV'); for(var i=0;i<p.length;i++) i_chan(p[i]) };
 
@@ -229,7 +243,7 @@ if(sizeof($_POST)!=0 && !empty($_POST['post_act'])) { $a=$_POST['post_act'];
 
 if($a=='check_pack') { // выбор файлов дл€ инсталл€ции
 	$s=UPDATE_select(urldecode($_POST['ara']),strtr($_POST['pack'],'+',' '));
-	die($GLOBALS['selectjs']."ohelpc('install2','post',\"".njsn("<tt>$s</tt>")."\");");
+	die($GLOBALS['selectjs']."ohelpc('install2','post',\"".njsn("<tt>$s</tt>")."\"); go_install('install2');");
 }
 
 // idie('1');
@@ -444,9 +458,10 @@ if($a=='install_edit_pack') { // форма редактировани€ пакета или создани€ нового
 
 $subm="<input type='button' value='Save' onclick='i_packsave()'>"
 ."&nbsp; &nbsp; <span class='ll' onclick=\"i_selectall()\">select</span>"
+."&nbsp; &nbsp; <span class='ll' onclick=\"i_toggle_visible()\">show/hidden</span>"
 ."&nbsp; &nbsp; <span class='ll' onclick=\"packdel()\">delete</span>";
 
-	return $GLOBALS['selectjs']."i_selectmode='color';
+	return $GLOBALS['selectjs']."i_selectmode='color';".($name==''?"i_toggle_visible_d=1;":'')."
 
 packdel=function(){ if(confirm('Delete pack `".$name.".pack`?')) majax('module.php',{mod:'INSTALL',a:'install_pack_del',name:idd('newpack_name').value}); };
 
@@ -458,7 +473,7 @@ ohelpc('pack','Edit pack: $name',\"".njsn(
 ($name==''?"<b>name: </b><input type='text' value='' size='10' maxlength='20' id='newpack_name'>":
 "<input type='hidden' value='$name' id='newpack_name'>")
 .$subm
-."<div id='packs'><tt>$s</tt></div>$subm")."\");";
+."<div id='packs'><tt>$s</tt></div>$subm")."\"); go_install('pack');";
 }
 
 if($a=='install_pack_del') { // удаление пакета
@@ -584,9 +599,11 @@ function get_dfiles() { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allm
 }
 
 function get_dfiles2($files) { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allmd5change; if(!--$stop) die('stop error');
-	$r=array(); $a=$filehost.$files; if(is_file($a)) $a=array($a); else { $b=glob($a."/*"); 
-$h=$a."/.htaccess"; if(is_file($h)) $b[]=$h; $a=$b;
-}
+	$r=array(); $a=$filehost.$files; if(is_file($a)) $a=array($a); else {
+		$l=$a; $a=glob($a."/*"); $h=$l."/.htaccess"; if(is_file($h)) $a[]=$h;
+		if(!sizeof($a)) return array(c(substr($l,$filehostn))."/(EMPTY_DIR)"); // была пуста€ папка
+	}
+
 	// сперва окучить файлы
 	foreach($a as $n=>$l) { if(is_dir($l)) continue; $name=c(substr($l,$filehostn));
 		$ras=getras($l); if(!in_array($name,$vetomas) && $ras!='old' && $ras!='off') { $time=filemtime($l);
