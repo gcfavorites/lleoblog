@@ -77,7 +77,7 @@ inst_MAS_DEL=[];
 inst_MAS_NON=[];
 
 i_submit=function(e){ var ff,o,ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
-	e.style.display='none';
+	/*e.style.display='none'; d@@@@@@@@@@@@@@@@@@2*/
 	inst_MAS_DEL=[]; inst_MAS_UPD=[]; inst_MAS_NON=[];
 	for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue;
 	dir=td1.firstChild.innerHTML;
@@ -97,12 +97,11 @@ i_process();
 };
 
 i_process=function(){
-
-	if(inst_MAS_NON.length) {
-		for(var i in a) { i_find(a[i]).innerHTML='#'; }
-	}
-
-return;
+	if(inst_MAS_NON.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join('\\n'),mode:'post',pack:i_pack});
+	
+/*	for(var i in inst_MAS_NON) { var s=i_find(inst_MAS_NON[i]); s.parentNode.removeChild(s); } */
+	
+	return;
 
   if(inst_MAS_NON.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join(' '),pack:i_pack});
   if(inst_MAS_DEL.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join(' '),pack:i_pack});
@@ -116,17 +115,20 @@ i_find=function(id){ var ff,o,ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').get
 	for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue; dir=td1.firstChild.innerHTML; ee=td2.getElementsByTagName('DIV');
 		for(var j=0;j<ee.length;j++){ e=ee[j];
 			var v=e.innerHTML.replace(/^<br>/g,'').replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1'); if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
-			if(v==id) return e;
+			if(id==dir+v) return e;
 		}
 	}
 alert('not find: '+id);
 };
 
-i_sett=function(e,t){ e.style.cursor='pointer'; e.style.textDecoration='none'; e.setAttribute('tiptitle',t);
-	addEvent(e,'mouseover',function(){ idd('tip').innerHTML=this.getAttribute('tiptitle');
-	posdiv('tip',mouse_x+10,mouse_y+10); });
+i_sett=function(e,t){ e.style.cursor='pointer'; e.style.textDecoration='none';
+	e.setAttribute('title',t);
+	/*
+	e.setAttribute('tiptitle',t);
+	addEvent(e,'mouseover',function(){ idd('tip').innerHTML=this.getAttribute('tiptitle'); posdiv('tip',mouse_x+10,mouse_y+10); });
 	addEvent(e,'mouseout',function(){ zakryl('tip') } );
 	addEvent(e,'mousemove',function(){ posdiv('tip',mouse_x+10,mouse_y+10) } );
+	*/
 }
 
 go_install=function(id){ var t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
@@ -550,7 +552,38 @@ if($a=='install_check') { // инсталл€ци€
 }
 
 
-// подготовлено решение об инсталл€ции majax('module.php',{mod:'INSTALL',a:'update_go',s:s,pack:i_pack});
+// подготовлено решение об инсталл€ции
+// return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join(':'),mode:'post',pack:i_pack});
+
+if($a=='install_update_NON') { // NON - пометить файлы отмеченные как
+	$f=$dir."my_veto.txt";
+//	$s=explode("\n",RE('d'));
+//	fileput($f,serialize($s));
+	
+
+	if(($s=file_get_contents($f))!==false) { $s=unserialize($s);
+		$r=get_dfiles_r(RE('pack')); // вз€ть все файлы дл€ этих пакетов
+		foreach($s as $n=>$l) { $l=trim($l); if(isset($r[$l])) unset($s[$n]); } // позбрасывать все дл€ этих пакетов
+	} else $s=array();
+	$s=array_merge($s,explode("\n",RE('d'))); // добавить новые
+
+//	$s=explode("\n",RE('d'));
+//	dier(explode("\n",RE('d')));
+//	$my_veto=explode("\n",RE('d'));
+	
+//	fileput($f,serialize($s));
+	return "
+
+while((i=inst_MAS_NON.shift)) { alert(i); }
+
+/*for(var i in inst_MAS_NON) { var s=i_find(inst_MAS_NON[i]); delete(inst_MAS_NON[i]); s.parentNode.removeChild(s); } i_process();*/
+
+";
+}
+
+	// if(($s=file($dir."my_veto.txt"))!==false) foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#' && !in_array($l,$my_veto)) $my_veto[]=$l; }
+
+
 if($a=='install_update_go') { // инсталл€ци€
 	$a=explode("\n".RE('s')); $pack=RE('pack');
 	$D=$U=$N=array();
@@ -651,7 +684,7 @@ function get_dfiles() { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allm
 	// вз€ть $md5mas - массив данных по всему движку
 	$md5mas=array(); $allmd5change=1; if(($s=file_get_contents($dir."all_md5.tmp"))!==false) { $allmd5change=0; $md5mas=unserialize($s); }
 	// вз€ть $vetomas - массив данных по всему движку
-	$vetomas=array(); if(($s=file_get_contents($dir."system_veto.txt"))!==false) { $s=file($dir."system_veto.txt"); foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $vetomas[]=$l; } }
+	$vetomas=array(); if(($s=file($dir."system_veto.txt"))!==false) foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $vetomas[]=$l; }
 	// вз€ть $all - массив данных по всему движку
 	$all=array(); $s=file($dir."system_dir.txt"); foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $all[]=$l; }
 	// обработать по одному
