@@ -467,21 +467,24 @@ if($a=='install_pack_del') { // удаление пакета
 	return "clean('pack'); zabil('mypacks',\"".njsn(get_my_pack($dir))."\"); salert('Pack <b>$name</b> deleted!',1000);";
 }
 
-if($a=='install_pack_save') { // приемка создания нового пакета
-// majax('module.php',{mod:'INSTALL',a:'install_pack_save',s:s,name:idd('newpack_name').value});
-$name=preg_replace("/[^0-9a-z\_\-\.]+/s",'',strtolower(RE('name')));
-if(empty($name)) return "idd('newpack_name').value='$name'; idie('Name error! Only: 0-9a-z_-.');";
-$pp=explode("\n",trim(RE('s'),"\n")); $p=array(); foreach($pp as $l) $p[$l]=1;
-$s=''; foreach(get_dfiles() as $l) { list($file,$ftime,$fkey)=explode(' ',$l,3); if(isset($p[$file])) $s.=$l."\n"; }
-if($s=='') return "salert('Empty pack!',1000);";
+if($a=='install_pack_save') { // приемка создания нового пакета majax('module.php',{mod:'INSTALL',a:'install_pack_save',s:s,name:idd('newpack_name').value});
+	$name=preg_replace("/[^0-9a-z\_\-\.]+/s",'',strtolower(RE('name'))); if(empty($name)) return "idd('newpack_name').value='$name'; idie('Name error! Only: 0-9a-z_-.');";
+	$pp=explode("\n",trim(RE('s'),"\n"));
+	dier($pp);
 
-//idie("$name<p>$s");
+	$p=array(); foreach($pp as $l) $p[$l]=1;
 
-testdir($dir."instpack"); file_put_contents($dir."instpack/".$name.".pack",$s);
-return "clean('pack');
-zabil('mypacks',\"".njsn(get_my_pack($dir))."\");
-salert('Pack <b>$name</b> saved!',1000);
-";
+	$s=''; foreach(get_dfiles() as $l) { list($file,$ftime,$fkey)=explode(' ',$l,3); if(isset($p[$file])) $s.=$l."\n";
+}
+
+
+
+	if($s=='') return "salert('Empty pack!',1000);";
+
+//	idie("$name<p>$s");
+
+	testdir($dir."instpack"); file_put_contents($dir."instpack/".$name.".pack",$s);
+	return "clean('pack'); zabil('mypacks',\"".njsn(get_my_pack($dir))."\"); salert('Pack <b>$name</b> saved!',1000);";
 }
 
 // прислать по-бырому список доступных пакетов на этой станции
@@ -576,51 +579,38 @@ function getpack($pack,$e) { global $filehost;
 }
 
 
-function get_dfiles() { global $stop,$veto_dir,$md5mas,$filehostn,$filehost,$allmd5change;
-	$stop=1000;
+// ПОЛУЧИТЬ МАССИВ ПО ВСЕМ ФАЙЛАМ ДВИЖКА (которые разрешены в system_dir.txt)
+function get_dfiles() { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allmd5change; $stop=1000;
 	if(!isset($filehostn)) $filehostn=strlen($filehost);
-
 	$dir=$GLOBALS['filehost']."binoniq/instlog/"; testdir($dir);
-
-	$md5mas=array(); if(($s=file_get_contents($dir."all_md5.tmp"))===false) $allmd5change=1; // понадобится запись
-	else { $allmd5change=0; $md5mas=unserialize($s); }
-
-	if(!isset($basic)) {
-		$s=file($dir."system_dir.txt"); // unset($s[0]); unset($s[sizeof($s)]);
-		$basic=array(); foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $basic[$l]=1; }
-	}
-
-	$r=array(); foreach($basic as $l=>$c) $r=array_merge($r,get_dfiles2($l));
-
-	if($allmd5change) fileput($dir."all_md5.tmp",serialize($md5mas)); // понадобилась запись
+	// взять $md5mas - массив данных по всему движку
+	$md5mas=array(); $allmd5change=1; if(($s=file_get_contents($dir."all_md5.tmp"))!==false) { $allmd5change=0; $md5mas=unserialize($s); }
+	// взять $vetomas - массив данных по всему движку
+	$vetomas=array(); if(($s=file_get_contents($dir."system_veto.txt"))!==false) { $s=file($dir."system_veto.txt"); foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $vetomas[]=$l; } }
+	// взять $all - массив данных по всему движку
+	$all=array(); $s=file($dir."system_dir.txt"); foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $all[]=$l; }
+	// обработать по одному
+	$r=array(); foreach($all as $l) $r=array_merge($r,get_dfiles2($l));
+	// подзаписать изменения, если были
+	if($allmd5change) fileput($dir."all_md5.tmp",serialize($md5mas));
 	return $r;
 }
 
 
-function get_dfiles2($files) { global $stop,$veto_dir,$md5mas,$filehostn,$filehost,$allmd5change;
-	if(!--$stop) die('stop error');
-	$r=array();
-	$a=$filehost.$files; if(is_file($a)) $a=array($a); else $a=glob($a."/*");
-	
+function get_dfiles2($files) { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allmd5change; if(!--$stop) die('stop error');
+	$r=array(); $a=$filehost.$files; if(is_file($a)) $a=array($a); else { $a=glob($a."/*"); $h=$a."/.htaccess"; if(is_file($h)) $a[]=$h; }
+	// сперва окучить файлы
 	foreach($a as $n=>$l) { if(is_dir($l)) continue;
-		$ras=getras($l);
-
-		if(!in_array($l,$veto_dir) and $ras!='old' and $ras!='off' and !preg_match("/($|\/)pre\//s",$name) ) {
-			$time=filemtime($l);
-			$name=c(substr($l,$filehostn));
-			if(!isset($md5mas[$name]) || $md5mas[$name][0]!=$time) { $md5=calcfile_md5($l,$ras);
-				$md5mas[$name]=array($time,$md5); $allmd5change=1; // и понадобится перезапись
-			} else $md5=$md5mas[$name][1];
-
+		$ras=getras($l); if(!in_array($l,$vetomas) && $ras!='old' && $ras!='off') {
+			$time=filemtime($l); $name=c(substr($l,$filehostn));
+			if(isset($md5mas[$name]) && $md5mas[$name][0]==$time) $md5=$md5mas[$name][1]; // без изменений
+			else { $md5=calcfile_md5($l,$ras); $md5mas[$name]=array($time,$md5); $allmd5change=1; }
 			$r[]="$name $time $md5";
 		}
 	        unset($a[$n]); 
 	}
-
-        foreach($a as $l) { $name=c(substr($l,$filehostn));
-		if(!isset($veto_dir[$name])) $r=array_merge($r,get_dfiles2($name));
-	}
-
+	// затем окучить папки
+        foreach($a as $l) { if(!in_array($l,$vetomas)) { $name=c(substr($l,$filehostn)); $r=array_merge($r,get_dfiles2($name)); } }
         return $r;
 }
 //=========================================================================
