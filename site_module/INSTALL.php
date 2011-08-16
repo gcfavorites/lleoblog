@@ -112,7 +112,7 @@ i_find=function(id){ var ff,o,ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').get
 			if(id==dir+v) return e;
 		}
 	}
-alert('not find: '+id);
+alert('not f find: '+id);
 };
 
 i_sett=function(e,t){ e.style.cursor='pointer'; e.style.textDecoration='none';
@@ -125,26 +125,20 @@ i_sett=function(e,t){ e.style.cursor='pointer'; e.style.textDecoration='none';
 	*/
 }
 
-go_install=function(id){ var t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
+go_install=function(id){ var o1,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
 	for(var i=0;i<tr.length;i++){ var p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue;
-		var dir=td1.firstChild; dir.onclick=function(){i_chand(this)}; i_sett(dir,'Invert selected files');
-		var ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ var x=ee[j];
-			var l=x.innerHTML; var O=l.substring(0,1); l=l.substring(1,l.length);
-			x.innerHTML='<br>'+l; x.onclick=function(){i_chan(this)}; x.style.display='inline';
-				if(O=='S') { c='red'; t='del';
-					i_sett(x,t);
-					x.style.textDecoration='line-through';
-					continue;
-				i_chan_chg(x,0);
-					x.style.background='#fc0';
-				}
-
+		var dir=td1.firstChild; dir.onclick=function(){i_chand(this)}; i_sett(dir,'Invert selected files'); var ee=td2.getElementsByTagName('DIV');
+		for(var j=0;j<ee.length;j++){ var x=ee[j];
+			var l=x.innerHTML; var O=l.substring(0,1); l=l.substring(1,l.length); o1=0;
+				if(O=='S') { O=l.substring(0,1); l=l.substring(1,l.length); o1=1; }
 				if(O=='U') { c='green'; t='update'; }
 				else if(O=='A') { c='rgb(0, 255, 0)'; t='add new'; }
 				else if(O=='D') { c='red'; t='del'; }
 				else { c='magenta'; t='unk'; }
+			x.innerHTML='<br>'+l; x.onclick=function(){i_chan(this)}; x.style.display='inline';
 			x.style.color=c; i_sett(x,t);
-			if(i_selectmode=='color') x.style.textDecoration=(c=='red'?'line-through':'none');
+			
+			if(o1) i_chan(x); else if(i_selectmode=='color') x.style.textDecoration=(c=='red'?'line-through':'none');
 }}
 i_toggle_visible();
 posdiv(id,-1,-1);
@@ -178,6 +172,7 @@ i_chan=function(e){ var s=0;
 
 function UPDATE_file($name,$temp) {
 	$f=$GLOBALS['filehost'].$name;
+	if(realpath($f)) { load_vetomas(); foreach($GLOBALS['vetomas'] as $l) { if(strtolower(substr($name,0,strlen($l)))==$l) return "Disabled file: ".h($l); } }
 	testdir(dirname($f)); // создать папки, если надо
         move_uploaded_file($temp,$f); filechmod($f);
 	return 1; //dirname($f)."|$f| name: $name data: ".strlen($data)." bytes";
@@ -190,7 +185,7 @@ function UPDATE_testkey($key){ // безопасность: проверка ключа инсталляции
 
 function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".print_r($r,1);
 
-	$s="<table><tr><td><input type='button' onclick='i_submit(this)' value='INSTALL'>";
+	$s="<table><tr><td><input type='button' onclick='i_submit(this)' value='INSTALL'> <span class=ll onclick='i_toggle_visible();'><span class=r>Hide/Show</span></span>";
 	$otstup=''; $lastdir='';
 
 	// 1. рассортировать данные
@@ -278,8 +273,9 @@ $obnovle=0;
 	// взять мою ветошь
 	$veto=unserialize(file_get_contents($GLOBALS['filehost']."binoniq/instlog/my_veto.txt")); if(empty($veto)) $veto=array(); // на всякий случай
 
-	foreach($DDDIR as $dir=>$val) { $s.="</td></tr></table><table><tr valign=top><td><b>".h($dir)."</b></td><td>";
-		foreach($val as $n=>$o) { if(in_array($dir.$n,$veto)) $o='S'; $s.="<div>".$o.$n."</div>"; $obnovle++; }
+	foreach($DDDIR as $dir=>$val) if(sizeof($val)) { 
+		$s.="</td></tr></table><table><tr valign=top><td><b>".h($dir)."</b></td><td>";
+		foreach($val as $n=>$o) { if(in_array($dir.$n,$veto)) $o='S'.$o; $s.="<div>".$o.$n."</div>"; $obnovle++; }
 	}
 
 	// return "<pre>".print_r($DDDIR,1)."</pre>";
@@ -645,8 +641,13 @@ if($a=='install_update_UPD') { // UPD - обновить 1 файл
 	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'$file'})";
 } // А ВОТ И ОН - СЕРВЕР-МАТКА:
 if($a=='install_update_far') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
-	$file=RE('file'); $fhost=$GLOBALS['filehost'].$file;
-	if(!is_file($fhost)) return "alert('File not found: ".h($file)."')";
+	$file=RE('file'); $fhost=realpath($GLOBALS['filehost'].$file);
+
+	load_vetomas(); foreach($GLOBALS['vetomas'] as $l) {
+		if(strtolower(substr($fhost,0,strlen($l)))==$l) return "alert('Disabled file: ".h($l)."')";
+	}
+
+	if(empty($fhost) || !is_file($fhost)) return "alert('File not found: ".h($file)."')";
 	return POST_file($GLOBALS['filehost'].$file,RE('url')."install",array('post_act'=>'update_file','file'=>$file,'key'=>RE('key'),'ara'=>serialize($r)));
 }
 
@@ -725,6 +726,11 @@ function getpack($pack,$e) { global $filehost; $save=0;
 	return array_merge($e,$r);
 }
 
+
+function load_vetomas(){ global $vetomas;
+	$vetomas=array(); if(($s=file($GLOBALS['filehost']."binoniq/instlog/system_veto.txt"))!==false) foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $vetomas[]=$l; }
+}
+
 // ПОЛУЧИТЬ МАССИВ ПО ВСЕМ ФАЙЛАМ ДВИЖКА (которые разрешены в system_dir.txt)
 function get_dfiles() { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allmd5change; $stop=1000;
 	if(!isset($filehostn)) $filehostn=strlen($filehost);
@@ -732,7 +738,7 @@ function get_dfiles() { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allm
 	// взять $md5mas - массив данных по всему движку
 	$md5mas=array(); $allmd5change=1; if(($s=file_get_contents($dir."all_md5.tmp"))!==false) { $allmd5change=0; $md5mas=unserialize($s); }
 	// взять $vetomas - массив данных по всему движку
-	$vetomas=array(); if(($s=file($dir."system_veto.txt"))!==false) foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $vetomas[]=$l; }
+	load_vetomas(); //$vetomas=array(); if(($s=file($dir."system_veto.txt"))!==false) foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $vetomas[]=$l; }
 	// взять $all - массив данных по всему движку
 	$all=array(); $s=file($dir."system_dir.txt"); foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $all[]=$l; }
 	// обработать по одному
