@@ -364,7 +364,7 @@ if($a=='update_file') { // выбор файлов для инсталляции
 }
 
 
-function AD2() { if(!isset($_COOKIE["adm2"]) || $_COOKIE["adm2"]!=$GLOBALS['admin_hash1'] || $GLOBALS['unic']==18) { idie('Admin only!'); } }
+function AD2() { if(!isset($_COOKIE["adm2"]) || $_COOKIE["adm2"]!=$GLOBALS['admin_hash1']) { idie('Admin only!'); } }
 
 function INSTALL_ajax() { $a=RE('a');
 //=========================================================================
@@ -596,7 +596,7 @@ if($a=='install_pack_save') { // приемка создания нового пакета majax('module.ph
 	return "clean('pack'); zabil('mypacks',\"".njsn(get_my_pack($dir))."\"); salert('Pack <b>$name</b> saved!',1000);";
 }
 
-// прислать по-бырому список доступных пакетов на этой станции
+// прислать по-бырому список доступных пакетов на этой станции - СЕРВЕР-МАТКА:
 if($a=='install_get_packs') { // выслать список пакетов
 	$s=''; foreach(glob($dir."instpack/*.pack") as $l) { $l=basename($l,'.pack');
 		$s.="<div><input class='cb' name=\"$l\" type='checkbox'>$l</div>";
@@ -615,6 +615,12 @@ if($a=='install_far_check') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом серве
 	$pack=trim(RE('pack')); $r=get_pack_r($pack);
 	return POST_file('',RE('url')."install",array('post_act'=>'check_pack','pack'=>$pack,'key'=>RE('key'),'ara'=>serialize($r)));
 }
+
+
+if($a=='arita_test') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
+	return "alert('test passed!')";
+}
+
 
 
 
