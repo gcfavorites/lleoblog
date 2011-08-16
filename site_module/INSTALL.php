@@ -24,16 +24,211 @@
 
 // idie('#'.$GLOBALS['admin']);
 
+//--------------------------------------------------------------------------------
+// ФУНКЦИИ УПДЕЙТОВ
+
+$GLOBALS['selectjs']="
+i_selectmode='none';
+
+i_get_selected=function(){ var ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
+        for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue;
+        dir=td1.firstChild.innerHTML;
+        ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ e=ee[j];
+                if(e.style.color=='green') {
+                        var v=e.innerHTML.replace(/^<br>/g,'').replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1');
+                        if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
+                        s=s+'\\n'+dir+v;
+                }
+            }
+        }
+return s;
+};
+
+i_selectall=function(){ var ee,v,td1,td2,selo='',p,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
+        for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue;
+        ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){
+
+        if(i_selectmode=='color') {
+           if(selo=='') selo=(ee[j].style.color=='red'?'green':'red'); ee[j].style.color=selo;
+           ee[j].style.textDecoration=(selo=='red'?'line-through':'none');
+        }else{
+           if(selo=='') selo=(ee[j].style.textDecoration=='none'?'line-through':'none'); ee[j].style.textDecoration=selo;
+        }
+
+            }
+        }
+};
+
+
+i_submit=function(e){ var ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
+	for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue;
+	dir=td1.firstChild.innerHTML;
+	ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ e=ee[j];
+			var v=e.innerHTML.replace(/^<br>/g,'').replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1');
+			if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
+			s=s+'<br>'+dir+v+' | ';
+			if(e.style.textDecoration=='none') { s=s+e.style.color; }
+			else s=s+'------';
+		}
+	}
+	ohelpc('asd','sda',s);
+};
+
+i_sett=function(e,t){ e.style.cursor='pointer'; e.style.textDecoration='none'; e.setAttribute('tiptitle',t);
+	addEvent(e,'mouseover',function(){ idd('tip').innerHTML=this.getAttribute('tiptitle');
+	posdiv('tip',mouse_x+10,mouse_y+10); });
+	addEvent(e,'mouseout',function(){ zakryl('tip') } );
+	addEvent(e,'mousemove',function(){ posdiv('tip',mouse_x+10,mouse_y+10) } );
+}
+
+go_install=function(){ var t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
+	for(var i=0;i<tr.length;i++){ var p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue;
+		var dir=td1.firstChild; dir.onclick=function(){i_chand(this)}; i_sett(dir,'Invert selected files');
+		var ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ var x=ee[j];
+			var l=x.innerHTML; var O=l.substring(0,1); l=l.substring(1,l.length);
+			x.innerHTML='<br>'+l; x.onclick=function(){i_chan(this)}; x.style.display='inline';
+				if(O=='U') { c='green'; t='update'; }
+				else if(O=='D') { c='red'; t='del'; }
+				else { c='magenta'; t='unk'; }
+			x.style.color=c; i_sett(x,t);
+			if(i_selectmode=='color') x.style.textDecoration=(c=='red'?'line-through':'none');
+}}};
+
+setTimeout(go_install,500);
+
+i_chand=function(e){ var p=e.parentNode.nextSibling.getElementsByTagName('DIV'); for(var i=0;i<p.length;i++) i_chan(p[i]) };
+
+i_chan=function(e){ var s=0;
+  if(i_selectmode=='color') { if(e.style.color=='red') { e.style.color='green'; s=1; } else e.style.color='red'; }
+  else{
+	if(e.style.textDecoration=='none') e.innerHTML=e.innerHTML.replace(/^<br>(.+?)$/g,'<br>&nbsp;&nbsp;$1&nbsp;&nbsp;');
+	else{ s=1; e.innerHTML=e.innerHTML.replace(/\&nbsp;/g,' ').replace(/^<br> +(.+?) +$/g,'<br>$1'); }
+  }
+  e.style.textDecoration=(s?'none':'line-through');
+};
+";
+
+
+function UPDATE_testkey($key){ // безопасность: проверка ключа инсталляции
+	$f=$GLOBALS['filehost'].'binoniq/instlog/install_key.php'; $k=file_get_contents($f); unlink($f);
+	return ( preg_replace("/^.+?\"([0-9a-z]{40})\".+?$/si","$1",$k) != $key ? 0:1);
+}
+
+function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".print_r($r,1);
+
+	$rp=get_pack_r($pack);
+
+	return "<pre>$pack<hr>".print_r($rp,1);
+
+	$s="<table><tr><td><input type='button' onclick='i_submit()' value='INSTALL'>";
+	$otstup=''; $lastdir='';
+
+	// 1. рассортировать данные
+	$Uconf=array(); // тут будут конфиговые переменные
+	$Ulang=array(); // тут будут языковые переменные
+	$Ufile=array(); // тут будут файлы
+	foreach($r as $n=>$l) { list($file,$val)=explode(' ',$l,2); unset($r[$n]);
+		if(strstr($file,':')) { // конфиг или язык
+			list($tt,$ff)=explode(':',$file,2);
+			if($tt=='config') { $Uconf[$ff]=$val; continue; }
+			if($tt=='lang') { $Ulang[$ff]=$val; continue; }
+		}
+		$Ufile[$file]=$val;
+	}
+
+//=========================================================
+	// 1. Что с конфигом?
+	// config:msq_login $msq_login = ""; // "lleo";
+	$con=file_get_contents('config.php'); preg_match_all("/\n\s*".'\$'."([0-9a-z\_\-]+)\s*\=\s*([^\n]+)/si",$con,$m);
+	$con=array(); foreach($m[1] as $i=>$n) $con[$n]=$m[2][$i];
+	$s.="</td></tr></table><table><tr valign=top><td><b>config.php:</b></td><td>";
+	foreach($Uconf as $n=>$v) { if(isset($con[$n])) unset($con[$n]); else $s.="<div>".'A'.'$'.$n."</div>"; }
+	foreach($con as $n=>$l) { $s.="<div>".'D'.'$'.$n."=".h($l)."</div>"; } // предлагается удалить
+	unset($con);
+//=========================================================
+	// 2. Что с языком?
+	// lang:fido/ru:Comments:empty_comm Comments:empty_comm	А где же комментарий?
+	$lan=array(); $allan=array();
+	foreach($Ulang as $n=>$v) { list($ll,$per)=explode(':',$n,2); $allan[$ll]='';
+
+		if(!isset($lan[$ll])) { $lan[$ll]=array(); // закачать сразу язык шоб не париться
+		$nf=$GLOBALS['filehost'].'binoniq/lang/'.$ll.".lang";
+		if(is_file($nf)&&($li=file($nf))!='') foreach($li as $c) {
+			list($cn,$cv)=explode("\t",$c,2); if(($cn=trim($cn))=='') continue; $lan[$ll][$cn]=trim($cv);
+		}}
+
+		if(isset($lan[$ll][$per])) { unset($lan[$ll][$per]); continue; }
+		$allan[$ll].="<div>".'A'.$per."</div>";
+	}
+	foreach($lan as $ll=>$arper) foreach($arper as $cn=>$cv) $allan[$ll].="<div>".'D'.$cn." = ".h($cv)."</div>"; // предлагается удалить
+
+	foreach($allan as $ll=>$oo) $s.="</td></tr></table><table><tr valign=top><td><b>LANG:$ll:</b></td><td>".$oo;
+ 
+//=========================================================
+	// 3. Что с файлами?
+	foreach($Ufile as $f=>$d) {
+		$fhost=$GLOBALS['filehost'].$f; // физический файл
+		$fname=basename($f); // его имя
+		$fdir=dirname($f).'/'; if($fdir=='./') $fdir='/'; // имя папки
+
+		if($fdir!=$lastdir){
+			$s.="</td></tr></table><table><tr valign=top><td><b>$fdir</b></td><td>";
+			$lastdir=$fdir;
+			// <div class=\"$dirname ii1\" onclick='i_d(this)'>".$dirname."</div>";
+		}
+
+		if(is_file($fhost)) {
+				$o='D';
+		} else $o='U';
+		$s.="<div>".$o.$fname."</div>";
+	}
+//=========================================================
+
+	return "<div id='i_selectfiles'>$s</td></tr></table></div>";
+}
+
+
 //----------------------------
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
+// POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
 // POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
 
 if(sizeof($_POST)!=0 && !empty($_POST['post_act'])) { $a=$_POST['post_act'];
-	include_once($GLOBALS['include_sys'].'install_update.php');
+	// include_once($GLOBALS['include_sys'].'install_update.php');
 
 	if(!UPDATE_testkey($_POST['key'])) die("ohelpc('install2','post',\"error key\");"); // безопасность: ключ инсталляции
 
 if($a=='check_pack') { // выбор файлов для инсталляции
-	$s=UPDATE_select(urldecode($_POST['ara']));
+	$s=UPDATE_select(urldecode($_POST['ara']),strtr($_POST['pack'],'+',' '));
 	die($GLOBALS['selectjs']."ohelpc('install2','post',\"".njsn("<tt>$s</tt>")."\");");
 }
 
@@ -228,8 +423,8 @@ ohelpc('install','Select server',\"".njsn($s)."\");";
 }
 
 if($a=='install_edit_pack') { // форма редактирования пакета или создания нового (name='')
-	include_once($GLOBALS['include_sys'].'install_update.php');
-	$name=RE('name'); $s="<table><tr><td>edit:";
+	// include_once($GLOBALS['include_sys'].'install_update.php');
+	$name=RE('name'); $s="<table><tr><td>";
 
 	$p=array(); if($name!='' && ($r=file($dir."instpack/".$name.".pack"))!==false) {
 		foreach($r as $l) { $m=explode(' ',$l); $p[$m[0]]=array($m[1],$m[2]); } // [0] => template/adminpanel.htm 1303587256 d866bd70d3d53450fd3b82243d32fe36
@@ -239,7 +434,7 @@ if($a=='install_edit_pack') { // форма редактирования пакета или создания нового
 	$lastdir=''; foreach(get_dfiles() as $l) { list($file,$ftime,$fkey)=explode(' ',$l,3);
 	$fhost=$GLOBALS['filehost'].$file; // физический файл
 	$fname=basename($file); // его имя
-	$fdir=dirname($file).'/'; // имя папки
+	$fdir=dirname($file).'/'; if($fdir=='./') $fdir='/'; // имя папки
 	if($fdir!=$lastdir){ $s.="</td></tr></table><table><tr valign=top><td><b>$fdir</b></td><td>"; $lastdir=$fdir; }
 
 	if(isset($p[$file])) $o='U'; else $o='D';
@@ -301,10 +496,9 @@ if($a=='install_check') { // инсталляция
 	$ser=RE('s'); $pack=RE('pack');
 	$e=explode(' ',$pack); $w=array(); foreach($e as $l){ if($l[0]=='+') $w[]=substr($l,1); }
 	fileput($dir."my_server.txt",$ser.strtr($pack,' ',"\n"));
-	$key=sha1(hash_generate()); // сформировать ключ
-	fileput($dir."install_key.php",'<?php die("Error 404"); $key="'.$key.'"; ?>');
-// return "majax('".$ser."/ajax/module.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'$key'})";
-return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'$key'})";
+	$key=createkey(); // сформировать ключ
+	// return "majax('".$ser."/ajax/module.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'$key'})";
+	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'$key'})";
 }
 
 // обработка конфига
@@ -328,58 +522,19 @@ function getlang($f){ $la=$GLOBALS['filehost'].'binoniq/lang/'; $nla=strlen($la)
 	return $r;
 }
 
-/*
-// скан по всем файлам в низжелащей папке
-function scanvdir($dir,$mask='*',$r='') { if($r=='') $r=array();
-	$a=glob(rtrim($dir,'/').'/'.$mask);
-	foreach($a as $l) { if(is_dir($l)) $r=scanvdir($l,$mask,$r); else $r[]='#'.$l; }
-	return $r;
-}
-*/
-
 if($a=='install_far_check') { // отправить запрос на проверку
-	$r=array();
-	foreach(explode(' ',trim(RE('pack'))) as $l) $r=getpack($l,$r);
-	$o=$r;
-	foreach($o as $n=>$l) { list($l,)=explode(' ',$l,2); $url=$GLOBALS['filehost'].$l;
-		if($l=='config.php.tmpl') { $r=array_merge(getconf($url),$r); } // обработать конфиг
-		if(getras($l)=='lang') { $r=array_merge(getlang($url),$r); unset($r[$n]); } // обработать язык
-	}
-
-	return POST_file('',RE('url')."install",array('post_act'=>'check_pack','key'=>RE('key'),'ara'=>serialize($r)));
+	$pack=trim(RE('pack')); $r=get_pack_r($pack);
+	return POST_file('',RE('url')."install",array('post_act'=>'check_pack','pack'=>$pack,'key'=>RE('key'),'ara'=>serialize($r)));
 }
 
-/*
-//	idie(nl2br("size: ".sizeof($r)."\n\n".implode("\n",$r)));
-//	$s=print_r(),1); // ''; foreach(glob($inst) as $l) $s.=$l;
-//	$select_serv=fileget_save($dir."my_server.txt","http://lleo.me/blog");
-// fileput($dir.$file,$s);	
-
-	return "ohelpc('install','Select packets',\"".njsn($s)."\");";
-
-	$key=RE('key');
-	$url=rtrim(RE('url'),'/')."/install";
-	idie("Ja: ".$GLOBALS['httphost']." key=$key<br>url=$url");
-	$ser=RE('s'); fileput($dir."my_server.txt",$ser);
-	$key=hash_generate();
-	fileput($dir."install_key.php",'<?php die("Error 404"); $key="'.$key.'"; ?>');
-	return "majax('".$ser."/ajax/module.php',{mod:'INSTALL',a:'check',url:'".$httphost."',key:'".$key."'});";
-*/
-
-
-if($a=='install_test') { // инсталляция
-
-//	POST_file($filepath,$url,$fields,$port=80,$scheme='http');
+if($a=='install_test') { // инсталляция POST_file($filepath,$url,$fields,$port=80,$scheme='http');
 	$t=POST_file(array(
 $GLOBALS['filehost']."re.png",
 $GLOBALS['filehost']."re.php",
 $GLOBALS['filehost']."install.zip",
 $GLOBALS['filehost']."gg.zip"
 ),'http://lleo.me/blog/install',array('post_act'=>'do','aaa'=>'123','key'=>'rrr'));
-//	sendFile('http://lleo.me/blog/install',,$path, $filePath, $fileName, $fileField, $fields = );
-
 	idie($t);
-// eeeeeeeeeeeee
 }
 
 
@@ -402,23 +557,24 @@ function calcfile_md5($l,$ras) {
 	return md5($txt);
 }
 
-// взять данные по пакету (если basic - то просканировать)
-function getpack($pack,$e) {
-	if($pack=='basic') $r=get_dfiles(); // подсчитать суммы
-	else { $r=array(); $s=file($GLOBALS['filehost']."binoniq/instlog/instpack/".$pack.".pack");
+// взять данные по пакету (если ALL - то просканировать всё)
+function getpack($pack,$e) { global $filehost;
+	if($pack=='ALL') $r=get_dfiles(); // подсчитать суммы
+	else { $r=array(); $s=file($filehost."binoniq/instlog/instpack/".$pack.".pack");
 		foreach($s as $l) { list($name,$time,$md5)=explode(' ',trim($l));
-			$l=$GLOBALS['filehost'].$name; $tim=filemtime($l);
+			$l=$filehost.$name; $tim=filemtime($l);
 			if($time!=$tim) $md5=calcfile_md5($l,getras($l));
 			$r[]="$name $tim $md5";
 		}
 	}
 	$s=implode("\n",$r);
-	$dir=$GLOBALS['filehost'].'binoniq/instlog/instpack/'; testdir($dir); // проверить папку для кэшиков
+	$dir=$filehost.'binoniq/instlog/instpack/'; testdir($dir); // проверить папку для кэшиков
 	fileput($dir.$pack.".pack",$s); // сохранить список
 
 	foreach($r as $n=>$l) { if(in_array($l,$e)) unset($r[$n]); } // выкинуть дубли
 	return array_merge($e,$r);
 }
+
 
 function get_dfiles() { global $stop,$veto_dir,$md5mas,$filehostn,$filehost,$allmd5change;
 	$stop=1000;
@@ -775,6 +931,20 @@ function get_my_pack($dir) { $s="my: "; // если есть своя папка с пакетами
 	$s.="<span title='Create my inctallpack!' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:''})\" style='margin-left:20px'>new</span>"
 ."<span title='System dir' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'edit_file',file:'".$dir."system_dir.txt'})\" style='margin-left:20px'>system_dir</span>";
 	return $s;
+}
+
+function createkey() { $key=sha1(hash_generate()); // сформировать ключ
+	fileput($GLOBALS['filehost']."binoniq/instlog/install_key.php",'<?php die("Error 404"); $key="'.$key.'"; ?>');
+	return $key;
+}
+
+function get_pack_r($pack) {
+	$r=array(); foreach(explode(' ',$pack) as $l) $r=getpack($l,$r); // взять все указанные пакеты
+	return $r;
+	$o=$r; foreach($o as $n=>$l) { list($l,)=explode(' ',$l,2); $url=$GLOBALS['filehost'].$l;
+		if($l=='config.php.tmpl') { $r=array_merge(getconf($url),$r); } // обработать конфиг
+		if(getras($l)=='lang') { $r=array_merge(getlang($url),$r); unset($r[$n]); } // обработать язык, сам не слать
+	} return $r;
 }
 
 ?>
