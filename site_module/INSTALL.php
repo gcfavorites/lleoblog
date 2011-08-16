@@ -37,7 +37,7 @@ i_get_selected=function(){ var ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').ge
                 if(e.style.color=='green') {
                         var v=e.innerHTML.replace(/^<br>/g,'').replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1');
                         if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
-                        s=s+'\\n'+dir+v;
+                        s=s+'\\n'+(dir!='/'?dir:'')+v;
                 }
             }
         }
@@ -66,7 +66,7 @@ i_submit=function(e){ var ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElem
 	ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ e=ee[j];
 			var v=e.innerHTML.replace(/^<br>/g,'').replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1');
 			if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
-			s=s+'<br>'+dir+v+' | ';
+			s=s+'<br>'+(dir!='/'?dir:'')+v+' | ';
 			if(e.style.textDecoration=='none') { s=s+e.style.color; }
 			else s=s+'------';
 		}
@@ -379,12 +379,11 @@ http://lleo.me/dnevnik Stable
 http://lleo.me Super Stable
 http://binoniq.net Server Stable");
 
-
 	$select_serv=fileget_save($dir."my_server.txt","http://lleo.me/blog\n+basic");
 
 // ЗЕНОНЗАЕБАЛ!!!!!11
 if( ($l=str_replace('lleo.aha.ru','lleo.me',$serv)) != $serv) { fileput($dir."servers.txt",$l); $serv=$l; }
-if( ($l=str_replace('lleo.aha.ru','lleo.me',$select_serv)) != $select_serv) { fileput($dir."my_servers.txt",$l); $select_serv=$l; }
+if( ($l=str_replace('lleo.aha.ru','lleo.me',$select_serv)) != $select_serv) { fileput($dir."my_server.txt",$l); $select_serv=$l; }
 // ЗЕНОНЗАЕБАЛ!!!!!11
 
 	$select_serv=explode("\n",$select_serv);
@@ -455,7 +454,7 @@ i_packsave=function(){
 	majax('module.php',{mod:'INSTALL',a:'install_pack_save',s:i_get_selected(),name:idd('newpack_name').value});
 };
 
-ohelpc('pack','Edit pack',\"".njsn(
+ohelpc('pack','Edit pack: $name',\"".njsn(
 ($name==''?"<b>name: </b><input type='text' value='' size='10' maxlength='20' id='newpack_name'>":
 "<input type='hidden' value='$name' id='newpack_name'>")
 .$subm
@@ -469,21 +468,13 @@ if($a=='install_pack_del') { // удаление пакета
 
 if($a=='install_pack_save') { // приемка создания нового пакета majax('module.php',{mod:'INSTALL',a:'install_pack_save',s:s,name:idd('newpack_name').value});
 	$name=preg_replace("/[^0-9a-z\_\-\.]+/s",'',strtolower(RE('name'))); if(empty($name)) return "idd('newpack_name').value='$name'; idie('Name error! Only: 0-9a-z_-.');";
-	$pp=explode("\n",trim(RE('s'),"\n"));
-	dier($pp);
-
-	$p=array(); foreach($pp as $l) $p[$l]=1;
-
-	$s=''; foreach(get_dfiles() as $l) { list($file,$ftime,$fkey)=explode(' ',$l,3); if(isset($p[$file])) $s.=$l."\n";
-}
-
-
-
+	$s=''; $r=get_dfiles_r(); foreach(explode("\n",trim(RE('s'),"\n")) as $l) {
+		if(isset($r[$l])) { $time=$r[$l][0]; $md5=$r[$l][1]; }
+		else { $ras=getras($l); $time=filemtime($l); $md5=calcfile_md5($l,$ras); }
+		$s.="$l $time $md5\n";
+	}
 	if($s=='') return "salert('Empty pack!',1000);";
-
-//	idie("$name<p>$s");
-
-	testdir($dir."instpack"); file_put_contents($dir."instpack/".$name.".pack",$s);
+	testdir($dir."instpack"); fileput($dir."instpack/".$name.".pack",$s);
 	return "clean('pack'); zabil('mypacks',\"".njsn(get_my_pack($dir))."\"); salert('Pack <b>$name</b> saved!',1000);";
 }
 
@@ -531,6 +522,9 @@ if($a=='install_far_check') { // отправить запрос на проверку
 }
 
 if($a=='install_test') { // инсталляция POST_file($filepath,$url,$fields,$port=80,$scheme='http');
+	$r=get_dfiles_r();
+	dier($r);
+
 	$t=POST_file(array(
 $GLOBALS['filehost']."re.png",
 $GLOBALS['filehost']."re.php",
@@ -548,36 +542,29 @@ $GLOBALS['filehost']."gg.zip"
 //=========================================================================
 //=========================================================================
 //=========================================================================
-function sr($s){ return "<font color=red>$s</font>"; }
-function sg($s){ return "<font color=green>$s</font>"; }
+//function sr($s){ return "<font color=red>$s</font>"; }
+//function sg($s){ return "<font color=green>$s</font>"; }
 
 function getras($s){ $r=explode('.',$s); if(sizeof($r)==1) return ''; return array_pop($r); }
 
 // высчитать кс файла со всеми вычетами и проверками
-function calcfile_md5($l,$ras) {
-	$txt=file_get_contents($l);
-	if($ras=='php') $txt=preg_replace("/[\n\r]+\/\*\s*lleo\s*\*\/[^\n\r]+/si","\n",$txt);
-	return md5($txt);
-}
+function calcfile_md5($l,$ras) { $o=file_get_contents($l); if($ras=='php') $o=preg_replace("/[\n\r]+\/\*\s*lleo\s*\*\/[^\n\r]+/si","\n",$o); return md5($o); }
 
-// взять данные по пакету (если ALL - то просканировать всё)
-function getpack($pack,$e) { global $filehost;
+// взять данные по пакету $pack (если ALL - то просканировать всё) и добавить к массиву $e
+function getpack($pack,$e) { global $filehost; $save=0;
+	$dir=$filehost."binoniq/instlog/instpack/"; testdir($dir); // проверить папку для кэшиков
 	if($pack=='ALL') $r=get_dfiles(); // подсчитать суммы
-	else { $r=array(); $s=file($filehost."binoniq/instlog/instpack/".$pack.".pack");
+	else { $r=array(); $s=file($dir.$pack.".pack");
 		foreach($s as $l) { list($name,$time,$md5)=explode(' ',trim($l));
 			$l=$filehost.$name; $tim=filemtime($l);
-			if($time!=$tim) $md5=calcfile_md5($l,getras($l));
+			if($time!=$tim) { $md5=calcfile_md5($l,getras($l)); $save=1; } // исправить
 			$r[]="$name $tim $md5";
 		}
 	}
-	$s=implode("\n",$r);
-	$dir=$filehost.'binoniq/instlog/instpack/'; testdir($dir); // проверить папку для кэшиков
-	fileput($dir.$pack.".pack",$s); // сохранить список
-
+	if($save) fileput($dir.$pack.".pack",implode("\n",$r)); // сохранить пакет, если были изменения
 	foreach($r as $n=>$l) { if(in_array($l,$e)) unset($r[$n]); } // выкинуть дубли
 	return array_merge($e,$r);
 }
-
 
 // ПОЛУЧИТЬ МАССИВ ПО ВСЕМ ФАЙЛАМ ДВИЖКА (которые разрешены в system_dir.txt)
 function get_dfiles() { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allmd5change; $stop=1000;
@@ -596,13 +583,13 @@ function get_dfiles() { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allm
 	return $r;
 }
 
-
 function get_dfiles2($files) { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allmd5change; if(!--$stop) die('stop error');
-	$r=array(); $a=$filehost.$files; if(is_file($a)) $a=array($a); else { $a=glob($a."/*"); $h=$a."/.htaccess"; if(is_file($h)) $a[]=$h; }
+	$r=array(); $a=$filehost.$files; if(is_file($a)) $a=array($a); else { $b=glob($a."/*"); 
+$h=$a."/.htaccess"; if(is_file($h)) $b[]=$h; $a=$b;
+}
 	// сперва окучить файлы
-	foreach($a as $n=>$l) { if(is_dir($l)) continue;
-		$ras=getras($l); if(!in_array($l,$vetomas) && $ras!='old' && $ras!='off') {
-			$time=filemtime($l); $name=c(substr($l,$filehostn));
+	foreach($a as $n=>$l) { if(is_dir($l)) continue; $name=c(substr($l,$filehostn));
+		$ras=getras($l); if(!in_array($name,$vetomas) && $ras!='old' && $ras!='off') { $time=filemtime($l);
 			if(isset($md5mas[$name]) && $md5mas[$name][0]==$time) $md5=$md5mas[$name][1]; // без изменений
 			else { $md5=calcfile_md5($l,$ras); $md5mas[$name]=array($time,$md5); $allmd5change=1; }
 			$r[]="$name $time $md5";
@@ -612,6 +599,11 @@ function get_dfiles2($files) { global $stop,$md5mas,$vetomas,$filehostn,$filehos
 	// затем окучить папки
         foreach($a as $l) { if(!in_array($l,$vetomas)) { $name=c(substr($l,$filehostn)); $r=array_merge($r,get_dfiles2($name)); } }
         return $r;
+}
+
+function get_dfiles_r(){ // взять файлы в удобном формате
+	$r=array(); foreach(get_dfiles() as $l) { list($f,$time,$md5)=explode(' ',$l,3); $r[$f]=array($time,$md5); }
+	return $r;
 }
 //=========================================================================
 
