@@ -30,7 +30,7 @@
 $GLOBALS['selectjs']="
 i_selectmode='none';
 i_toggle_visible_d=0;
-i_slicen=3;
+i_slicen=1;
 
 i_toggle_visible=function(){ var g,ee,p,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
 	for(var i=0;i<tr.length;i++){ p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue; ee=td2.getElementsByTagName('DIV');
@@ -87,7 +87,7 @@ i_submit=function(e){ var ff,o,ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').ge
 			if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
 			ff=(dir!='/'?dir:'')+v;
 			if(e.style.textDecoration=='none') { o=e.style.color;
-				if(o=='green') inst_MAS_UPD.push(ff);
+				if(o=='green'||o=='rgb(0, 255, 0)') inst_MAS_UPD.push(ff);
 				else if(o=='red') inst_MAS_DEL.push(ff);
 				else ohelpc('errError optino','Error option','Error option: '+o);
 			} else inst_MAS_NON.push(ff);
@@ -99,11 +99,13 @@ i_process();
 
 
 i_process=function(){
+	if(inst_MAS_DEL.length) return majax('module.php',{mod:'INSTALL',a:'install_update_DEL',d:inst_MAS_DEL.join('\\n'),mode:'post'});
+	return;
 	if(inst_MAS_UPD.length) return majax('module.php',{mod:'INSTALL',a:'install_update_UPD',d:inst_MAS_UPD.slice(0,i_slicen).join('\\n'),mode:'post'});
 	return;
 
 	if(inst_MAS_NON.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join('\\n'),mode:'post',pack:i_pack});
-	if(inst_MAS_DEL.length) return majax('module.php',{mod:'INSTALL',a:'install_update_DEL',d:inst_MAS_NON.join('\\n'),mode:'post'});	
+
 	if(inst_MAS_UPD.length) return majax('module.php',{mod:'INSTALL',a:'install_update_DEL',d:inst_MAS_NON.slice(0,3).join('\\n'),mode:'post'});
 
 /*	for(var i in inst_MAS_NON) { var s=i_find(inst_MAS_NON[i]); s.parentNode.removeChild(s); } */
@@ -115,8 +117,6 @@ i_process=function(){
   if(inst_MAS_UPD.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join(' '),pack:i_pack});
 	/*ohelpc('asd','sda',s);  majax('module.php',{mod:'INSTALL',a:'install_update_go',s:s,pack:i_pack});*/
 }
-
-i_hides=function(a){ if(!a.length) return; for(var i in a) { i_find(a[i]).innerHTML='#'; }};
 
 i_find=function(id){ var ff,o,ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
 	for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue; dir=td1.firstChild.innerHTML; ee=td2.getElementsByTagName('DIV');
@@ -145,6 +145,7 @@ go_install=function(id){ var t,c,tr=idd('i_selectfiles').getElementsByTagName('T
 			var l=x.innerHTML; var O=l.substring(0,1); l=l.substring(1,l.length);
 			x.innerHTML='<br>'+l; x.onclick=function(){i_chan(this)}; x.style.display='inline';
 				if(O=='U') { c='green'; t='update'; }
+				else if(O=='A') { c='rgb(0, 255, 0)'; t='add new'; }
 				else if(O=='D') { c='red'; t='del'; }
 				else { c='magenta'; t='unk'; }
 			x.style.color=c; i_sett(x,t);
@@ -154,7 +155,21 @@ i_toggle_visible();
 posdiv(id,-1,-1);
 };
 
-i_chand=function(e){ var p=e.parentNode.nextSibling.getElementsByTagName('DIV'); for(var i=0;i<p.length;i++) i_chan(p[i]) };
+i_chand=function(e){ var c='',p=e.parentNode.nextSibling.getElementsByTagName('DIV');
+	for(var i=0;i<p.length;i++) {
+		/* i_chan(p[i]); */
+		if(i=='') c=i_chan_tst(p[i])?0:1;
+		i_chan_chg(p[i],c);
+	}
+};
+
+i_chan_tst=function(e){	return i_selectmode=='color' && e.style.color=='green' || i_selectmode!='color' && e.style.textDecoration=='none' }
+
+i_chan_chg=function(e,i){
+  if(i_selectmode=='color') e.style.color=i?'green':'red';
+  else e.innerHTML=i?e.innerHTML.replace(/\&nbsp;/g,' ').replace(/^<br> +(.+?) +$/g,'<br>$1'):e.innerHTML.replace(/^<br>(.+?)$/g,'<br>&nbsp;&nbsp;$1&nbsp;&nbsp;');
+  e.style.textDecoration=(i?'none':'line-through');
+}
 
 i_chan=function(e){ var s=0;
   if(i_selectmode=='color') { if(e.style.color=='red') { e.style.color='green'; s=1; } else e.style.color='red'; }
@@ -223,28 +238,47 @@ function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".pri
 */
 //=========================================================
 	// 3. Что с файлами?
+	$DDDIR=array();
+
 	$ruf=get_dfiles_r($pack);
 
 //return "<pre>".print_r($ruf,1)."</pre>";
-return "<pre>".print_r($Ufile,1)."</pre>";
+//return "<pre>".print_r($Ufile,1)."</pre>";
 
 	foreach($Ufile as $f=>$d) {
-		//$fhost=$GLOBALS['filehost'].$f; // физический файл
 		$fname=basename($f); // его имя
 		$fdir=dirname($f).'/'; if($fdir=='./') $fdir='/'; // имя папки
+		if(!isset($DDDIR[$fdir])) $DDDIR[$fdir]=array(); // создать такую папку
 
-		if($fdir!=$lastdir){ $s.="</td></tr></table><table><tr valign=top><td><b>$fdir</b></td><td>"; $lastdir=$fdir; }
-
-		if(!isset($ruf[$fname])) $o='U'; // если такого у нас не было - добавить
+		if(!isset($ruf[$fname])) $o='A'; // если такого у нас не было - добавить
 		else {
-			if($ruf[$fname]==$d) $o='O'; // если тот же - ОК
+			if($ruf[$fname]==$d) $o=''; // если тот же - ОК
 			else $o='U'; // если не тот - обновить
 			unset($ruf[$fname]); // в любом случае удалить
 		}
-		$s.="<div>".$o.$fname."</div>";
+		if($o!='') $DDDIR[$fdir][$fname]=$o;
 	}
 
-//	foreach($ruf as $f=>$d) $s.="<div>".'D'.$fname."</div>"; // и поудалять
+	// собрать все удаляемые
+	foreach($ruf as $f=>$d) { // и оставшиеся вне пакета поудалять
+		$fdir=dirname($f).'/'; if($fdir=='./') $fdir='/'; // имя папки
+		if(!isset($DDDIR[$fdir])) $DDDIR[$fdir]=array(); // создать такую папку
+		$DDDIR[$fdir][basename($f)]='D';
+	}
+
+	// и напечатать
+	foreach($DDDIR as $dir=>$val) { $s.="</td></tr></table><table><tr valign=top><td><b>".h($dir)."</b></td><td>";
+		foreach($val as $n=>$o) $s.="<div>".$o.$n."</div>";
+	}
+
+	// return "<pre>".print_r($DDDIR,1)."</pre>";
+
+		// $s.="<div>".$o.$fname."</div>";
+		//if($fdir!=$lastdir){ $s.="</td></tr></table><table><tr valign=top><td><b>$fdir</b></td><td>"; $lastdir=$fdir; }
+		//if($fdir!=$lastdir){ $s.="</td></tr></table><table><tr valign=top><td><b>$fdir</b></td><td>"; $lastdir=$fdir; }
+		//$s.="<div>".'D'.basename($f)."</div>";
+
+
 
 //=========================================================
 
@@ -587,6 +621,10 @@ i_process();
 
 if($a=='install_update_DEL') { // DEL - удалить файлы
 	$pp=explode("\n",RE('d')); // добавить новые
+	return "var s=inst_MAS_DEL.pop(); s=i_find(s); s.parentNode.removeChild(s);";
+
+// ){ var s=i_find(inst_MAS_NON[i]); s.parentNode.removeChild(s); } inst_MAS_DEL=[]; i_process();";
+
 	dier($pp);
 	$f=$dir."my_veto.txt";
 	if(($s=file_get_contents($f))!==false) { $s=unserialize($s);

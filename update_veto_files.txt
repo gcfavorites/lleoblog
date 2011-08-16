@@ -1,7 +1,7 @@
 _install_md5.php
 _veto.php
 
-binoniq/
+binoniq
 
 design/userpick.jpg.lleo 
 module/install/no/
