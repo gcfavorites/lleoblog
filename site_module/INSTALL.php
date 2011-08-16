@@ -130,9 +130,7 @@ function UPDATE_testkey($key){ // безопасность: проверка ключа инсталляции
 
 function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".print_r($r,1);
 
-	$rp=get_pack_r($pack);
-
-	return "<pre>$pack<hr>".print_r($rp,1);
+//	$rp=get_pack_r($pack);	return "<pre>$pack<hr>".print_r($rp,1);
 
 	$s="<table><tr><td><input type='button' onclick='i_submit()' value='INSTALL'>";
 	$otstup=''; $lastdir='';
@@ -150,6 +148,7 @@ function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".pri
 		$Ufile[$file]=$val;
 	}
 
+/*
 //=========================================================
 	// 1. Что с конфигом?
 	// config:msq_login $msq_login = ""; // "lleo";
@@ -177,25 +176,29 @@ function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".pri
 	foreach($lan as $ll=>$arper) foreach($arper as $cn=>$cv) $allan[$ll].="<div>".'D'.$cn." = ".h($cv)."</div>"; // предлагается удалить
 
 	foreach($allan as $ll=>$oo) $s.="</td></tr></table><table><tr valign=top><td><b>LANG:$ll:</b></td><td>".$oo;
- 
+*/
 //=========================================================
 	// 3. Что с файлами?
+	$ruf=get_dfiles_r($pack);
+
 	foreach($Ufile as $f=>$d) {
-		$fhost=$GLOBALS['filehost'].$f; // физический файл
+		//$fhost=$GLOBALS['filehost'].$f; // физический файл
 		$fname=basename($f); // его имя
 		$fdir=dirname($f).'/'; if($fdir=='./') $fdir='/'; // имя папки
 
-		if($fdir!=$lastdir){
-			$s.="</td></tr></table><table><tr valign=top><td><b>$fdir</b></td><td>";
-			$lastdir=$fdir;
-			// <div class=\"$dirname ii1\" onclick='i_d(this)'>".$dirname."</div>";
-		}
+		if($fdir!=$lastdir){ $s.="</td></tr></table><table><tr valign=top><td><b>$fdir</b></td><td>"; $lastdir=$fdir; }
 
-		if(is_file($fhost)) {
-				$o='D';
-		} else $o='U';
+		if(!isset($ruf[$fname])) $o='U'; // если такого у нас не было - добавить
+		else {
+			if($ruf[$fname]==$d) $o='O'; // если тот же - ОК
+			else $o='U'; // если не тот - обновить
+			unset($ruf[$fname]); // в любом случае удалить
+		}
 		$s.="<div>".$o.$fname."</div>";
 	}
+
+//	foreach($ruf as $f=>$d) $s.="<div>".'D'.$fname."</div>"; // и поудалять
+
 //=========================================================
 
 	return "<div id='i_selectfiles'>$s</td></tr></table></div>";
@@ -484,9 +487,9 @@ if($a=='install_pack_del') { // удаление пакета
 if($a=='install_pack_save') { // приемка создания нового пакета majax('module.php',{mod:'INSTALL',a:'install_pack_save',s:s,name:idd('newpack_name').value});
 	$name=preg_replace("/[^0-9a-z\_\-\.]+/s",'',strtolower(RE('name'))); if(empty($name)) return "idd('newpack_name').value='$name'; idie('Name error! Only: 0-9a-z_-.');";
 	$s=''; $r=get_dfiles_r(); foreach(explode("\n",trim(RE('s'),"\n")) as $l) {
-		if(isset($r[$l])) { $time=$r[$l][0]; $md5=$r[$l][1]; }
-		else { $ras=getras($l); $time=filemtime($l); $md5=calcfile_md5($l,$ras); }
-		$s.="$l $time $md5\n";
+		if(isset($r[$l])) $time_md5=$r[$l];
+		else { $ras=getras($l); $time_md5=filemtime($l)." ".calcfile_md5($l,$ras); }
+		$s.="$l $time_md5\n";
 	}
 	if($s=='') return "salert('Empty pack!',1000);";
 	testdir($dir."instpack"); fileput($dir."instpack/".$name.".pack",$s);
@@ -618,9 +621,10 @@ function get_dfiles2($files) { global $stop,$md5mas,$vetomas,$filehostn,$filehos
         return $r;
 }
 
-function get_dfiles_r(){ // взять файлы в удобном формате
-	$r=array(); foreach(get_dfiles() as $l) { list($f,$time,$md5)=explode(' ',$l,3); $r[$f]=array($time,$md5); }
-	return $r;
+function get_dfiles_r($pack='ALL') { // взять файлы в удобном формате
+	$r=array(); foreach(explode(' ',$pack) as $p) {
+		foreach(getpack($p,array()) as $l) { list($f,$time,$md5)=explode(' ',$l,3); $r[$f]=$time." ".$md5; }
+	} return $r;
 }
 //=========================================================================
 
