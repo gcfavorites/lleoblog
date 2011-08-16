@@ -102,6 +102,7 @@ i_process=function(){
 	if(inst_MAS_NON.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join('\\n'),mode:'post',pack:i_pack});
 	if(inst_MAS_DEL.length) return majax('module.php',{mod:'INSTALL',a:'install_update_DEL',file:inst_MAS_DEL[0],mode:'post'});
 	if(inst_MAS_UPD.length) return majax('module.php',{mod:'INSTALL',a:'install_update_UPD',file:inst_MAS_UPD[0],mode:'post'});
+	clean('install2');
 }
 
 i_find=function(id){ var ff,o,ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
@@ -168,14 +169,11 @@ i_chan=function(e){ var s=0;
 ";
 
 function UPDATE_file($name,$temp) {
-	$f=realpath($GLOBALS['filehost'].$name);
-	return $f;
-
-	$fileh=$GLOBALS['filehost']."binoniq/tmp/".basename($name);
-        move_uploaded_file($temp,$fileh); // filechmod($fileh);
-	return "name: $name data: ".strlen($data)." bytes";
+	$f=$GLOBALS['filehost'].$name;
+	testdir(dirname($f)); // создать папки, если надо
+        move_uploaded_file($temp,$f); filechmod($f);
+	return 1; //dirname($f)."|$f| name: $name data: ".strlen($data)." bytes";
 }
-
 
 function UPDATE_testkey($key){ // безопасность: проверка ключа инсталляции
 	$f=$GLOBALS['filehost'].'binoniq/instlog/install_key.php'; $k=file_get_contents($f); unlink($f);
@@ -241,17 +239,16 @@ function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".pri
 //return "<pre>".print_r($Ufile,1)."</pre>";
 
 	foreach($Ufile as $f=>$d) {
-		$fname=basename($f); // его имя
 		$fdir=dirname($f).'/'; if($fdir=='./') $fdir='/'; // имя папки
 		if(!isset($DDDIR[$fdir])) $DDDIR[$fdir]=array(); // создать такую папку
 
-		if(!isset($ruf[$fname])) $o='A'; // если такого у нас не было - добавить
+		if(!isset($ruf[$f])) $o='A'; // если такого у нас не было - добавить
 		else {
-			if($ruf[$fname]==$d) $o=''; // если тот же - ОК
-			else $o='U'; // если не тот - обновить
-			unset($ruf[$fname]); // в любом случае удалить
+			if($ruf[$f]==$d) $o=''; // если тот же - ОК
+			else $o='U (<br>'.$ruf[$f].'<br>'.$d.'<br>)'; // U если не тот - обновить
+			unset($ruf[$f]); // в любом случае удалить
 		}
-		if($o!='') $DDDIR[$fdir][$fname]=$o;
+		if($o!='') $DDDIR[$fdir][basename($f)]=$o;
 	}
 
 	// собрать все удаляемые
@@ -332,8 +329,8 @@ if($a=='update_file') { // выбор файлов для инсталляции
 		if($f['error']!=0) die("alert('Error upload: ".h($f["error"])."')"); // ошибка файла
 		$s.=UPDATE_file($name,$f["tmp_name"]);
 	}
-	// $s="<pre>".print_r($_FILES,1);
-	die("ohelpc('file_install2','post',\"".njsn($s)."\");");
+	if($s!=1) die("ohelpc('file_install2','post',\"".njsn($s)."\");");
+	die("var s=inst_MAS_UPD.shift(); s=i_find(s); s.parentNode.removeChild(s); i_process();");
 }
 
 
@@ -628,16 +625,10 @@ if($a=='install_update_UPD') { // UPD - обновить 1 файл
 	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'$file'})";
 } // А ВОТ И ОН - СЕРВЕР-МАТКА:
 if($a=='install_update_far') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
-	return "alert(3)";
-
 	$file=RE('file'); $fhost=$GLOBALS['filehost'].$file;
 	if(!is_file($fhost)) return "alert('File not found: ".h($file)."')";
-
 	return POST_file($GLOBALS['filehost'].$file,RE('url')."install",array('post_act'=>'update_file','file'=>$file,'key'=>RE('key'),'ara'=>serialize($r)));
 }
-
-
-
 
 
 // обработка конфига

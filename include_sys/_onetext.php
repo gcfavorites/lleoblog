@@ -34,9 +34,9 @@ if(isset($_GET['mode']) and ($_GET['mode']=='mudoslov' or $_GET['mode']=='mudosl
 */
 
 // произвести автоформатирование
-if($p['autoformat']!='no') $s=str_replace(array("\n\n","\n"),($p['autoformat']=='p'?
-array("<p>","<br>"):array("<p class=pd>","<p class=d>")),"\n\n"
-.str_replace("\n ","\n<p class=z>","\n".$s));
+if($p['autoformat']!='no') $s=str_replace(
+	array("\n\n","\n"),($p['autoformat']=='p'?array("<p>","<br>"):array("<p class=pd>","<p class=d>")),
+str_replace("\n ","\n<p class=z>","\n\n".$s));
 
 // return "<div id='Body_".$article['num']."'".
 
