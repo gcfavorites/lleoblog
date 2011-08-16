@@ -207,7 +207,8 @@ function removeEvent(e,evType,fn){
 function helps_cancel(id,f) { getElementsByClass('can',idd(id))[0].onclick=f; }
 function helpc(id,s) { helps(id,s); posdiv(id,-1,-1); }
 function ohelpc(id,z,s) { helpc(id,"<fieldset><legend>"+z+"</legend>"+s+"</fieldset>"); }
-function idie(s) { ohelpc('idie','Error',s) }
+function idie(s) { var e=typeof s; if(e=='object') s='<pre>'+print_r(s)+'</pre>'; ohelpc('idie','Error type: '+e,s) }
+dier=idie;
 
 function helps(id,s,pos) {
 s=s+"<div onclick=\"clean('"+id+"')\" class='can' title='cancel'></div>";

@@ -30,6 +30,7 @@
 $GLOBALS['selectjs']="
 i_selectmode='none';
 i_toggle_visible_d=0;
+i_slicen=3;
 
 i_toggle_visible=function(){ var g,ee,p,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
 	for(var i=0;i<tr.length;i++){ p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue; ee=td2.getElementsByTagName('DIV');
@@ -96,9 +97,15 @@ i_submit=function(e){ var ff,o,ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').ge
 i_process();
 };
 
+
 i_process=function(){
+	if(inst_MAS_UPD.length) return majax('module.php',{mod:'INSTALL',a:'install_update_UPD',d:inst_MAS_UPD.slice(0,i_slicen).join('\\n'),mode:'post'});
+	return;
+
 	if(inst_MAS_NON.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join('\\n'),mode:'post',pack:i_pack});
-	
+	if(inst_MAS_DEL.length) return majax('module.php',{mod:'INSTALL',a:'install_update_DEL',d:inst_MAS_NON.join('\\n'),mode:'post'});	
+	if(inst_MAS_UPD.length) return majax('module.php',{mod:'INSTALL',a:'install_update_DEL',d:inst_MAS_NON.slice(0,3).join('\\n'),mode:'post'});
+
 /*	for(var i in inst_MAS_NON) { var s=i_find(inst_MAS_NON[i]); s.parentNode.removeChild(s); } */
 	
 	return;
@@ -217,6 +224,9 @@ function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".pri
 //=========================================================
 	// 3. Что с файлами?
 	$ruf=get_dfiles_r($pack);
+
+//return "<pre>".print_r($ruf,1)."</pre>";
+return "<pre>".print_r($Ufile,1)."</pre>";
 
 	foreach($Ufile as $f=>$d) {
 		//$fhost=$GLOBALS['filehost'].$f; // физический файл
@@ -557,29 +567,40 @@ if($a=='install_check') { // инсталляция
 
 if($a=='install_update_NON') { // NON - пометить файлы отмеченные как
 	$f=$dir."my_veto.txt";
-//	$s=explode("\n",RE('d'));
-//	fileput($f,serialize($s));
-	
-
 	if(($s=file_get_contents($f))!==false) { $s=unserialize($s);
 		$r=get_dfiles_r(RE('pack')); // взять все файлы для этих пакетов
 		foreach($s as $n=>$l) { $l=trim($l); if(isset($r[$l])) unset($s[$n]); } // позбрасывать все для этих пакетов
 	} else $s=array();
 	$s=array_merge($s,explode("\n",RE('d'))); // добавить новые
+	fileput($f,serialize($s));
+	return "for(var i in inst_MAS_NON){ var s=i_find(inst_MAS_NON[i]); s.parentNode.removeChild(s); } inst_MAS_NON=[]; i_process();";
+}
 
-//	$s=explode("\n",RE('d'));
-//	dier(explode("\n",RE('d')));
-//	$my_veto=explode("\n",RE('d'));
-	
-//	fileput($f,serialize($s));
+if($a=='install_update_UPD') { // UPD - обновить файлы
 	return "
-
-while((i=inst_MAS_NON.shift)) { alert(i); }
-
-/*for(var i in inst_MAS_NON) { var s=i_find(inst_MAS_NON[i]); delete(inst_MAS_NON[i]); s.parentNode.removeChild(s); } i_process();*/
-
+var p=inst_MAS_UPD.slice(0,i_slicen);
+for(var i in p){ var s=i_find(p[i]); s.parentNode.removeChild(s); }
+inst_MAS_UPD=cpmas(inst_MAS_UPD.slice(i_slicen));
+i_process();
 ";
 }
+
+if($a=='install_update_DEL') { // DEL - удалить файлы
+	$pp=explode("\n",RE('d')); // добавить новые
+	dier($pp);
+	$f=$dir."my_veto.txt";
+	if(($s=file_get_contents($f))!==false) { $s=unserialize($s);
+		$r=get_dfiles_r(RE('pack')); // взять все файлы для этих пакетов
+		foreach($s as $n=>$l) { $l=trim($l); if(isset($r[$l])) unset($s[$n]); } // позбрасывать все для этих пакетов
+	} else $s=array();
+	$s=array_merge($s,explode("\n",RE('d'))); // добавить новые
+	fileput($f,serialize($s));
+	return "for(var i in inst_MAS_DEL){ var s=i_find(inst_MAS_NON[i]); s.parentNode.removeChild(s); } inst_MAS_DEL=[]; i_process();";
+}
+
+
+
+
 
 	// if(($s=file($dir."my_veto.txt"))!==false) foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#' && !in_array($l,$my_veto)) $my_veto[]=$l; }
 
