@@ -252,9 +252,7 @@ $subm="<input type='button' value='Save' onclick='i_packsave()'>"
 ."&nbsp; &nbsp; <span class='ll' onclick=\"i_selectall()\">select</span>"
 ."&nbsp; &nbsp; <span class='ll' onclick=\"packdel()\">delete</span>";
 
-	return $GLOBALS['selectjs']."
-
-i_selectmode='color';
+	return $GLOBALS['selectjs']."i_selectmode='color';
 
 packdel=function(){ if(confirm('Delete pack `".$name.".pack`?')) majax('module.php',{mod:'INSTALL',a:'install_pack_del',name:idd('newpack_name').value}); };
 

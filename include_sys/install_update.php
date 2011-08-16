@@ -4,6 +4,37 @@
 // ФУНКЦИИ УПДЕЙТОВ
 
 $GLOBALS['selectjs']="
+i_selectmode='none';
+
+i_get_selected=function(){ var ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
+        for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue;
+        dir=td1.firstChild.innerHTML;
+        ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ e=ee[j];
+                if(e.style.color=='green') {
+                        var v=e.innerHTML.replace(/^<br>/g,'').replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1');
+                        if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
+                        s=s+'\\n'+dir+v;
+                }
+            }
+        }
+return s;
+};
+
+i_selectall=function(){ var ee,v,td1,td2,selo='',p,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
+        for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue;
+        ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){
+
+        if(i_selectmode=='color') {
+           if(selo=='') selo=(ee[j].style.color=='red'?'green':'red'); ee[j].style.color=selo;
+           ee[j].style.textDecoration=(selo=='red'?'line-through':'none');
+        }else{
+           if(selo=='') selo=(ee[j].style.textDecoration=='none'?'line-through':'none'); ee[j].style.textDecoration=selo;
+        }
+
+            }
+        }
+};
+
 
 i_submit=function(e){ var ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
 	for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue;
@@ -31,24 +62,25 @@ go_install=function(){ var t,c,tr=idd('i_selectfiles').getElementsByTagName('TR'
 		var dir=td1.firstChild; dir.onclick=function(){i_chand(this)}; i_sett(dir,'Invert selected files');
 		var ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ var x=ee[j];
 			var l=x.innerHTML; var O=l.substring(0,1); l=l.substring(1,l.length);
-			x.setAttribute('myl',l); x.setAttribute('myO',O);
 			x.innerHTML='<br>'+l; x.onclick=function(){i_chan(this)}; x.style.display='inline';
 				if(O=='U') { c='green'; t='update'; }
 				else if(O=='D') { c='red'; t='del'; }
 				else { c='magenta'; t='unk'; }
 			x.style.color=c; i_sett(x,t);
+			if(i_selectmode=='color') x.style.textDecoration=(c=='red'?'line-through':'none');
 }}};
 
 setTimeout(go_install,500);
 
 i_chand=function(e){ var p=e.parentNode.nextSibling.getElementsByTagName('DIV'); for(var i=0;i<p.length;i++) i_chan(p[i]) };
 
-i_chan=function(e){ 
-	if(e.style.textDecoration=='none'){ e.style.textDecoration='line-through';
-		e.innerHTML=e.innerHTML.replace(/^<br>(.+?)$/g,'<br>&nbsp;&nbsp;$1&nbsp;&nbsp;');
-	}else{ e.style.textDecoration='none';
-		e.innerHTML=e.innerHTML.replace(/\&nbsp;/g,' ').replace(/^<br> +(.+?) +$/g,'<br>$1');
-	}
+i_chan=function(e){ var s=0;
+  if(i_selectmode=='color') { if(e.style.color=='red') { e.style.color='green'; s=1; } else e.style.color='red'; }
+  else{
+	if(e.style.textDecoration=='none') e.innerHTML=e.innerHTML.replace(/^<br>(.+?)$/g,'<br>&nbsp;&nbsp;$1&nbsp;&nbsp;');
+	else{ s=1; e.innerHTML=e.innerHTML.replace(/\&nbsp;/g,' ').replace(/^<br> +(.+?) +$/g,'<br>$1'); }
+  }
+  e.style.textDecoration=(s?'none':'line-through');
 };
 ";
 
@@ -62,7 +94,6 @@ function UPDATE_testkey($key){ // безопасность: проверка ключа инсталляции
 function UPDATE_select($rrr) { $r=unserialize($rrr); // return "<pre>".print_r($r,1);
 	$s="<table><tr><td><input type='button' onclick='i_submit()' value='INSTALL'>";
 	$otstup=''; $lastdir='';
-
 
 	// 1. рассортировать данные
 	$Uconf=array(); // тут будут конфиговые переменные
