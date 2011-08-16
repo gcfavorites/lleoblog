@@ -99,23 +99,9 @@ i_process();
 
 
 i_process=function(){
-	if(inst_MAS_DEL.length) return majax('module.php',{mod:'INSTALL',a:'install_update_DEL',d:inst_MAS_DEL.join('\\n'),mode:'post'});
-	return;
-	if(inst_MAS_UPD.length) return majax('module.php',{mod:'INSTALL',a:'install_update_UPD',d:inst_MAS_UPD.slice(0,i_slicen).join('\\n'),mode:'post'});
-	return;
-
 	if(inst_MAS_NON.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join('\\n'),mode:'post',pack:i_pack});
-
-	if(inst_MAS_UPD.length) return majax('module.php',{mod:'INSTALL',a:'install_update_DEL',d:inst_MAS_NON.slice(0,3).join('\\n'),mode:'post'});
-
-/*	for(var i in inst_MAS_NON) { var s=i_find(inst_MAS_NON[i]); s.parentNode.removeChild(s); } */
-	
-	return;
-
-  if(inst_MAS_NON.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join(' '),pack:i_pack});
-  if(inst_MAS_DEL.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join(' '),pack:i_pack});
-  if(inst_MAS_UPD.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join(' '),pack:i_pack});
-	/*ohelpc('asd','sda',s);  majax('module.php',{mod:'INSTALL',a:'install_update_go',s:s,pack:i_pack});*/
+	if(inst_MAS_DEL.length) return majax('module.php',{mod:'INSTALL',a:'install_update_DEL',file:inst_MAS_DEL[0],mode:'post'});
+	if(inst_MAS_UPD.length) return majax('module.php',{mod:'INSTALL',a:'install_update_UPD',file:inst_MAS_UPD[0],mode:'post'});
 }
 
 i_find=function(id){ var ff,o,ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
@@ -321,8 +307,6 @@ function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".pri
 // POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
 
 if(sizeof($_POST)!=0 && !empty($_POST['post_act'])) { $a=$_POST['post_act'];
-	// include_once($GLOBALS['include_sys'].'install_update.php');
-
 	if(!UPDATE_testkey($_POST['key'])) die("ohelpc('install2','post',\"error key\");"); // безопасность: ключ инсталляции
 
 if($a=='check_pack') { // выбор файлов для инсталляции
@@ -330,6 +314,14 @@ if($a=='check_pack') { // выбор файлов для инсталляции
 	$s=UPDATE_select(urldecode($_POST['ara']),$p);
 	die($GLOBALS['selectjs']."ohelpc('install2','post',\"".njsn($s)."\"); i_pack='$p'; go_install('install2');");
 }
+
+if($a=='update_file') { // выбор файлов для инсталляции
+//	die($p=strtr($_POST['pack'],'+',' ');
+//	$s=UPDATE_select(urldecode($_POST['ara']),$p);
+	$s=urldecode($_POST['file']);
+	die("ohelpc('file_install2','post',\"".njsn($s)."\");");
+}
+
 
 // idie('1');
 	$a=$_POST;
@@ -521,7 +513,6 @@ ohelpc('install','Select server',\"".njsn($s)."\");";
 }
 
 if($a=='install_edit_pack') { // форма редактирования пакета или создания нового (name='')
-	// include_once($GLOBALS['include_sys'].'install_update.php');
 	$name=RE('name'); $s="<table><tr><td>";
 
 	$p=array(); if($name!='' && ($r=file($dir."instpack/".$name.".pack"))!==false) {
@@ -586,19 +577,21 @@ if($a=='install_get_packs') { // выслать список пакетов
 }
 
 // принять запрос на инсталляцию пакетов
-if($a=='install_check') { // инсталляция
+if($a=='install_check') { // инсталляция - ЭТО ПРОИСХОДИТ ЕЩЕ НА СОБСТВЕННОМ СЕРВЕРЕ
 	$ser=RE('s'); $pack=RE('pack');
 	$e=explode(' ',$pack); $w=array(); foreach($e as $l){ if($l[0]=='+') $w[]=substr($l,1); }
 	fileput($dir."my_server.txt",$ser.strtr($pack,' ',"\n"));
-	$key=createkey(); // сформировать ключ
-	// return "majax('".$ser."/ajax/module.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'$key'})";
-	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'$key'})";
+	// делаем запрос на сервер-матку
+	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'".createkey()."'})";
+} // А ВОТ И ОН - СЕРВЕР-МАТКА:
+if($a=='install_far_check') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
+	$pack=trim(RE('pack')); $r=get_pack_r($pack);
+	return POST_file('',RE('url')."install",array('post_act'=>'check_pack','pack'=>$pack,'key'=>RE('key'),'ara'=>serialize($r)));
 }
 
 
-// подготовлено решение об инсталляции
-// return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join(':'),mode:'post',pack:i_pack});
 
+// подготовлено решение об инсталляции
 if($a=='install_update_NON') { // NON - пометить файлы отмеченные как
 	$f=$dir."my_veto.txt";
 	if(($s=file_get_contents($f))!==false) { $s=unserialize($s);
@@ -610,58 +603,22 @@ if($a=='install_update_NON') { // NON - пометить файлы отмеченные как
 	return "for(var i in inst_MAS_NON){ var s=i_find(inst_MAS_NON[i]); s.parentNode.removeChild(s); } inst_MAS_NON=[]; i_process();";
 }
 
-if($a=='install_update_UPD') { // UPD - обновить файлы
-	return "
-var p=inst_MAS_UPD.slice(0,i_slicen);
-for(var i in p){ var s=i_find(p[i]); s.parentNode.removeChild(s); }
-inst_MAS_UPD=cpmas(inst_MAS_UPD.slice(i_slicen));
-i_process();
-";
+if($a=='install_update_DEL') { // DEL - удалить 1 файл
+	$file=RE('file'); $f=$GLOBALS['filehost'].$file;
+	if(is_file($f)) unlink($f); elseif(is_dir($f)) rmdir($f); else idie('Not found: '.h($f));
+	return "var s=inst_MAS_DEL.shift(); s=i_find(s); s.parentNode.removeChild(s); i_process();";
 }
 
-if($a=='install_update_DEL') { // DEL - удалить файлы
-	$pp=explode("\n",RE('d')); // добавить новые
-	return "var s=inst_MAS_DEL.pop(); s=i_find(s); s.parentNode.removeChild(s);";
-
-// ){ var s=i_find(inst_MAS_NON[i]); s.parentNode.removeChild(s); } inst_MAS_DEL=[]; i_process();";
-
-	dier($pp);
-	$f=$dir."my_veto.txt";
-	if(($s=file_get_contents($f))!==false) { $s=unserialize($s);
-		$r=get_dfiles_r(RE('pack')); // взять все файлы для этих пакетов
-		foreach($s as $n=>$l) { $l=trim($l); if(isset($r[$l])) unset($s[$n]); } // позбрасывать все для этих пакетов
-	} else $s=array();
-	$s=array_merge($s,explode("\n",RE('d'))); // добавить новые
-	fileput($f,serialize($s));
-	return "for(var i in inst_MAS_DEL){ var s=i_find(inst_MAS_NON[i]); s.parentNode.removeChild(s); } inst_MAS_DEL=[]; i_process();";
+if($a=='install_update_UPD') { // UPD - обновить 1 файл
+	$file=RE('file'); $ser=file($dir."my_server.txt"); $ser=$u[0]; // вычислить текущий сервер
+	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'$file'})";
+} // А ВОТ И ОН - СЕРВЕР-МАТКА:
+if($a=='install_update_far') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
+	$file=RE('file');
+	return POST_file($GLOBALS['filehost'].$file,RE('url')."install",array('post_act'=>'update_file','file'=>$file,'key'=>RE('key'),'ara'=>serialize($r)));
 }
 
 
-
-
-
-	// if(($s=file($dir."my_veto.txt"))!==false) foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#' && !in_array($l,$my_veto)) $my_veto[]=$l; }
-
-
-if($a=='install_update_go') { // инсталляция
-	$a=explode("\n".RE('s')); $pack=RE('pack');
-	$D=$U=$N=array();
-	foreach($a as $l) { list($x,$f)=explode(':',$l);
-		if($x=='U') $Udel[]=$f;
-		elseif($x=='D') $D[]=$f;
-		elseif($x=='N') $N[]=$f;
-		else idie("Error value: `".h($l)."`");
-	}
-	
-
-	idie(nl2br($s));
-
-//	$e=explode(' ',$pack); $w=array(); foreach($e as $l){ if($l[0]=='+') $w[]=substr($l,1); }
-//	fileput($dir."my_server.txt",$ser.strtr($pack,' ',"\n"));
-//	$key=createkey(); // сформировать ключ
-//	// return "majax('".$ser."/ajax/module.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'$key'})";
-//	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'$key'})";
-}
 
 
 
@@ -686,12 +643,14 @@ function getlang($f){ $la=$GLOBALS['filehost'].'binoniq/lang/'; $nla=strlen($la)
 	return $r;
 }
 
-if($a=='install_far_check') { // отправить запрос на проверку
-	$pack=trim(RE('pack')); $r=get_pack_r($pack);
-	return POST_file('',RE('url')."install",array('post_act'=>'check_pack','pack'=>$pack,'key'=>RE('key'),'ara'=>serialize($r)));
-}
 
 if($a=='install_test') { // инсталляция POST_file($filepath,$url,$fields,$port=80,$scheme='http');
+	return "mijax('http://lleo.me/blog/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'binoniq/testdir/FOTOM.php'})";
+/*
+	$pack='';
+	dier(explode(' ',$pack));
+
+
 	$r=get_dfiles_r();
 	dier($r);
 
@@ -702,6 +661,7 @@ $GLOBALS['filehost']."install.zip",
 $GLOBALS['filehost']."gg.zip"
 ),'http://lleo.me/blog/install',array('post_act'=>'do','aaa'=>'123','key'=>'rrr'));
 	idie($t);
+*/
 }
 
 
@@ -723,11 +683,11 @@ function calcfile_md5($l,$ras) { $o=file_get_contents($l); if($ras=='php') $o=pr
 // взять данные по пакету $pack (если ALL - то просканировать всё) и добавить к массиву $e
 function getpack($pack,$e) { global $filehost; $save=0;
 	$dir=$filehost."binoniq/instlog/instpack/"; testdir($dir); // проверить папку для кэшиков
-	if($pack=='ALL') $r=get_dfiles(); // подсчитать суммы
+	if(empty($pack)) $r=get_dfiles(); // подсчитать суммы
 	else { $r=array(); $s=file($dir.$pack.".pack");
 		foreach($s as $l) { list($name,$time,$md5)=explode(' ',trim($l));
-			$l=$filehost.$name; $tim=filemtime($l);
-			if($time!=$tim) { $md5=calcfile_md5($l,getras($l)); $save=1; } // исправить
+			$l=$filehost.$name; if(!is_file($l)) { $save=1; continue; } // файл был удален
+			$tim=filemtime($l); if($time!=$tim) { $save=1; $md5=calcfile_md5($l,getras($l)); } // исправить
 			$r[]="$name $tim $md5";
 		}
 	}
@@ -773,7 +733,7 @@ function get_dfiles2($files) { global $stop,$md5mas,$vetomas,$filehostn,$filehos
         return $r;
 }
 
-function get_dfiles_r($pack='ALL') { // взять файлы в удобном формате
+function get_dfiles_r($pack='') { // взять файлы в удобном формате
 	$r=array(); foreach(explode(' ',$pack) as $p) {
 		foreach(getpack($p,array()) as $l) { list($f,$time,$md5)=explode(' ',$l,3); $r[$f]=$time." ".$md5; }
 	} return $r;
@@ -941,80 +901,6 @@ return "<table width=100% style='border: 1px dotted red'>
 
 function testdir($s) { $a=explode('/',rtrim($s,'/')); $s=''; for($i=0;$i<sizeof($a);$i++) { $s.='/'.$a[$i]; if(!is_dir($s)) dirput($s); } }
 
-
-//////////
-
-// turn sendFile($url['host'],$url['port'],$to,$b,basename($b), "oo", $ara);
-
-/*
-//==================================================================================================
-// процедура передачи данных и файлов через POST-запрос по старинке без всяких там уебищных CURL-библиотек
-// $filePath - полное имя (с путем) файла для передачи или массив имен файлов для передачи (если файлы не передаются - '')
-// $urla - адрес запроса, напр. http://lleo.me/blog/install
-// $ara - массив переменных POST, напр: array('action'=>'do','key'=>'1','user'=>123)
-// возвравщает ответ сервера или, если ошибка, строку, начинающуюся с 'ERROR:'
-function POST_file($filePath,$urla,$ara,$port=80,$scheme='http',$charset='Windows-1251') {
-
-unset($ara['ara']);
-
-// return print_r($ara,1);
-
-	$url=array_merge(array('scheme'=>$scheme,'port'=>$port),parse_url($urla));
-	$bu="---------------------".substr(md5($filePath.rand(0,32000)),0,10); $r="\r\n"; $ft=$r.'--'.$bu.'--'.$r;
-
-	// данные
-	$dat=''; if(count($ara)) foreach($ara as $n=>$v) $dat.='--'.$bu.$r.'Content-Disposition: form-data; name="'.$n.'"'.$r.$r.urlencode($v).$r;
-
-	$len=strlen($dat); // общая длина
-
-	$files=array(); $k=0; foreach($filePath as $l) { if(empty($l)) continue;
-		if(!is_file($l)) return "ERROR: file not found '$l'";
-		$fh='--'.$bu.$r
-		.'Content-Disposition: form-data; name="file'.(++$k).'"; filename="'.urlencode(basename($l)).'"'.$r
-		.'Content-Type: '.$charset.$r
-		.$r;
-
-		$len+=strlen($fh.$ft)+filesize($l);
-		$files[$l]=$fh;
-	}
-
-	$headers="POST ".$urla." HTTP/1.0".$r
-	."Host: ".$url['host'].$r
-	."Referer: ".$url['host'].$r
-	."Content-type: multipart/form-data, boundary=".$bu.$r
-	."Content-length: ".$len.$r
-	.$r
-	.$dat;
-
-
-
-	// открыть хост
-	if(!$fp=fsockopen($url['host'],$url['port'])) return "ERROR: can't open url ".$url['host'].":".$url['port'];
-	// запихнуть заголовок и POST-массив
-	if(fputs($fp,$headers)===false) return "ERROR: can't send #1";
-
-	if(count($files)) foreach($files as $l=>$fh) { // позапихивать файлы
-		if(fputs($fp,$fh)===false) return "ERROR: can't send #2";
-		// открыть файл и запихнуть его
-		if(($fp2=fopen($l,"rb"))===false) return "ERROR: can't open file '".$l."'";
-		while(!feof($fp2)) if(fputs($fp,fgets($fp2,1024*100))===false) return "ERROR: can't send #4";
-		fclose($fp2);
-		// запихнуть заключительный хедер
-		if(fputs($fp,$ft)===false) return "ERROR: can't send #5";
-	}
-
-return '1234 '.$headers;
-
-	// и получить ответ
-	$s=''; while(!feof($fp)) $s.=fgets($fp,4096); fclose($fp);
-	if($s=='') return "ERROR: NO RESPONSE";
-
-return $s;
-
-	list($h,$t)=explode($r.$r,$s,2); return $t;
-}
-*/
-
 //==================================================================================================
 // процедура передачи данных и файлов через POST-запрос по старинке без всяких там уебищных CURL-библиотек
 // $filePath - полное имя (с путем) файла для передачи или массив имен файлов для передачи (если файлов нет - '')
@@ -1093,7 +979,7 @@ function createkey() { $key=sha1(hash_generate()); // сформировать ключ
 	return $key;
 }
 
-function get_pack_r($pack) {
+function get_pack_r($pack='') {
 	$r=array(); foreach(explode(' ',$pack) as $l) $r=getpack($l,$r); // взять все указанные пакеты
 	return $r;
 	$o=$r; foreach($o as $n=>$l) { list($l,)=explode(' ',$l,2); $url=$GLOBALS['filehost'].$l;
@@ -1101,5 +987,4 @@ function get_pack_r($pack) {
 		if(getras($l)=='lang') { $r=array_merge(getlang($url),$r); unset($r[$n]); } // обработать язык, сам не слать
 	} return $r;
 }
-
 ?>
