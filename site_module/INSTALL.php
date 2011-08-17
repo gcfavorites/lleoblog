@@ -1,5 +1,7 @@
 <?php // INSTALL
 
+ini_set("display_errors","0"); ini_set("display_startup_errors","0");
+
 // if(!function_exists('h')) die("Error 404");
 
 /*
@@ -175,6 +177,17 @@ function UPDATE_file($name,$temp) {
 	if(realpath($f)) { load_vetomas(); foreach($GLOBALS['vetomas'] as $l) { if(strtolower(substr($name,0,strlen($l)))==$l) return "Disabled file: ".h($l); } }
 	testdir(dirname($f)); // создать папки, если надо
         move_uploaded_file($temp,$f); filechmod($f);
+
+	if(getras($f)=='css' && !empty($GLOBALS['www_design'])) {
+		$s=file_get_contents($f);
+		//---------------------------- если чо надо поменять -------------
+		$s=preg_replace("/url\([\'\"]*[^\s\'\"\)]+\/design\/(.*?)[\'\"]*\)/si",'url('.$GLOBALS['www_design']."$1)",$s);
+		$s=preg_replace("/\@charset\s[\'\"][^\s\'\"]+[\'\"]*/si",'@charset "'.$GLOBALS['wwwcharset'].'"',$s);
+		$s=str_replace('{www_design}',$GLOBALS['www_design'],$s);
+		//----------------------------------------------------------------
+		fileput($f,$s);
+	}
+
 	return 1; //dirname($f)."|$f| name: $name data: ".strlen($data)." bytes";
 }
 
@@ -514,10 +527,13 @@ if( ($l=str_replace('lleo.aha.ru','lleo.me',$select_serv)) != $select_serv) { fi
 ."mijax(this.value+'/ajax/midule.php',{mod:'INSTALL',a:'install_get_packs'});"
 ."\" id")."
 <br><input type='button' value='Check Update' onclick='servselect(this)'>
+<div id='epacks' style='margin: 20px; border: 1px dotted #ccc'>";
+
+/*
 <input type='button' value='Clean *.old' onclick=\"$maj'install_clean',s:idd('servs').value})\">
 <input type='button' value='Back' onclick=\"$maj'install_back',s:idd('servs').value})\">
 <input type='button' value='TEST' onclick=\"$maj'install_test',s:idd('servs').value})\">
-<div id='epacks' style='margin: 20px; border: 1px dotted #ccc'>";
+*/
 
 unset($select_serv[0]);
 foreach($select_serv as $l) { $w=substr($l,1);
@@ -714,13 +730,22 @@ $GLOBALS['filehost']."gg.zip"
 function getras($s){ $r=explode('.',$s); if(sizeof($r)==1) return ''; return array_pop($r); }
 
 // высчитать кс файла со всеми вычетами и проверками
-function calcfile_md5($l,$ras) { $o=file_get_contents($l); if($ras=='php') $o=preg_replace("/[\n\r]+\/\*\s*lleo\s*\*\/[^\n\r]+/si","\n",$o); return md5($o); }
+function calcfile_md5($l,$ras) { $o=file_get_contents($l);
+	if($ras=='php') $o=preg_replace("/[\n\r]+\/\*\s*lleo\s*\*\/[^\n\r]+/si","\n",$o);
+	if($ras=='pack') $o=preg_replace("/((^|\n)[^ ])+.+?$/s","$1",$o);
+	if($ras=='css') {
+	        $o=preg_replace("/url\([\'\"]*[^\s\'\"\)]+[\'\"]*\)/si",'#',$o);
+        	$o=preg_replace("/\@charset\s[\'\"][^\s\'\"]+[\'\"]*/si",'#',$o);
+	        $o=str_replace('{www_design}','#',$o);
+	}
+	return md5($o);
+}
 
 // взять данные по пакету $pack (если ALL - то просканировать всё) и добавить к массиву $e
 function getpack($pack,$e) { global $filehost; $save=0;
 	$dir=$filehost."binoniq/instlog/instpack/"; testdir($dir); // проверить папку для кэшиков
 	if(empty($pack)) $r=get_dfiles(); // подсчитать суммы
-	else { $r=array(); $s=file($dir.$pack.".pack");
+	else if(is_file($dir.$pack.".pack")) { $r=array();  $s=file($dir.$pack.".pack");
 		foreach($s as $l) { list($name,$time,$md5)=explode(' ',trim($l));
 			$l=$filehost.$name; if(!is_file($l)) { $save=1; continue; } // файл был удален
 			$tim=filemtime($l); if($time!=$tim) { $save=1; $md5=calcfile_md5($l,getras($l)); } // исправить
