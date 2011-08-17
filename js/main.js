@@ -470,13 +470,16 @@ function bigfoto(i,p){ var Z=(typeof p == 'undefined');
 
 // tip
 
-function init_tip(w) { var tip_x=0,tip_y=15; if(!idd('tip')) mkdiv('tip','','qTip');
+function init_tip(w) { var /*tip_x=0,tip_y=15*/tip_x=-35,tip_y=25; if(!idd('tip')) /*mkdiv('tip','','qTip');*/ {
+mkdiv('tip','','b-popup bubble-node b-popup-noclosecontrol');
+zabil('tip','<div class="b-popup-outer"><div class="b-popup-inner"><div id="rtip" style="display: block;"></div><i class="i-popup-arr i-popup-arrtl"><i class="i-popup-arr-brdr-outer"><i class="i-popup-arr-brdr-inner"><i class="i-popup-arr-bg"></i></i></i></i><i class="i-popup-close"></i></div></div>');
+}
 	var a,s,e; var el=['a','label','input','img','span','div'];
 	for(var j=0;j<el.length;j++){ e=w.getElementsByTagName(el[j]); if(e){ for(var i=0;i<e.length;i++){ a=e[i];
 		s=a.getAttribute('title')||a.getAttribute('alt');
 		if(s && a.onMouseOver==undefined){ a.setAttribute('tiptitle',s);
 		a.removeAttribute('title'); a.removeAttribute('alt');
-		addEvent(a,'mouseover',function(){ idd('tip').innerHTML=this.getAttribute('tiptitle'); posdiv('tip',mouse_x+tip_x,mouse_y+tip_y); } );
+		addEvent(a,'mouseover',function(){ idd('rtip').innerHTML=this.getAttribute('tiptitle'); posdiv('tip',mouse_x+tip_x,mouse_y+tip_y); } );
 		addEvent(a,'mouseout',function(){ zakryl('tip') } );
 		addEvent(a,'mousemove',function(){ posdiv('tip',mouse_x+tip_x,mouse_y+tip_y) } );
 //		a.onMouseOver=function(){ idd('tip').innerHTML='#########'; otkryl('tip'); };
