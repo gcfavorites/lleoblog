@@ -284,7 +284,7 @@ $obnovle=0;
 	// и напечатать
 
 	// взять мою ветошь
-	$veto=unserialize(file_get_contents($GLOBALS['filehost']."binoniq/instlog/my_veto.txt")); if(empty($veto)) $veto=array(); // на всякий случай
+	$veto=unserialize(file_get_contents($GLOBALS['filehost']."binoniq/instlog/veto.my")); if(empty($veto)) $veto=array(); // на всякий случай
 
 	foreach($DDDIR as $dir=>$val) if(sizeof($val)) { 
 		$s.="</td></tr></table><table><tr valign=top><td><b>".h($dir)."</b></td><td>";
@@ -292,7 +292,7 @@ $obnovle=0;
 	}
 
 	// return "<pre>".print_r($DDDIR,1)."</pre>";
-
+// $pack!='ALL' && 
 		// $s.="<div>".$o.$fname."</div>";
 		//if($fdir!=$lastdir){ $s.="</td></tr></table><table><tr valign=top><td><b>$fdir</b></td><td>"; $lastdir=$fdir; }
 		//if($fdir!=$lastdir){ $s.="</td></tr></table><table><tr valign=top><td><b>$fdir</b></td><td>"; $lastdir=$fdir; }
@@ -398,6 +398,32 @@ if(isset($GLOBALS['admin_hash1']) && preg_match("/^[0-9a-z]{40}$/",$admin_hash1)
 	$pass=c($pass);	if($pass=='') return "salert('Where the password?!',2000);";
 	config_change('admin_hash1',broident2($pass.$GLOBALS['koldunstvo1']));
 	return "salert('Password: $pass',2000); window.location='".$GLOBALS['$mypage']."?reboot='+Math.random();";
+}
+
+
+//======================= MIJAX от внешнего сервера - БЕЗ АДМИСНКОГО ЛОГИНА! =====================
+// СЕРВЕР-МАТКА
+if($a=='install_update_far') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
+	$file=RE('file'); $fhost=realpath($GLOBALS['filehost'].$file);
+
+	load_vetomas(); foreach($GLOBALS['vetomas'] as $l) {
+		if(strtolower(substr($fhost,0,strlen($l)))==$l) return "alert('Disabled file: ".h($l)."')";
+	}
+
+	if(empty($fhost) || !is_file($fhost)) return "alert('File not found: ".h($file)."')";
+	return POST_file($GLOBALS['filehost'].$file,RE('url')."install",array('post_act'=>'update_file','file'=>$file,'key'=>RE('key'),'ara'=>serialize($r)));
+}
+
+if($a=='install_far_check') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
+	$pack=trim(RE('pack')); $r=get_pack_r($pack);
+	return POST_file('',RE('url')."install",array('post_act'=>'check_pack','pack'=>$pack,'key'=>RE('key'),'ara'=>serialize($r)));
+}
+
+// прислать по-бырому список доступных пакетов на этой станции - СЕРВЕР-МАТКА:
+if($a=='install_get_packs') { // выслать список пакетов
+	$s=''; $pacdir=$GLOBALS['filehost'].'binoniq/instlog/instpack/'; $p=glob($pacdir."*.pack"); $p[]=$pacdir."ALL.pack";
+	foreach($p as $l) { $l=basename($l,'.pack'); $s.="<div><input class='cb' name=\"$l\" type='checkbox'>$l</div>";	}
+	return "zabil('epacks',\"".njsn($s)."\")";
 }
 
 AD2();
@@ -510,11 +536,11 @@ http://lleo.me/dnevnik Stable
 http://lleo.me Super Stable
 http://binoniq.net Server Stable");
 
-	$select_serv=fileget_save($dir."my_server.txt","http://lleo.me/blog\n+basic");
+	$select_serv=fileget_save($dir."server.my","http://lleo.me/blog\n+basic");
 
 // ЗЕНОНЗАЕБАЛ!!!!!11
 if( ($l=str_replace('lleo.aha.ru','lleo.me',$serv)) != $serv) { fileput($dir."servers.txt",$l); $serv=$l; }
-if( ($l=str_replace('lleo.aha.ru','lleo.me',$select_serv)) != $select_serv) { fileput($dir."my_server.txt",$l); $select_serv=$l; }
+if( ($l=str_replace('lleo.aha.ru','lleo.me',$select_serv)) != $select_serv) { fileput($dir."server.my",$l); $select_serv=$l; }
 // ЗЕНОНЗАЕБАЛ!!!!!11
 
 	$select_serv=explode("\n",$select_serv);
@@ -529,11 +555,6 @@ if( ($l=str_replace('lleo.aha.ru','lleo.me',$select_serv)) != $select_serv) { fi
 <br><input type='button' value='Check Update' onclick='servselect(this)'>
 <div id='epacks' style='margin: 20px; border: 1px dotted #ccc'>";
 
-/*
-<input type='button' value='Clean *.old' onclick=\"$maj'install_clean',s:idd('servs').value})\">
-<input type='button' value='Back' onclick=\"$maj'install_back',s:idd('servs').value})\">
-<input type='button' value='TEST' onclick=\"$maj'install_test',s:idd('servs').value})\">
-*/
 
 unset($select_serv[0]);
 foreach($select_serv as $l) { $w=substr($l,1);
@@ -543,8 +564,7 @@ $s.="</div>";
 	$s.="<div id='mypacks' style='position:relative;font-size: 14px; margin: 20px; padding: 20px; border: 1px dotted #ccc'>"
 ."<img id='expert_knop' onclick=\"majax('module.php',{mod:'INSTALL',a:'expert_options_panel'})\""
 ." title='Other options<br>(expert mode)' src='".$GLOBALS['www_design']."e3/system.png' style='position:absolute;display:inline;right:0px;top:0px;cursor: pointer;'>"
-.get_my_pack($dir)."</div>"
-."<div id='mysettings'></div>";
+.get_my_pack($dir)."</div>";
 
 	return "
 servselect=function(e){ var s='',e=getElementsByClass('cb');
@@ -560,8 +580,17 @@ ohelpc('install','Select server',\"".njsn($s)."\");";
 }
 
 if($a=='expert_options_panel') { // панель опций
+
+$s="<input type='button' value='Clean *.old' onclick=\"$maj'install_clean',s:idd('servs').value})\">
+<input type='button' value='Back' onclick=\"$maj'install_back',s:idd('servs').value})\">
+<input type='button' value='TEST' onclick=\"$maj'install_test',s:idd('servs').value})\">
+<span title='Create my inctallpack!' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:''})\" style='margin-left:20px'>new</span>
+";
+
+foreach(glob($dir."*.txt") as $l) { $l0=basename($l); $s.="<div class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'edit_file',file:'$l'})\">$l0</div>"; }
+
 return "
-zabil('mypacks','<div>#######</div>'+vzyal('mypacks'));
+zabil('mypacks',\"<div style='border:1px dotted #ccc; width:100%;'>".njs($s)."</div>\"+vzyal('mypacks'));
 clean('expert_knop');
 ";
 // idie('###');
@@ -625,26 +654,14 @@ if($a=='install_pack_save') { // приемка создания нового пакета majax('module.ph
 	return "clean('pack'); zabil('mypacks',\"".njsn(get_my_pack($dir))."\"); salert('Pack <b>$name</b> saved!',1000);";
 }
 
-// прислать по-бырому список доступных пакетов на этой станции - СЕРВЕР-МАТКА:
-if($a=='install_get_packs') { // выслать список пакетов
-	$s=''; foreach(glob($dir."instpack/*.pack") as $l) { $l=basename($l,'.pack');
-		$s.="<div><input class='cb' name=\"$l\" type='checkbox'>$l</div>";
-	} return "zabil('epacks',\"".njsn($s)."\")";
-}
-
 // принять запрос на инсталляцию пакетов
 if($a=='install_check') { // инсталляция - ЭТО ПРОИСХОДИТ ЕЩЕ НА СОБСТВЕННОМ СЕРВЕРЕ
 	$ser=RE('s'); $pack=RE('pack');
 	$e=explode(' ',$pack); $w=array(); foreach($e as $l){ if($l[0]=='+') $w[]=substr($l,1); }
-	fileput($dir."my_server.txt",$ser.strtr($pack,' ',"\n"));
+	fileput($dir."server.my",$ser.strtr($pack,' ',"\n"));
 	// делаем запрос на сервер-матку
 	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'".createkey()."'})";
-} // А ВОТ И ОН - СЕРВЕР-МАТКА:
-if($a=='install_far_check') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
-	$pack=trim(RE('pack')); $r=get_pack_r($pack);
-	return POST_file('',RE('url')."install",array('post_act'=>'check_pack','pack'=>$pack,'key'=>RE('key'),'ara'=>serialize($r)));
-}
-
+} // А ВОТ И ОН - СЕРВЕР-МАТКА
 
 if($a=='arita_test') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
 	return "alert('test passed!')";
@@ -655,7 +672,7 @@ if($a=='arita_test') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матк
 
 // подготовлено решение об инсталляции
 if($a=='install_update_NON') { // NON - пометить файлы отмеченные как
-	$f=$dir."my_veto.txt";
+	$f=$dir."veto.my";
 	if(($s=file_get_contents($f))!==false) { $s=unserialize($s);
 		$r=get_dfiles_r(RE('pack')); // взять все файлы для этих пакетов
 		foreach($s as $n=>$l) { $l=trim($l); if(isset($r[$l])) unset($s[$n]); } // позбрасывать все для этих пакетов
@@ -672,20 +689,11 @@ if($a=='install_update_DEL') { // DEL - удалить 1 файл
 }
 
 if($a=='install_update_UPD') { // UPD - обновить 1 файл
-	$file=RE('file'); $ser=file($dir."my_server.txt"); $ser=trim($ser[0]); // вычислить текущий сервер
+	$file=RE('file'); $ser=file($dir."server.my"); $ser=trim($ser[0]); // вычислить текущий сервер
 	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'$file'})";
 } // А ВОТ И ОН - СЕРВЕР-МАТКА:
-if($a=='install_update_far') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
-	$file=RE('file'); $fhost=realpath($GLOBALS['filehost'].$file);
 
-	load_vetomas(); foreach($GLOBALS['vetomas'] as $l) {
-		if(strtolower(substr($fhost,0,strlen($l)))==$l) return "alert('Disabled file: ".h($l)."')";
-	}
-
-	if(empty($fhost) || !is_file($fhost)) return "alert('File not found: ".h($file)."')";
-	return POST_file($GLOBALS['filehost'].$file,RE('url')."install",array('post_act'=>'update_file','file'=>$file,'key'=>RE('key'),'ara'=>serialize($r)));
-}
-
+//====================================================================
 
 // обработка конфига
 function getconf($l){ $r=array();
@@ -757,7 +765,7 @@ function calcfile_md5($l,$ras) { $o=file_get_contents($l);
 // взять данные по пакету $pack (если ALL - то просканировать всё) и добавить к массиву $e
 function getpack($pack,$e) { global $filehost; $save=0;
 	$dir=$filehost."binoniq/instlog/instpack/"; testdir($dir); // проверить папку для кэшиков
-	if(empty($pack)) $r=get_dfiles(); // подсчитать суммы
+	if($pack='ALL') $r=get_dfiles(); // подсчитать суммы
 	else if(is_file($dir.$pack.".pack")) { $r=array();  $s=file($dir.$pack.".pack");
 		foreach($s as $l) { list($name,$time,$md5)=explode(' ',trim($l));
 			$l=$filehost.$name; if(!is_file($l)) { $save=1; continue; } // файл был удален
@@ -1046,11 +1054,9 @@ return $t;
 //==================================================================================================
 //==================================================================================================
 
-function get_my_pack($dir) { $s="installed: "; // если есть своя папка с пакетами
-	if(is_dir($dir.'instpack')) foreach(glob($dir.'instpack/*.pack') as $l) { $w=basename($l); $s.="<div class='l' style='margin-left:50px;' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:'".preg_replace("/\.pack$/s",'',$w)."'})\">$w</div>"; }
-	$s.="<span title='Create my inctallpack!' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:''})\" style='margin-left:20px'>new</span>"
-
-."<span title='System dir' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'edit_file',file:'".$dir."system_dir.txt'})\" style='margin-left:20px'>system_dir</span>";
+function get_my_pack($dir) { if(!is_dir($dir.'instpack')) return 'not found'; $s="installed: "; // если есть своя папка с пакетами
+		$p=glob($dir.'instpack/*.pack'); $p[]=$dir.'instpack/ALL.pack';
+		foreach($p as $l) { $w=basename($l); $s.="<div class='l' style='margin-left:50px;' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:'".preg_replace("/\.pack$/s",'',$w)."'})\">$w</div>"; }
 	return $s;
 }
 
