@@ -167,7 +167,12 @@ text-align: left; position: absolute; z-index: 999999; max-width: 30%;
     /* Popups with arrows
 --------------------------- */
 /* Must be removed after implementation of Framework! */
-.b-popup { position: absolute; font-size:12px; z-index: 99999; background-color:transparent; }
+.b-popup {
+    position: absolute;
+    font-size:12px;
+    z-index: 4000;
+    background-color:transparent;
+    }
     .b-popup input,
     .b-popup div,
     .b-popup strong,
@@ -185,7 +190,7 @@ text-align: left; position: absolute; z-index: 999999; max-width: 30%;
    -moz-box-shadow: 0 0 20px 10px #555;
 -webkit-box-shadow: 0 0 20px 10px #555;
     filter: progid:DXImageTransform.Microsoft.shadow(direction=120, color=#000000, strength=10);
-	z-index: 100;
+	z-index: 99999;
 	}
     .b-popup-inner {
 	padding: 10px 15px;
