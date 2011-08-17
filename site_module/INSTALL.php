@@ -540,7 +540,11 @@ foreach($select_serv as $l) { $w=substr($l,1);
 	$s.="<div><input class='cb' name=\"$w\" type='checkbox'".($l[0]=='+'?' checked':'').">$w</div>";
 }
 $s.="</div>";
-	$s.="<div id='mypacks' style='font-size: 11px; margin: 20px; border: 1px dotted red'>".get_my_pack($dir)."</div>";
+	$s.="<div id='mypacks' style='position:relative;font-size: 14px; margin: 20px; padding: 20px; border: 1px dotted #ccc'>"
+."<img id='expert_knop' onclick=\"majax('module.php',{mod:'INSTALL',a:'expert_options_panel'})\""
+." title='Other options<br>(expert mode)' src='".$GLOBALS['www_design']."e3/system.png' style='position:absolute;display:inline;right:0px;top:0px;cursor: pointer;'>"
+.get_my_pack($dir)."</div>"
+."<div id='mysettings'></div>";
 
 	return "
 servselect=function(e){ var s='',e=getElementsByClass('cb');
@@ -554,6 +558,15 @@ ohelpc('install','Select server',\"".njsn($s)."\");";
 //	alert(idd('servs').value+'/ajax/midule.php?mod=INSTALL&a=install_check&s='+idd('servs').value+'&pack='+encodeURIComponent(s));
 //
 }
+
+if($a=='expert_options_panel') { // панель опций
+return "
+mkdiv('expert_panel','######','',idd('mypacks'),1); otkryl('expert_panel');
+clean('expert_knop');
+";
+// idie('###');
+}
+
 
 if($a=='install_edit_pack') { // форма редактирования пакета или создания нового (name='')
 	$name=RE('name'); $s="<table><tr><td>";
@@ -1033,9 +1046,10 @@ return $t;
 //==================================================================================================
 //==================================================================================================
 
-function get_my_pack($dir) { $s="my: "; // если есть своя папка с пакетами
-	if(is_dir($dir.'instpack')) foreach(glob($dir.'instpack/*.pack') as $l) { $w=basename($l); $s.="<span class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:'".preg_replace("/\.pack$/s",'',$w)."'})\" style='margin-left:20px'>$w</span>&nbsp; "; }
+function get_my_pack($dir) { $s="installed: "; // если есть своя папка с пакетами
+	if(is_dir($dir.'instpack')) foreach(glob($dir.'instpack/*.pack') as $l) { $w=basename($l); $s.="<div class='l' style='margin-left:50px;' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:'".preg_replace("/\.pack$/s",'',$w)."'})\">$w</div>"; }
 	$s.="<span title='Create my inctallpack!' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:''})\" style='margin-left:20px'>new</span>"
+
 ."<span title='System dir' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'edit_file',file:'".$dir."system_dir.txt'})\" style='margin-left:20px'>system_dir</span>";
 	return $s;
 }
