@@ -52,7 +52,7 @@ overflow: auto; padding: 0.4em 0.4em 0.4em 0.4em; margin: 0.4em 0 0 0.4em; }
 .cplu,.cmin { font-size:8pt; }
 .cplu {color:red;cursor:n-resize} .cplu:before { content:'+'} .cplu:after { content:'..'}
 .cmin {color:blue;cursor:s-resize} .cmin:before { content:'-'} .cmin:after { content:'..'}
-.kmail:after { content: '.'url(/blog/design/e2/kmail.png)'.' }
+.kmail:after { content:url(/blog/design/e2/kmail.png) }
 
 .rul1:before {content:url(/blog/design/e3/button_accept.png)}
 .rul0:before {content:url(/blog/design/e3/list-remove.png)}
