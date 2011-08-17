@@ -561,7 +561,7 @@ ohelpc('install','Select server',\"".njsn($s)."\");";
 
 if($a=='expert_options_panel') { // панель опций
 return "
-mkdiv('expert_panel','######','',idd('mypacks'),1); otkryl('expert_panel');
+zabil('mypacks','<div>#######</div>'+vzyal('mypacks'));
 clean('expert_knop');
 ";
 // idie('###');
