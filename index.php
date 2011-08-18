@@ -1,12 +1,15 @@
 <?php
 
+//die('REMONT');
 
-// die('REMONT');
 
 include "config.php";
 include $include_sys."_autorize.php";
 $_SCRIPT=$_SCRIPT_ADD=$_STYLE=$_HEADD=array(); include $include_sys."_modules.php";
 include_once $include_sys."blogpage.php"; // потом удалить!!!
+
+
+
 mystart();
 
 // if($admin) idie('#<pre>'.print_r($_SERVER,1));
@@ -81,6 +84,8 @@ if(preg_match("/^".$pwwwhost."(\d\d\d\d\/\d\d\/\d\d.*)\.html/si", $path, $m)) AR
 // заметка месяца
 if(preg_match("/^".$pwwwhost."(\d\d\d\d\/\d\d)$/si", $path, $m)) ARTICLE_Date($m[1]); // Заметка
 
+
+
 // Корень => Последняя заметка ???
 if($path."/" == $wwwhost) {
  	// Yandex заебал индексировать титул блога! Он же меняется все время! Блять, для кого robots.txt был написан?!
@@ -136,7 +141,12 @@ $mod_name=substr($path,strlen($wwwhost)); $mod_name=str_replace('..','.',$mod_na
 //if(file_exists($file_template.$mod_name.".htm")) { $article=array('template'=>$mod_name,'num'=>0,'Date'=>h($mod_name)); ARTICLE(); }
 
 // затем ищем в модулях
-$mod=$host_module.$mod_name.".php"; if(file_exists($mod)) { include($mod); exit; }
+$mod=$host_module.$mod_name.".php"; if(file_exists($mod)) { 
+
+// die("REMONT7: `$mod`");
+
+include($mod); exit; }
+
 
 // затем в базе site
 $text=ms("SELECT `text` FROM `site` ".WHERE("`name`='".e($mod_name)."' AND `type`='page'"),"_l",$ttl);
