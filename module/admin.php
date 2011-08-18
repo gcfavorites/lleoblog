@@ -188,15 +188,12 @@ return "<div class=adminkletka><b>$name</b>: $message".($value?" &nbsp; <input t
 function admin_pohvast() { return "<center><div id=soobshi><input type=button value='Похвастаться успешной установкой' onclick=\"document.getElementById('soobshi').innerHTML = '<img src=http://lleo.aha.ru/blog/stat?link={httphost}>';\"></div></center>"; }
 
 //======================================================================================
-function msql4_varchar_255($t){
-	if($t[1]>255) return 'TEXT ыворпаолырполрв';
-	return "varchar(".$t[1].") eeeeeeeeee";
-}
+function msql4_varchar_255($t){	return ($t[1]>255?"TEXT":"varchar(".$t[1].")"); }
 
 
 
 // таблицы баз
-function admin_tables() { global $filehost,$admin,$mypage;
+function admin_tables() { global $msqe,$filehost,$admin,$mypage;
 	$s=file_get_contents($filehost."module/upgrade/sql.txt"); // взять список баз на создание
 	$s=preg_replace("/AUTO_INCREMENT=\d+/si","AUTO_INCREMENT=0",$s); // поправить сбитый автоинкремент
 	$s=preg_replace("/\n-[^\n]+/si","","\n".$s); // убрать строки комментариев
@@ -205,12 +202,36 @@ function admin_tables() { global $filehost,$admin,$mypage;
 		$l=c($l); if(!preg_match("/CREATE TABLE[^\n\`\(]+\`([^\`]+)\`/si",$l,$m)) continue; $table=$m[1];
 		if($admin && $GLOBALS['PEST'][$table]=='create' && !msq_table($table)) {
 //$old_msqe=$GLOBALS['msqe']; //if($_GET)
-$GLOBALS['msqe']=''; msq($l);
+$lq=$l; $z=0; while(1){ $msqe=''; msq($lq); if($msqe==''||(++$z>20)) break; $olq=$lq;
+
+	$o .= "<div style='margin:5px;border:3px dotted orange;'>Etage $z: $msqe
+<div><pre>".h($lq)."</pre></div>
+</div>";
+
+	if(strstr($msqe,'Too big column length for column'))
+		{ $lq=preg_replace_callback("/varchar\((\d+)\)/si","msql4_varchar_255",$lq); if($olq==$lq) break; continue; }
+
+	if(strstr($msqe,"server version for the right syntax to use near 'CURRENT_TIMESTAMP"))
+		{
+			$lq=str_replace('default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP','',$lq);
+			$lq=str_replace('default CURRENT_TIMESTAMP','',$lq);
+			if($olq==$lq) break; continue;
+		}
+
+	if(strstr($msqe,"server version for the right syntax to use near 'DEFAULT CHARSET=cp1251"))
+		{ $lq=str_replace('DEFAULT CHARSET=cp1251','',$lq); if($olq==$lq) break; continue; }
+
+
+
+//  'link' (max = 255). Use BLOB instead')
 // if($GLOBALS['msqe']!='') { $GLOBALS['msqe']=''; msq(str_replace('DEFAULT CHARSET=cp1251','',$l)); }
 // if($GLOBALS['msqe']!='') { $GLOBALS['msqe']=''; msq(preg_replace_callback("/varchar\((\d+)\)/si","msql4_varchar_255",$l)); }
 
+//	$o .= "<div style='margin:5px;border:3px dotted orange;'>Etage $z: $msqe</div>";
+	break;
+}
 
-$o .= $GLOBALS['msqe'];
+$o .= $msqe;
 $o .= admin_kletka($table,"<font color=green>создана</font>"); }
 		else if(msq_table($table)) {
 
