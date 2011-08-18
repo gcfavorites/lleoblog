@@ -428,6 +428,7 @@ if($a=='install_far_check') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом серве
 
 // прислать по-бырому список доступных пакетов на этой станции - СЕРВЕР-МАТКА:
 if($a=='install_get_packs') { // выслать список пакетов
+	$packs=explode(' ',trim(RE('pack')));
 	$dir=$GLOBALS['filehost'].'binoniq/instlog/'; $pacdir=$dir.'instpack/';
 	$ft=$dir."all_md5.tmp"; $lasttime=(is_file($ft)?date("Y-m-d h:i:s",filemtime($ft)):"- no -");
 	$s="<div class=r>Server: <b>".$GLOBALS['httphost']."</b>"
@@ -435,8 +436,7 @@ if($a=='install_get_packs') { // выслать список пакетов
 .(isset($GLOBALS['admin_mobile'])?"<br>mob:&nbsp;".$GLOBALS['admin_mobile']:'')
 ."' href='mailto:".$GLOBALS['admin_mail']."'>".$GLOBALS['admin_name']."</a>"
 ."<br>Last update: <b>".$lasttime."</b></div><p>";
-	$p=glob($pacdir."*.pack"); $p[]=$pacdir."ALL.pack";
-	foreach($p as $l) { $l=basename($l,'.pack'); $s.="<div><input class='cb' name=\"$l\" type='checkbox'>$l</div>";	}
+	foreach(get_my_packlist() as $l) $s.="<div><input class='cb' name=\"$l\" type='checkbox'".(in_array($l,$packs)?' checked':'').">$l</div>";
 	return "zabil('epacks',\"".njsn($s)."\")";
 }
 
@@ -564,10 +564,13 @@ if( ($l=str_replace('lleo.aha.ru','lleo.me',$select_serv)) != $select_serv) { fi
 	}
 
 	$s="server: ".selecto('servs',$select_serv[0],$o,"onchange=\"zabil('epacks','');"
-."mijax(this.value+'/ajax/midule.php',{mod:'INSTALL',a:'install_get_packs'});"
+."mijax(this.value+'/ajax/midule.php',{mod:'INSTALL',a:'install_get_packs',pack:'".implode(' ',get_my_packlist())."'});"
 ."\" id")."
 <br><input type='button' value='Check Update' onclick='servselect(this)'>
-<div id='epacks' style='margin: 20px; border: 1px dotted #ccc'>";
+<div id='epacks' style='margin: 20px; border: 1px dotted #ccc'>
+
+".implode(' ',get_my_packlist())."
+";
 
 
 unset($select_serv[0]);
@@ -578,7 +581,7 @@ $s.="</div>";
 	$s.="<div id='mypacks' style='position:relative;font-size: 14px; margin: 20px; padding: 20px; border: 1px dotted #ccc'>"
 ."<img id='expert_knop' onclick=\"majax('module.php',{mod:'INSTALL',a:'expert_options_panel'})\""
 ." title='Other options<br>(expert mode)' src='".$GLOBALS['www_design']."e3/system.png' style='position:absolute;display:inline;right:0px;top:0px;cursor: pointer;'>"
-.get_my_pack($dir)."</div>";
+."<div id='mypacklist'>".get_my_pack($dir)."</div></div>";
 
 	return "
 servselect=function(e){ var s='',e=getElementsByClass('cb');
@@ -595,16 +598,20 @@ ohelpc('install','Select server',\"".njsn($s)."\");";
 
 if($a=='expert_options_panel') { // панель опций
 
-$s="<input type='button' value='Clean *.old' onclick=\"$maj'install_clean',s:idd('servs').value})\">
-<input type='button' value='Back' onclick=\"$maj'install_back',s:idd('servs').value})\">
+// <input type='button' value='Clean *.old' onclick=\"$maj'install_clean',s:idd('servs').value})\">
+// <input type='button' value='Back' onclick=\"$maj'install_back',s:idd('servs').value})\">
+$s="
 <input type='button' value='TEST' onclick=\"$maj'install_test',s:idd('servs').value})\">
-<span title='Create my inctallpack!' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:''})\" style='margin-left:20px'>new</span>
+
 ";
 
 foreach(glob($dir."*.txt") as $l) { $l0=basename($l); $s.="<div class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'edit_file',file:'$l'})\">$l0</div>"; }
 
 return "
-zabil('mypacks',\"<div style='border:1px dotted #ccc; width:100%;'>".njs($s)."</div>\"+vzyal('mypacks'));
+zabil('mypacks',\"<div style='margin-bottom:20px;'>".njs($s)."</div>\"+vzyal('mypacks'));
+zabil('mypacklist',\"".njsn(get_my_pack($dir,1)
+."<div title='Create my new inctallpack' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:''})\"><i>&lt;create new&gt;</i></div>"
+)."\");
 clean('expert_knop');
 ";
 // idie('###');
@@ -653,7 +660,7 @@ ohelpc('pack','Edit pack: $name',\"".njsn(
 
 if($a=='install_pack_del') { // удаление пакета
 	$name=RE('name'); unlink($dir."instpack/".$name.".pack");
-	return "clean('pack'); zabil('mypacks',\"".njsn(get_my_pack($dir))."\"); salert('Pack <b>$name</b> deleted!',1000);";
+	return "clean('pack'); zabil('mypacklist',\"".njsn(get_my_pack($dir))."\"); salert('Pack <b>$name</b> deleted!',1000);";
 }
 
 if($a=='install_pack_save') { // приемка создания нового пакета majax('module.php',{mod:'INSTALL',a:'install_pack_save',s:s,name:idd('newpack_name').value});
@@ -665,7 +672,7 @@ if($a=='install_pack_save') { // приемка создания нового пакета majax('module.ph
 	}
 	if($s=='') return "salert('Empty pack!',1000);";
 	testdir($dir."instpack"); fileput($dir."instpack/".$name.".pack",$s);
-	return "clean('pack'); zabil('mypacks',\"".njsn(get_my_pack($dir))."\"); salert('Pack <b>$name</b> saved!',1000);";
+	return "clean('pack'); zabil('mypacklist',\"".njsn(get_my_pack($dir))."\"); salert('Pack <b>$name</b> saved!',1000);";
 }
 
 // принять запрос на инсталляцию пакетов
@@ -1068,10 +1075,15 @@ return $t;
 //==================================================================================================
 //==================================================================================================
 
-function get_my_pack($dir) { if(!is_dir($dir.'instpack')) return 'not found'; $s="installed: "; // если есть своя папка с пакетами
-		$p=glob($dir.'instpack/*.pack'); $p[]=$dir.'instpack/ALL.pack';
-		foreach($p as $l) { $w=basename($l); $s.="<div class='l' style='margin-left:50px;' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:'".preg_replace("/\.pack$/s",'',$w)."'})\">$w</div>"; }
+function get_my_pack($dir,$i=0) { if(!is_dir($dir.'instpack')) return 'not found'; $s="<i>installed: </i>"; // если есть своя папка с пакетами
+	foreach(get_my_packlist() as $w) $s.="<div style='margin-left:50px;".($i
+?"' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:'$w'})\""
+:"font-weight:bold;'").">$w</div>";
 	return $s;
+}
+
+function get_my_packlist() { $pd=$GLOBALS['filehost'].'binoniq/instlog/instpack/'; if(!is_dir($pd)) return array();
+	$p=glob($pd."*.pack"); $p[]=$pd; foreach($p as $n=>$l) $p[$n]=basename($l,'.pack'); return $p;
 }
 
 function createkey() { $key=sha1(hash_generate()); // сформировать ключ

@@ -472,7 +472,7 @@ function bigfoto(i,p){ var Z=(typeof p == 'undefined');
 
 function init_tip(w) { var /*tip_x=0,tip_y=15*/tip_x=-35,tip_y=25; if(!idd('tip')) /*mkdiv('tip','','qTip');*/ {
 mkdiv('tip','','b-popup bubble-node b-popup-noclosecontrol');
-zabil('tip','<div class="b-popup-outer"><div class="b-popup-inner"><div id="rtip" style="display: block;"></div><i class="i-popup-arr i-popup-arrtl"><i class="i-popup-arr-brdr-outer"><i class="i-popup-arr-brdr-inner"><i class="i-popup-arr-bg"></i></i></i></i><i class="i-popup-close"></i></div></div>');
+zabil('tip','<div class="b-popup-outer"><div class="b-popup-inner"><div id="rtip"></div><i class="i-popup-arr i-popup-arrtl"><i class="i-popup-arr-brdr-outer"><i class="i-popup-arr-brdr-inner"><i class="i-popup-arr-bg"></i></i></i></i><i class="i-popup-close"></i></div></div>');
 }
 	var a,s,e; var el=['a','label','input','img','span','div'];
 	for(var j=0;j<el.length;j++){ e=w.getElementsByTagName(el[j]); if(e){ for(var i=0;i<e.length;i++){ a=e[i];
