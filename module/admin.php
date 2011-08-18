@@ -188,7 +188,15 @@ return "<div class=adminkletka><b>$name</b>: $message".($value?" &nbsp; <input t
 function admin_pohvast() { return "<center><div id=soobshi><input type=button value='Похвастаться успешной установкой' onclick=\"document.getElementById('soobshi').innerHTML = '<img src=http://lleo.aha.ru/blog/stat?link={httphost}>';\"></div></center>"; }
 
 //======================================================================================
-function msql4_varchar_255($t){	return ($t[1]>255?"TEXT":"varchar(".$t[1].")"); }
+function msql4_varchar_255($t){	
+	$s=str_replace($t[2]." varchar(".$t[3].")",$t[2]." TEXT",$t[1]);
+	$s=preg_replace("/KEY ".$t[2]." \(".$t[2]."\(\d+\)\)/s","KEY ".$t[2]." (".$t[2].")",$s);
+	return $s;
+//idie("<pre>".$s); //print_r($t,1));
+//`name` varchar(1024)
+//KEY `name` (`name`(1024))
+//return ($t[1]>255?"TEXT":"varchar(".$t[1].")");
+}
 
 
 
@@ -209,10 +217,9 @@ $lq=$l; $z=0; while(1){ $msqe=''; msq($lq); if($msqe==''||(++$z>20)) break; $olq
 </div>";
 
 	if(strstr($msqe,'Too big column length for column'))
-		{ $lq=preg_replace_callback("/varchar\((\d+)\)/si","msql4_varchar_255",$lq); if($olq==$lq) break; continue; }
+		{ $lq=preg_replace_callback("/^(.*?(`[^`]+`) varchar\((\d+)\).*?)$/si","msql4_varchar_255",$lq); if($olq==$lq) break; continue; }
 
-	if(strstr($msqe,"server version for the right syntax to use near 'CURRENT_TIMESTAMP"))
-		{
+	if(strstr($msqe,"server version for the right syntax to use near 'CURRENT_TIMESTAMP")) {
 			$lq=str_replace('default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP','',$lq);
 			$lq=str_replace('default CURRENT_TIMESTAMP','',$lq);
 			if($olq==$lq) break; continue;
