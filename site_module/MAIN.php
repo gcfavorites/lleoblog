@@ -54,7 +54,7 @@ $article["DateTime"]=mktime(1,1,1,$article["Mon"],$article["Day"],$article["Year
 
 // [prevlink] [nextlink] [prevnext] - ссылки на соседние заметки
 $article['Prev']=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`<'".e($article['DateDatetime'])."' AND `DateDatetime`!=0")." ORDER BY `DateDatetime` DESC LIMIT 1","_l");
-$article['Next']=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`>'".e($article['DateDatetime'])."' AND `DateDatetime`!=0")." ORDER BY `DateDatetime` LIMIT 1","_l");
+$article['Next']=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`>'".e($article['DateDatetime'])."'")." ORDER BY `DateDatetime` LIMIT 1","_l");
 
 return ''; }
 
