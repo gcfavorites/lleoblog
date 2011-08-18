@@ -113,7 +113,7 @@ $as=array("`dnevnik_zapisi` as z");
 if($conf['mode']=='blog') $wher[]="z.`DateDatetime`!='0'";
 elseif($conf['mode']=='page') { $wher[]="z.`DateDatetime`='0'"; $conf['days']=0; }
 
-if($conf['days']!=0) $wher[]="z.`DateDatetime`>='".(time()-$conf['days']*86400)."'";
+if($conf['days']!=0) $wher[]="z.`DateDate`>='".(time()-$conf['days']*86400)."'";
 
 if($conf['podzamok']) {
 	if($GLOBALS['podzamok']) $wher[]="z.`Access`='podzamok'";

@@ -31,7 +31,6 @@ if(empty($conf['redirect'])) { // если не указан тэг
 	$Date=ms("SELECT d.`Date` FROM `dnevnik_tags` AS t JOIN `dnevnik_zapisi` AS d ON t.`num`=d.`num`
 ".WHERE("`DateDatetime`!=0 AND t.`tag`='".e($conf['redirect'])."'")." ORDER BY `Date` DESC LIMIT 1","_l");
 */
-
 	$Date=ms("SELECT d.`Date` FROM `dnevnik_zapisi` AS d
 INNER JOIN `dnevnik_tags` AS t
 ON t.`num`=d.`num` AND t.`tag`='".e($conf['redirect'])."'
