@@ -176,7 +176,8 @@ function UPDATE_file($name,$temp) {
 	$f=$GLOBALS['filehost'].$name;
 	if(realpath($f)) { load_vetomas(); foreach($GLOBALS['vetomas'] as $l) { if(strtolower(substr($name,0,strlen($l)))==$l) return "Disabled file: ".h($l); } }
 	testdir(dirname($f)); // создать папки, если надо
-        move_uploaded_file($temp,$f); filechmod($f);
+	if(is_file($f)) backup_local_file($f); // забэкапили его
+	move_uploaded_file($temp,$f); filechmod($f);
 
 	if(getras($f)=='css' && !empty($GLOBALS['www_design'])) {
 		$s=file_get_contents($f);
@@ -681,12 +682,6 @@ if($a=='install_check') { // инсталляция - ЭТО ПРОИСХОДИТ ЕЩЕ НА СОБСТВЕННОМ СЕР
 	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'".createkey()."'});";
 } // А ВОТ И ОН - СЕРВЕР-МАТКА
 
-if($a=='arita_test') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
-	return "alert('test passed!')";
-}
-
-
-
 
 // подготовлено решение об инсталляции
 if($a=='install_update_NON') { // NON - пометить файлы отмеченные как
@@ -702,7 +697,7 @@ if($a=='install_update_NON') { // NON - пометить файлы отмеченные как
 
 if($a=='install_update_DEL') { // DEL - удалить 1 файл
 	$file=RE('file'); $f=$GLOBALS['filehost'].$file;
-	if(is_file($f)) unlink($f); elseif(is_dir($f)) rmdir($f); else idie('Not found: '.h($f));
+	if(is_file($f)) { backup_local_file($f); unlink($f); } elseif(is_dir($f)) rmdir($f); else idie('Not found: '.h($f));
 	return "var s=inst_MAS_DEL.shift(); s=i_find(s); s.parentNode.removeChild(s); i_process();";
 }
 
@@ -736,6 +731,8 @@ function getlang($f){ $la=$GLOBALS['filehost'].'binoniq/lang/'; $nla=strlen($la)
 
 
 if($a=='install_test') { // инсталляция POST_file($filepath,$url,$fields,$port=80,$scheme='http');
+	$f=$dir.'config.php'; return "alert('".backup_local_file($f)."');";
+
 	return "mijax('http://lleo.me/blog/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'binoniq/melok/mp3.swf'})";
 /*
 	$pack='';
@@ -1096,4 +1093,10 @@ function get_pack_r($pack='') {
 		if(getras($l)=='lang') { $r=array_merge(getlang($url),$r); unset($r[$n]); } // обработать язык, сам не слать
 	} return $r;
 }
+
+function backup_local_file($f) { $i=-1;	// вычислить имя old и забэкапить
+	while(is_file(($old=$f.".old".(++$i?'-'.sprintf("%03d",$i):'')))){}
+	rename($f,$old); return $old;
+}
+
 ?>
