@@ -190,12 +190,9 @@ function admin_pohvast() { return "<center><div id=soobshi><input type=button va
 //======================================================================================
 function msql4_varchar_255($t){	
 	$s=str_replace($t[2]." varchar(".$t[3].")",$t[2]." TEXT",$t[1]);
-	$s=preg_replace("/KEY ".$t[2]." \(".$t[2]."\(\d+\)\)/s","KEY ".$t[2]." (".$t[2].")",$s);
+//	$s=preg_replace("/KEY ".$t[2]." \(".$t[2]."\(\d+\)\)/s","KEY ".$t[2]." (".$t[2].")",$s);
+	$s=preg_replace("/KEY ".$t[2]." \(".$t[2]."\(\d+\)\)/s","FULLTEXT (".$t[2].")",$s);
 	return $s;
-//idie("<pre>".$s); //print_r($t,1));
-//`name` varchar(1024)
-//KEY `name` (`name`(1024))
-//return ($t[1]>255?"TEXT":"varchar(".$t[1].")");
 }
 
 

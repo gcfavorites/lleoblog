@@ -221,6 +221,9 @@ function parse_mytables($ta='') { $o=''; $i="<img src='".$GLOBALS['www_design'].
 				.($p['Null']=='NO'?"NOT NULL ":"")
 				.($p['Default']!=''?"default '".$p['Default']."' ":"")
 				.($p['Extra']!=''?$p['Extra']." ":""));
+
+			$str=preg_replace("/timestamp\(\d+\)/si","timestamp",$str);
+
 			$str2 = substr($str,strlen($pole)+3);
 			if(!isset($arr[$pole])) { $arr_del[$pole]=$str2; }
 			elseif($arr[$pole]==$str) { $arr_ok[$pole]=$str2; unset($arr[$pole]); } // равно
@@ -231,6 +234,10 @@ function parse_mytables($ta='') { $o=''; $i="<img src='".$GLOBALS['www_design'].
 					{ $arr_ok[$pole]=$str2; unset($arr[$pole]); } // равно
 
 			elseif(preg_match("/^`.+` text$/si",$str) && preg_match("/^`.+` varchar\(\d+\)/si",$arr[$pole]))
+					{ $arr_ok[$pole]=$str2; unset($arr[$pole]); } // равно
+
+
+			elseif(str_replace(" NOT NULL default 'CURRENT_TIMESTAMP'",'',$arr[$pole])==$str)
 					{ $arr_ok[$pole]=$str2; unset($arr[$pole]); } // равно
 
 			else {  // изменить
