@@ -567,18 +567,11 @@ if( ($l=str_replace('lleo.aha.ru','lleo.me',$select_serv)) != $select_serv) { fi
 ."mijax(this.value+'/ajax/midule.php',{mod:'INSTALL',a:'install_get_packs',pack:'".implode(' ',get_my_packlist())."'});"
 ."\" id")."
 <br><input type='button' value='Check Update' onclick='servselect(this)'>
-<div id='epacks' style='margin: 20px; border: 1px dotted #ccc'>
-
-".implode(' ',get_my_packlist())."
-";
-
-
-unset($select_serv[0]);
-foreach($select_serv as $l) { $w=substr($l,1);
-	$s.="<div><input class='cb' name=\"$w\" type='checkbox'".($l[0]=='+'?' checked':'').">$w</div>";
-}
+<div id='epacks' style='margin: 20px; border: 1px dotted #ccc'>";
+unset($select_serv[0]); foreach($select_serv as $l) { $w=substr($l,1); $s.="<div><input class='cb' name=\"$w\" type='checkbox'".($l[0]=='+'?' checked':'').">$w</div>"; }
 $s.="</div>";
-	$s.="<div id='mypacks' style='position:relative;font-size: 14px; margin: 20px; padding: 20px; border: 1px dotted #ccc'>"
+
+$s.="<div id='mypacks' style='position:relative;font-size: 14px; margin: 20px; padding: 20px; border: 1px dotted #ccc'>"
 ."<img id='expert_knop' onclick=\"majax('module.php',{mod:'INSTALL',a:'expert_options_panel'})\""
 ." title='Other options<br>(expert mode)' src='".$GLOBALS['www_design']."e3/system.png' style='position:absolute;display:inline;right:0px;top:0px;cursor: pointer;'>"
 ."<div id='mypacklist'>".get_my_pack($dir)."</div></div>";
@@ -605,12 +598,16 @@ $s="
 
 ";
 
-foreach(glob($dir."*.txt") as $l) { $l0=basename($l); $s.="<div class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'edit_file',file:'$l'})\">$l0</div>"; }
+$a=array('servers.txt'=>"Known installable servers",
+'system_dir.txt'=>"All system folders for scan files",
+'system_veto.txt'=>"Disabled files&amp;folders for upgrade/load");
+
+foreach(glob($dir."*.txt") as $l) { $l0=basename($l); $s.="<div><div ".(isset($a[$l0])?"title='".$a[$l0]." '":'')."class='ll' onclick=\"majax('module.php',{mod:'INSTALL',a:'edit_file',file:'$l'})\">$l0</div></div>"; }
 
 return "
 zabil('mypacks',\"<div style='margin-bottom:20px;'>".njs($s)."</div>\"+vzyal('mypacks'));
 zabil('mypacklist',\"".njsn(get_my_pack($dir,1)
-."<div title='Create my new inctallpack' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:''})\"><i>&lt;create new&gt;</i></div>"
+."<div><div title='Create my new inctallpack' class='ll' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:''})\"><i>&lt;create new&gt;</i></div></div>"
 )."\");
 clean('expert_knop');
 ";
@@ -681,7 +678,7 @@ if($a=='install_check') { // инсталляция - ЭТО ПРОИСХОДИТ ЕЩЕ НА СОБСТВЕННОМ СЕР
 	$e=explode(' ',$pack); $w=array(); foreach($e as $l){ if($l[0]=='+') $w[]=substr($l,1); }
 	fileput($dir."server.my",$ser.strtr($pack,' ',"\n"));
 	// делаем запрос на сервер-матку
-	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'".createkey()."'})";
+	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'".createkey()."'});";
 } // А ВОТ И ОН - СЕРВЕР-МАТКА
 
 if($a=='arita_test') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
@@ -1077,7 +1074,7 @@ return $t;
 
 function get_my_pack($dir,$i=0) { if(!is_dir($dir.'instpack')) return 'not found'; $s="<i>installed: </i>"; // если есть своя папка с пакетами
 	foreach(get_my_packlist() as $w) $s.="<div style='margin-left:50px;".($i
-?"' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:'$w'})\""
+?"' class='l' title='edit' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:'$w'})\""
 :"font-weight:bold;'").">$w</div>";
 	return $s;
 }
