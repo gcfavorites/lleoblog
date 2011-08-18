@@ -1,5 +1,8 @@
 <?php
 
+
+
+
 // йбаный PHP
 // php_flag register_globals off
 // if(function_exists('ini_get')&&(ini_get('register_globals')==false)&&(PHP_VERSION<4.3))
@@ -19,11 +22,17 @@ if($AC=='www') {
 //Некоторые ебанутые сборки PHP не имеют элементарных функций, мне придется их эмулировать
 // Также надо будет сделать эмуляцию curl и iconv.
 
+if(!function_exists('file_put_contents')) { function file_put_contents($url,$s) { $f=fopen($url,"w"); fputs($f,$s); fclose($f); } }
+// ЕБАНУТЬСЯ!!!!!!
+if(!function_exists('str_ireplace')){ function str_ireplace($a,$b,$s){ $t=chr(1); $h=strtolower($s); $n=strtolower($a);
+ while(($pos=strpos($h,$n))!==FALSE){ $s=substr_replace($s,$t,$pos,strlen($a)); $h=substr_replace($h,$t,$pos,strlen($a)); }
+ return str_replace($t,$b,$s);
+}}
+
 // Также надо прописать пермиссионс
 
 function filechmod($f,$p=''){ if($p=='') $p=isset($GLOBALS['fchmod'])?$GLOBALS['fchmod']:0644; chmod($f,$p); }
 function dirchmod($d,$p=''){ if($p=='') $p=isset($GLOBALS['dchmod'])?$GLOBALS['dchmod']:0755; chmod($d,$p); }
-if(!function_exists('file_put_contents')) { function file_put_contents($url,$s) { $f=fopen($url,"w"); fputs($f,$s); fclose($f); } }
 function fileput($f,$s) { $o=file_put_contents($f,$s); filechmod($f); return $o; }
 function dirput($d) { $o=mkdir($d); dirchmod($d); return $o; }
 

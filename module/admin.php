@@ -188,6 +188,13 @@ return "<div class=adminkletka><b>$name</b>: $message".($value?" &nbsp; <input t
 function admin_pohvast() { return "<center><div id=soobshi><input type=button value='Похвастаться успешной установкой' onclick=\"document.getElementById('soobshi').innerHTML = '<img src=http://lleo.aha.ru/blog/stat?link={httphost}>';\"></div></center>"; }
 
 //======================================================================================
+function msql4_varchar_255($t){
+	if($t[1]>255) return 'TEXT ыворпаолырполрв';
+	return "varchar(".$t[1].") eeeeeeeeee";
+}
+
+
+
 // таблицы баз
 function admin_tables() { global $filehost,$admin,$mypage;
 	$s=file_get_contents($filehost."module/upgrade/sql.txt"); // взять список баз на создание
@@ -196,7 +203,13 @@ function admin_tables() { global $filehost,$admin,$mypage;
 	$s=preg_replace("/\n{2,}/si","\001",trim($s)); $a=explode("\001",$s); // разобрать
 	foreach($a as $l) {
 		$l=c($l); if(!preg_match("/CREATE TABLE[^\n\`\(]+\`([^\`]+)\`/si",$l,$m)) continue; $table=$m[1];
-		if($admin && $GLOBALS['PEST'][$table]=='create' && !msq_table($table)) { msq($l); 
+		if($admin && $GLOBALS['PEST'][$table]=='create' && !msq_table($table)) {
+//$old_msqe=$GLOBALS['msqe']; //if($_GET)
+$GLOBALS['msqe']=''; msq($l);
+// if($GLOBALS['msqe']!='') { $GLOBALS['msqe']=''; msq(str_replace('DEFAULT CHARSET=cp1251','',$l)); }
+// if($GLOBALS['msqe']!='') { $GLOBALS['msqe']=''; msq(preg_replace_callback("/varchar\((\d+)\)/si","msql4_varchar_255",$l)); }
+
+
 $o .= $GLOBALS['msqe'];
 $o .= admin_kletka($table,"<font color=green>создана</font>"); }
 		else if(msq_table($table)) {

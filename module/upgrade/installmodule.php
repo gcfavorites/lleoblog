@@ -4,6 +4,7 @@
 foreach(array(
 
 	'install'=>'INSTALL',
+	'install2'=>'INSTALL',
 	'pravki'=>'PRAVKI',
 	'comm'=>'PAGE_COMM',
 	'imbload'=>'IMBLOAD',

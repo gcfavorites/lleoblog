@@ -1,20 +1,7 @@
 <?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 // перевод цвета из rgb в 16-ричное
 
-print 'a 2 '.$GLOBALS['host_design']."
-function1: ".function_exists('file_get_contents')."
-function2: ".function_exists('file_put_contents')."
-";
-
-print '<p>test_get:'.h(file_get_contents('README.TXT'));
-
-// ." ".file_get_contents($GLOBALS['host_design']."plain.html") );
-/*
-) { function
-file_put_contents($url,$s) { $f=fopen($url,"w"); fputs($f,$s); fclose($f); } }
-*/
-
-$_PAGE = array( /* 'design'=>file_get_contents($GLOBALS['host_design']."plain.html"), */
+$_PAGE = array('design'=>file_get_contents($GLOBALS['host_design']."plain.html"),
 'header'=>"Перевод цвета из RGB в 16-ричное представление",
 'title'=>"Перевод цвета из RGB в 16-ричное представление",
 'www_design'=>$www_design,
@@ -24,8 +11,6 @@ $_PAGE = array( /* 'design'=>file_get_contents($GLOBALS['host_design']."plain.ht
 'wwwcharset'=>$wwwcharset,
 'signature'=>$signature
 );
-
-
 
 $txt=$_POST['txt'];
 
