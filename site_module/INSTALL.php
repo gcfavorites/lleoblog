@@ -1073,9 +1073,9 @@ return $t;
 //==================================================================================================
 
 function get_my_pack($dir,$i=0) { if(!is_dir($dir.'instpack')) return 'not found'; $s="<i>installed: </i>"; // если есть своя папка с пакетами
-	foreach(get_my_packlist() as $w) $s.="<div style='margin-left:50px;".($i
-?"' class='l' title='edit' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:'$w'})\""
-:"font-weight:bold;'").">$w</div>";
+	foreach(get_my_packlist() as $w) $s.="<div><span style='margin-left:50px;".($i
+?"' class='l' title='Edit <b>".$w.".pack</b>' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:'$w'})\""
+:"font-weight:bold;'").">$w</span></div>";
 	return $s;
 }
 
