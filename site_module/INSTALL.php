@@ -431,7 +431,7 @@ if($a=='install_far_check') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом серве
 if($a=='install_get_packs') { // выслать список пакетов
 	$packs=explode(' ',trim(RE('pack')));
 	$dir=$GLOBALS['filehost'].'binoniq/instlog/'; $pacdir=$dir.'instpack/';
-	$ft=$dir."all_md5.tmp"; $lasttime=(is_file($ft)?date("Y-m-d h:i:s",filemtime($ft)):"- no -");
+	$ft=$dir."all_md5.tmp"; $lasttime=(is_file($ft)?date("Y-m-d H:i:s",filemtime($ft)):"- no -");
 	$s="<div class=r>Server: <b>".$GLOBALS['httphost']."</b>"
 ."<br>Admin: <a title='mail:&nbsp;".$GLOBALS['admin_mail']
 .(isset($GLOBALS['admin_mobile'])?"<br>mob:&nbsp;".$GLOBALS['admin_mobile']:'')

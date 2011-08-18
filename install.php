@@ -10,7 +10,6 @@ ini_set("display_startup_errors","1");
 ini_set('error_reporting', E_ALL);
 set_time_limit(0);
 
-
 if(!function_exists('file_put_contents')) { function file_put_contents($url,$s) { $f=fopen($url,"w"); fputs($f,$s); fclose($f); } }
 
 //	die("<p>Fatal error: '$s' not found! Install in Apache/PHP!!!");
@@ -19,6 +18,8 @@ if(!function_exists('file_put_contents')) { function file_put_contents($url,$s) 
 // UPD: не, не заебался, разобрался. НАХУЙ CURL!!!!!!!!!!!
 // $s='curl_init'; if(function_exists($s)) idebug("CURL module - ok"); else die("<p>Fatal error: CURL not found! Install CURL module in Apache/PHP.");
 
+
+
 $s='iconv'; if(function_exists($s)) idebug("ICONV module - ok"); else die("<p>Fatal error: ICONV not found! Install ICONV-module in Apache/PHP.");
 $s='ImageCreateFromJpeg'; if(function_exists($s)) idebug("GB module - ok"); else idebug("Warning: GD not found, install GD-module in Apache/PHP (for working with photoalbum).");
 
@@ -26,6 +27,15 @@ $MYPAGE=str_replace(array('<','>',"'",'"'),array('%3C','%3E','%27','%22'),$_SERV
 list($mypage) = explode('?',$MYPAGE.'?',2);
 
 $filehost_s=rtrim($_SERVER["DOCUMENT_ROOT"],'/').'/blog/';
+
+if($filehost_s=='/www/htdocs/w00e4af2/blog/') {
+	idebug("filehost: $filehost_s");
+	chmod($filehost_s.'.htaccess',0666);
+	chmod($filehost_s.'install.php',0666);
+	chmod($filehost_s.'index.php',0666);
+	chmod($filehost_s.'config.php',0666);
+}
+
 $vetoserver=$filehost_s."update_veto_files.txt";
 $nadoserver=$filehost_s."update_nado_files.txt";
 
