@@ -211,7 +211,7 @@ function idie(s) { var e=typeof s; if(e=='object') s='<pre>'+print_r(s)+'</pre>'
 dier=idie;
 
 function helps(id,s,pos) {
-s=s+"<div onclick=\"clean('"+id+"')\" class='can' title='cancel'></div>";
+s=s+"<div onclick=\"clean('"+id+"')\" class='can'></div>";
 /*
 s=s+"<div style='position:absolute;bottom:0px;right:8px;cursor:pointer;'><a href='?module="+encodeURIComponent(majax_lastu.replace('.php',''));
 for(var k in majax_lasta) s=s+'&'+encodeURIComponent(k)+'='+encodeURIComponent(majax_lasta[k]);
