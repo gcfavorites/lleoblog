@@ -14,7 +14,7 @@ ini_set("display_errors","0"); ini_set("display_startup_errors","0");
 	- config.php
 	- template/blank.html
 
-сервер-матка:
+сервер-мтк:
 	js/main.js
 	design/JsHttpRequest.js
 	css/blog.css
@@ -198,7 +198,11 @@ function UPDATE_testkey($key){ // безопасность: проверка ключа инсталляции
 
 function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".print_r($r,1);
 
-	$s="<table><tr><td><input type='button' onclick='i_submit(this)' value='INSTALL'> <span class=ll onclick='i_toggle_visible();'><span class=r>Hide/Show</span></span>";
+	$s="<table><tr><td><input type='button' onclick='i_submit(this)' value='INSTALL'>"
+."&nbsp; &nbsp; <span class='ll r' onclick='i_toggle_visible();'>Hide/Show</span>"
+."&nbsp; &nbsp; <span class='ll r' onclick='i_selectall()'>select</span>"
+
+;
 	$otstup=''; $lastdir='';
 
 	// 1. рассортировать данные
@@ -253,9 +257,11 @@ $obnovle=0;
 //return "<pre>".print_r($ruf,1)."</pre>";
 //return "<pre>".print_r($Ufile,1)."</pre>";
 
-	foreach($Ufile as $f=>$d) {
-		$fdir=dirname($f).'/'; if($fdir=='./') $fdir='/'; // имя папки
+	foreach($Ufile as $f=>$d) { // return $d; 
+//return "<pre>".print_r($Ufile,1);
+		$fdir=($d!='0 0'?dirname($f).'/':$f); if($fdir=='./') $fdir='/'; // имя папки
 		if(!isset($DDDIR[$fdir])) $DDDIR[$fdir]=array(); // создать такую папку
+		if($d=='0 0') continue;
 
 		if(!isset($ruf[$f])) { // если такого у нас не было В СООТВЕТСТВУЮЩЕМ ПАКЕТЕ
 			$fh=$GLOBALS['filehost'].$f;
@@ -276,8 +282,9 @@ $obnovle=0;
 
 	// собрать все удаляемые
 	foreach($ruf as $f=>$d) { // и оставшиеся вне пакета поудалять
-		$fdir=dirname($f).'/'; if($fdir=='./') $fdir='/'; // имя папки
+		$fdir=($d!='0 0'?dirname($f).'/':$f); if($fdir=='./') $fdir='/'; // имя папки
 		if(!isset($DDDIR[$fdir])) $DDDIR[$fdir]=array(); // создать такую папку
+		if($d=='0 0') continue;
 		$DDDIR[$fdir][basename($f)]='D';
 	}
 
@@ -286,7 +293,7 @@ $obnovle=0;
 	// взять мою ветошь
 	$veto=unserialize(file_get_contents($GLOBALS['filehost']."binoniq/instlog/veto.my")); if(empty($veto)) $veto=array(); // на всякий случай
 
-	foreach($DDDIR as $dir=>$val) if(sizeof($val)) { 
+	foreach($DDDIR as $dir=>$val) /*if(sizeof($val))*/ {
 		$s.="</td></tr></table><table><tr valign=top><td><b>".h($dir)."</b></td><td>";
 		foreach($val as $n=>$o) { if(in_array($dir.$n,$veto)) $o='S'.$o; $s.="<div>".$o.$n."</div>"; $obnovle++; }
 	}
@@ -421,7 +428,14 @@ if($a=='install_far_check') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом серве
 
 // прислать по-бырому список доступных пакетов на этой станции - СЕРВЕР-МАТКА:
 if($a=='install_get_packs') { // выслать список пакетов
-	$s=''; $pacdir=$GLOBALS['filehost'].'binoniq/instlog/instpack/'; $p=glob($pacdir."*.pack"); $p[]=$pacdir."ALL.pack";
+	$dir=$GLOBALS['filehost'].'binoniq/instlog/'; $pacdir=$dir.'instpack/';
+	$ft=$dir."all_md5.tmp"; $lasttime=(is_file($ft)?date("Y-m-d h:i:s",filemtime($ft)):"- no -");
+	$s="<div class=r>Server: <b>".$GLOBALS['httphost']."</b>"
+."<br>Admin: <a title='mail:&nbsp;".$GLOBALS['admin_mail']
+.(isset($GLOBALS['admin_mobile'])?"<br>mob:&nbsp;".$GLOBALS['admin_mobile']:'')
+."' href='mailto:".$GLOBALS['admin_mail']."'>".$GLOBALS['admin_name']."</a>"
+."<br>Last update: <b>".$lasttime."</b></div><p>";
+	$p=glob($pacdir."*.pack"); $p[]=$pacdir."ALL.pack";
 	foreach($p as $l) { $l=basename($l,'.pack'); $s.="<div><input class='cb' name=\"$l\" type='checkbox'>$l</div>";	}
 	return "zabil('epacks',\"".njsn($s)."\")";
 }
@@ -606,13 +620,13 @@ if($a=='install_edit_pack') { // форма редактирования пакета или создания нового
 
 	//-----
 	$lastdir=''; foreach(get_dfiles() as $l) { list($file,$ftime,$fkey)=explode(' ',$l,3);
-	$fhost=$GLOBALS['filehost'].$file; // физический файл
-	$fname=basename($file); // его имя
-	$fdir=dirname($file).'/'; if($fdir=='./') $fdir='/'; // имя папки
-	if($fdir!=$lastdir){ $s.="</td></tr></table><table><tr valign=top><td><b>$fdir</b></td><td>"; $lastdir=$fdir; }
-
-	if(isset($p[$file])) $o='U'; else $o='D';
-	$s.="<div>".$o.$fname."</div>";
+		$fhost=$GLOBALS['filehost'].$file; // физический файл
+		$fname=basename($file); // его имя
+		$fdir=($ftime.$fkey!='00'?dirname($file).'/':$file); if($fdir=='./') $fdir='/'; // имя папки
+		if($fdir!=$lastdir){ $s.="</td></tr></table><table><tr valign=top><td><b>$fdir</b></td><td>"; $lastdir=$fdir; }
+		if($ftime.$fkey=='00') continue;
+			if(isset($p[$file])) $o='U'; else $o='D';
+			$s.="<div>".$o.$fname."</div>";
 	}
 	$s="<div id='i_selectfiles'>$s</td></tr></table></div>";
 	//-----
@@ -803,7 +817,7 @@ function get_dfiles() { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allm
 function get_dfiles2($files) { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allmd5change; if(!--$stop) die('stop error');
 	$r=array(); $a=$filehost.$files; if(is_file($a)) $a=array($a); else {
 		$l=$a; $a=glob($a."/*"); $h=$l."/.htaccess"; if(is_file($h)) $a[]=$h;
-		if(!sizeof($a)) return array(c(substr($l,$filehostn))."/(EMPTY_DIR)"); // была пустая папка
+		if(!sizeof($a)) return array(c(substr($l,$filehostn))."/ 0 0"); // была пустая папка
 	}
 
 	// сперва окучить файлы
