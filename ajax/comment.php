@@ -114,25 +114,22 @@ if($a=='pokazat') { // показать
 $maxcommlevel=$level+2;
         $mas=load_mas($dat); if($mas===false) otprav("clean('$oid')");
 
+$mojnocom=getmojno_comm($dat);
+
 $r=''; $rr="clean('$oid');";
 
-	for($i=0,$max=sizeof($mas);$i<$max;$i++) {
-		if($mas[$i]['p']['Parent']==$id){ $p=$mas[$i]; $pid=$p['id'];
-$rr.="mkdiv($pid,\"".njs(comment_one($p['p'],getmojno_comm($p['DateID'])))."\", '".commclass($p['p'])."', idd(0), idd($id));
-idd($pid).style.marginLeft='".($p['level']*$comment_otstup)."px';
-otkryl($pid);";
-
-$i++; for(;$i<$max;$i++) { if($mas[$i]['level']<$level) break; $p=$mas[$i]; $pid=$p['id'];
-$r="mkdiv($pid,\"".$p['Parent'].njs(comment_one($p['p'],getmojno_comm($p['DateID'])))."\", '".commclass($p['p'])."', idd(0), idd($id));
-idd($pid).style.marginLeft='".($p['level']*$comment_otstup)."px';
-otkryl($pid);".$r;
-		}
-
+function otdalcomm($p,$id,$mojnocom){ return "
+mkdiv(".$p['id'].",\"".njs(comment_one($p['p'],$mojnocom))."\",'".commclass($p['p'])."',idd(0),idd($id));
+idd(".$p['id'].").style.marginLeft='".($p['level']*$GLOBALS['comment_otstup'])."px';
+otkryl(".$p['id'].");
+";
 }
-}
+	for($i=0,$max=sizeof($mas);$i<$max;$i++){if($mas[$i]['p']['Parent']==$id){
+		$rr.=otdalcomm($mas[$i],$id,$mojnocom);
+		$i++; for(;$i<$max;$i++) { if($mas[$i]['level']<$level) break; $r=otdalcomm($mas[$i],$id,$mojnocom).$r; }
+	}}
 
 otprav($r.$rr);
-
 }
 //========================================================================================================================
 if($a=='paren') { // показать коммент
@@ -140,7 +137,7 @@ if($a=='paren') { // показать коммент
         $p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0);
         $opt=ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='".$p['DateID']."'","_1"); $GLOBALS['opt']=mkzopt($opt);
 otprav("
-mkdiv('show_parent',\"".njs(comment_one($p, getmojno_comm($p['DateID']),0 ))."\",'popup');
+mkdiv('show_parent',\"".njs(comment_one($p,getmojno_comm($p['DateID']),0 ))."\",'popup');
 posdiv('show_parent',mouse_x+10,mouse_y);
 ");
 }
@@ -500,7 +497,7 @@ function otprav_comment($p,$r='') {
 	cache_rm(comment_cachename($p['DateID'])); // сбросить кэш коментов этой записи
 	$opt=ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='".$p['DateID']."'","_1");
 	$GLOBALS['opt']=mkzopt($opt);
-	otprav("idd(".$p['id'].").innerHTML=\"".njs(comment_one($p, getmojno_comm($p['DateID']) ))."\"; ".$r);
+	otprav("idd(".$p['id'].").innerHTML=\"".njs(comment_one($p,getmojno_comm($p['DateID']) ))."\"; ".$r);
 }
 
 function getmojno_comm($num) {
