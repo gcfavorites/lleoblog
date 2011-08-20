@@ -95,8 +95,8 @@ function mojno_comment($p) { global $IS,$podzamok,$N_maxkomm,$enter_comentary_da
 	if($p['Comment_tree']=='0') return 0; // если запрещено отвечать на комменты
 
 	// Превышение количества посещений или слишком старая заметка
-	if(!isset($p["counter"])) $t=0;
-	else $t=($p["counter"] < $N_maxkomm and $p["DateDatetime"] > time()-86400*$enter_comentary_days ?1:0);
+	if(!isset($p['counter'])) $t=0;
+	else $t=($p['counter'] < $N_maxkomm and $p["DateDatetime"] > time()-86400*$enter_comentary_days ?1:0);
 
 //if($GLOBALS['IP']=='178.140.69.89') {}
 
