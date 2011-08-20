@@ -188,7 +188,7 @@ function posdiv(id,x,y) { // позиционирование с проверкой на вылет, если аргумен
 	if(x==-1) x=(W-w)/2+getScrollW();
 	if(y==-1) y=(H-h)/2+getScrollH();
 	var DH=W-10; if(w<DH && x+w>DH) x=DH-w; if(x<0) x=0; 
-	DH=getDocH()-10; if(h<DH && y+h>DH) y=DH-h; if(y<0) y=0;
+	DH=getDocH()-10; if(h<DH /*&& y+h>DH*/) y=DH-h; if(y<0) y=0;
         e.style.top=y+'px'; e.style.left=x+'px';
 	otkryl(id);
 }
