@@ -257,7 +257,6 @@ $obnovle=0;
 
 
 	// foreach($Ufile as $f=>$l) { if(isset($rud[$f])); unset($rud[$f]); } // 
-	// $ruf=get_dfiles_r($pack);
 
 //return "<pre>".print_r($ruf,1)."</pre>";
 //return "<pre>".print_r($Ufile,1)."</pre>";
@@ -286,20 +285,9 @@ $obnovle=0;
 		if($o!='') $DDDIR[$fdir][basename($f)]=$o;
 	}
 
-	// unset($RALL);
 	// теперь нам надо из этого RALL убрать все пакеты, котоые не нынешние
-	// берем список...
-	$p=get_my_packlist();
-$s.="<p>##########p=<pre>".print_r($p,1)."</pre>";
-	$e=explode(' ',$pack);
-$s.="<p>##########e=<pre>".print_r($e,1)."</pre>";
-	foreach($e as $n=>$l) { if(in_array($l,$p)) unset($e[$n]); }
-$s.="<p>##########ee=<pre>".print_r($e,1)."</pre>";
-
-	$p=get_dfiles_r(implode(' ',$e)); // берем список
-	foreach($RALL as $n=>$l) { if(in_array($l,$p)) unset($RALL[$n]); }
-
-//$rud=array();	// и убираем из них все ЌјЎ» пакеты, которые Ќ≈ ќЅЌќ¬Ћя≈ћџ —≈…„ј—
+	$p=get_my_packlist(); $e=explode(' ',$pack); foreach($p as $n=>$l) { if(in_array($l,$e)) unset($p[$n]); }
+	$np=get_dfiles_r(implode(' ',$p)); foreach($RALL as $n=>$l) { if(in_array($l,$np)) unset($RALL[$n]); }
 
 	// собрать все удал€емые
 	foreach($RALL as $f=>$d) { // и оставшиес€ вне пакета поудал€ть
@@ -751,15 +739,19 @@ function getlang($f){ $la=$GLOBALS['filehost'].'binoniq/lang/'; $nla=strlen($la)
 
 
 if($a=='install_test') { // инсталл€ци€ POST_file($filepath,$url,$fields,$port=80,$scheme='http');
-	$f=$dir.'config.php'; return "alert('".backup_local_file($f)."');";
+	$r=get_dfiles_r("fido jhfgjvdf hfjghvjf");
+//	$r=get_dfiles_r("inghhghstpack");
+	dier($r);
 
-	return "mijax('http://lleo.me/blog/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'binoniq/melok/mp3.swf'})";
+//	$f=$dir.'config.php'; return "alert('".backup_local_file($f)."');";
+//	return "mijax('http://lleo.me/blog/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'binoniq/melok/mp3.swf'})";
 /*
 	$pack='';
 	dier(explode(' ',$pack));
 
 
 	$r=get_dfiles_r();
+
 	dier($r);
 
 	$t=POST_file(array(
@@ -800,7 +792,7 @@ function calcfile_md5($l,$ras) { $o=file_get_contents($l);
 // вз€ть данные по пакету $pack (если ALL - то просканировать всЄ) и добавить к массиву $e
 function getpack($pack,$e) { global $filehost; $save=0;
 	$dir=$filehost."binoniq/instlog/instpack/"; testdir($dir); // проверить папку дл€ кэшиков
-	if($pack='ALL') $r=get_dfiles(); // подсчитать суммы
+	if($pack=='ALL') $r=get_dfiles(); // подсчитать суммы
 	else if(is_file($dir.$pack.".pack")) { $r=array();  $s=file($dir.$pack.".pack");
 		foreach($s as $l) { list($name,$time,$md5)=explode(' ',trim($l));
 			$l=$filehost.$name; if(!is_file($l)) { $save=1; continue; } // файл был удален
@@ -1097,7 +1089,7 @@ function get_my_pack($dir,$i=0) { if(!is_dir($dir.'instpack')) return 'not found
 }
 
 function get_my_packlist() { $pd=$GLOBALS['filehost'].'binoniq/instlog/instpack/'; if(!is_dir($pd)) return array();
-	$p=glob($pd."*.pack"); $p[]=$pd; foreach($p as $n=>$l) $p[$n]=basename($l,'.pack'); return $p;
+	$p=glob($pd."*.pack"); foreach($p as $n=>$l) $p[$n]=basename($l,'.pack'); return $p;
 }
 
 function createkey() { $key=sha1(hash_generate()); // сформировать ключ
