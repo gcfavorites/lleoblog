@@ -181,14 +181,13 @@ function mkdiv(id,s,cls,paren,relative){ if(idd(id)) { idd(id).innerHTML=s; idd(
 }
 
 function posdiv(id,x,y) { // позиционирование с проверкой на вылет, если аргумент '-1' - по центру экрана
-        var e=idd(id);
+	var e=idd(id),W,w,H,h,DW,DH;
 	if(e.style.display!='block') otkryl(id);
-        var W=getWinW(); var H=getWinH();
-        var w=e.clientWidth; var h=e.clientHeight;
+	W=getWinW(); H=getWinH(); w=e.clientWidth; h=e.clientHeight;
 	if(x==-1) x=(W-w)/2+getScrollW();
 	if(y==-1) y=(H-h)/2+getScrollH();
-	var DH=W-10; if(w<DH && x+w>DH) x=DH-w; if(x<0) x=0; 
-	DH=getDocH()-10; if(h<DH /*&& y+h>DH*/) y=DH-h; if(y<0) y=0;
+	DW=W-10; if(w<DW && x+w>DW) x=DW-w; if(x<0) x=0;
+/*	DH=getDocH()-10; if(h<DH && y+h>DH) y=DH-h; if(y<0) y=0; */
         e.style.top=y+'px'; e.style.left=x+'px';
 	otkryl(id);
 }

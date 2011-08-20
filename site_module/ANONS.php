@@ -76,6 +76,11 @@ limit = 10
 length = 60
 unread = 1
 _}_}</div>
+
+
+PS: —лужебна€ переменна€ $GLOBALS['ANONS_count'] устанавливаетс€ равной числу выбранных постов.
+≈е можно затем вывести командой {_PHPEVAL: $o=$GLOBALS['ANONS_count']; _}
+
 */
 
 include_once $GLOBALS['include_sys']."_onetext.php";
@@ -113,7 +118,7 @@ $as=array("`dnevnik_zapisi` as z");
 if($conf['mode']=='blog') $wher[]="z.`DateDatetime`!='0'";
 elseif($conf['mode']=='page') { $wher[]="z.`DateDatetime`='0'"; $conf['days']=0; }
 
-if($conf['days']!=0) $wher[]="z.`DateDate`>='".(time()-$conf['days']*86400)."'";
+if($conf['days']!=0) $wher[]="z.`DateDatetime`>='".(time()-$conf['days']*86400)."'";
 
 if($conf['podzamok']) {
 	if($GLOBALS['podzamok']) $wher[]="z.`Access`='podzamok'";
@@ -144,7 +149,7 @@ $sq="SELECT z.`opt`,z.`Date`,".($bodyneed?"z.`Body`,":'')."z.`Header`,z.`Access`
 ." ORDER BY z.`".($conf['sort']=='date'?'DateDatetime':'DateUpdate')."` ".($conf['sortx']=='DESC'?'DESC':'')
 .($conf['limit']==0?'':" LIMIT ".e($conf['limit']));
 
-$pp=ms($sq,"_a");
+$pp=ms($sq,"_a"); $GLOBALS['ANONS_count']=sizeof($pp);
 // dier($pp,$sq);
 
 
