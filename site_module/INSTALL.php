@@ -253,7 +253,11 @@ $obnovle=0;
 	// 3. Что с файлами?
 	$DDDIR=array();
 
-	$ruf=get_dfiles_r($pack);
+	$RALL=get_dfiles_r('ALL'); // сперва мы берем вообще все наши файлы
+
+
+	// foreach($Ufile as $f=>$l) { if(isset($rud[$f])); unset($rud[$f]); } // 
+	// $ruf=get_dfiles_r($pack);
 
 //return "<pre>".print_r($ruf,1)."</pre>";
 //return "<pre>".print_r($Ufile,1)."</pre>";
@@ -264,7 +268,7 @@ $obnovle=0;
 		if(!isset($DDDIR[$fdir])) $DDDIR[$fdir]=array(); // создать такую папку
 		if($d=='0 0') continue;
 
-		if(!isset($ruf[$f])) { // если такого у нас не было В СООТВЕТСТВУЮЩЕМ ПАКЕТЕ
+		if(!isset($RALL[$f])) { // если такого у нас не было ФАЙЛА на хостинге
 			$fh=$GLOBALS['filehost'].$f;
 			if(!is_file($fh)) $o='A'; // добавить
 			else { // если есть файл
@@ -273,16 +277,32 @@ $obnovle=0;
 				else $o='';
 			}
 		} else {
-			list(,$d1)=explode(' ',$d,2); list(,$d2)=explode(' ',$ruf[$f],2); // не сравнивать время!
+			list(,$d1)=explode(' ',$d,2); list(,$d2)=explode(' ',$RALL[$f],2); // не сравнивать время!
 			if($d1==$d2) $o=''; // если тот же - ОК
 			else $o='U'; // U если не тот - обновить
-			unset($ruf[$f]); // в любом случае удалить
 		}
+
+		unset($RALL[$f]); // в любом случае удалить
 		if($o!='') $DDDIR[$fdir][basename($f)]=$o;
 	}
 
+	// unset($RALL);
+	// теперь нам надо из этого RALL убрать все пакеты, котоые не нынешние
+	// берем список...
+	$p=get_my_packlist();
+$s.="<p>##########p=<pre>".print_r($p,1)."</pre>";
+	$e=explode(' ',$pack);
+$s.="<p>##########e=<pre>".print_r($e,1)."</pre>";
+	foreach($e as $n=>$l) { if(in_array($l,$p)) unset($e[$n]); }
+$s.="<p>##########ee=<pre>".print_r($e,1)."</pre>";
+
+	$p=get_dfiles_r(implode(' ',$e)); // берем список
+	foreach($RALL as $n=>$l) { if(in_array($l,$p)) unset($RALL[$n]); }
+
+//$rud=array();	// и убираем из них все НАШИ пакеты, которые НЕ ОБНОВЛЯЕМЫ СЕЙЧАС
+
 	// собрать все удаляемые
-	foreach($ruf as $f=>$d) { // и оставшиеся вне пакета поудалять
+	foreach($RALL as $f=>$d) { // и оставшиеся вне пакета поудалять
 		$fdir=($d!='0 0'?dirname($f).'/':$f); if($fdir=='./') $fdir='/'; // имя папки
 		if(!isset($DDDIR[$fdir])) $DDDIR[$fdir]=array(); // создать такую папку
 		if($d=='0 0') continue;
