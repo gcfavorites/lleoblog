@@ -3,13 +3,16 @@
 
 function NIKONOV($e) { global $admin,$podzamok,$article;
 	list($url,$text)=explode("\n",$e,2); $url=c($url); $text=c($text);
+
+	if(isset($GLOBALS['nikonov_no_epilog'])) return $text; // Если установлен спецфлажок - вернуть целиком.
+
 	if( time() > (strtotime(substr($article['Date'],0,10)) + 86400*8) ) { // если больше недели - не заменять
 	return $text.NIKONOV_NEMALO(NIKONOVU($url));
 }
 
 // --- razgovor.org ---
 if(strstr($url,'razgovor.org')) { $flag=$GLOBALS['hosttmp']."razgovor.org.flag"; if(file_exists($flag)) {
-	return $text."<p><font color=red><i>Если вы видите этот текст здесь ценликом, значит, специально настронный робот определил, "
+	return $text."<p><font color=red><i>Если вы видите этот текст здесь целиком, значит, специально настронный робот определил, "
 ."что сайт <a href='$url'>razgovor.org</a>, для которого написан этот материал, опять сломался. Сегодняшняя причина - "
 .file_get_contents($flag).". Это происходит регулярно потому, что их админ Роман Шкаев г.Томск занесен в книгу рекордов Гиннесса как "
 ."самые кривые руки мира последнего десятилетия.</i></font>";
