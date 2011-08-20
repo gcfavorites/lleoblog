@@ -220,8 +220,11 @@ function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".pri
 	}
 
 $obnovle=0;
-/*
+
+$s.="<pre>".print_r($Ulang,1)."</pre>";
+
 //=========================================================
+/*
 	// 1. Что с конфигом?
 	// config:msq_login $msq_login = ""; // "lleo";
 	$con=file_get_contents('config.php'); preg_match_all("/\n\s*".'\$'."([0-9a-z\_\-]+)\s*\=\s*([^\n]+)/si",$con,$m);
@@ -230,7 +233,9 @@ $obnovle=0;
 	foreach($Uconf as $n=>$v) { if(isset($con[$n])) unset($con[$n]); else $s.="<div>".'A'.'$'.$n."</div>"; }
 	foreach($con as $n=>$l) { $s.="<div>".'D'.'$'.$n."=".h($l)."</div>"; } // предлагается удалить
 	unset($con);
+*/
 //=========================================================
+/*
 	// 2. Что с языком?
 	// lang:fido/ru:Comments:empty_comm Comments:empty_comm	А где же комментарий?
 	$lan=array(); $allan=array();
@@ -432,6 +437,7 @@ if($a=='install_update_far') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом серв
 
 if($a=='install_far_check') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
 	$pack=trim(RE('pack')); $r=get_pack_r($pack);
+	return "idie(\"<pre>".njsn(print_r($r,1))."</pre>\")";
 	return POST_file('',RE('url')."install",array('post_act'=>'check_pack','pack'=>$pack,'key'=>RE('key'),'ara'=>serialize($r)));
 }
 
@@ -717,14 +723,18 @@ if($a=='install_update_UPD') { // UPD - обновить 1 файл
 //====================================================================
 
 // обработка конфига
-function getconf($l){ $r=array();
+function getconf($l){ return 'eee'; //array('dfdfdfdf'=>'eee');
+/*
+	$r=array(); 
 	$a=file($l); unset($a[0]); unset($a[sizeof($a)]);
+	return $a;
 	foreach($a as $l) { $l=trim($l);
 		if($l=='' || preg_match("/^\s*(#|\/\/)/s",$l)) continue;
 		$per=preg_replace("/^\s*".'\$'."([a-z0-9\_]+).*?$/si","$1",$l); if($per==$l) continue;
 		$r[]="config:$per $l";
 	}
 	return $r;
+*/
 }
 
 // обработка языка
@@ -1099,11 +1109,17 @@ function createkey() { $key=sha1(hash_generate()); // сформировать ключ
 
 function get_pack_r($pack='') {
 	$r=array(); foreach(explode(' ',$pack) as $l) $r=getpack($l,$r); // взять все указанные пакеты
-	return $r;
+//	return $r;
 	$o=$r; foreach($o as $n=>$l) { list($l,)=explode(' ',$l,2); $url=$GLOBALS['filehost'].$l;
-		if($l=='config.php.tmpl') { $r=array_merge(getconf($url),$r); } // обработать конфиг
-		if(getras($l)=='lang') { $r=array_merge(getlang($url),$r); unset($r[$n]); } // обработать язык, сам не слать
-	} return $r;
+		if($l=='config.php.tmpl') return array('eee'=>"###getconf($url)",
+'dddddd'=>getconf($url)
+);
+//$r; //array('eee'='getconf($url)');
+
+// { $r=array_merge(getconf($url),$r); } // обработать конфиг
+	//	if(getras($l)=='lang') { $r=array_merge(getlang($url),$r); unset($r[$n]); } // обработать язык, сам не слать
+	}
+	return $r;
 }
 
 function backup_local_file($f) { $i=-1;	// вычислить имя old и забэкапить
