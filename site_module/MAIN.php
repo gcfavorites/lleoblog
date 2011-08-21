@@ -245,10 +245,6 @@ function HEADERS($e) { global $article,$admin;
 $conf=array_merge(array(
 'zamok_template'=>"{zamok}&nbsp;", // темплейт замка
 'onclick_editor'=>'',
-'MONTH'=>$GLOBALS['months_rod'][intval($article["Mon"])],
-'M'=>$article["Mon"],
-'D'=>$article["Day"],
-'Y'=>$article["Year"],
 'num'=>$article["num"],
 'Header'=>$article["Header"],
 'empty_Header'=>'(...)',
@@ -256,13 +252,16 @@ $conf=array_merge(array(
 'podzamstyle'=>" style='padding:10pt;background-color:{podzamcolor}'",
 'template'=>"<div{onclick_editor} class='header' id='Header_{num}'>{Y}-{MONTH}-{D} {H}:{i}:{s}</div>"
 // "<div style='display:inline' {podzamstyle}>{adminset} {zamok}{D} {MONTH} {Y} ? <span{onclick_editor} id=Header_{num}>
-// {Header}</span></div>"_}
+// {Header}</span></div>"
 ),parse_e_conf($e));
+
+list($conf['UY'],$conf['UM'],$conf['UD'],$conf['H'],$conf['i'],$conf['s'])=explode(":",date("Y:m:d:H:i:s",$article['DateUpdate']));
+list($conf['Y'],$conf['M'],$conf['D'])=($article['DateDatetime']!=0?array($article["Year"],$article["Mon"],$article["Day"]):array($conf['UY'],$conf['UM'],$conf['UD']));
+$conf['MONTH']=$GLOBALS['months_rod'][intval($conf['M'])];
 
 $conf['zamok']=mper($conf['zamok_template'],array('zamok'=>zamok($article['Access'])));
 if(empty($conf['Header'])) $conf['Header']=$conf['empty_Header'];
 $conf['podzamstyle']=($article['Access']!='all'?str_replace('{podzamcolor}',$GLOBALS['podzamcolor'],$conf['podzamstyle']):'');
-list($conf['UY'],$conf['UM'],$conf['UD'],$conf['H'],$conf['i'],$conf['s'])=explode(":",date("Y:m:d:H:i:s",$article['DateUpdate']));
 if($admin) $conf['onclick_editor']=" onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\"";
 return mper($conf['template'],$conf);
 }
