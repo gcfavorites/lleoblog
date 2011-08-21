@@ -1,7 +1,10 @@
 @charset "windows-1251";
 
+/*
+.ulin { border: 1px dotted green; color:green; cursor: pointer; color: blue; text-decoration: underline; }
+.ulin:before, .ulin:after {content:' - - '}
+*/
 
-.ulin {text-decoration:line-through} .ulin:before,.ulin:after {content:'   '}
 
 /* Κΰλενδΰπό */
 .cld_top,.cld_days,.cld_red,.cld,.cld_this,.cld_ed {font-size: 10px;}
