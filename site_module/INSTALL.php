@@ -39,14 +39,14 @@ i_selectmode='none';
 i_toggle_visible_d=0;
 i_slicen=1;
 
-addstyle=function(c,s){ var i,
-	for(i=0;i<u.length;i++){ if(u[i].selectorText==c) return; }
+addstyle=function(c,s){ var i=0,a=document.styleSheets[0],u=a.cssRules;
+	for(;i<u.length;i++){ if(u[i].selectorText==c) return; }
 	if(typeof a.insertRule(c+' '+s,0)!='number') a.addRule(c+' '+s,0);
 }
 
 replaceblockstyle=function(c,s){ var i,a=document.styleSheets[0],u=a.cssRules;
 	for(i=0;i<u.length;i++){ if(u[i].selectorText==c) break; }
-	if(u.style.сolor) u.style.сolor='#555'; else a.rules[0].style.сolor='#555;
+	if(u.style.сolor) u.style.сolor='#555'; else a.rules[0].style.сolor='#555';
 }
 
 i_toggle_visible=function(){ var g,ee,p,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
@@ -132,7 +132,6 @@ i_find=function(id){ var ff,o,ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').get
 alert('not f find: '+id);
 };
 
-go_install=function(id){ var o1,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
 /*
 addstyle('.ulin',\"{text-decoration:line-through}\");
 addstyle('.ulin:before',\"{content:'   '}\");
@@ -149,11 +148,15 @@ if(o1) i_chan(x); else if(i_selectmode=='color') x.style.textDecoration=(c=='red
 i_toggle_visible();
 */
 
-var itit={iDEL:'del',iADD:'add new',iUPD:'update'};
-
-	for(var i=0;i<tr.length;i++){ var p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue;
-		var dir=td1.firstChild; dir.onclick=function(){i_chand(this)}; i_sett(dir,'Invert selected files'); var ee=td2.getElementsByTagName('DIV');
-		for(var j=0;j<ee.length;j++){ var x=ee[j]; if(x.className=='ic') continue;
+go_install=function(id){ 
+	var itit={iDEL:'del',iADD:'add new',iUPD:'update'};
+	for(var i=0,o1,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');i<tr.length;i++){
+		var p=tr[i]; var td1=p.firstChild;
+		var td2=p.lastChild; if(td2==td1) continue;
+		var dir=td1.firstChild;
+			dir.onclick=function(){i_chand(this)};
+			dir.setAttribute('title','Invert selected files');
+		for(var j=0,ee=td2.getElementsByTagName('DIV');j<ee.length;j++){ var x=ee[j]; if(x.className=='ic') continue;
 			if(itit[x.className]) x.setAttribute('title',itit[x.className]);
 			x.onclick=function(){i_chan(this)};
 		}
@@ -237,11 +240,11 @@ function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size
 	$con=array(); foreach($m[1] as $i=>$n) $con[$n]=$m[2][$i]; // все наши
 	$s.="</td></tr></table><table><tr valign=top><td><b>config.php:</b></td><td><br>"; // заголовок
 	foreach($Uconf as $n=>$v) { if(isset($con[$n])) { unset($con[$n]); continue; }
-$v=h($v);
-$v=preg_replace_callback("/^([\'\"])([^\'\"]*)([\'\"];)/s","vtoinput",$v);
-$v=preg_replace_callback("/^([\'\"]*)(\d+)([\'\"]*;)/s","vtoinput",$v);
-$s.="<div>".'A'.'$'.$n."<div class='ic'> = $v</div></div>"; } // добавить
-	foreach($con as $n=>$l) { $s.="<div>".'D'.'$'.$n."=".h($l)."</div>"; } // удалить
+			$v=h($v);
+			$v=preg_replace_callback("/^([\'\"])([^\'\"]*)([\'\"];)/s","vtoinput",$v);
+			$v=preg_replace_callback("/^([\'\"]*)(\d+)([\'\"]*;)/s","vtoinput",$v);
+			$s.="<div class='iADD'>$".$n."<div class='ic'> = $v</div></div>"; // добавить
+	} foreach($con as $n=>$l) $s.="<div class='iDEL'>$".$n."=".h($l)."</div>"; // удалить
 	unset($con);
 //=========================================================
 	// 2. Что с языком?
