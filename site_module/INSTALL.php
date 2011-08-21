@@ -37,7 +37,7 @@ i_slicen=1;
 i_toggle_visible=function(){ var g,ee,p,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
 	for(var i=0;i<tr.length;i++){ p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue; ee=td2.getElementsByTagName('DIV');
 		g=ee.length; for(var j=0;j<ee.length;j++){ var x=ee[j];
-			if(i_toggle_visible_d) { if(x.style.display=='none') x.style.display='inline'; }
+			if(i_toggle_visible_d) { if(x.style.display=='none') x.style.display='block'; }
 			else if(i_selectmode=='color' && x.style.color=='red' || i_selectmode!='color' && x.style.textDecoration!='none') { x.style.display='none'; g=g-1;}
 		} if(!i_toggle_visible_d && !g) p.style.display='none';
 	if(i_toggle_visible_d && p.style.display=='none') p.style.display='block';
@@ -51,7 +51,7 @@ i_get_selected=function(){ var ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').ge
         dir=td1.firstChild.innerHTML;
         ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ e=ee[j];
                 if(e.style.color=='green') {
-                        var v=e.innerHTML.replace(/^<br>/g,'').replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1');
+                        var v=e.replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1');
                         if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
                         s=s+'\\n'+(dir!='/'?dir:'')+v;
                 }
@@ -85,7 +85,7 @@ i_submit=function(e){ var ff,o,ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').ge
 	for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue;
 	dir=td1.firstChild.innerHTML;
 	ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ e=ee[j];
-			var v=e.innerHTML.replace(/^<br>/g,'').replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1');
+			var v=e.innerHTML.replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1');
 			if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
 			ff=(dir!='/'?dir:'')+v;
 			if(e.style.textDecoration=='none') { o=e.style.color;
@@ -93,7 +93,7 @@ i_submit=function(e){ var ff,o,ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').ge
 				else if(o=='red') inst_MAS_DEL.push(ff);
 				else ohelpc('errError optino','Error option','Error option: '+o);
 			} else inst_MAS_NON.push(ff);
-		s=s+'<br>'+o+':'+(dir!='/'?dir:'')+v;
+		s=s+'###'+o+':'+(dir!='/'?dir:'')+v;
 		}
 	}
 i_process();
@@ -110,7 +110,7 @@ i_process=function(){
 i_find=function(id){ var ff,o,ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
 	for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue; dir=td1.firstChild.innerHTML; ee=td2.getElementsByTagName('DIV');
 		for(var j=0;j<ee.length;j++){ e=ee[j];
-			var v=e.innerHTML.replace(/^<br>/g,'').replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1'); if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
+			var v=e.innerHTML.replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1'); if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
 			if(id==dir+v) return e;
 		}
 	}
@@ -131,7 +131,8 @@ go_install=function(id){ var o1,t,c,tr=idd('i_selectfiles').getElementsByTagName
 	for(var i=0;i<tr.length;i++){ var p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue;
 		var dir=td1.firstChild; dir.onclick=function(){i_chand(this)}; i_sett(dir,'Invert selected files'); var ee=td2.getElementsByTagName('DIV');
 		for(var j=0;j<ee.length;j++){ var x=ee[j];
-			x.style.display='inline';
+			x.style.display='block';
+			/*x.style.clear='both';*/
 			if(x.className=='ic') continue;
 
 			var l=x.innerHTML; var O=l.substring(0,1); l=l.substring(1,l.length); o1=0;
@@ -140,12 +141,14 @@ go_install=function(id){ var o1,t,c,tr=idd('i_selectfiles').getElementsByTagName
 				else if(O=='A') { c='rgb(0, 255, 0)'; t='add new'; }
 				else if(O=='D') { c='red'; t='del'; }
 				else { c='magenta'; t='unk'; }
-			x.innerHTML='<br>'+l; x.onclick=function(){i_chan(this)};
+			x.innerHTML=l; x.onclick=function(){i_chan(this)};
+
+
 			x.style.color=c; i_sett(x,t);
 			
 			if(o1) i_chan(x); else if(i_selectmode=='color') x.style.textDecoration=(c=='red'?'line-through':'none');
 }}
-/*i_toggle_visible();*/
+i_toggle_visible();
 posdiv(id,-1,-1);
 };
 
@@ -161,17 +164,14 @@ i_chan_tst=function(e){	return i_selectmode=='color' && e.style.color=='green' |
 
 i_chan_chg=function(e,i){
   if(i_selectmode=='color') e.style.color=i?'green':'red';
-  else e.innerHTML=i?e.innerHTML.replace(/\&nbsp;/g,' ').replace(/^<br> +(.+?) +$/g,'<br>$1'):e.innerHTML.replace(/^<br>(.+?)$/g,'<br>&nbsp;&nbsp;$1&nbsp;&nbsp;');
+  else e.innerHTML=i?e.innerHTML.replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1'):e.innerHTML.replace(/^(.+?)$/g,'&nbsp;&nbsp;$1&nbsp;&nbsp;');
   e.style.textDecoration=(i?'none':'line-through');
 }
 
 i_chan=function(e){ var s=0;
   if(i_selectmode=='color') { if(e.style.color=='red') { e.style.color='green'; s=1; } else e.style.color='red'; }
-  else{
-	if(e.style.textDecoration=='none') e.innerHTML=e.innerHTML.replace(/^<br>(.+?)$/g,'<br>&nbsp;&nbsp;$1&nbsp;&nbsp;');
-	else{ s=1; e.innerHTML=e.innerHTML.replace(/\&nbsp;/g,' ').replace(/^<br> +(.+?) +$/g,'<br>$1'); }
-  }
-  e.style.textDecoration=(s?'none':'line-through');
+  else { if(e.style.textDecoration!='none') { e.className='nulin'; s=1 } else e.className='ulin'; }
+/*  e.style.textDecoration=(s?'none':'line-through'); */
 };
 ";
 
@@ -232,7 +232,7 @@ function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size
 	// config:msq_login $msq_login = ""; // "lleo";
 	$con=file_get_contents('config.php'); preg_match_all("/\n\s*".'\$'."([0-9a-z\_\-]+)\s*\=\s*([^\n]+)/si",$con,$m);
 	$con=array(); foreach($m[1] as $i=>$n) $con[$n]=$m[2][$i]; // все наши
-	$s.="</td></tr></table><table><tr valign=top><td><b>config.php:</b></td><td>"; // заголовок
+	$s.="</td></tr></table><table><tr valign=top><td><b>config.php:</b></td><td><br>"; // заголовок
 	foreach($Uconf as $n=>$v) { if(isset($con[$n])) { unset($con[$n]); continue; }
 $v=h($v);
 $v=preg_replace_callback("/^([\'\"])([^\'\"]*)([\'\"];)/s","vtoinput",$v);
@@ -257,7 +257,7 @@ $s.="<div>".'A'.'$'.$n."<div class='ic'> = $v</div></div>"; } // добавить
 	}
 	foreach($lan as $ll=>$arper) foreach($arper as $cn=>$cv) $allan[$ll].="<div>".'D'.$cn." = ".h($cv)."</div>"; // предлагается удалить
 
-	foreach($allan as $ll=>$oo) $s.="</td></tr></table><table><tr valign=top><td><b>LANG:$ll:</b></td><td>".$oo;
+	foreach($allan as $ll=>$oo) $s.="</td></tr></table><table><tr valign=top><td><b>LANG:$ll:</b></td><td><br>".$oo;
 //=========================================================
 	// 3. Что с файлами?
 	$DDDIR=array();
@@ -304,7 +304,7 @@ $s.="<div>".'A'.'$'.$n."<div class='ic'> = $v</div></div>"; } // добавить
 	$veto=unserialize(file_get_contents($GLOBALS['filehost']."binoniq/instlog/veto.my")); if(empty($veto)) $veto=array(); // на всякий случай
 
 	foreach($DDDIR as $dir=>$val) /*if(sizeof($val))*/ {
-		$s.="</td></tr></table><table><tr valign=top><td><b>".h($dir)."</b></td><td>";
+		$s.="</td></tr></table><table><tr valign=top><td><b>".h($dir)."</b></td><td><br>";
 		foreach($val as $n=>$o) { if(in_array($dir.$n,$veto)) $o='S'.$o; $s.="<div>".$o.$n."</div>"; $obnovle++; }
 	}
 

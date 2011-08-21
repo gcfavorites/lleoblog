@@ -1,5 +1,8 @@
 @charset "windows-1251";
 
+
+.ulin {text-decoration:line-through} .ulin:before,.ulin:after {content:'   '}
+
 /* Κΰλενδΰπό */
 .cld_top,.cld_days,.cld_red,.cld,.cld_this,.cld_ed {font-size: 10px;}
 .cld_days {background-color: #F0F0F0;}
