@@ -1,4 +1,4 @@
-<?php // INSTALL
+6<?php // INSTALL
 
 ini_set("display_errors","0"); ini_set("display_startup_errors","0");
 
@@ -39,23 +39,15 @@ i_selectmode='none';
 i_toggle_visible_d=0;
 i_slicen=1;
 
-addstyle=function(c,s){
-alert(c+' '+s+'\\n'+print_r(document.styleSheets[0]));
-document.styleSheets[0].insertRule(c+' '+s,0);
-return;
-
-/*
-	var i,u=document.styleSheets[0].cssRules;
-	for(i=0;i<u.length;i++){ if(u[i].selectorText==c) {alert('byli: '+c);return;} }
-
-	document.styleSheets[0].insertRule('#elem:before {content: 'pewpew'; color: red;}', 0);
-	if(typeof document.styleSheets[0].insertRule(c+' '+s,0)!='number') document.styleSheets[0].addRule(c+' '+s,0);
-
-document.styleSheets[0].cssRules[0].style.сolor='#555';
-document.styleSheets[0].rules[0].style.сolor='#555;
-*/
+addstyle=function(c,s){ var i,
+	for(i=0;i<u.length;i++){ if(u[i].selectorText==c) return; }
+	if(typeof a.insertRule(c+' '+s,0)!='number') a.addRule(c+' '+s,0);
 }
 
+replaceblockstyle=function(c,s){ var i,a=document.styleSheets[0],u=a.cssRules;
+	for(i=0;i<u.length;i++){ if(u[i].selectorText==c) break; }
+	if(u.style.сolor) u.style.сolor='#555'; else a.rules[0].style.сolor='#555;
+}
 
 i_toggle_visible=function(){ var g,ee,p,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
 	for(var i=0;i<tr.length;i++){ p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue; ee=td2.getElementsByTagName('DIV');
@@ -140,71 +132,49 @@ i_find=function(id){ var ff,o,ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').get
 alert('not f find: '+id);
 };
 
-i_sett=function(e,t){ e.style.cursor='pointer'; e.style.textDecoration='none';
-	e.setAttribute('title',t);
-	/*
-	e.setAttribute('tiptitle',t);
-	addEvent(e,'mouseover',function(){ idd('tip').innerHTML=this.getAttribute('tiptitle'); posdiv('tip',mouse_x+10,mouse_y+10); });
-	addEvent(e,'mouseout',function(){ zakryl('tip') } );
-	addEvent(e,'mousemove',function(){ posdiv('tip',mouse_x+10,mouse_y+10) } );
-	*/
-}
-
 go_install=function(id){ var o1,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
-
 /*
 addstyle('.ulin',\"{text-decoration:line-through}\");
 addstyle('.ulin:before',\"{content:'†††'}\");
 addstyle('.ulin:after',\"{content:'†††'}\");
-*/
+/*x.style.display='block';*/
+/*x.style.clear='both';*/
 
-	for(var i=0;i<tr.length;i++){ var p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue;
-		var dir=td1.firstChild; dir.onclick=function(){i_chand(this)}; i_sett(dir,'Invert selected files'); var ee=td2.getElementsByTagName('DIV');
-		for(var j=0;j<ee.length;j++){ var x=ee[j];
-			x.style.display='block';
-			/*x.style.clear='both';*/
-			if(x.className=='ic') continue;
 
-			var l=x.innerHTML; var O=l.substring(0,1); l=l.substring(1,l.length); o1=0;
 				if(O=='S') { O=l.substring(0,1); l=l.substring(1,l.length); o1=1; }
 				if(O=='U') { c='green'; t='update'; }
 				else if(O=='A') { c='rgb(0, 255, 0)'; t='add new'; }
 				else if(O=='D') { c='red'; t='del'; }
 				else { c='magenta'; t='unk'; }
-			x.innerHTML=l; x.onclick=function(){i_chan(this)};
-
-
-			x.style.color=c; i_sett(x,t);
-
 			if(o1) i_chan(x); else if(i_selectmode=='color') x.style.textDecoration=(c=='red'?'line-through':'none');
-}}
 i_toggle_visible();
+*/
+
+var itit={iDEL:'del',iADD:'add new',iUPD:'update'};
+
+	for(var i=0;i<tr.length;i++){ var p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue;
+		var dir=td1.firstChild; dir.onclick=function(){i_chand(this)}; i_sett(dir,'Invert selected files'); var ee=td2.getElementsByTagName('DIV');
+		for(var j=0;j<ee.length;j++){ var x=ee[j]; if(x.className=='ic') continue;
+			if(itit[x.className]) x.setAttribute('title',itit[x.className]);
+			x.onclick=function(){i_chan(this)};
+		}
+	}
 posdiv(id,-1,-1);
 };
 
-i_chand=function(e){ var c='',p=e.parentNode.nextSibling.getElementsByTagName('DIV');
-	for(var i=0;i<p.length;i++) {
-		/* i_chan(p[i]); */
-		if(i=='') c=i_chan_tst(p[i])?0:1;
-		i_chan_chg(p[i],c);
-	}
+i_chand=function(e){ var p=e.parentNode.nextSibling.getElementsByTagName('DIV');
+	for(var i=0;i<p.length;i++) { if(i=='') i_chan_chg(p[i],i_chan_tst(p[i])?0:1); }
 };
-
 i_chan_tst=function(e){	return i_selectmode=='color' && e.style.color=='green' || i_selectmode!='color' && e.style.textDecoration=='none' }
 
 i_chan_chg=function(e,i){
   if(i_selectmode=='color') e.style.color=i?'green':'red';
-  else e.innerHTML=i?e.innerHTML.replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1'):e.innerHTML.replace(/^(.+?)$/g,'&nbsp;&nbsp;$1&nbsp;&nbsp;');
-  e.style.textDecoration=(i?'none':'line-through');
+  e.className=(i?'nulin':'ulin');
 }
 
-
-
-i_chan=function(e){ var s=0;
-	e.style.textDecoration='';
-  if(i_selectmode=='color') { if(e.style.color=='red') { e.style.color='green'; s=1; } else e.style.color='red'; }
+i_chan=function(e){
+  if(i_selectmode=='color') e.style.color=(e.style.color=='red'?'green':'red');
   else e.className=(e.className=='ulin'?'nulin':'ulin');
-/*  e.style.textDecoration=(s?'none':'line-through'); */
 };
 
 ";
@@ -309,16 +279,16 @@ $s.="<div>".'A'.'$'.$n."<div class='ic'> = $v</div></div>"; } // добавить
 
 		if(!isset($ruf[$f])) { // если такого у нас не было ¬ —ќќ“¬≈“—“¬”ёў≈ћ ѕј ≈“≈
 			$fh=$GLOBALS['filehost'].$f;
-			if(!is_file($fh)) $o='A'; // добавить
+			if(!is_file($fh)) $o='iADD'; // добавить
 			else { // если есть файл
 				list(,$d1)=explode(' ',$d,2);
-				if(calcfile_md5($fh,getras($f))!=$d1) $o='A'; // добавить
+				if(calcfile_md5($fh,getras($f))!=$d1) $o='iADD'; // добавить
 				else $o='';
 			}
 		} else {
 			list(,$d1)=explode(' ',$d,2); list(,$d2)=explode(' ',$ruf[$f],2); // не сравнивать врем€!
 			if($d1==$d2) $o=''; // если тот же - ќ 
-			else $o='U'; // U если не тот - обновить
+			else $o='iUPD'; // U если не тот - обновить
 			unset($ruf[$f]); // в любом случае удалить
 		}
 		if($o!='') $DDDIR[$fdir][basename($f)]=$o;
@@ -329,7 +299,7 @@ $s.="<div>".'A'.'$'.$n."<div class='ic'> = $v</div></div>"; } // добавить
 		$fdir=($d!='0 0'?dirname($f).'/':$f); if($fdir=='./') $fdir='/'; // им€ папки
 		if(!isset($DDDIR[$fdir])) $DDDIR[$fdir]=array(); // создать такую папку
 		if($d=='0 0') continue;
-		$DDDIR[$fdir][basename($f)]='D';
+		$DDDIR[$fdir][basename($f)]='iDEL';
 	}
 
 	// и напечатать
@@ -339,7 +309,7 @@ $s.="<div>".'A'.'$'.$n."<div class='ic'> = $v</div></div>"; } // добавить
 
 	foreach($DDDIR as $dir=>$val) /*if(sizeof($val))*/ {
 		$s.="</td></tr></table><table><tr valign=top><td><b>".h($dir)."</b></td><td><br>";
-		foreach($val as $n=>$o) { if(in_array($dir.$n,$veto)) $o='S'.$o; $s.="<div>".$o.$n."</div>"; $obnovle++; }
+		foreach($val as $n=>$o) { $o.=' '.(in_array($dir.$n,$veto)?'iSS':'iNO'); $s.="<div class='$o'>".$n."</div>"; $obnovle++; }
 	}
 
 	// return "<pre>".print_r($DDDIR,1)."</pre>";
@@ -967,22 +937,14 @@ function INSTALL($e) { $s=$im='';
 if($GLOBALS['admin']) {
 
 STYLES("mod","
-
-.mod {font-size:11px;}
-
-.ulin {text-decoration:line-through}
-.ulin:before,.ulin:after {content:'†††'}
-
-
-.iid,.iia,.iiu,.ii1,.ii0 { cursor:pointer; }
-
-.ii0 { text-decoration: line-through; color: #999999; background-color: #dddddd; }
-
-.iid { color: red; }
-.iia { color: green; }
-.iiu { color: magenta; }
-
-"); // .ii0,.ii1 { font-weight: bold; }
+.iYES,iNON,.iDEL,.iUPD,.iADD { cursor:pointer; }
+.iNON,.iDEL {color: red}
+.iYES,.iUPD {color: green}
+.iADD {color: rgb(0,255,0)}
+.iNON,.iSS {text-decoration:line-through}
+.iNON:before,.iNON:after,.iSS:before,.iSS:after {content:'†††'}
+.iYES,.iOK {text-decoration:none}
+"); //.mod {font-size:11px;}
 
 
         $upgrade=glob($GLOBALS['host_module']."install/*.php");
