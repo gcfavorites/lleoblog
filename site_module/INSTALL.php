@@ -1,4 +1,4 @@
-6<?php // INSTALL
+<?php // INSTALL
 
 ini_set("display_errors","0"); ini_set("display_startup_errors","0");
 
@@ -137,16 +137,15 @@ go_install=function(id){ var o1,t,c,tr=idd('i_selectfiles').getElementsByTagName
 addstyle('.ulin',\"{text-decoration:line-through}\");
 addstyle('.ulin:before',\"{content:'   '}\");
 addstyle('.ulin:after',\"{content:'   '}\");
-/*x.style.display='block';*/
-/*x.style.clear='both';*/
+x.style.display='block';
+x.style.clear='both';
 
-
-				if(O=='S') { O=l.substring(0,1); l=l.substring(1,l.length); o1=1; }
-				if(O=='U') { c='green'; t='update'; }
-				else if(O=='A') { c='rgb(0, 255, 0)'; t='add new'; }
-				else if(O=='D') { c='red'; t='del'; }
-				else { c='magenta'; t='unk'; }
-			if(o1) i_chan(x); else if(i_selectmode=='color') x.style.textDecoration=(c=='red'?'line-through':'none');
+	if(O=='S') { O=l.substring(0,1); l=l.substring(1,l.length); o1=1; }
+	if(O=='U') { c='green'; t='update'; }
+	else if(O=='A') { c='rgb(0, 255, 0)'; t='add new'; }
+	else if(O=='D') { c='red'; t='del'; }
+	else { c='magenta'; t='unk'; }
+if(o1) i_chan(x); else if(i_selectmode=='color') x.style.textDecoration=(c=='red'?'line-through':'none');
 i_toggle_visible();
 */
 
