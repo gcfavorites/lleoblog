@@ -25,6 +25,11 @@ ini_set("display_errors","0"); ini_set("display_startup_errors","0");
 // $GLOBALS['admin']=1;
 
 // idie('#'.$GLOBALS['admin']);
+/*
+
+
+
+*/
 
 //--------------------------------------------------------------------------------
 // ‘”Õ ÷»» ”œƒ≈…“Œ¬
@@ -34,9 +39,18 @@ i_selectmode='none';
 i_toggle_visible_d=0;
 i_slicen=1;
 
-addstyle=function(s){
-	if(typeof document.styleSheets[0].insertRule(s,0)!='number') document.styleSheets[0].addRule(s,0);
+addstyle=function(c,s){
+alert(c+' '+s+'\\n'+print_r(document.styleSheets[0]));
+document.styleSheets[0].insertRule(c+' '+s,0);
+return;
+
 /*
+	var i,u=document.styleSheets[0].cssRules;
+	for(i=0;i<u.length;i++){ if(u[i].selectorText==c) {alert('byli: '+c);return;} }
+
+	document.styleSheets[0].insertRule('#elem:before {content: 'pewpew'; color: red;}', 0);
+	if(typeof document.styleSheets[0].insertRule(c+' '+s,0)!='number') document.styleSheets[0].addRule(c+' '+s,0);
+
 document.styleSheets[0].cssRules[0].style.Òolor='#555';
 document.styleSheets[0].rules[0].style.Òolor='#555;
 */
@@ -138,10 +152,11 @@ i_sett=function(e,t){ e.style.cursor='pointer'; e.style.textDecoration='none';
 
 go_install=function(id){ var o1,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
 
-addstyle(\".ulin {text-decoration:line-through;border:1px solid #ccc;}\");
-addstyle(\".ulin:before {content:'†††'}\");
-addstyle(\".ulin:after {content:'†††'}\");
-
+/*
+addstyle('.ulin',\"{text-decoration:line-through}\");
+addstyle('.ulin:before',\"{content:'†††'}\");
+addstyle('.ulin:after',\"{content:'†††'}\");
+*/
 
 	for(var i=0;i<tr.length;i++){ var p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue;
 		var dir=td1.firstChild; dir.onclick=function(){i_chand(this)}; i_sett(dir,'Invert selected files'); var ee=td2.getElementsByTagName('DIV');
@@ -160,8 +175,8 @@ addstyle(\".ulin:after {content:'†††'}\");
 
 
 			x.style.color=c; i_sett(x,t);
-			
-			if(0&&o1) i_chan(x); else if(i_selectmode=='color') x.style.textDecoration=(c=='red'?'line-through':'none');
+
+			if(o1) i_chan(x); else if(i_selectmode=='color') x.style.textDecoration=(c=='red'?'line-through':'none');
 }}
 i_toggle_visible();
 posdiv(id,-1,-1);
@@ -186,8 +201,9 @@ i_chan_chg=function(e,i){
 
 
 i_chan=function(e){ var s=0;
+	e.style.textDecoration='';
   if(i_selectmode=='color') { if(e.style.color=='red') { e.style.color='green'; s=1; } else e.style.color='red'; }
-  else e.className=(e.className!=''?'':'ulin');
+  else e.className=(e.className=='ulin'?'nulin':'ulin');
 /*  e.style.textDecoration=(s?'none':'line-through'); */
 };
 
@@ -414,6 +430,12 @@ if($a=='update_file') { // ‚˚·Ó Ù‡ÈÎÓ‚ ‰Îˇ ËÌÒÚ‡ÎÎˇˆËË
 
 function AD2() { if(!isset($_COOKIE["adm2"]) || $_COOKIE["adm2"]!=$GLOBALS['admin_hash1']) { idie('Admin only!'); } }
 
+
+
+
+
+
+
 function INSTALL_ajax() { $a=RE('a');
 //=========================================================================
 if($a=='login') { // Á‡ÎÓ„ËÌËÚ¸Òˇ
@@ -470,6 +492,7 @@ if($a=='install_get_packs') { // ‚˚ÒÎ‡Ú¸ ÒÔËÒÓÍ Ô‡ÍÂÚÓ‚
 
 AD2();
 //=========================================================================
+
 
 // dier($_REQUEST,1);
 
@@ -573,6 +596,7 @@ $maj="majax('module.php',{mod:'INSTALL',a:";
 $dir=$GLOBALS['filehost'].'binoniq/instlog/';
 
 if($a=='install') { // ËÌÒÚ‡ÎÎˇˆËˇ
+
 	$serv=fileget_save($dir."servers.txt","http://lleo.me/blog Beta
 http://lleo.me/dnevnik Stable
 http://lleo.me Super Stable
@@ -943,7 +967,12 @@ function INSTALL($e) { $s=$im='';
 if($GLOBALS['admin']) {
 
 STYLES("mod","
+
 .mod {font-size:11px;}
+
+.ulin {text-decoration:line-through}
+.ulin:before,.ulin:after {content:'†††'}
+
 
 .iid,.iia,.iiu,.ii1,.ii0 { cursor:pointer; }
 
@@ -954,6 +983,7 @@ STYLES("mod","
 .iiu { color: magenta; }
 
 "); // .ii0,.ii1 { font-weight: bold; }
+
 
         $upgrade=glob($GLOBALS['host_module']."install/*.php");
         foreach($upgrade as $l) { $m=array_pop(explode('/',$l));
