@@ -123,8 +123,11 @@ $conf=array_merge(array(
 //==============================================================================================
 // [body] - обработка текста заметки
 function TEXT($e) { global $article; include_once $GLOBALS['include_sys']."_onetext.php";
-	// return onetext($article);
-	return "<div id='Body_".$article['num']."'>".onetext($article)."</div>";
+$conf=array_merge(array(
+'template'=>"<div id='Body_{num}'>{text}</div>"
+),parse_e_conf($e));
+
+return mper($conf['template'],array('text'=>onetext($article),'num'=>$article['num']));
 }
 
 function PODZAMCOLOR() { $a=$GLOBALS['article']['Access']; if($a=='all') return "";
