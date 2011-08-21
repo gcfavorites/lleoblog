@@ -34,6 +34,15 @@ i_selectmode='none';
 i_toggle_visible_d=0;
 i_slicen=1;
 
+addstyle=function(s){
+	if(typeof document.styleSheets[0].insertRule(s,0)!='number') document.styleSheets[0].addRule(s,0);
+/*
+document.styleSheets[0].cssRules[0].style.ñolor='#555';
+document.styleSheets[0].rules[0].style.ñolor='#555;
+*/
+}
+
+
 i_toggle_visible=function(){ var g,ee,p,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
 	for(var i=0;i<tr.length;i++){ p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue; ee=td2.getElementsByTagName('DIV');
 		g=ee.length; for(var j=0;j<ee.length;j++){ var x=ee[j];
@@ -128,6 +137,12 @@ i_sett=function(e,t){ e.style.cursor='pointer'; e.style.textDecoration='none';
 }
 
 go_install=function(id){ var o1,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');
+
+addstyle(\".ulin {text-decoration:line-through;border:1px solid #ccc;}\");
+addstyle(\".ulin:before {content:'   '}\");
+addstyle(\".ulin:after {content:'   '}\");
+
+
 	for(var i=0;i<tr.length;i++){ var p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue;
 		var dir=td1.firstChild; dir.onclick=function(){i_chand(this)}; i_sett(dir,'Invert selected files'); var ee=td2.getElementsByTagName('DIV');
 		for(var j=0;j<ee.length;j++){ var x=ee[j];
@@ -146,7 +161,7 @@ go_install=function(id){ var o1,t,c,tr=idd('i_selectfiles').getElementsByTagName
 
 			x.style.color=c; i_sett(x,t);
 			
-			if(o1) i_chan(x); else if(i_selectmode=='color') x.style.textDecoration=(c=='red'?'line-through':'none');
+			if(0&&o1) i_chan(x); else if(i_selectmode=='color') x.style.textDecoration=(c=='red'?'line-through':'none');
 }}
 i_toggle_visible();
 posdiv(id,-1,-1);
@@ -168,11 +183,14 @@ i_chan_chg=function(e,i){
   e.style.textDecoration=(i?'none':'line-through');
 }
 
+
+
 i_chan=function(e){ var s=0;
   if(i_selectmode=='color') { if(e.style.color=='red') { e.style.color='green'; s=1; } else e.style.color='red'; }
-  else { if(e.style.textDecoration!='none') { e.className='nulin'; s=1 } else e.className='ulin'; }
+  else e.className=(e.className!=''?'':'ulin');
 /*  e.style.textDecoration=(s?'none':'line-through'); */
 };
+
 ";
 
 function UPDATE_file($name,$temp) {
