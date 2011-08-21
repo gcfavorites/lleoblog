@@ -131,18 +131,21 @@ go_install=function(id){ var o1,t,c,tr=idd('i_selectfiles').getElementsByTagName
 	for(var i=0;i<tr.length;i++){ var p=tr[i]; var td1=p.firstChild; var td2=p.lastChild; if(td2==td1) continue;
 		var dir=td1.firstChild; dir.onclick=function(){i_chand(this)}; i_sett(dir,'Invert selected files'); var ee=td2.getElementsByTagName('DIV');
 		for(var j=0;j<ee.length;j++){ var x=ee[j];
+			x.style.display='inline';
+			if(x.className=='ic') continue;
+
 			var l=x.innerHTML; var O=l.substring(0,1); l=l.substring(1,l.length); o1=0;
 				if(O=='S') { O=l.substring(0,1); l=l.substring(1,l.length); o1=1; }
 				if(O=='U') { c='green'; t='update'; }
 				else if(O=='A') { c='rgb(0, 255, 0)'; t='add new'; }
 				else if(O=='D') { c='red'; t='del'; }
 				else { c='magenta'; t='unk'; }
-			x.innerHTML='<br>'+l; x.onclick=function(){i_chan(this)}; x.style.display='inline';
+			x.innerHTML='<br>'+l; x.onclick=function(){i_chan(this)};
 			x.style.color=c; i_sett(x,t);
 			
 			if(o1) i_chan(x); else if(i_selectmode=='color') x.style.textDecoration=(c=='red'?'line-through':'none');
 }}
-i_toggle_visible();
+/*i_toggle_visible();*/
 posdiv(id,-1,-1);
 };
 
@@ -220,14 +223,22 @@ function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".pri
 
 $obnovle=0;
 
+//return "<pre>".print_r($Uconf,1)."</pre>";
+
 //=========================================================
+function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size='".(strlen($t[2])?strlen($t[2]):1)."'>".$t[3]; }
+
 	// 1. Что с конфигом?
 	// config:msq_login $msq_login = ""; // "lleo";
 	$con=file_get_contents('config.php'); preg_match_all("/\n\s*".'\$'."([0-9a-z\_\-]+)\s*\=\s*([^\n]+)/si",$con,$m);
-	$con=array(); foreach($m[1] as $i=>$n) $con[$n]=$m[2][$i];
-	$s.="</td></tr></table><table><tr valign=top><td><b>config.php:</b></td><td>";
-	foreach($Uconf as $n=>$v) { if(isset($con[$n])) unset($con[$n]); else $s.="<div>".'A'.'$'.$n."</div>"; }
-	foreach($con as $n=>$l) { $s.="<div>".'D'.'$'.$n."=".h($l)."</div>"; } // предлагается удалить
+	$con=array(); foreach($m[1] as $i=>$n) $con[$n]=$m[2][$i]; // все наши
+	$s.="</td></tr></table><table><tr valign=top><td><b>config.php:</b></td><td>"; // заголовок
+	foreach($Uconf as $n=>$v) { if(isset($con[$n])) { unset($con[$n]); continue; }
+$v=h($v);
+$v=preg_replace_callback("/^([\'\"])([^\'\"]*)([\'\"];)/s","vtoinput",$v);
+$v=preg_replace_callback("/^([\'\"]*)(\d+)([\'\"]*;)/s","vtoinput",$v);
+$s.="<div>".'A'.'$'.$n."<div class='ic'> = $v</div></div>"; } // добавить
+	foreach($con as $n=>$l) { $s.="<div>".'D'.'$'.$n."=".h($l)."</div>"; } // удалить
 	unset($con);
 //=========================================================
 	// 2. Что с языком?
@@ -1047,12 +1058,11 @@ function POST_file($filePath,$urla,$ara,$port=80,$scheme='http',$charset='Window
 return $t;
 }
 //==================================================================================================
-function getconf($l){ $r=array();
-	$a=file($l); unset($a[0]); unset($a[sizeof($a)]);
+function getconf($l){ $r=array(); $a=file($l); unset($a[0]); unset($a[sizeof($a)]);
 	foreach($a as $l) { $l=trim($l);
-		if($l=='' || preg_match("/^\s*(#|\/\/)/s",$l)) continue;
+		if($l=='' || preg_match("/^\s*(#|\/\/)/s",$l)) continue; // если это комментарий
 		$per=preg_replace("/^\s*".'\$'."([a-z0-9\_]+).*?$/si","$1",$l); if($per==$l) continue;
-		$r[]="config:$per $l";
+		$r[]="config:$per ".preg_replace("/^\s*".'\$'."[a-z0-9\_]+\s*\=\s*(.*?)$/si","$1",$l);
 	}
 	return $r;
 }
