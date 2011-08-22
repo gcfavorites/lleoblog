@@ -74,11 +74,6 @@ i_submit=function(){ inst_MAS_DEL=[]; inst_MAS_UPD=[]; inst_MAS_NON=[];
 				/*if(dir=='config.php:') f=f.replace(/^\\\$/g,''); alert(f);*/
 			f=dir+f;
 			if(i_tst(p[j])) {
-
-
-				if(dir=='config.php:') alert(f);
-
-
 				c=p[j].className.split(' ')[0];
 				if(c=='iUPD'||c=='iADD') inst_MAS_UPD.push(f);
 				else if(c=='iDEL') inst_MAS_DEL.push(f);
@@ -95,7 +90,7 @@ i_selectall=function(){ for(var z=7,tr=idd('i_selectfiles').getElementsByTagName
 };
 
 i_find=function(id){
-		if(id.indexOf('config.php:')>=0) id=id.replace(/^([^\s\+]+).*?$/g,'$1');
+		if(id.indexOf('config.php:')>=0) id=id.replace(/^([^\s\=]+).*?$/g,'$1');
 	for(var v,tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
 	for(var dir=tr[i].firstChild.innerHTML,p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){
 		v=p[j].innerHTML;
@@ -110,7 +105,7 @@ go_install=function(id){ var x,dir,itit={iDEL:'del',iADD:'add new',iUPD:'update'
 		dir.onclick=function(){i_chand(this)}; dir.setAttribute('title','Invert selected');
 		for(var p=dir.nextSibling.getElementsByTagName('DIV'),j=0;j<p.length;j++){
 			if(itit[p[j].className]) p[j].setAttribute('title',itit[p[j].className]);
-			p[j].onclick=function(){alert(2); i_chan(this,i_tst(this))};
+			p[j].onclick=function(e){if(e.target.tagName!='INPUT')i_chan(this,i_tst(this))};
 		}
 	}
 i_toggle_visible(); posdiv(id,-1,-1);
@@ -179,11 +174,13 @@ $obnovle=0;
 
 //return "<pre>".print_r($Uconf,1)."</pre>";
 
-//=========================================================
-function vtoinput($t){ return $t[1]."<input type='text' onclick='alert(1); return false;' value=\"".$t[2]."\" size='".(strlen($t[2])?strlen($t[2]):1)."'>".$t[3]; }
+//========================================================= // onclick=\"setTimeout('this.parentNode.click()',100)\" 
+function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size='".(strlen($t[2])?strlen($t[2]):1)."'>".$t[3]; }
 
 	// 1. Что с конфигом?
 	// config:msq_login $msq_login = ""; // "lleo";
+	//$s.="<pre>".print_r($Uconf,1)."</pre>";
+
 	$con=file_get_contents('config.php'); preg_match_all("/\n\s*".'\$'."([0-9a-z\_\-]+)\s*\=\s*([^\n]+)/si",$con,$m);
 	$con=array(); foreach($m[1] as $i=>$n) $con[$n]=$m[2][$i]; // все наши
 	$s.="<table><tr valign=top><td class='iDIR iOK'>config.php:</td><td class='iT'>"; // заголовок
@@ -682,7 +679,13 @@ if($a=='install_update_DEL') { // DEL - удалить 1 файл
 }
 
 if($a=='install_update_UPD') { // UPD - обновить 1 файл
-	$file=RE('file'); if(strstr($file,':')) return "alert('$file');";
+	$file=RE('file');
+			if(strstr($file,':')) {
+			if(preg_match("/^(config\.php)\:([^\:\=]+)\=(.+?)$/s",$file,$m)) {
+				config_add($m[2],$m[3]);
+				return "alert(\"".implode("\\n",$m)."\");";
+			} else return "alert('no');";
+			}
 	$ser=file($dir."server.my"); $ser=trim($ser[0]); // вычислить текущий сервер
 	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'$file'})";
 } // А ВОТ И ОН - СЕРВЕР-МАТКА:
@@ -1030,8 +1033,8 @@ return $t;
 function getconf($l){ $r=array(); $a=file($l); unset($a[0]); unset($a[sizeof($a)]);
 	foreach($a as $l) { $l=trim($l);
 		if($l=='' || preg_match("/^\s*(#|\/\/)/s",$l)) continue; // если это комментарий
-		$per=preg_replace("/^\s*".'\$'."([a-z0-9\_]+).*?$/si","$1",$l); if($per==$l) continue;
-		$r[]="config:$per ".preg_replace("/^\s*".'\$'."[a-z0-9\_]+\s*\=\s*(.*?)$/si","$1",$l);
+		$per=preg_replace("/^\s*".'\$'."([a-z0-9\_\-]+).*?$/si","$1",$l); if($per==$l) continue;
+		$r[]="config:$per ".preg_replace("/^\s*".'\$'."[a-z0-9\_\-]+\s*\=\s*(.*?)$/si","$1",$l);
 	}
 	return $r;
 }
