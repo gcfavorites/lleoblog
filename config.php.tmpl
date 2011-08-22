@@ -52,9 +52,9 @@ $readru_partner='';
 	// if(stristr($_SERVER["HTTP_USER_AGENT"],'Nokia') or stristr($_SERVER["HTTP_USER_AGENT"],'konquer') ) $cookie_method_old=true;
 
 # Если установлен и работает memcache - пытаемся подключиться к нему
-$memcache=function_exists('memcache_connect'); if($memcache) $memcache=memcache_connect('localhost',ini_get('memcache.default_port'));
-
+$memcache=0; if(($memcache=function_exists('memcache_connect')) and ($a=intval(ini_get('memcache.default_port')))) $memcache=memcache_connect('localhost',$a);
 $ttl_longsite = 10000; // длинное хранение данных
+
 $editor_width = 1000; // количество пикселей по ширине в окне редактора заметки
 $editor_height = 900; // количество пикселей по высоте в окне редактора заметки
 $old_counter = 0; // 1 - учитывать данные счетчика посещений старой версии блога, 0 - не учитывать, работать по новому

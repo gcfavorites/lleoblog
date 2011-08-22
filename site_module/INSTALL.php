@@ -105,7 +105,7 @@ go_install=function(id){ var x,dir,itit={iDEL:'del',iADD:'add new',iUPD:'update'
 		dir.onclick=function(){i_chand(this)}; dir.setAttribute('title','Invert selected');
 		for(var p=dir.nextSibling.getElementsByTagName('DIV'),j=0;j<p.length;j++){
 			if(itit[p[j].className]) p[j].setAttribute('title',itit[p[j].className]);
-			p[j].onclick=function(e){if(e.target.tagName!='INPUT')i_chan(this,i_tst(this))};
+			p[j].onclick=function(e){if(e.target.tagName!='INPUT')i_chan(this,i_tst(this));window.event.stopPropagation();};
 		}
 	}
 i_toggle_visible(); posdiv(id,-1,-1);
@@ -673,19 +673,20 @@ if($a=='install_update_NON') { // NON - пометить файлы отмеченные как
 }
 
 if($a=='install_update_DEL') { // DEL - удалить 1 файл
-	$file=RE('file'); $f=$GLOBALS['filehost'].$file;
+	$file=RE('file');
+		if(preg_match("/^(config\.php)\:([^\:\=]+)\=(.+?)$/s",$file,$m)) { config_del($m[2]);
+		return "var s=inst_MAS_DEL.shift(); s=i_find(s); s.parentNode.removeChild(s); i_process();";
+		}
+	$f=$GLOBALS['filehost'].$file;
 	if(is_file($f)) { backupfile($f); unlink($f); } elseif(is_dir($f)) rmdir($f); else idie('Not found: '.h($f));
 	return "var s=inst_MAS_DEL.shift(); s=i_find(s); s.parentNode.removeChild(s); i_process();";
 }
 
 if($a=='install_update_UPD') { // UPD - обновить 1 файл
 	$file=RE('file');
-			if(strstr($file,':')) {
-			if(preg_match("/^(config\.php)\:([^\:\=]+)\=(.+?)$/s",$file,$m)) {
-				config_add($m[2],$m[3]);
-				return "alert(\"".implode("\\n",$m)."\");";
-			} else return "alert('no');";
-			}
+		if(preg_match("/^(config\.php)\:([^\:\=]+)\=(.+?)$/s",$file,$m)) { config_add($m[2],$m[3]);
+		return "var s=inst_MAS_UPD.shift(); s=i_find(s); s.parentNode.removeChild(s); i_process();";
+		}
 	$ser=file($dir."server.my"); $ser=trim($ser[0]); // вычислить текущий сервер
 	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'$file'})";
 } // А ВОТ И ОН - СЕРВЕР-МАТКА:
@@ -807,7 +808,8 @@ function get_dfiles_r($pack='') { // взять файлы в удобном формате
 
 // добавить в конфиг
 function config_add($name,$value){ if(($s=config_get())===false) return $s;
-	return config_put(preg_replace("/\n\s*\?>\s*$/s","\n\$".$name."=\"".$value."\"; // added ".date("Y-m-d")."\n?>\n",$s));
+	$str="\$".$name.'='.((strstr($value,'"')||strstr($value,"'")||preg_match("/^\d+\;/s",$value))?$value:'"'.$value.'";');
+	return config_put(preg_replace("/\n\s*\?>\s*$/s","\n".$str." // added ".date("Y-m-d")."\n?>\n",$s));
 }
 // удалить из конфига
 function config_del($name){ if(($s=config_get())===false) return $s;
