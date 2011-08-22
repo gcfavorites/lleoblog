@@ -77,52 +77,36 @@ i_toggle_visible=function(){ for(var tr=idd('i_selectfiles').getElementsByTagNam
 i_toggle_visible_d=i_toggle_visible_d?0:1;
 };
 
+i_get_selected=function(){ for(var dir,s='',tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
+  dir=tr[i].firstChild.innerHTML; if(dir=='/') dir='';
+  for(var p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){ if(i_tst(p[j])) s='\\n'+dir+p[j].innerHTML; }
+ } return s;
+};
 
-i_get_selected=function(){ alert(2);
-var ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
-        for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue;
-        dir=td1.firstChild.innerHTML;
-        ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ e=ee[j];
-                if(e.style.color=='green') {
-                        var v=e.replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1');
-                        if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
-                        s=s+'\\n'+(dir!='/'?dir:'')+v;
-                }
-            }
-        }
-return s;
+i_submit=function(){ inst_MAS_DEL=[]; inst_MAS_UPD=[]; inst_MAS_NON=[];
+  for(var c,f,dir,s='',tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
+	dir=tr[i].firstChild.innerHTML; if(dir=='/') dir='';
+		for(var p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){
+			f=p[j].innerHTML; if(dir=='config.php:') f=f.replace(/^\\\$([^\s\=]+).*?$/g,'$1'); f=dir+f;
+			if(i_tst(p[j])) {
+				c=p[j].className.split(' ')[0];
+				if(c=='iUPD'||c=='iADD') inst_MAS_UPD.push(f);
+				else if(c=='iDEL') inst_MAS_DEL.push(f);
+				else ohelpc('errError option','Error option','Error option: `'+c+'` / '+f);
+		  	} else inst_MAS_NON.push(f);
+		}
+ }
+dier(inst_MAS_NON);
+/*i_process();*/
 };
 
 i_selectall=function(){ for(var z=7,tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
-		for(var p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){
-			if(z==7) { z=i_tst(p[j]); alert(z); } i_chan_i(p[j],z);
-		}
-	}
-};
+  for(var p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){ if(z==7) z=i_tst(p[j]); i_chan_i(p[j],z); }
+}};
 
 inst_MAS_UPD=[];
 inst_MAS_DEL=[];
 inst_MAS_NON=[];
-
-i_submit=function(e){ var ff,o,ee,v,td1,td2,dir,p,e,c,tr=idd('i_selectfiles').getElementsByTagName('TR'), s='';
-	inst_MAS_DEL=[]; inst_MAS_UPD=[]; inst_MAS_NON=[];
-	for(var i=0;i<tr.length;i++){ p=tr[i]; td1=p.firstChild; td2=p.lastChild; if(td2==td1) continue;
-	dir=td1.firstChild.innerHTML;
-	ee=td2.getElementsByTagName('DIV'); for(var j=0;j<ee.length;j++){ e=ee[j];
-			var v=e.innerHTML.replace(/\&nbsp;/g,' ').replace(/^ +(.+?) +$/g,'$1');
-			if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1');
-			ff=(dir!='/'?dir:'')+v;
-			if(e.style.textDecoration=='none') { o=e.style.color;
-				if(o=='green'||o=='rgb(0, 255, 0)') inst_MAS_UPD.push(ff);
-				else if(o=='red') inst_MAS_DEL.push(ff);
-				else ohelpc('errError optino','Error option','Error option: '+o);
-			} else inst_MAS_NON.push(ff);
-		s=s+'###'+o+':'+(dir!='/'?dir:'')+v;
-		}
-	}
-i_process();
-};
-
 
 i_process=function(){
 	if(inst_MAS_NON.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join('\\n'),mode:'post',pack:i_pack});
@@ -153,7 +137,7 @@ i_toggle_visible();
 posdiv(id,-1,-1);
 };
 
-i_chand=function(e){ for(var c=7,p=e.nextSibling.getElementsByTagName('DIV'),i=0;i<p.length;i++) { if(c==7) c=!i_tst(p[i]); i_chan_i(p[i],c); }};
+i_chand=function(e){ for(var c=7,p=e.nextSibling.getElementsByTagName('DIV'),i=0;i<p.length;i++) { if(c==7) c=i_tst(p[i]); i_chan_i(p[i],c); }};
 
 i_tst=function(e){
 	/*return i_selectmode=='color' && e.style.color=='green' || i_selectmode!='color' && e.style.textDecoration=='none'*/
@@ -300,9 +284,9 @@ function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size
 	// взять мою ветошь
 	$veto=unserialize(file_get_contents($GLOBALS['filehost']."binoniq/instlog/veto.my")); if(empty($veto)) $veto=array(); // на всякий случай
 
-	foreach($DDDIR as $dir=>$val) /*if(sizeof($val))*/ {
+	foreach($DDDIR as $dir=>$val) if(sizeof($val)) {
 		$s.="<table><tr valign=top><td class='iDIR iOK'>".h($dir)."</td><td class='iT'>";
-		foreach($val as $n=>$o) { $o.=' '.(in_array($dir.$n,$veto)?'iSS':'iNO'); $s.="<div class='$o'>".$n."</div>"; $obnovle++; }
+		foreach($val as $n=>$o) { $o.=' '.(in_array($dir.$n,$veto)?'iSS':'iOK'); $s.="<div class='$o'>".$n."</div>"; $obnovle++; }
 		$s.="</td></tr></table>";
 	}
 
@@ -631,23 +615,22 @@ clean('expert_knop');
 
 
 if($a=='install_edit_pack') { // форма редактирования пакета или создания нового (name='')
-	$name=RE('name'); $s="<table><tr><td>";
+	$name=RE('name');
 
 	$p=array(); if($name!='' && ($r=file($dir."instpack/".$name.".pack"))!==false) {
 		foreach($r as $l) { $m=explode(' ',$l); $p[$m[0]]=array($m[1],$m[2]); } // [0] => template/adminpanel.htm 1303587256 d866bd70d3d53450fd3b82243d32fe36
 	}
 
 	//-----
-	$lastdir=''; foreach(get_dfiles() as $l) { list($file,$ftime,$fkey)=explode(' ',$l,3);
+	$s=''; $lastdir=''; foreach(get_dfiles() as $l) { list($file,$ftime,$fkey)=explode(' ',$l,3);
 		$fhost=$GLOBALS['filehost'].$file; // физический файл
 		$fname=basename($file); // его имя
 		$fdir=($ftime.$fkey!='00'?dirname($file).'/':$file); if($fdir=='./') $fdir='/'; // имя папки
-		if($fdir!=$lastdir){ $s.="</td></tr></table><table><tr valign=top><td><b>$fdir</b></td><td>"; $lastdir=$fdir; }
-		if($ftime.$fkey=='00') continue;
-			if(isset($p[$file])) $o='U'; else $o='D';
-			$s.="<div>".$o.$fname."</div>";
+		if($fdir!=$lastdir) { $s.=($s==''?'':"</td></tr></table>")."<table><tr><td class='iDIR iOK'>$fdir</td><td>"; $lastdir=$fdir; }
+			if($ftime.$fkey=='00') continue;
+			$s.="<div class='".(isset($p[$file])?'iYES':'iNON')."'>".$fname."</div>";
 	}
-	$s="<div id='i_selectfiles'>$s</td></tr></table></div>";
+	$s="<div id='i_selectfiles'>$s".($s!=''?'</td></tr></table>':'')."</div>";
 	//-----
 
 $subm="<input type='button' value='Save' onclick='i_packsave()'>"
@@ -660,7 +643,8 @@ $subm="<input type='button' value='Save' onclick='i_packsave()'>"
 packdel=function(){ if(confirm('Delete pack `".$name.".pack`?')) majax('module.php',{mod:'INSTALL',a:'install_pack_del',name:idd('newpack_name').value}); };
 
 i_packsave=function(){
-	majax('module.php',{mod:'INSTALL',a:'install_pack_save',s:i_get_selected(),name:idd('newpack_name').value});
+dier(i_get_selected());
+/*	majax('module.php',{mod:'INSTALL',a:'install_pack_save',s:i_get_selected(),name:idd('newpack_name').value}); */
 };
 
 ohelpc('pack','Edit pack: $name',\"".njsn(
@@ -936,14 +920,12 @@ STYLES("mod","
 .iYES,.iUPD {color: green}
 .iADD {color: rgb(0,255,0)}
 .iNON,.iSS {text-decoration:line-through}
-.iNON:before,.iNON:after,.iSS:before,.iSS:after {content:'   '}
+.iNON:before,.iNON:after,.iSS:before,.iSS:after {content:' '}
 .iYES,.iOK {text-decoration:none}
 
 .iDIR {font-weight: bold; float:left;}
 .iT {float:left;margin-top:10px;}
-
-.iDDR {font-weight: bold; color:green;}
-"); //.mod {font-size:11px;}
+"); //.mod {font-size:11px;} .iDDR {font-weight: bold; color:green;}
 
 
         $upgrade=glob($GLOBALS['host_module']."install/*.php");
