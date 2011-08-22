@@ -82,9 +82,9 @@ i_selectall=function(){ for(var z=7,tr=idd('i_selectfiles').getElementsByTagName
 
 i_find=function(id){ for(var v,tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
 	for(var dir=tr[i].firstChild.innerHTML,p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){
-		v=p[j].innerHTML; if(dir=='config.php:') v=v.replace(/^([^\=]+)\s*\=.*?$/g,'$1'); if(id==dir+v) return e;
+		v=p[j].innerHTML; if(dir=='config.php:') v=v.replace(/^\\\$([^\=\s]+).*?$/g,'$1'); if(id==dir+v) return p[j];
 	}
-} alert('not f find: '+id);
+} alert('not find: '+id);
 };
 
 go_install=function(id){ var x,dir,itit={iDEL:'del',iADD:'add new',iUPD:'update'};
@@ -116,6 +116,7 @@ function UPDATE_file($name,$temp) {
 	$f=$GLOBALS['filehost'].$name;
 	if(realpath($f)) { load_vetomas(); foreach($GLOBALS['vetomas'] as $l) { if(strtolower(substr($name,0,strlen($l)))==$l) return "Disabled file: ".h($l); } }
 	testdir(dirname($f)); // создать папки, если надо
+	backupfile($f);
         move_uploaded_file($temp,$f); filechmod($f);
 
 	if(getras($f)=='css' && !empty($GLOBALS['www_design'])) {
@@ -658,7 +659,7 @@ if($a=='install_update_NON') { // NON - пометить файлы отмеченные как
 
 if($a=='install_update_DEL') { // DEL - удалить 1 файл
 	$file=RE('file'); $f=$GLOBALS['filehost'].$file;
-	if(is_file($f)) unlink($f); elseif(is_dir($f)) rmdir($f); else idie('Not found: '.h($f));
+	if(is_file($f)) { backupfile($f); unlink($f); } elseif(is_dir($f)) rmdir($f); else idie('Not found: '.h($f));
 	return "var s=inst_MAS_DEL.shift(); s=i_find(s); s.parentNode.removeChild(s); i_process();";
 }
 
@@ -761,7 +762,7 @@ function get_dfiles2($files) { global $stop,$md5mas,$vetomas,$filehostn,$filehos
 
 	// сперва окучить файлы
 	foreach($a as $n=>$l) { if(is_dir($l)) continue; $name=c(substr($l,$filehostn));
-		$ras=getras($l); if(!in_array($name,$vetomas) && $ras!='old' && $ras!='off') { $time=filemtime($l);
+		$ras=getras($l); if(!in_array($name,$vetomas) && $ras!='old' && $ras!='off' && substr($ras,0,6)!='old---') { $time=filemtime($l);
 			if(isset($md5mas[$name]) && $md5mas[$name][0]==$time) $md5=$md5mas[$name][1]; // без изменений
 			else { $md5=calcfile_md5($l,$ras); $md5mas[$name]=array($time,$md5); $allmd5change=1; }
 			$r[]="$name $time $md5";
@@ -872,7 +873,7 @@ function INSTALL($e) { $s=$im='';
 if($GLOBALS['admin']) {
 
 STYLES("mod","
-.iDIR,.iYES,iNON,.iDEL,.iUPD,.iADD { cursor:pointer; }
+.iDIR,.iYES,.iNON,.iDEL,.iUPD,.iADD { cursor:pointer; clear:left;float:left; }
 .iNON {color: #aaa}
 .iDEL {color: red}
 .iYES,.iUPD {color: green}
@@ -882,7 +883,7 @@ STYLES("mod","
 .iYES,.iOK {text-decoration:none}
 
 .iDIR {font-weight: bold; float:left;}
-.iT {float:left;margin-top:10px;}
+.iT {float:left;margin-top:20pt;}
 "); //.mod {font-size:11px;} .iDDR {font-weight: bold; color:green;}
 
 
@@ -1048,4 +1049,7 @@ function get_pack_r($pack='') {
 		if(getras($l)=='lang') { $r=array_merge(getlang($url),$r); unset($r[$n]); } // обработать язык, сам не слать
 	} return $r;
 }
+
+function backupfile($f) { if(is_file($f) && substr(getras($f),0,6)!='old---') rename($f,$f.".old---".date("Y-m-d_h-i-s")); }
+
 ?>
