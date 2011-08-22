@@ -37,36 +37,13 @@ replaceblockstyle=function(c,s){ var i,a=document.styleSheets[0],u=a.cssRules;
 addstyle('.ulin',\"{text-decoration:line-through}\");
 addstyle('.ulin:before',\"{content:'   '}\");
 addstyle('.ulin:after',\"{content:'   '}\");
-x.style.display='block';
-x.style.clear='both';
-
-	if(O=='S') { O=l.substring(0,1); l=l.substring(1,l.length); o1=1; }
-	if(O=='U') { c='green'; t='update'; }
-	else if(O=='A') { c='rgb(0, 255, 0)'; t='add new'; }
-	else if(O=='D') { c='red'; t='del'; }
-	else { c='magenta'; t='unk'; }
-if(o1) i_chan(x); else if(i_selectmode=='color') x.style.textDecoration=(c=='red'?'line-through':'none');
-i_toggle_visible();
-
-STYLES("mod","
-.iYES,iNON,.iDEL,.iUPD,.iADD { cursor:pointer; }
-.iNON,.iDEL {color: red}
-.iYES,.iUPD {color: green}
-.iADD {color: rgb(0,255,0)}
-.iNON,.iSS {text-decoration:line-through}
-.iNON:before,.iNON:after,.iSS:before,.iSS:after {content:'   '}
-.iYES,.iOK {text-decoration:none}
-"); //.mod {font-size:11px;}
-
 */
 
 //--------------------------------------------------------------------------------
 // ФУНКЦИИ УПДЕЙТОВ
 
 $GLOBALS['selectjs']="
-i_selectmode='none';
 i_toggle_visible_d=1;
-i_slicen=1;
 
 i_toggle_visible=function(){ for(var tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
 		for(var p=tr[i].lastChild.getElementsByTagName('DIV'),z=g=p.length,j=0;j<g;j++){
@@ -79,7 +56,7 @@ i_toggle_visible_d=i_toggle_visible_d?0:1;
 
 i_get_selected=function(){ for(var dir,s='',tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
   dir=tr[i].firstChild.innerHTML; if(dir=='/') dir='';
-  for(var p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){ if(i_tst(p[j])) s='\\n'+dir+p[j].innerHTML; }
+  for(var p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){ if(i_tst(p[j])) s='\\n'+dir+p[j].innerHTML+s; }
  } return s;
 };
 
@@ -96,24 +73,12 @@ i_submit=function(){ inst_MAS_DEL=[]; inst_MAS_UPD=[]; inst_MAS_NON=[];
 		  	} else inst_MAS_NON.push(f);
 		}
  }
-dier(inst_MAS_NON);
-/*i_process();*/
+i_process();
 };
 
 i_selectall=function(){ for(var z=7,tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
-  for(var p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){ if(z==7) z=i_tst(p[j]); i_chan_i(p[j],z); }
+  for(var p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){ if(z==7) z=i_tst(p[j]); i_chan(p[j],z); }
 }};
-
-inst_MAS_UPD=[];
-inst_MAS_DEL=[];
-inst_MAS_NON=[];
-
-i_process=function(){
-	if(inst_MAS_NON.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join('\\n'),mode:'post',pack:i_pack});
-	if(inst_MAS_DEL.length) return majax('module.php',{mod:'INSTALL',a:'install_update_DEL',file:inst_MAS_DEL[0],mode:'post'});
-	if(inst_MAS_UPD.length) return majax('module.php',{mod:'INSTALL',a:'install_update_UPD',file:inst_MAS_UPD[0],mode:'post'});
-	clean('install2');
-}
 
 i_find=function(id){ for(var v,tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
 	for(var dir=tr[i].firstChild.innerHTML,p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){
@@ -122,37 +87,29 @@ i_find=function(id){ for(var v,tr=idd('i_selectfiles').getElementsByTagName('TR'
 } alert('not f find: '+id);
 };
 
-
-go_install=function(id){ 
-	var itit={iDEL:'del',iADD:'add new',iUPD:'update'};
-	for(var i=0,o1,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');i<tr.length;i++){	var dir=tr[i].firstChild;
+go_install=function(id){ var x,dir,itit={iDEL:'del',iADD:'add new',iUPD:'update'};
+	for(var tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){ dir=tr[i].firstChild;
 		dir.onclick=function(){i_chand(this)}; dir.setAttribute('title','Invert selected');
-		for(var j=0,p=dir.nextSibling.getElementsByTagName('DIV');j<p.length;j++){ var x=p[j];
-			/* if(x.className=='ic') continue; */
-			if(itit[x.className]) x.setAttribute('title',itit[x.className]);
-			x.onclick=function(){i_chan(this)};
+		for(var p=dir.nextSibling.getElementsByTagName('DIV'),j=0;j<p.length;j++){
+			if(itit[p[j].className]) p[j].setAttribute('title',itit[p[j].className]);
+			p[j].onclick=function(){i_chan(this,i_tst(this))};
 		}
 	}
-i_toggle_visible();
-posdiv(id,-1,-1);
+i_toggle_visible(); posdiv(id,-1,-1);
 };
 
-i_chand=function(e){ for(var c=7,p=e.nextSibling.getElementsByTagName('DIV'),i=0;i<p.length;i++) { if(c==7) c=i_tst(p[i]); i_chan_i(p[i],c); }};
+i_chand=function(e){ for(var c=7,p=e.nextSibling.getElementsByTagName('DIV'),i=0;i<p.length;i++) { if(c==7) c=i_tst(p[i]); i_chan(p[i],c); }};
+i_tst=function(e){ var c=e.className.split(' '); if(c.length!=1) return (c[1]=='iOK'?true:false); return (c[0]=='iYES'?true:false); }
+i_chan=function(e,i){ var c=e.className.split(' '); e.className=c.length!=1?c[0]+(i?' iSS':' iOK'):(i?'iNON':'iYES'); }
 
-i_tst=function(e){
-	/*return i_selectmode=='color' && e.style.color=='green' || i_selectmode!='color' && e.style.textDecoration=='none'*/
-	return (e.className.split(' ')[1]=='iOK'?true:false);
+inst_MAS_UPD=[]; inst_MAS_DEL=[]; inst_MAS_NON=[];
+
+i_process=function(){
+	if(inst_MAS_NON.length) return majax('module.php',{mod:'INSTALL',a:'install_update_NON',d:inst_MAS_NON.join('\\n'),mode:'post',pack:i_pack});
+	if(inst_MAS_DEL.length) return majax('module.php',{mod:'INSTALL',a:'install_update_DEL',file:inst_MAS_DEL[0],mode:'post'});
+	if(inst_MAS_UPD.length) return majax('module.php',{mod:'INSTALL',a:'install_update_UPD',file:inst_MAS_UPD[0],mode:'post'});
+	clean('install2');
 }
-
-i_chan_i=function(e,i){
-	/*  if(i_selectmode=='color') e.style.color=i?'green':'red'; */
-	e.className=e.className.replace(/ .+?$/g,(i?' iSS':' iOK'));
-}
-
-i_chan=function(e){
-	/*  if(i_selectmode=='color') e.style.color=(e.style.color=='red'?'green':'red'); else */
-	var c=e.className.split(' '); e.className=c[0]+' '+(c[1]=='iSS'?'iOK':'iSS');
-};
 ";
 
 function UPDATE_file($name,$temp) {
@@ -578,10 +535,10 @@ foreach($select_serv as $l) { $w=substr($l,1);
 	$s.="<div><input class='cb' name=\"$w\" type='checkbox'".($l[0]=='+'?' checked':'').">$w</div>";
 }
 $s.="</div>";
-	$s.="<div id='mypacks' style='position:relative;font-size: 14px; margin: 20px; padding: 20px; border: 1px dotted #ccc'>"
+	$s.="<div id='mypan' style='position:relative;font-size: 14px; margin: 20px; padding: 20px; border: 1px dotted #ccc'>"
 ."<img id='expert_knop' onclick=\"majax('module.php',{mod:'INSTALL',a:'expert_options_panel'})\""
 ." title='Other options<br>(expert mode)' src='".$GLOBALS['www_design']."e3/system.png' style='position:absolute;display:inline;right:0px;top:0px;cursor: pointer;'>"
-.get_my_pack($dir)."</div>";
+."<p>installed:<div id='mypacks' style='padding-left:50px;'>".get_my_pack()."</div></div>";
 
 	return "
 servselect=function(e){ var s='',e=getElementsByClass('cb');
@@ -601,16 +558,17 @@ if($a=='expert_options_panel') { // панель опций
 $s="<input type='button' value='Clean *.old' onclick=\"$maj'install_clean',s:idd('servs').value})\">
 <input type='button' value='Back' onclick=\"$maj'install_back',s:idd('servs').value})\">
 <input type='button' value='TEST' onclick=\"$maj'install_test',s:idd('servs').value})\">
-<span title='Create my inctallpack!' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:''})\" style='margin-left:20px'>new</span>
+<span title='Create my inctallpack!' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:''})\" style='margin-left:20px'>[new]</span>
 ";
 
 foreach(glob($dir."*.txt") as $l) { $l0=basename($l); $s.="<div class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'edit_file',file:'$l'})\">$l0</div>"; }
 
 return "
-zabil('mypacks',\"<div style='border:1px dotted #ccc; width:100%;'>".njs($s)."</div>\"+vzyal('mypacks'));
+
+zabil('mypan',\"<div style='border:1px dotted #ccc; width:100%;'>".njs($s)."</div>\"+vzyal('mypan'));
+zabil('mypacks',\"".njs(get_my_pack(0))."\");
 clean('expert_knop');
 ";
-// idie('###');
 }
 
 
@@ -636,15 +594,14 @@ if($a=='install_edit_pack') { // форма редактирования пакета или создания нового
 $subm="<input type='button' value='Save' onclick='i_packsave()'>"
 ."&nbsp; &nbsp; <span class='ll' onclick=\"i_selectall()\">select</span>"
 ."&nbsp; &nbsp; <span class='ll' onclick=\"i_toggle_visible()\">show/hidden</span>"
-."&nbsp; &nbsp; <span class='ll' onclick=\"packdel()\">delete</span>";
+."&nbsp; &nbsp; <img src='".$GLOBALS['www_design']."e3/remove.png' title='Delete' onclick=\"packdel()\">";
 
-	return $GLOBALS['selectjs']."i_selectmode='color';".($name==''?"i_toggle_visible_d=1;":'')."
+	return $GLOBALS['selectjs'].($name==''?"i_toggle_visible_d=0;":'')."
 
 packdel=function(){ if(confirm('Delete pack `".$name.".pack`?')) majax('module.php',{mod:'INSTALL',a:'install_pack_del',name:idd('newpack_name').value}); };
 
 i_packsave=function(){
-dier(i_get_selected());
-/*	majax('module.php',{mod:'INSTALL',a:'install_pack_save',s:i_get_selected(),name:idd('newpack_name').value}); */
+	majax('module.php',{mod:'INSTALL',a:'install_pack_save',s:i_get_selected(),name:idd('newpack_name').value});
 };
 
 ohelpc('pack','Edit pack: $name',\"".njsn(
@@ -656,7 +613,7 @@ ohelpc('pack','Edit pack: $name',\"".njsn(
 
 if($a=='install_pack_del') { // удаление пакета
 	$name=RE('name'); unlink($dir."instpack/".$name.".pack");
-	return "clean('pack'); zabil('mypacks',\"".njsn(get_my_pack($dir))."\"); salert('Pack <b>$name</b> deleted!',1000);";
+	return "clean('pack'); zabil('mypacks',\"".njsn(get_my_pack(0))."\"); salert('Pack <b>$name</b> deleted!',1000);";
 }
 
 if($a=='install_pack_save') { // приемка создания нового пакета majax('module.php',{mod:'INSTALL',a:'install_pack_save',s:s,name:idd('newpack_name').value});
@@ -668,7 +625,7 @@ if($a=='install_pack_save') { // приемка создания нового пакета majax('module.ph
 	}
 	if($s=='') return "salert('Empty pack!',1000);";
 	testdir($dir."instpack"); fileput($dir."instpack/".$name.".pack",$s);
-	return "clean('pack'); zabil('mypacks',\"".njsn(get_my_pack($dir))."\"); salert('Pack <b>$name</b> saved!',1000);";
+	return "clean('pack'); zabil('mypacks',\"".njsn(get_my_pack(0))."\"); salert('Pack <b>$name</b> saved!',1000);";
 }
 
 // принять запрос на инсталляцию пакетов
@@ -916,7 +873,8 @@ if($GLOBALS['admin']) {
 
 STYLES("mod","
 .iDIR,.iYES,iNON,.iDEL,.iUPD,.iADD { cursor:pointer; }
-.iNON,.iDEL {color: red}
+.iNON {color: #aaa}
+.iDEL {color: red}
 .iYES,.iUPD {color: green}
 .iADD {color: rgb(0,255,0)}
 .iNON,.iSS {text-decoration:line-through}
@@ -1069,13 +1027,13 @@ function getlang($f){ $la=$GLOBALS['filehost'].'binoniq/lang/'; $nla=strlen($la)
 }
 //==================================================================================================
 
-function get_my_pack($dir) { if(!is_dir($dir.'instpack')) return 'not found'; $s="installed: "; // если есть своя папка с пакетами
-	foreach(get_my_packlist() as $w) $s.="<div class='l' style='margin-left:50px;' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:'$w'})\">$w</div>";
-	return $s;
+function get_my_pack($i=1) { $p=get_my_packlist(); if(!sizeof($p)) return 'not found'; $s='';
+foreach($p as $w) $s.=($i?"<div>":"<div class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:'$w'})\">").h($w)."</div>";
+return $s;
 }
 
 function get_my_packlist() { $pd=$GLOBALS['filehost'].'binoniq/instlog/instpack/'; if(!is_dir($pd)) return array();
-	$p=glob($pd."*.pack"); $p[]=$pd; foreach($p as $n=>$l) $p[$n]=basename($l,'.pack'); return $p;
+	$p=glob($pd."*.pack"); foreach($p as $n=>$l) $p[$n]=basename($l,'.pack'); return $p;
 }
 
 function createkey() { $key=sha1(hash_generate()); // сформировать ключ
