@@ -1,0 +1,10 @@
+wget http://lleo.aha.ru/design/egw0.gif
+wget http://lleo.aha.ru/design/egw1.gif
+wget http://lleo.aha.ru/design/egw2.gif
+wget http://lleo.aha.ru/design/egw3.gif
+wget http://lleo.aha.ru/design/egw4.gif
+wget http://lleo.aha.ru/design/egw5.gif
+wget http://lleo.aha.ru/design/egw6.gif
+wget http://lleo.aha.ru/design/egw7.gif
+wget http://lleo.aha.ru/design/egw8.gif
+wget http://lleo.aha.ru/design/egw9.gif
