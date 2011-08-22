@@ -61,14 +61,15 @@ alert('\ngetScrollH()='+getScrollH()+'\ngetScrollW()='+getScrollW()+'\ngetWinW()
 	setkey(['N','Т','т'],'',function(e){majax('editor.php',{a:'newform',hid:hid})},false); // новая заметка
 }
 
-setkey(['ctrl+A','ctrl+А','ctrl+а'],'alt shift ctrl',function(e){keyalert=1;talert('Скан клавиш включен',1000);},false); // включение сканкодов
-setkey(['ctrl+U'],'',function(e){},true); // личная карточка
+//setkey(['ctrl+A','ctrl+А','ctrl+а'],'alt shift ctrl',function(e){keyalert=1;talert('Скан клавиш включен',1000);},false); // включение сканкодов
+//setkey(['A','Ф','ф'],'alt',function(e){keyalert=1;salert('Скан клавиш включен',1000);},false); // включение сканкодов
+
 setkey(['U','Г','г'],'',function(e){majax('login.php',{action:'openid_form'})},true); // личная карточка
 setkey(['D','В','в'],'',function(e){document.location.href=wwwhost;},true); // в блог
 setkey(['K','Л','л'],'',function(e){document.location.href=wwwhost+'comms';},true); // комментарии
 setkey(['right','7'],'',function(e){rel_redirect('NextLink')},true);
 setkey(['left','4'],'',function(e){rel_redirect('PrevLink')},true);
-setkey([' ','A','Ф','ф'],'',function(e){ if(admin && !isHelps()) ipadfinger4() },true);
+setkey(['A','Ф','ф'],'alt',function(e){keyalert=1;salert('Скан клавиш включен',1000);},false); // включение сканкодов
 setkey('up','ctrl',function(e){rel_redirect('UpLink')},true);
 setkey('down','ctrl',function(e){rel_redirect('DownLink')},true);
 setkey('home','ctrl',function(e){document.location.href='/'},true);
