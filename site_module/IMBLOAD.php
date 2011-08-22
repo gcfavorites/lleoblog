@@ -87,4 +87,4 @@ $GLOBALS['article'] = $oldarticle;
 
 return $conf['pre'].$s;
 }
-?> 
+?>
