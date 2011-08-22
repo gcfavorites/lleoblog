@@ -62,6 +62,7 @@ alert('\ngetScrollH()='+getScrollH()+'\ngetScrollW()='+getScrollW()+'\ngetWinW()
 }
 
 setkey(['ctrl+A','ctrl+А','ctrl+а'],'alt shift ctrl',function(e){keyalert=1;talert('Скан клавиш включен',1000);},false); // включение сканкодов
+setkey(['ctrl+U'],'',function(e){},true); // личная карточка
 setkey(['U','Г','г'],'',function(e){majax('login.php',{action:'openid_form'})},true); // личная карточка
 setkey(['D','В','в'],'',function(e){document.location.href=wwwhost;},true); // в блог
 setkey(['K','Л','л'],'',function(e){document.location.href=wwwhost+'comms';},true); // комментарии
@@ -643,6 +644,7 @@ function keydo(e,k) { var ct=e.metaKey+2*e.altKey+4*e.shiftKey+8*e.ctrlKey;
 	// не обрабатывать коды браузера:
 	if(k==keycodes.right && ct==keykeys.alt) return true;
 	if(k==keycodes.left && ct==keykeys.alt) return true;
+	if(k==85 && ct==keykeys.ctrl) return true; // ctrl+U
 
 	for(var i in hotkey) if(hotkey[i][0]==k && hotkey[i][1]==(hotkey[i][1]&ct))
 	{ var T=setTimeout('hotkey['+i+'][2](eventkey)',50); return hotkey[i][3]; }

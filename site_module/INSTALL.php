@@ -157,9 +157,6 @@ go_install=function(id){
 	var itit={iDEL:'del',iADD:'add new',iUPD:'update'};
 	for(var i=0,o1,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');i<tr.length;i++){	var dir=tr[i].firstChild;
 		dir.onclick=function(){i_chand(this)}; dir.setAttribute('title','Invert selected');
-
-		if(!dir.nextSibling) { alert(tr[i].innerHTML); continue; }
-
 		for(var j=0,p=dir.nextSibling.getElementsByTagName('DIV');j<p.length;j++){ var x=p[j];
 			/* if(x.className=='ic') continue; */
 			if(itit[x.className]) x.setAttribute('title',itit[x.className]);
@@ -169,12 +166,8 @@ go_install=function(id){
 posdiv(id,-1,-1);
 };
 
-i_chand=function(e){ alert('gogo '+e.tagName);
-	for(var p=e.nextSibling.getElementsByTagName('DIV'),i=0;i<p.length;i++) { alert(i);
-/*
-		p[i].style.border='1px orange #ccc';
-		i_chan_i(p[i],i_chan_tst(p[i])?0:1);
-*/
+i_chand=function(e){ for(var c='',p=e.nextSibling.getElementsByTagName('DIV'),i=0;i<p.length;i++) {
+		if(c=='') c=i_chan_tst(p[i])?1:0; i_chan_i(p[i],c);
 }};
 
 i_chan_tst=function(e){
@@ -323,7 +316,7 @@ function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size
 	$veto=unserialize(file_get_contents($GLOBALS['filehost']."binoniq/instlog/veto.my")); if(empty($veto)) $veto=array(); // на всякий случай
 
 	foreach($DDDIR as $dir=>$val) /*if(sizeof($val))*/ {
-		$s.="<table><tr valign=top><td class='iDIR iOK'>".h($dir)."</td><td class='iT'><br>";
+		$s.="<table><tr valign=top><td class='iDIR iOK'>".h($dir)."</td><td class='iT'>";
 		foreach($val as $n=>$o) { $o.=' '.(in_array($dir.$n,$veto)?'iSS':'iNO'); $s.="<div class='$o'>".$n."</div>"; $obnovle++; }
 		$s.="</td></tr></table>";
 	}
