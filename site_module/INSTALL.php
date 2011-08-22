@@ -155,11 +155,13 @@ alert('not f find: '+id);
 
 go_install=function(id){ 
 	var itit={iDEL:'del',iADD:'add new',iUPD:'update'};
-	for(var i=0,o1,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');i<tr.length;i++){	var p=tr[i];
-		var dir=p.firstChild;
-		dir.onclick=function(){i_chand(this)};
-		dir.setAttribute('title','Invert selected files');
-		for(var j=0,ee=p.lastChild.getElementsByTagName('DIV');j<ee.length;j++){ var x=ee[j]; if(x.className=='ic') continue;
+	for(var i=0,o1,t,c,tr=idd('i_selectfiles').getElementsByTagName('TR');i<tr.length;i++){	var dir=tr[i].firstChild;
+		dir.onclick=function(){i_chand(this)}; dir.setAttribute('title','Invert selected');
+
+		if(!dir.nextSibling) { alert(tr[i].innerHTML); continue; }
+
+		for(var j=0,p=dir.nextSibling.getElementsByTagName('DIV');j<p.length;j++){ var x=p[j];
+			/* if(x.className=='ic') continue; */
 			if(itit[x.className]) x.setAttribute('title',itit[x.className]);
 			x.onclick=function(){i_chan(this)};
 		}
@@ -167,19 +169,26 @@ go_install=function(id){
 posdiv(id,-1,-1);
 };
 
-i_chand=function(e){ var p=e.parentNode.nextSibling.getElementsByTagName('DIV');
-	for(var i=0;i<p.length;i++) { if(i=='') i_chan_chg(p[i],i_chan_tst(p[i])?0:1); }
-};
+i_chand=function(e){ alert('gogo '+e.tagName);
+	for(var p=e.nextSibling.getElementsByTagName('DIV'),i=0;i<p.length;i++) { alert(i);
+/*
+		p[i].style.border='1px orange #ccc';
+		i_chan_i(p[i],i_chan_tst(p[i])?0:1);
+*/
+}};
 
-i_chan_tst=function(e){	return i_selectmode=='color' && e.style.color=='green' || i_selectmode!='color' && e.style.textDecoration=='none' }
+i_chan_tst=function(e){
+	/*return i_selectmode=='color' && e.style.color=='green' || i_selectmode!='color' && e.style.textDecoration=='none'*/
+	return (e.className.split(' ')[1]=='iSS'?0:1);
+}
 
-i_chan_chg=function(e,i){
-  if(i_selectmode=='color') e.style.color=i?'green':'red';
-  e.className=(i?'nulin':'ulin');
+i_chan_i=function(e,i){
+	/*  if(i_selectmode=='color') e.style.color=i?'green':'red'; */
+	e.className=e.className.replace(/ .+?$/g,(i?' iSS':' iOK'));
 }
 
 i_chan=function(e){
-/*  if(i_selectmode=='color') e.style.color=(e.style.color=='red'?'green':'red'); else */
+	/*  if(i_selectmode=='color') e.style.color=(e.style.color=='red'?'green':'red'); else */
 	var c=e.className.split(' '); e.className=c[0]+' '+(c[1]=='iSS'?'iOK':'iSS');
 };
 ";
@@ -210,11 +219,9 @@ function UPDATE_testkey($key){ // безопасность: проверка ключа инсталляции
 
 function UPDATE_select($rrr,$pack) { $r=unserialize($rrr); // return "<pre>".print_r($r,1);
 
-	$s="<table><tr><td><input type='button' onclick='i_submit(this)' value='INSTALL'>"
+	$s="<input type='button' onclick='i_submit(this)' value='INSTALL'>"
 ."&nbsp; &nbsp; <span class='ll r' onclick='i_toggle_visible();'>Hide/Show</span>"
-."&nbsp; &nbsp; <span class='ll r' onclick='i_selectall()'>select</span>"
-
-;
+."&nbsp; &nbsp; <span class='ll r' onclick='i_selectall()'>select</span>";
 	$otstup=''; $lastdir='';
 
 	// 1. рассортировать данные
@@ -241,15 +248,17 @@ function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size
 	// config:msq_login $msq_login = ""; // "lleo";
 	$con=file_get_contents('config.php'); preg_match_all("/\n\s*".'\$'."([0-9a-z\_\-]+)\s*\=\s*([^\n]+)/si",$con,$m);
 	$con=array(); foreach($m[1] as $i=>$n) $con[$n]=$m[2][$i]; // все наши
-	$s.="</td></tr></table><table><tr valign=top><td><b>config.php:</b></td><td><br>"; // заголовок
+	$s.="<table><tr valign=top><td class='iDIR iOK'>config.php:</td><td class='iT'>"; // заголовок
 	foreach($Uconf as $n=>$v) { if(isset($con[$n])) { unset($con[$n]); continue; }
 			$v=h($v);
 			$v=preg_replace_callback("/^([\'\"])([^\'\"]*)([\'\"];)/s","vtoinput",$v);
 			$v=preg_replace_callback("/^([\'\"]*)(\d+)([\'\"]*;)/s","vtoinput",$v);
-			$s.="<div class='iADD'>$".$n."<div class='ic'> = $v</div></div>"; // добавить
-	} foreach($con as $n=>$l) $s.="<div class='iDEL'>$".$n."=".h($l)."</div>"; // удалить
+			$s.="<div class='iADD iOK'>$".$n." = $v</div>"; // добавить
+	} foreach($con as $n=>$l) $s.="<div class='iDEL iOK'>$".$n."=".h($l)."</div>"; // удалить
 	unset($con);
+	$s.="</td></tr></table>";
 //=========================================================
+/*
 	// 2. Что с языком?
 	// lang:fido/ru:Comments:empty_comm Comments:empty_comm	А где же комментарий?
 	$lan=array(); $allan=array();
@@ -267,6 +276,7 @@ function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size
 	foreach($lan as $ll=>$arper) foreach($arper as $cn=>$cv) $allan[$ll].="<div>".'D'.$cn." = ".h($cv)."</div>"; // предлагается удалить
 
 	foreach($allan as $ll=>$oo) $s.="</td></tr></table><table><tr valign=top><td><b>LANG:$ll:</b></td><td><br>".$oo;
+*/
 //=========================================================
 	// 3. Что с файлами?
 	$DDDIR=array();
@@ -313,8 +323,9 @@ function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size
 	$veto=unserialize(file_get_contents($GLOBALS['filehost']."binoniq/instlog/veto.my")); if(empty($veto)) $veto=array(); // на всякий случай
 
 	foreach($DDDIR as $dir=>$val) /*if(sizeof($val))*/ {
-		$s.="</td></tr></table><table><tr valign=top><td class='iDIR iOK'>".h($dir)."</td><td><br>";
+		$s.="<table><tr valign=top><td class='iDIR iOK'>".h($dir)."</td><td class='iT'><br>";
 		foreach($val as $n=>$o) { $o.=' '.(in_array($dir.$n,$veto)?'iSS':'iNO'); $s.="<div class='$o'>".$n."</div>"; $obnovle++; }
+		$s.="</td></tr></table>";
 	}
 
 	// return "<pre>".print_r($DDDIR,1)."</pre>";
@@ -328,7 +339,7 @@ function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size
 
 //=========================================================
 	if(!$obnovle) return false;
-	return "<div id='i_selectfiles'>$s</td></tr></table></div>";
+	return "<div id='i_selectfiles'>$s</div>";
 }
 
 
@@ -950,7 +961,9 @@ STYLES("mod","
 .iNON:before,.iNON:after,.iSS:before,.iSS:after {content:'   '}
 .iYES,.iOK {text-decoration:none}
 
-.iDIR {font-weight: bold}
+.iDIR {font-weight: bold; float:left;}
+.iT {float:left;margin-top:10px;}
+
 .iDDR {font-weight: bold; color:green;}
 "); //.mod {font-size:11px;}
 
