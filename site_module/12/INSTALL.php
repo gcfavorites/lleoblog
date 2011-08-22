@@ -64,21 +64,8 @@ i_submit=function(){ inst_MAS_DEL=[]; inst_MAS_UPD=[]; inst_MAS_NON=[];
   for(var c,f,dir,s='',tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
 	dir=tr[i].firstChild.innerHTML; if(dir=='/') dir='';
 		for(var p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){
-			f=p[j].innerHTML;
-				if(dir=='config.php:') {
-					f=f.replace(/^\\\$([^\s\=]+)\s*=\s*(.*?)$/g,'$1=$2');
-					var inp=p[j].getElementsByTagName('INPUT');
-					if(inp.length==1) f=f.replace(/<input.*?>/gi,inp[0].value);
-				}
-
-				/*if(dir=='config.php:') f=f.replace(/^\\\$/g,''); alert(f);*/
-			f=dir+f;
+			f=p[j].innerHTML; if(dir=='config.php:') f=f.replace(/^\\\$([^\s\=]+).*?$/g,'$1'); f=dir+f;
 			if(i_tst(p[j])) {
-
-
-				if(dir=='config.php:') alert(f);
-
-
 				c=p[j].className.split(' ')[0];
 				if(c=='iUPD'||c=='iADD') inst_MAS_UPD.push(f);
 				else if(c=='iDEL') inst_MAS_DEL.push(f);
@@ -91,16 +78,11 @@ i_process();
 
 i_selectall=function(){ for(var z=7,tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
   for(var p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){ if(z==7) z=i_tst(p[j]); i_chan(p[j],z); }
-} if(!z && !i_toggle_visible_d) i_toggle_visible();
-};
+}};
 
-i_find=function(id){
-		if(id.indexOf('config.php:')>=0) id=id.replace(/^([^\s\+]+).*?$/g,'$1');
-	for(var v,tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
+i_find=function(id){ for(var v,tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
 	for(var dir=tr[i].firstChild.innerHTML,p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){
-		v=p[j].innerHTML;
-			if(dir=='config.php:') v=v.replace(/^\\\$([^\s\=]+).*?$/g,'$1');
-		if(id==dir+v) return p[j];
+		v=p[j].innerHTML; if(dir=='config.php:') v=v.replace(/^\\\$([^\=\s]+).*?$/g,'$1'); if(id==dir+v) return p[j];
 	}
 } alert('not find: '+id);
 };
@@ -110,7 +92,7 @@ go_install=function(id){ var x,dir,itit={iDEL:'del',iADD:'add new',iUPD:'update'
 		dir.onclick=function(){i_chand(this)}; dir.setAttribute('title','Invert selected');
 		for(var p=dir.nextSibling.getElementsByTagName('DIV'),j=0;j<p.length;j++){
 			if(itit[p[j].className]) p[j].setAttribute('title',itit[p[j].className]);
-			p[j].onclick=function(){alert(2); i_chan(this,i_tst(this))};
+			p[j].onclick=function(){i_chan(this,i_tst(this))};
 		}
 	}
 i_toggle_visible(); posdiv(id,-1,-1);
@@ -180,7 +162,7 @@ $obnovle=0;
 //return "<pre>".print_r($Uconf,1)."</pre>";
 
 //=========================================================
-function vtoinput($t){ return $t[1]."<input type='text' onclick='alert(1); return false;' value=\"".$t[2]."\" size='".(strlen($t[2])?strlen($t[2]):1)."'>".$t[3]; }
+function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size='".(strlen($t[2])?strlen($t[2]):1)."'>".$t[3]; }
 
 	// 1. Что с конфигом?
 	// config:msq_login $msq_login = ""; // "lleo";
@@ -682,8 +664,7 @@ if($a=='install_update_DEL') { // DEL - удалить 1 файл
 }
 
 if($a=='install_update_UPD') { // UPD - обновить 1 файл
-	$file=RE('file'); if(strstr($file,':')) return "alert('$file');";
-	$ser=file($dir."server.my"); $ser=trim($ser[0]); // вычислить текущий сервер
+	$file=RE('file'); $ser=file($dir."server.my"); $ser=trim($ser[0]); // вычислить текущий сервер
 	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'$file'})";
 } // А ВОТ И ОН - СЕРВЕР-МАТКА:
 
