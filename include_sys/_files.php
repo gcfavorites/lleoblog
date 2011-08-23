@@ -70,7 +70,7 @@ return $t;
 
 // отправить в ответ просто файл
 
-function Exit_SendFILE($file) {
+function Exit_SendFILE($file,$s=false) {
 $mimetypes=array(
 	'jpg'=>'image/jpg',
 	'jpeg'=>'image/jpg',
@@ -94,6 +94,7 @@ header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 header('Pragma: public');
 header('Content-Length: '.filesize($file));
 ob_clean(); flush();
+if($s!==false) die($s);
 readfile($file);
 exit;
 }
