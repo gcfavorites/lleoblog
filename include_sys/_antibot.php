@@ -54,14 +54,11 @@ function antibot_make($antibot_C=0) { global $antibot_pic, $antibot_H, $antibot_
 
 	$antibot_hash = md5($sums.$antibot_add2hash);
 
-
-	if(!imagejpeg($im,$antibot_file.$antibot_hash.".jpg")) // сохран€ем картинку
-	{
-	if(!is_dir($GLOBALS['hosttmp'])) { mkdir($GLOBALS['hosttmp']); chmod($GLOBALS['hosttmp'],0777); }
-	if(!is_dir($GLOBALS['antibot_file'])); { mkdir($GLOBALS['antibot_file']); chmod($GLOBALS['antibot_file'],0777); }
-	if(!imagejpeg($im,$antibot_file.$antibot_hash.".jpg")) // сохран€ем картинку
-	idie("ќшибка! Ќе могу сохранить картинку в директорию \"".$antibot_file."\", проверьте, создана ли она, и установлены ли права записи?");
-	}
+	$nam=$antibot_file.$antibot_hash.".jpg";
+	if(!imagejpeg($im,$nam)) { // сохран€ем картинку
+		testdir($GLOBALS['antibot_file']); if(!imagejpeg($im,$nam)) // сохран€ем картинку снова
+		idie("ќшибка! Ќе могу сохранить картинку в директорию \"".$antibot_file."\", проверьте, создана ли она, и установлены ли права записи?");
+	} filechmod($nam);
 
 	$GLOBALS['antibot_imW'] = imagesx($im);
 	$GLOBALS['antibot_imH'] = imagesy($im);
