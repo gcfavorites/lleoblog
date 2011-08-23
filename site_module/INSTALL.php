@@ -6,6 +6,13 @@ $GLOBALS["installname"]='install'; // имя этого файла
 
 ini_set("display_errors","0"); ini_set("display_startup_errors","0");
 
+if(!empty($_SERVER['QUERY_STRING'])&&!strstr($_SERVER['QUERY_STRING'],'=')) {
+	$file=urldecode($_SERVER['QUERY_STRING']); if(is_vetofile($file)) die("ERROR: Veto");
+	$fhost=realpath($GLOBALS['filehost'].$file);
+	if(!file_exists($fhost)) die("ERROR: File not found: ".h($file));
+	Exit_SendFILE($file);
+}
+
 // if(!function_exists('h')) die("Error 404");
 
 /*
@@ -61,7 +68,6 @@ i_tr=function(e){ return idd('i_selectfiles').getElementsByTagName('TR') };
 i_fil=function(e){ return e.innerHTML.replace(/<[^>]*>/g,'') };
 
 i_srav=function(e){ e=i_dir(e.parentNode.parentNode.parentNode)+i_fil(e.parentNode);
-	/* majax('module.php',{mod:'INSTALL',a:'install_cmpfile',file:e}); */
 	mijax(i_ser+'/ajax/midule.php',{mod:'INSTALL',a:'install_far_cmp',url:i_url,file:e});
 };
 
@@ -326,24 +332,6 @@ function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size
 // POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
 // POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST POST 
 
-if(!empty($_SERVER['QUERY_STRING'])) {
-	$file=urldecode($_SERVER['QUERY_STRING']); if(is_vetofile($file)) die('ERROR: Veto')
-	if(!file_exists($file)) die("ERROR: File not found: ".$file);
-
-	Exit_SendFILE($file);
-
-
-
-
-
-
-
-
-
-	die($file);
-	// if($file_my=='ERROR') return "alert('ERROR')"; // veto?
-}
-
 if(sizeof($_POST)!=0 && !empty($_POST['post_act'])) { $a=$_POST['post_act'];
 	if(!UPDATE_testkey($_POST['key'])) die("ohelpc('install2','post',\"error key\");"); // безопасность: ключ инсталляции
 
@@ -352,8 +340,8 @@ if($a=='check_pack') { // выбор файлов для инсталляции
 	$s=UPDATE_select(urldecode($_POST['ara']),$p);
 	if($s===false) die("salert('Nothing to do!',500);");
 	die($GLOBALS['selectjs']."
-i_ser='".urldecode($_POST['ser'])."';
-i_url='".$GLOBALS['httphost']."';
+i_ser='".$GLOBALS['httphost']."';
+i_url='".urldecode($_POST['url'])."';
 i_pack='$p';
 ohelpc('install2','post',\"".njsn($s)."\");
 go_install('install2');");
@@ -421,11 +409,21 @@ if(isset($GLOBALS['admin_hash1']) && preg_match("/^[0-9a-z]{40}$/",$admin_hash1)
 
 if($a=='install_far_cmp') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
 	$file=rpath(RE('file')); if(is_vetofile($file)) return "alert('Disabled file: ".h($file)."')"; // veto?
+
+//	return "idie(\"".njsn(RE('url').$GLOBALS["installname"].'?'.urlencode($file))."\")";
+
 	$file_my=file_get_contents(RE('url').$GLOBALS["installname"].'?'.urlencode($file)); // скачать ЕГО файл
-		if($file_my=='ERROR') return "alert('ERROR')"; // veto?
+		if(substr($file_my,0,6)=='ERROR:') return "alert('".h($file_my)."')"; // veto?
+//	return "alert(\"OK: ".njsn($file_my)."\")";
 	$file_ser=file_get_contents(realpath($GLOBALS['filehost'].$file));
 
-	return "idie(\"".njsn($file_my)."\")";
+	include_once $GLOBALS['include_sys']."_podsveti.php"; // процедура вывода окошка с одной правкой
+
+//	$s="<hr>БЫЛО:<p>".nl2br(h($file_my))."<hr>СТАЛО:<p>".nl2br(h($file_ser));
+
+	$s=podsveti(nl2br(h($file_my)),nl2br(h($file_ser)));
+
+	return "idie(\"".njsn(h($s))."\")";
 
 	return "alert('D: ".h(RE('url').$file)."')";
 
@@ -441,8 +439,8 @@ if($a=='install_update_far') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом серв
 }
 
 if($a=='install_far_check') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
-	$pack=trim(RE('pack')); $r=get_pack_r($pack); $ser=RE('url');
-	return POST_file('',$ser.$GLOBALS["installname"],array('post_act'=>'check_pack','ser'=>$ser,'pack'=>$pack,'key'=>RE('key'),'ara'=>serialize($r)));
+	$pack=trim(RE('pack')); $r=get_pack_r($pack);
+	return POST_file('',RE('url').$GLOBALS["installname"],array('post_act'=>'check_pack','url'=>$GLOBALS['httphost'],'pack'=>$pack,'key'=>RE('key'),'ara'=>serialize($r)));
 }
 
 // прислать по-бырому список доступных пакетов на этой станции - СЕРВЕР-МАТКА:
