@@ -10,7 +10,8 @@ if(!empty($_SERVER['QUERY_STRING'])&&!strstr($_SERVER['QUERY_STRING'],'=')) {
 	$file=urldecode($_SERVER['QUERY_STRING']); if(is_vetofile($file)) die("ERROR: Veto");
 	$fhost=realpath($GLOBALS['filehost'].$file);
 	if(!file_exists($fhost)) die("ERROR: File not found: ".h($file));
-	Exit_SendFILE($file);
+	$s=obrabotal_file($file,file_get_contents($file));
+	Exit_SendFILE($file,$s);
 }
 
 // if(!function_exists('h')) die("Error 404");
@@ -414,21 +415,11 @@ if($a=='install_far_cmp') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере
 	$file_my=file_get_contents(RE('url').$GLOBALS["installname"].'?'.urlencode($file)); // скачать ЕГО файл
 		if(substr($file_my,0,6)=='ERROR:') return "alert('".h($file_my)."')"; // veto?
 	$file_ser=file_get_contents(realpath($GLOBALS['filehost'].$file));
+	$file_ser=obrabotal_file($file,$file_ser);
 		include_once $GLOBALS['include_sys']."_podsveti.php"; // процедура вывода окошка с одной правкой
 //		$s=highlight_string(podsveti($file_my,$file_ser),1);
 //		$s=podsveti(h($file_my),h($file_ser),"\n");
 		$s=podsveti(h($file_my),h($file_ser));
-
-//	fileput($GLOBALS['filehost'].'n1',$file_my);
-//	fileput($GLOBALS['filehost'].'n2',$file_ser);
-//	$s=podsveti('ffdfd dfdf','dfdfd sdfdfd');
-
-//$s='fsdfsdf';
-//return "idie(\"".njsn(nl2br(h($file_ser)))."\")";
-
-//return("alert(082)");
-
-/*fgf*/
 	return "idie(\"".njsn(nl2br($s))."\")";
 }
 
@@ -587,7 +578,7 @@ if( ($l=str_replace('lleo.aha.ru','lleo.me',$select_serv)) != $select_serv) { fi
 ."mijax(this.value+'/ajax/midule.php',{mod:'INSTALL',a:'install_get_packs',pack:'".implode(' ',get_my_packlist())."'});"
 ."\" id")."
 <br><input type='button' value='Check Update' onclick='servselect(this)'>
-<div id='epacks' style='margin: 20px; border: 1px dotted #ccc'>
+<div id='epacks' style='margin: 20px;'>
 
 ".implode(' ',get_my_packlist())."
 ";
@@ -598,7 +589,7 @@ foreach($select_serv as $l) { $w=substr($l,1);
 	$s.="<div><input class='cb' name=\"$w\" type='checkbox'".($l[0]=='+'?' checked':'').">$w</div>";
 }
 $s.="</div>";
-	$s.="<div id='mypan' style='position:relative;font-size: 14px; margin: 20px; padding: 20px; border: 1px dotted #ccc'>"
+	$s.="<div id='mypan' style='position:relative;font-size: 14px; margin: 20px; padding: 20px;'>"
 ."<img id='expert_knop' onclick=\"majax('module.php',{mod:'INSTALL',a:'expert_options_panel'})\""
 ." title='Other options<br>(expert mode)' src='".$GLOBALS['www_design']."e3/system.png' style='position:absolute;display:inline;right:0px;top:0px;cursor: pointer;'>"
 ."<p>installed:<div id='mypacks' style='padding-left:50px;'>".get_my_pack()."</div></div>";
@@ -621,14 +612,14 @@ if($a=='expert_options_panel') { // панель опций
 $s="<input type='button' value='Clean *.old' onclick=\"$maj'install_clean',s:idd('servs').value})\">
 <input type='button' value='Back' onclick=\"$maj'install_back',s:idd('servs').value})\">
 <input type='button' value='TEST' onclick=\"$maj'install_test',s:idd('servs').value})\">
-<span title='Create my inctallpack!' class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:''})\" style='margin-left:20px'>[new]</span>
+<img src='".$GLOBALS['www_design']."e3/filenew.png' title='Create my inctallpack!' onclick=\"majax('module.php',{mod:'INSTALL',a:'install_edit_pack',name:''})\" style='margin-left: 20px;'>
 ";
 
 foreach(glob($dir."*.txt") as $l) { $l0=basename($l); $s.="<div class='l' onclick=\"majax('module.php',{mod:'INSTALL',a:'edit_file',file:'$l'})\">$l0</div>"; }
 
 return "
 
-zabil('mypan',\"<div style='border:1px dotted #ccc; width:100%;'>".njs($s)."</div>\"+vzyal('mypan'));
+zabil('mypan',\"<div style='width:100%;'>".njs($s)."</div>\"+vzyal('mypan'));
 zabil('mypacks',\"".njs(get_my_pack(0))."\");
 clean('expert_knop');
 ";
@@ -1070,5 +1061,7 @@ function get_pack_r($pack='') {
 }
 
 function backupfile($f) { if(is_file($f) && substr(getras($f),0,6)!='old---') rename($f,$f.".old---".date("Y-m-d_h-i-s")); }
+
+function obrabotal_file($file,$s) { return $s; }
 
 ?>
