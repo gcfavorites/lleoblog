@@ -52,7 +52,7 @@ $readru_partner='';
 	// if(stristr($_SERVER["HTTP_USER_AGENT"],'Nokia') or stristr($_SERVER["HTTP_USER_AGENT"],'konquer') ) $cookie_method_old=true;
 
 # Если установлен и работает memcache - пытаемся подключиться к нему
-$memcache=0; if(($memcache=function_exists('memcache_connect')) and ($a=intval(ini_get('memcache.default_port')))) $memcache=memcache_connect('localhost',$a);
+$memcache=function_exists('memcache_connect'); if($memcache and ($a=intval(ini_get('memcache.default_port')))) $memcache=memcache_connect('localhost',$a);
 $ttl_longsite = 10000; // длинное хранение данных
 
 $editor_width = 1000; // количество пикселей по ширине в окне редактора заметки
@@ -173,5 +173,7 @@ $foto_logo=chr(169)." ".chr(171).$admin_name." ".$httpsite.chr(187); // автомати
 /* chr(160) nbsp chr(169) copy chr(151) mdash chr(171) chr(187) ltgt */
 
 $comments_on_page=50;
+
+$jopa=''; // x<y y>x a&b ' "
 
 ?>

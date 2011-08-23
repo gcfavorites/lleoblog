@@ -1,5 +1,7 @@
 <?php // INSTALL
 
+$GLOBALS["installname"]='install'; // имя этого файла
+
 ini_set("display_errors","0"); ini_set("display_startup_errors","0");
 
 // if(!function_exists('h')) die("Error 404");
@@ -126,10 +128,10 @@ i_process=function(){
 ";
 
 function UPDATE_file($name,$temp) {
-	$f=$GLOBALS['filehost'].$name;
-	if(realpath($f)) { if(is_vetofile($name)) return "Disabled file: ".h($$name); } // veto
+	$f=realpath($GLOBALS['filehost'].$name);
+	if(is_vetofile($name)) return "Disabled file: ".h($name); // veto?
+	backupfile($f); // забэкапить старый файл
 	testdir(dirname($f)); // создать папки, если надо
-	backupfile($f);
         move_uploaded_file($temp,$f); filechmod($f);
 
 	if(getras($f)=='css' && !empty($GLOBALS['www_design'])) {
@@ -379,18 +381,18 @@ if(isset($GLOBALS['admin_hash1']) && preg_match("/^[0-9a-z]{40}$/",$admin_hash1)
 }
 
 
-//======================= MIJAX от внешнего сервера - БЕЗ АДМИСНКОГО ЛОГИНА! =====================
+//======================= MIJAX от внешнего сервера - БЕЗ АДМИНСКОГО ЛОГИНА! =====================
 // СЕРВЕР-МАТКА
 if($a=='install_update_far') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
 	$file=RE('file'); $fhost=realpath($GLOBALS['filehost'].$file);
-	if(is_vetofile($file)) return "alert('Disabled file: ".h($file)."')";
+	if(is_vetofile($file)) return "alert('Disabled file: ".h($file)."')"; // veto?
 	if(empty($fhost) || !is_file($fhost)) return "alert('File not found: ".h($file)."')";
-	return POST_file($GLOBALS['filehost'].$file,RE('url')."install",array('post_act'=>'update_file','file'=>$file,'key'=>RE('key'),'ara'=>serialize($r)));
+	return POST_file($fhost,RE('url').$GLOBALS["installname"],array('post_act'=>'update_file','file'=>$file,'key'=>RE('key')));
 }
 
 if($a=='install_far_check') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
 	$pack=trim(RE('pack')); $r=get_pack_r($pack);
-	return POST_file('',RE('url')."install",array('post_act'=>'check_pack','pack'=>$pack,'key'=>RE('key'),'ara'=>serialize($r)));
+	return POST_file('',RE('url').$GLOBALS["installname"],array('post_act'=>'check_pack','pack'=>$pack,'key'=>RE('key'),'ara'=>serialize($r)));
 }
 
 // прислать по-бырому список доступных пакетов на этой станции - СЕРВЕР-МАТКА:
@@ -649,13 +651,6 @@ if($a=='install_check') { // инсталляция - ЭТО ПРОИСХОДИТ ЕЩЕ НА СОБСТВЕННОМ СЕР
 	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_far_check',url:'".$GLOBALS['httphost']."',pack:'".implode(' ',$w)."',key:'".createkey()."'})";
 } // А ВОТ И ОН - СЕРВЕР-МАТКА
 
-if($a=='arita_test') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
-	return "alert('test passed!')";
-}
-
-
-
-
 // подготовлено решение об инсталляции
 if($a=='install_update_NON') { // NON - пометить файлы отмеченные как
 	$f=$dir."veto.my";
@@ -680,7 +675,9 @@ if($a=='install_update_DEL') { // DEL - удалить 1 файл
 
 if($a=='install_update_UPD') { // UPD - обновить 1 файл
 	$file=RE('file');
-		if(preg_match("/^(config\.php)\:([^\:\=]+)\=(.+?)$/s",$file,$m)) { config_add($m[2],$m[3]);
+		if(preg_match("/^(config\.php)\:([^\:\=]+)\=(.+?)$/s",$file,$m)) {
+			return "alert(\"".$m[3]."\")";
+			config_add($m[2],$m[3]);
 		return "var s=inst_MAS_UPD.shift(); s=i_find(s); s.parentNode.removeChild(s); i_process();";
 		}
 	$ser=file($dir."server.my"); $ser=trim($ser[0]); // вычислить текущий сервер
@@ -691,8 +688,16 @@ if($a=='install_update_UPD') { // UPD - обновить 1 файл
 
 
 if($a=='install_test') { // инсталляция POST_file($filepath,$url,$fields,$port=80,$scheme='http');
-	return "mijax('http://lleo.me/blog/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'binoniq/melok/mp3.swf'})";
+
+	$r=getpack('basic',array());
+
+	return("idie(\"path: ".implode('<br>',$r)."\");");
+
+//	return("alert(\"path: ".rpath('//this/\\\\//is/../a/./test/.///is//')."\");");
+
 /*
+	return "mijax('http://lleo.me/blog/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'binoniq/melok/mp3.swf'})";
+
 	$pack='';
 	dier(explode(' ',$pack));
 
@@ -752,26 +757,22 @@ function getpack($pack,$e) { global $filehost; $save=0;
 }
 
 
-function load_vetomas(){ global $vetomas; if(isset($vetomas)) return;
-$vetomas=array(); if(($s=file($GLOBALS['filehost']."binoniq/instlog/system_veto.txt"))!==false) foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $vetomas[]=$l; }
-}
 
-function is_vetofile($l) { load_vetomas(); return in_array(strtolower($l),$GLOBALS['vetomas']); 
-// substr($name,0,strlen($l)) $l
-//	load_vetomas(); foreach($GLOBALS['vetomas'] as $l) {
-//		if(strtolower(substr($fhost,0,strlen($l)))==$l) return "alert('Disabled file: ".h($l)."')";
-//	}
-}
 
+function is_vetofile($f) { global $vetomas; // если не загружен еще был $vetomas - загрузить
+	if(!isset($vetomas)) { $vetomas=array(); if(($s=file($GLOBALS['filehost']."binoniq/instlog/system_veto.txt"))!==false) foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $vetomas[]=$l; } }
+	$f=trim(rpath($f),'/'); // почистить
+		if(array_pop(explode('/',$f))=='config.php.tmpl') return 0;
+	foreach($vetomas as $l) { if(strtolower(substr($f,0,strlen($l)))==$l) return 1; }
+	return 0;
+}
 
 // ПОЛУЧИТЬ МАССИВ ПО ВСЕМ ФАЙЛАМ ДВИЖКА (которые разрешены в system_dir.txt)
-function get_dfiles() { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allmd5change; $stop=1000;
+function get_dfiles() { global $stop,$md5mas,$filehostn,$filehost,$allmd5change; $stop=1000;
 	if(!isset($filehostn)) $filehostn=strlen($filehost);
 	$dir=$GLOBALS['filehost']."binoniq/instlog/"; testdir($dir);
 	// взять $md5mas - массив данных по всему движку
 	$md5mas=array(); $allmd5change=1; if(($s=file_get_contents($dir."all_md5.tmp"))!==false) { $allmd5change=0; $md5mas=unserialize($s); }
-	// взять $vetomas - массив данных по всему движку
-	load_vetomas();
 	// взять $all - массив данных по всему движку
 	$all=array(); $s=file($dir."system_dir.txt"); foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $all[]=$l; }
 	// обработать по одному
@@ -781,7 +782,7 @@ function get_dfiles() { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allm
 	return $r;
 }
 
-function get_dfiles2($files) { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allmd5change; if(!--$stop) die('stop error');
+function get_dfiles2($files) { global $stop,$md5mas,$filehostn,$filehost,$allmd5change; if(!--$stop) die('stop error');
 	$r=array(); $a=$filehost.$files; if(is_file($a)) $a=array($a); else {
 		$l=$a; $a=glob($a."/*"); $h=$l."/.htaccess"; if(is_file($h)) $a[]=$h;
 		if(!sizeof($a)) return array(c(substr($l,$filehostn))."/ 0 0"); // была пустая папка
@@ -789,7 +790,7 @@ function get_dfiles2($files) { global $stop,$md5mas,$vetomas,$filehostn,$filehos
 
 	// сперва окучить файлы
 	foreach($a as $n=>$l) { if(is_dir($l)) continue; $name=c(substr($l,$filehostn));
-		$ras=getras($l); if(!in_array($name,$vetomas) && $ras!='old' && $ras!='off' && substr($ras,0,6)!='old---') { $time=filemtime($l);
+		$ras=getras($l); if(!is_vetofile($name) && $ras!='old' && $ras!='off' && substr($ras,0,6)!='old---') { $time=filemtime($l);
 			if(isset($md5mas[$name]) && $md5mas[$name][0]==$time) $md5=$md5mas[$name][1]; // без изменений
 			else { $md5=calcfile_md5($l,$ras); $md5mas[$name]=array($time,$md5); $allmd5change=1; }
 			$r[]="$name $time $md5";
@@ -797,7 +798,7 @@ function get_dfiles2($files) { global $stop,$md5mas,$vetomas,$filehostn,$filehos
 	        unset($a[$n]); 
 	}
 	// затем окучить папки
-        foreach($a as $l) { if(!in_array($l,$vetomas)) { $name=c(substr($l,$filehostn)); $r=array_merge($r,get_dfiles2($name)); } }
+        foreach($a as $l) { if(!is_vetofile($l)) { $name=c(substr($l,$filehostn)); $r=array_merge($r,get_dfiles2($name)); } }
         return $r;
 }
 
@@ -1073,11 +1074,19 @@ function createkey() { $key=sha1(hash_generate()); // сформировать ключ
 function get_pack_r($pack='') {
 	$r=array(); foreach(explode(' ',$pack) as $l) $r=getpack($l,$r); // взять все указанные пакеты
 	$o=$r; foreach($o as $n=>$l) { list($l,)=explode(' ',$l,2); $url=$GLOBALS['filehost'].$l;
-		if($l=='config.php.tmpl') $r=array_merge(getconf($url),$r); // обработать конфиг
+		if($l=='config.php.tmpl') { $r=array_merge(getconf($url),$r); } // обработать конфиг
 		if(getras($l)=='lang') { $r=array_merge(getlang($url),$r); unset($r[$n]); } // обработать язык, сам не слать
 	} return $r;
 }
 
 function backupfile($f) { if(is_file($f) && substr(getras($f),0,6)!='old---') rename($f,$f.".old---".date("Y-m-d_h-i-s")); }
+
+
+//------------------
+function rpath($l) { // $p=array_filter(explode(DIRECTORY_SEPARATOR,$l),'strlen');
+	$l=str_replace("\\",'/',$l); $a=array();
+	foreach(explode('/',$l) as $x){ if((''==$x&&!empty($a))||'.'==$x) continue; if('..'==$x) array_pop($a); else $a[]=$x; }
+	return implode('/',$a);
+}
 
 ?>
