@@ -1,10 +1,10 @@
 <?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 
-$start_tag = array('',"<span class=p1>","<span class=p2>");
-$end_tag = array('',"</span>","</span>");
+$GLOBALS['start_tag'] = array('',"<span class=p1>","<span class=p2>");
+$GLOBALS['end_tag'] = array('',"</span>","</span>");
 
-$stage=array(); foreach($start_tag as $l) $stage[]=str_replace('/','\/',$l); // для прега
-$etage=array(); foreach($end_tag as $l) $etage[]=str_replace('/','\/',$l); // для прега
+$GLOBALS['stage']=array(); foreach($GLOBALS['start_tag'] as $l) $GLOBALS['stage'][]=str_replace('/','\/',$l); // для прега
+$GLOBALS['etage']=array(); foreach($GLOBALS['end_tag'] as $l) $GLOBALS['etage'][]=str_replace('/','\/',$l); // для прега
 
 
 // ЭТО КАКАЯ-ТО ЖОПА, Я ДАЖЕ БОЮСЬ ТУТ ВСЕРЬЕЗ КОПАТЬСЯ, ОТЛАДИЛ КОГДА-ТО, РАБОТАЕТ - И ЛАДНО

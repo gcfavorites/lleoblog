@@ -163,7 +163,7 @@ function url_present($p) { global $httpsite,$opt,$media_id,$site_mod;
 
 	if($p[5]=='www.youtube.com') { // вставка роликов с ютуба
 	preg_match("/v=([0-9a-z\_\-]+)/si",$p[2],$m);
-	if($o){ include_once $site_mod."YOUTUB.php"; return $p[1]."<center>".YOUTUB($m[1].",480,385")."</center>".$p[7];
+	if($o){ include_once $site_mod."YOUTUB.php"; return $p[1]."<center>".YOUTUB($m[1].",480,385")."</center>".$p[8];
 	} else return url_click($p,'youtub',$m[1]);
 	}
 

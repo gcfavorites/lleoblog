@@ -113,7 +113,7 @@ i_selectall=function(){ for(var z=7,tr=i_tr(),i=0;i<tr.length;i++){
 i_find=function(id){
 		if(id.indexOf('config.php:')>=0) id=id.replace(/^([^\s\=]+).*?$/g,'$1');
 	for(var v,tr=i_tr(),i=0;i<tr.length;i++){ for(var dir=i_dir(tr[i]),p=i_div(tr[i]),j=0;j<p.length;j++){
-		v=p[j].innerHTML;
+		v=i_fil(p[j]);
 			if(dir=='config.php:') v=v.replace(/^\\\$([^\s\=]+).*?$/g,'$1');
 		if(id==dir+v) return p[j];
 	}
@@ -194,8 +194,11 @@ $obnovle=0;
 
 //return "<pre>".print_r($Uconf,1)."</pre>";
 
+// взять мою ветошь
+$veto=unserialize(file_get_contents($GLOBALS['filehost']."binoniq/instlog/veto.my")); if(empty($veto)) $veto=array(); // на всякий случай
+
 //========================================================= // onclick=\"setTimeout('this.parentNode.click()',100)\" 
-function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size='".(strlen($t[2])?strlen($t[2]):1)."'>".$t[3]; }
+	function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size='".(strlen($t[2])?strlen($t[2]):1)."'>".$t[3]; }
 
 	// 1. Что с конфигом?
 	// config:msq_login $msq_login = ""; // "lleo";
@@ -208,8 +211,8 @@ function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size
 			$v=h($v);
 			$v=preg_replace_callback("/^([\'\"])([^\'\"]*)([\'\"];)/s","vtoinput",$v);
 			$v=preg_replace_callback("/^([\'\"]*)(\d+)([\'\"]*;)/s","vtoinput",$v);
-			$s.="<div class='iADD iOK'>$".$n." = $v</div>"; // добавить
-	} foreach($con as $n=>$l) $s.="<div class='iDEL iOK'>$".$n."=".h($l)."</div>"; // удалить
+			$s.="<div class='iADD ".(in_array('config.php:'.$n,$veto)?'iSS':'iOK')."'>$".$n." = $v</div>"; // добавить
+	} foreach($con as $n=>$l) $s.="<div class='iDEL ".(in_array('config.php:'.$n,$veto)?'iSS':'iOK')."'>$".$n."=".h($l)."</div>"; // удалить
 	unset($con);
 	$s.="</td></tr></table>";
 //=========================================================
@@ -274,12 +277,11 @@ function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size
 
 	// и напечатать
 
-	// взять мою ветошь
-	$veto=unserialize(file_get_contents($GLOBALS['filehost']."binoniq/instlog/veto.my")); if(empty($veto)) $veto=array(); // на всякий случай
-
 	foreach($DDDIR as $dir=>$val) if(sizeof($val)) {
 		$s.="<table><tr valign=top><td class='iDIR iOK'>".h($dir)."</td><td class='iT'>";
-		foreach($val as $n=>$o) { $s.="<div class='".$o.' '.(in_array($dir.$n,$veto)?'iSS':'iOK')."'>".$n.(getras($n)=='php'&&$o=='iUPD'?"<img onclick='i_srav(this)' src='".$GLOBALS['www_design']."e3/kontact_journal.png'>":'')."</div>"; $obnovle++; }
+		foreach($val as $n=>$o) {
+$s.="<div class='".$o.' '.(in_array($dir.$n,$veto)?'iSS':'iOK')."'>".$n
+.($o=='iUPD'?"<img onclick='i_srav(this)' src='".$GLOBALS['www_design']."e3/kontact_journal.png'>":'')."</div>"; $obnovle++; }
 		$s.="</td></tr></table>";
 	}
 
@@ -409,26 +411,13 @@ if(isset($GLOBALS['admin_hash1']) && preg_match("/^[0-9a-z]{40}$/",$admin_hash1)
 
 if($a=='install_far_cmp') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
 	$file=rpath(RE('file')); if(is_vetofile($file)) return "alert('Disabled file: ".h($file)."')"; // veto?
-
-//	return "idie(\"".njsn(RE('url').$GLOBALS["installname"].'?'.urlencode($file))."\")";
-
 	$file_my=file_get_contents(RE('url').$GLOBALS["installname"].'?'.urlencode($file)); // скачать ЕГО файл
 		if(substr($file_my,0,6)=='ERROR:') return "alert('".h($file_my)."')"; // veto?
-//	return "alert(\"OK: ".njsn($file_my)."\")";
 	$file_ser=file_get_contents(realpath($GLOBALS['filehost'].$file));
-
-	include_once $GLOBALS['include_sys']."_podsveti.php"; // процедура вывода окошка с одной правкой
-
-//	$s="<hr>БЫЛО:<p>".nl2br(h($file_my))."<hr>СТАЛО:<p>".nl2br(h($file_ser));
-
-	$s=podsveti(nl2br(h($file_my)),nl2br(h($file_ser)));
-
-	return "idie(\"".njsn(h($s))."\")";
-
-	return "alert('D: ".h(RE('url').$file)."')";
-
-//	if(empty($fhost) || !is_file($fhost)) return "alert('File not found: ".h($file)."')";
-//	return POST_file($fhost,RE('url').$GLOBALS["installname"],array('post_act'=>'update_file','file'=>$file,'key'=>RE('key')));
+		include_once $GLOBALS['include_sys']."_podsveti.php"; // процедура вывода окошка с одной правкой
+		// $s=highlight_string(podsveti($file_my,$file_ser),1);
+		$s=podsveti(h($file_my),h($file_ser));
+	return "idie(\"".njsn(nl2br($s))."\")";
 }
 
 if($a=='install_update_far') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
@@ -962,6 +951,10 @@ STYLES("mod","
 
 .iDIR {font-weight: bold; float:left; valign:top; }
 .iT {float:left;margin-top:20pt;}
+
+.p1 { color: #3F3F3F; text-decoration: line-through; background: #DFDFDF; } /* вычеркнутый */
+.p2 { background: #FFD0C0; } /* вставленный */
+
 "); //.mod {font-size:11px;} .iDDR {font-weight: bold; color:green;}
 
 
@@ -1054,7 +1047,7 @@ function createkey() { $key=sha1(hash_generate()); // сформировать ключ
 	return $key;
 }
 
-function getmatka(){ file($GLOBALS['filehost']."binoniq/instlog/server.my"); return trim($ser[0]); } // текущий сервер
+function getmatka(){ $s=file($GLOBALS['filehost']."binoniq/instlog/server.my"); return trim($s[0]); } // текущий сервер
 
 function get_pack_r($pack='') {
 	$r=array(); foreach(explode(' ',$pack) as $l) $r=getpack($l,$r); // взять все указанные пакеты
