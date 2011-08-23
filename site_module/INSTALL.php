@@ -127,7 +127,7 @@ i_process=function(){
 
 function UPDATE_file($name,$temp) {
 	$f=$GLOBALS['filehost'].$name;
-	if(realpath($f)) { load_vetomas(); foreach($GLOBALS['vetomas'] as $l) { if(strtolower(substr($name,0,strlen($l)))==$l) return "Disabled file: ".h($l); } }
+	if(realpath($f)) { if(is_vetofile($name)) return "Disabled file: ".h($$name); } // veto
 	testdir(dirname($f)); // создать папки, если надо
 	backupfile($f);
         move_uploaded_file($temp,$f); filechmod($f);
@@ -383,11 +383,7 @@ if(isset($GLOBALS['admin_hash1']) && preg_match("/^[0-9a-z]{40}$/",$admin_hash1)
 // СЕРВЕР-МАТКА
 if($a=='install_update_far') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере-матке
 	$file=RE('file'); $fhost=realpath($GLOBALS['filehost'].$file);
-
-	load_vetomas(); foreach($GLOBALS['vetomas'] as $l) {
-		if(strtolower(substr($fhost,0,strlen($l)))==$l) return "alert('Disabled file: ".h($l)."')";
-	}
-
+	if(is_vetofile($file)) return "alert('Disabled file: ".h($file)."')";
 	if(empty($fhost) || !is_file($fhost)) return "alert('File not found: ".h($file)."')";
 	return POST_file($GLOBALS['filehost'].$file,RE('url')."install",array('post_act'=>'update_file','file'=>$file,'key'=>RE('key'),'ara'=>serialize($r)));
 }
@@ -756,9 +752,17 @@ function getpack($pack,$e) { global $filehost; $save=0;
 }
 
 
-function load_vetomas(){ global $vetomas;
-	$vetomas=array(); if(($s=file($GLOBALS['filehost']."binoniq/instlog/system_veto.txt"))!==false) foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $vetomas[]=$l; }
+function load_vetomas(){ global $vetomas; if(isset($vetomas)) return;
+$vetomas=array(); if(($s=file($GLOBALS['filehost']."binoniq/instlog/system_veto.txt"))!==false) foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $vetomas[]=$l; }
 }
+
+function is_vetofile($l) { load_vetomas(); return in_array(strtolower($l),$GLOBALS['vetomas']); 
+// substr($name,0,strlen($l)) $l
+//	load_vetomas(); foreach($GLOBALS['vetomas'] as $l) {
+//		if(strtolower(substr($fhost,0,strlen($l)))==$l) return "alert('Disabled file: ".h($l)."')";
+//	}
+}
+
 
 // ПОЛУЧИТЬ МАССИВ ПО ВСЕМ ФАЙЛАМ ДВИЖКА (которые разрешены в system_dir.txt)
 function get_dfiles() { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allmd5change; $stop=1000;
@@ -767,7 +771,7 @@ function get_dfiles() { global $stop,$md5mas,$vetomas,$filehostn,$filehost,$allm
 	// взять $md5mas - массив данных по всему движку
 	$md5mas=array(); $allmd5change=1; if(($s=file_get_contents($dir."all_md5.tmp"))!==false) { $allmd5change=0; $md5mas=unserialize($s); }
 	// взять $vetomas - массив данных по всему движку
-	load_vetomas(); //$vetomas=array(); if(($s=file($dir."system_veto.txt"))!==false) foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $vetomas[]=$l; }
+	load_vetomas();
 	// взять $all - массив данных по всему движку
 	$all=array(); $s=file($dir."system_dir.txt"); foreach($s as $l) { $l=trim($l); if($l!='' && substr($l,0,1)!='#') $all[]=$l; }
 	// обработать по одному
