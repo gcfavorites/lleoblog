@@ -35,6 +35,13 @@ function filechmod($f,$p=''){ if($p=='') $p=isset($GLOBALS['fchmod'])?$GLOBALS['
 function dirchmod($d,$p=''){ if($p=='') $p=isset($GLOBALS['dchmod'])?$GLOBALS['dchmod']:0755; chmod($d,$p); }
 function fileput($f,$s) { $o=file_put_contents($f,$s); filechmod($f); return $o; }
 function dirput($d) { $o=mkdir($d); dirchmod($d); return $o; }
+function testdir($s) { $a=explode('/',rtrim($s,'/')); $s=''; for($i=0;$i<sizeof($a);$i++) { $s.='/'.$a[$i]; if(!is_dir($s)) dirput($s); } }
+function getras($s){ $r=explode('.',$s); if(sizeof($r)==1) return ''; return strtolower(array_pop($r)); }
+function rpath($l) { // $p=array_filter(explode(DIRECTORY_SEPARATOR,$l),'strlen');
+  $l=str_replace("\\",'/',$l); $a=array();
+  foreach(explode('/',$l) as $x){ if((''==$x&&!empty($a))||'.'==$x) continue; if('..'==$x) array_pop($a); else $a[]=$x; }
+  return implode('/',$a);
+}
 
 /*
 function LL($n,$ara=0){ global $mylang,$langbasa;
