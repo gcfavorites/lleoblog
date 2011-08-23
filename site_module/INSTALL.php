@@ -47,8 +47,17 @@ addstyle('.ulin:after',\"{content:'   '}\");
 $GLOBALS['selectjs']="
 i_toggle_visible_d=1;
 
-i_toggle_visible=function(){ for(var tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
-		for(var p=tr[i].lastChild.getElementsByTagName('DIV'),z=g=p.length,j=0;j<g;j++){
+i_dir=function(e){ e=e.firstChild.innerHTML; return e=='/'?'':e };
+i_div=function(e){ return e.lastChild.getElementsByTagName('DIV') };
+i_tr=function(e){ return idd('i_selectfiles').getElementsByTagName('TR') };
+
+i_fil=function(e){ return e.innerHTML.replace(/<[^>]*>/g,'') };
+
+i_srav=function(e){ e=i_dir(e.parentNode.parentNode.parentNode)+i_fil(e.parentNode);
+	majax('module.php',{mod:'INSTALL',a:'install_cmpfile',file:e});
+};
+
+i_toggle_visible=function(){ for(var tr=i_tr(),i=0;i<tr.length;i++){ for(var p=i_div(tr[i]),z=g=p.length,j=0;j<g;j++){
 			if(i_toggle_visible_d && !i_tst(p[j])) { p[j].style.display='none'; z--; }
 			else p[j].style.display='block';
 		} tr[i].style.display=(i_toggle_visible_d && !z)?'none':'block';
@@ -56,64 +65,60 @@ i_toggle_visible=function(){ for(var tr=idd('i_selectfiles').getElementsByTagNam
 i_toggle_visible_d=i_toggle_visible_d?0:1;
 };
 
-i_get_selected=function(){ for(var dir,s='',tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
-  dir=tr[i].firstChild.innerHTML; if(dir=='/') dir='';
-  for(var p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){ if(i_tst(p[j])) s='\\n'+dir+p[j].innerHTML+s; }
+i_get_selected=function(){ for(var s='',tr=i_tr(),i=0;i<tr.length;i++){
+	for(var dir=i_dir(tr[i]),p=i_div(tr[i]),j=0;j<p.length;j++){ if(i_tst(p[j])) s='\\n'+dir+p[j].innerHTML+s; }
  } return s;
 };
 
 i_submit=function(){ inst_MAS_DEL=[]; inst_MAS_UPD=[]; inst_MAS_NON=[];
-  for(var c,f,dir,s='',tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
-	dir=tr[i].firstChild.innerHTML; if(dir=='/') dir='';
-		for(var p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){
-			f=p[j].innerHTML;
-				if(dir=='config.php:') {
-					f=f.replace(/^\\\$([^\s\=]+)\s*=\s*(.*?)$/g,'$1=$2');
-					var inp=p[j].getElementsByTagName('INPUT');
-					if(inp.length==1) f=f.replace(/<input.*?>/gi,inp[0].value);
-				}
+  for(var c,f,s='',tr=i_tr(),i=0;i<tr.length;i++){ for(var dir=i_dir(tr[i]),p=i_div(tr[i]),j=0;j<p.length;j++){
+		f=p[j].innerHTML;
+			if(dir=='config.php:') {
+				f=f.replace(/^\\\$([^\s\=]+)\s*=\s*(.*?)$/g,'$1=$2');
+				var inp=p[j].getElementsByTagName('INPUT');
+				if(inp.length==1) f=f.replace(/<input.*?>/gi,inp[0].value);
+			}
 
-				/*if(dir=='config.php:') f=f.replace(/^\\\$/g,''); alert(f);*/
-			f=dir+f;
-			if(i_tst(p[j])) {
-				c=p[j].className.split(' ')[0];
-				if(c=='iUPD'||c=='iADD') inst_MAS_UPD.push(f);
-				else if(c=='iDEL') inst_MAS_DEL.push(f);
-				else ohelpc('errError option','Error option','Error option: `'+c+'` / '+f);
-		  	} else inst_MAS_NON.push(f);
-		}
+			/*if(dir=='config.php:') f=f.replace(/^\\\$/g,''); alert(f);*/
+		f=dir+f;
+		if(i_tst(p[j])) {
+			c=p[j].className.split(' ')[0];
+			if(c=='iUPD'||c=='iADD') inst_MAS_UPD.push(f);
+			else if(c=='iDEL') inst_MAS_DEL.push(f);
+			else ohelpc('errError option','Error option','Error option: `'+c+'` / '+f);
+	  	} else inst_MAS_NON.push(f);
+	}
  }
 i_process();
 };
 
-i_selectall=function(){ for(var z=7,tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
-  for(var p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){ if(z==7) z=i_tst(p[j]); i_chan(p[j],z); }
+i_selectall=function(){ for(var z=7,tr=i_tr(),i=0;i<tr.length;i++){
+  for(var p=i_div(tr[i]),j=0;j<p.length;j++){ if(z==7) z=i_tst(p[j]); i_chan(p[j],z); }
 } if(!z && !i_toggle_visible_d) i_toggle_visible();
 };
 
 i_find=function(id){
 		if(id.indexOf('config.php:')>=0) id=id.replace(/^([^\s\=]+).*?$/g,'$1');
-	for(var v,tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){
-	for(var dir=tr[i].firstChild.innerHTML,p=tr[i].lastChild.getElementsByTagName('DIV'),j=0;j<p.length;j++){
+	for(var v,tr=i_tr(),i=0;i<tr.length;i++){ for(var dir=i_dir(tr[i]),p=i_div(tr[i]),j=0;j<p.length;j++){
 		v=p[j].innerHTML;
 			if(dir=='config.php:') v=v.replace(/^\\\$([^\s\=]+).*?$/g,'$1');
 		if(id==dir+v) return p[j];
 	}
-} alert('not find: '+id);
+} alert('not find: `'+id+'`');
 };
 
-go_install=function(id){ var x,dir,itit={iDEL:'del',iADD:'add new',iUPD:'update'};
-	for(var tr=idd('i_selectfiles').getElementsByTagName('TR'),i=0;i<tr.length;i++){ dir=tr[i].firstChild;
-		dir.onclick=function(){i_chand(this)}; dir.setAttribute('title','Invert selected');
-		for(var p=dir.nextSibling.getElementsByTagName('DIV'),j=0;j<p.length;j++){
+go_install=function(id){ var x,d,itit={iDEL:'del',iADD:'add new',iUPD:'update'};
+	for(var tr=i_tr(),i=0;i<tr.length;i++){ d=tr[i].firstChild;
+		d.onclick=function(){i_chand(this)}; d.setAttribute('title','Invert selected');
+		for(var p=i_div(tr[i]),j=0;j<p.length;j++){
 			if(itit[p[j].className]) p[j].setAttribute('title',itit[p[j].className]);
-			p[j].onclick=function(e){if(e.target.tagName!='INPUT')i_chan(this,i_tst(this));window.event.stopPropagation();};
+			p[j].onclick=function(e){e=e.target.tagName;if(e!='INPUT'&&e!='IMG')i_chan(this,i_tst(this))};
 		}
 	}
 i_toggle_visible(); posdiv(id,-1,-1);
 };
 
-i_chand=function(e){ for(var c=7,p=e.nextSibling.getElementsByTagName('DIV'),i=0;i<p.length;i++) { if(c==7) c=i_tst(p[i]); i_chan(p[i],c); }};
+i_chand=function(e){ for(var c=7,p=i_div(e.parentNode),i=0;i<p.length;i++) { if(c==7) c=i_tst(p[i]); i_chan(p[i],c); }};
 i_tst=function(e){ var c=e.className.split(' '); if(c.length!=1) return (c[1]=='iOK'?true:false); return (c[0]=='iYES'?true:false); }
 i_chan=function(e,i){ var c=e.className.split(' '); e.className=c.length!=1?c[0]+(i?' iSS':' iOK'):(i?'iNON':'iYES'); }
 
@@ -261,7 +266,7 @@ function vtoinput($t){ return $t[1]."<input type='text' value=\"".$t[2]."\" size
 
 	foreach($DDDIR as $dir=>$val) if(sizeof($val)) {
 		$s.="<table><tr valign=top><td class='iDIR iOK'>".h($dir)."</td><td class='iT'>";
-		foreach($val as $n=>$o) { $o.=' '.(in_array($dir.$n,$veto)?'iSS':'iOK'); $s.="<div class='$o'>".$n."</div>"; $obnovle++; }
+		foreach($val as $n=>$o) { $s.="<div class='".$o.' '.(in_array($dir.$n,$veto)?'iSS':'iOK')."'>".$n.(getras($n)=='php'&&$o=='iUPD'?"<img onclick='i_srav(this)' src='".$GLOBALS['www_design']."e3/kontact_journal.png'>":'')."</div>"; $obnovle++; }
 		$s.="</td></tr></table>";
 	}
 
@@ -664,7 +669,7 @@ if($a=='install_update_NON') { // NON - пометить файлы отмеченные как
 }
 
 if($a=='install_update_DEL') { // DEL - удалить 1 файл
-	$file=RE('file');
+	$file=html_entity_decode(RE('file'));
 		if(preg_match("/^(config\.php)\:([^\:\=]+)\=(.+?)$/s",$file,$m)) { config_del($m[2]);
 		return "var s=inst_MAS_DEL.shift(); s=i_find(s); s.parentNode.removeChild(s); i_process();";
 		}
@@ -674,16 +679,19 @@ if($a=='install_update_DEL') { // DEL - удалить 1 файл
 }
 
 if($a=='install_update_UPD') { // UPD - обновить 1 файл
-	$file=RE('file');
-		if(preg_match("/^(config\.php)\:([^\:\=]+)\=(.+?)$/s",$file,$m)) {
-			return "alert(\"".$m[3]."\")";
-			config_add($m[2],$m[3]);
+	$file=html_entity_decode(RE('file'));
+		if(preg_match("/^(config\.php)\:([^\:\=]+)\=(.+?)$/s",$file,$m)) { config_add($m[2],$m[3]);
 		return "var s=inst_MAS_UPD.shift(); s=i_find(s); s.parentNode.removeChild(s); i_process();";
 		}
 	$ser=file($dir."server.my"); $ser=trim($ser[0]); // вычислить текущий сервер
 	return "mijax('".$ser."/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'$file'})";
 } // А ВОТ И ОН - СЕРВЕР-МАТКА:
 
+
+if($a=='install_cmp_file') { // сравнить два файла PHP
+	$file=html_entity_decode(RE('file'));
+	return "idie('###: $file');";
+}
 //====================================================================
 
 
@@ -911,7 +919,7 @@ STYLES("mod","
 .iNON:before,.iNON:after,.iSS:before,.iSS:after {content:' '}
 .iYES,.iOK {text-decoration:none}
 
-.iDIR {font-weight: bold; float:left;}
+.iDIR {font-weight: bold; float:left; valign:top; }
 .iT {float:left;margin-top:20pt;}
 "); //.mod {font-size:11px;} .iDDR {font-weight: bold; color:green;}
 
