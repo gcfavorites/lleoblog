@@ -28,14 +28,18 @@ function remas($txt) {
 function nehtml($s) { return str_replace("\1",'',$s); }
 
 
-function podsveti($oldtxt,$newtxt) { global $start_tag,$end_tag,$PODSV_do,$PODSV_po;
+function podsveti($oldtxt,$newtxt,$modr='') { global $start_tag,$end_tag,$PODSV_do,$PODSV_po;
 
+if($oldtxt=="" || $newtxt==$oldtxt) return($newtxt);
+if($newtxt=="") return($oldtxt);
 
-if($oldtxt=="") return($newtxt);
-elseif($newtxt=="") return($oldtxt);
-
-	$oldmas=explode("\1",remas($oldtxt));
-	$newmas=explode("\1",remas($newtxt));
+        if($modr=='') {
+                $oldmas=explode("\1",remas($oldtxt));
+                $newmas=explode("\1",remas($newtxt));
+        } else {
+                $oldmas=explode($modr,$oldtxt);
+                $newmas=explode($modr,$newtxt);
+        }
 
 	$diff=PHPDiff( $newmas, $oldmas );
 

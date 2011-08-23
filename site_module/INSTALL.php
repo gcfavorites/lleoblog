@@ -415,8 +415,20 @@ if($a=='install_far_cmp') { // запрос POST - ЭТО ПРОИСХОДИТ УЖЕ на чужом сервере
 		if(substr($file_my,0,6)=='ERROR:') return "alert('".h($file_my)."')"; // veto?
 	$file_ser=file_get_contents(realpath($GLOBALS['filehost'].$file));
 		include_once $GLOBALS['include_sys']."_podsveti.php"; // процедура вывода окошка с одной правкой
-		// $s=highlight_string(podsveti($file_my,$file_ser),1);
+//		$s=highlight_string(podsveti($file_my,$file_ser),1);
+//		$s=podsveti(h($file_my),h($file_ser),"\n");
 		$s=podsveti(h($file_my),h($file_ser));
+
+//	fileput($GLOBALS['filehost'].'n1',$file_my);
+//	fileput($GLOBALS['filehost'].'n2',$file_ser);
+//	$s=podsveti('ffdfd dfdf','dfdfd sdfdfd');
+
+//$s='fsdfsdf';
+//return "idie(\"".njsn(nl2br(h($file_ser)))."\")";
+
+//return("alert(082)");
+
+/*fgf*/
 	return "idie(\"".njsn(nl2br($s))."\")";
 }
 
