@@ -20,7 +20,7 @@ var hid=1;
 var mHelps={};
 var hotkey=[]; //code,(ctrlKey,shiftKey,altKey,metaKey),func
 
-keycodes={right:0x27,left:0x25,up:0x26,down:0x28,esc:0x1B,enter:0x0D,home:0x24,tab:9,del:46,
+keycodes={right:0x27,left:0x25,up:0x26,down:0x28,esc:0x1B,enter:0x0D,home:0x24,tab:9,del:46,F5:116,
 'А':'1040','а':'1072','Б':'1041','б':'1073','В':'1042','в':'1074','Г':'1043','г':'1075','Д':'1044','д':'1076',
 'Е':'1045','е':'1077','Ё':'1025','ё':'1105','Ж':'1046','ж':'1078','З':'1047','з':'1079','И':'1048','и':'1080',
 'Й':'1049','й':'1081','К':'1050','к':'1082','Л':'1051','л':'1083','М':'1052','м':'1084','Н':'1053','н':'1085',
@@ -69,7 +69,10 @@ setkey(['D','В','в'],'',function(e){document.location.href=wwwhost;},true); // в
 setkey(['K','Л','л'],'',function(e){document.location.href=wwwhost+'comms';},true); // комментарии
 setkey(['right','7'],'',function(e){rel_redirect('NextLink')},true);
 setkey(['left','4'],'',function(e){rel_redirect('PrevLink')},true);
-setkey(['A','Ф','ф'],'alt',function(e){keyalert=1;salert('Скан клавиш включен',1000);},false); // включение сканкодов
+
+// setkey(['F5'],'',function(e){setTimeout("salert('Боже, да сколько же вас, верующих в силу кнопки F5?',4000)",50);},false);
+
+setkey(['A','Ф','ф'],'alt shift',function(e){keyalert=1;salert('Скан клавиш включен',1000);},false); // включение сканкодов
 setkey('up','ctrl',function(e){rel_redirect('UpLink')},true);
 setkey('down','ctrl',function(e){rel_redirect('DownLink')},true);
 setkey('home','ctrl',function(e){document.location.href='/'},true);
@@ -515,13 +518,14 @@ var eventkey,lastkeycode,lastkeykey,keyalert=0;
 window.onload = function() {
 
 // === KEYBOARD === http://www.asquare.net/javascript/tests/KeyCode.html
-document.onkeypress = function(e){ lastkeycode=(e.keyCode ? e.keyCode :e.which ? e.which : null); };
+document.onkeypress = function(e){ /*if(keyalert) return false;*/ lastkeycode=(e.keyCode ? e.keyCode :e.which ? e.which : null); };
 
-document.onkeyup = function(e){ if(keyalert) var T=setTimeout('keyprint()',50);
+document.onkeyup = function(e){ if(keyalert) { var T=setTimeout('keyprint()',50); return false; }
 if(eventkey!==0 || lastkeycode==0) return; return keydo(e,lastkeycode);
 };
 
-document.onkeydown = function(e) { if(!e) e=window.event; eventkey=0; var k=(e.keyCode ? e.keyCode : e.which ? e.which : 0);
+document.onkeydown = function(e) { if(keyalert) return false;
+if(!e) e=window.event; eventkey=0; var k=(e.keyCode ? e.keyCode : e.which ? e.which : 0);
 if(k===0) return; eventkey=e; lastkeykey=k; return keydo(e,k);
 };
 

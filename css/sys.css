@@ -157,6 +157,11 @@ a[href *=".wikipedia.org"] {
         padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
 }
 
+a[href *=".apple.com"] {
+        background: transparent url(http://apple.com/favicon.ico) no-repeat center left;
+        padding: 5px 0 5px 17px; font-weight: normal; text-decoration: none;
+}
+
 .clearfloat,.cf,.q { clear:both; height:0; font-size: 1px; line-height: 0px; }
 
 LEGEND { font-weight: bold; color: #FF6200; font-size: 14px; text-align: left; }
