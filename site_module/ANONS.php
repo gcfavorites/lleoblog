@@ -100,6 +100,9 @@ $conf=array_merge(array(
 'sortx'=>'DESC', // сортировка: 'DESC' - самый новый сверху; если '' - то наоборот
 'length'=>200, // число букв в отрывке текста, если 0 - то тест целиком
 'media'=>0, // 0 - голый текст (без верстки, картинок и т.п.)
+'list'=>0, // 1 - делать оглавление
+'list_element'=>"<div>{numer}. <a href='#L{num}'>{Header}</a></div>", // темплейт элемента оглавления
+'list_tmpl'=>"<div><h2>ОГЛАВЛЕНИЕ</h2></div><div>{list}</div>", // темплейт оглавления
 'template'=>"<div style='text-align:left; padding: 10px 0 10px 0; font-size:12px;'>"
 // ."{edit}"
 ."<b>{Y}-{M}-{D}: {Header}</b>"
@@ -158,7 +161,8 @@ if($oldarticle['Date']==$p['Date']) return "<font color=red> error: redirect </f
 redirect($GLOBALS['httphost'].$p['Date'].".html".($GLOBALS['admin']?"?redir=".$oldarticle['Date']:''),302); // на последнюю
 }
 
-$s=''; if(sizeof($pp)) foreach($pp as $p) { if($p['num']==$oldarticle['num']) continue;
+$list=''; $s=''; $numer=0; if(sizeof($pp)) foreach($pp as $p) { if($p['num']==$oldarticle['num']) continue;
+	$numer++;
 	$p=mkzopt($p); $GLOBALS['article']=$p;
 	list($Y,$M,$D) = explode('/', $p['Date'], 3); $article["Day"]=substr($article["Day"],0,2);
 
@@ -178,18 +182,30 @@ $s=''; if(sizeof($pp)) foreach($pp as $p) { if($p['num']==$oldarticle['num']) co
 
 	} else $Body='';
 
-$s.=mper(str_replace("\\n","\n",$conf['template']),array(
+$s.=($conf['list']?"<a name='L".$p["num"]."'></a>":'').mper(str_replace("\\n","\n",$conf['template']),array(
 'Body'=>$body,
 'Header'=>$p["Header"],
 'link'=>get_link_($p["Date"]), // неполная ссылка на статью
 'num'=>$p["num"],
+'numer'=>$numer,
 'Y'=>$Y,'M'=>$M,'D'=>$D
 // ,'edit'=>($GLOBALS['admin']?"<img style='margin: 0 10px 0 10px;' class=knop onClick=\"majax('editor.php',{a:'editform',num:'".$p['num']."',comments:(idd('commpresent')?1:0)})\" src='".$GLOBALS['www_design']."e3/color_line.png' alt='editor'>":'')
+));
+
+if($conf['list']) $list.=mper($conf['list_element'],array(
+// 'Body'=>$body,
+'numer'=>$numer,
+'Header'=>$p["Header"],
+'link'=>get_link_($p["Date"]), // неполная ссылка на статью
+'num'=>$p["num"],
+'Y'=>$Y,'M'=>$M,'D'=>$D
 ));
 
 }
 
 $GLOBALS['article'] = $oldarticle;
+
+if($conf['list']) { $list=mper($conf['list_tmpl'],array('list'=>$list)); return $list.$s; }
 
 return $s;
 }

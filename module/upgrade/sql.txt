@@ -276,17 +276,15 @@ CREATE TABLE IF NOT EXISTS `rekomenda` (
 --
 -- Структура таблицы `site`
 --
+-- `Access` enum('all','podzamok','admin') NOT NULL default 'admin' COMMENT 'Параметры доступа',
+-- `type` enum('page','design','news','pageplain','photo') NOT NULL default 'page',
+-- `id` int(10) unsigned NOT NULL auto_increment,
+-- KEY `type` (`type`)
 
 CREATE TABLE IF NOT EXISTS `site` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `Access` enum('all','podzamok','admin') NOT NULL default 'admin' COMMENT 'Параметры доступа',
-  `name` varchar(1024) NOT NULL,
-  `type` enum('page','design','news','pageplain','photo') NOT NULL default 'page',
+  `name` varchar(128) NOT NULL,
   `text` text NOT NULL,
-  `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
-  PRIMARY KEY  (`id`),
-  KEY `name` (`name`(1024)),
-  KEY `type` (`type`)
+  PRIMARY KEY `name` (`name`(128))
 ) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Контент сайта' AUTO_INCREMENT=169 ;
 
 

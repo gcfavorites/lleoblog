@@ -610,8 +610,8 @@ die($s);
 
 
 //----------------------------------------------------------------------
-function filechmod($f,$p=0664){ chmod($f,$p); }
-function dirchmod($d,$p=0775){ chmod($d,$p); }
+function filechmod($f,$p=''){ if($p=='') $p=isset($GLOBALS['fchmod'])?$GLOBALS['fchmod']:0644; chmod($f,$p); }
+function dirchmod($d,$p=''){ if($p=='') $p=isset($GLOBALS['dchmod'])?$GLOBALS['dchmod']:0755; chmod($d,$p); }
 function fileput($f,$s) { $o=file_put_contents($f,$s); filechmod($f); return $o; }
 function dirput($d) { $o=mkdir($d); dirchmod($d); return $o; }
 function copyf($a,$b) { $o=copy($a,$b); filechmod($b); return $o; }

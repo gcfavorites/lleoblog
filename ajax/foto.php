@@ -20,8 +20,11 @@ if($a=='album') {
 $s="
 <div id=treehelp class=br>&nbsp;</div>
 <div>
-<img onmouseover=\"treeh('Удалить выделенные')\" onmouseout=\"treeh('&nbsp;')\" src='".$www_design."e3/remove.png' class=knop onclick=\"var i=vzyal('treese'); if(i && confirm('Delete '+i+' files?')) majax('foto.php',{a:'albumdel',sel:treeselected})\">&nbsp;
-<img onmouseover=\"treeh('...это пока не работает...')\" onmouseout=\"treeh('&nbsp;')\" src='".$www_design."e3/filenew.png' class=knop id='#new#'>&nbsp;
+<img title='Reload' src='".$www_design."e3/kr_invert.png' class=knop onclick='treereload()'>&nbsp;
+<img title='Delete selected' src='".$www_design."e3/remove.png' class=knop onclick=\"var i=1*vzyal('treese'); if(!i||confirm('Delete '+i+' files?')) majax('foto.php',{a:'albumdel',sel:treeselected})\">&nbsp;
+<img title='Move selected' src='".$www_design."e3/redo.png' class=knop onclick=\"var i=1*vzyal('treese'); if(!i||confirm('Move '+i+' files to '+treefolder+' ?')) majax('foto.php',{a:'filemove',sel:treeselected,dir:treefolder})\">&nbsp;
+<img title='Copy selected' src='".$www_design."e3/redo-ltr.png' class=knop onclick=\"var i=1*vzyal('treese'); if(!i||confirm('Copy '+i+' files to '+treefolder+' ?')) majax('foto.php',{a:'filecopy',sel:treeselected,dir:treefolder})\">&nbsp;
+<img title='Create new' src='".$www_design."e3/filenew.png' class=knop onclick=\"majax('foto.php',{a:'createfile',dir:treefolder});\">&nbsp;
 <img onmouseover=\"treeh('Снять все выделение')\" onmouseout=\"treeh('&nbsp;')\" src='".$www_design."e3/list-remove.png' class=knop onclick='treeremove()'>&nbsp;
 <img onmouseover=\"treeh('Выделить все, что в раскрытых папках')\" onmouseout=\"treeh('&nbsp;')\" src='".$www_design."e3/list-add.png' class=knop onclick='treeadd()'>&nbsp;
 <img onmouseover=\"treeh('Увеличить масштаб просмотра')\" onmouseout=\"treeh('&nbsp;')\" src='".$www_design."e3/viewmagp.png' class=knop onclick='treeiconp()'>&nbsp;
@@ -45,6 +48,11 @@ otprav_sb('tree.js',"
 	helps('fotoalbum',\"<fieldset><legend>фотоальбом</legend>".njs($s)."</fieldset>\");
 	".$alb."
 
+treereload=function(i){ if(typeof i == 'undefined') i=treefolder;
+	idd(i).getElementsByTagName('UL')[0].innerHTML='';
+	majax('foto.php',{a:'albumgo',id:i,tog:1});
+};
+
 treeh=function(s){
 if(s.indexOf('#')!=-1) {
 	var i=vzyal('treese'); if(i=='0') i='(папка <u>'+treefolder+'</u>)'; else i='('+i+'&nbsp;шт)';
@@ -57,7 +65,7 @@ zabil('treehelp',e.src.replace(/^.{".(strlen($httphost)-1)."}(.*?\\/)pre\\/([^\\
 };
 
 treeallimgicon=function(n){ var findimg=[];
-var pp=idd('/').getElementsByTagName('LI'); for(var i in pp) { if(isNaN(i)) continue;
+var pp=idd('/').getElementsByTagName('LI'); for(var i in pp) { if(isNaN(i)||typeof pp[i] == 'undefined') continue;
 var e=pp[i].getElementsByTagName('DIV')[1].getElementsByTagName('IMG');	for(var k in e) { if(e[k].id) findimg.push(e[k]); }
 } for(var i in findimg) { var e=findimg[i]; e.style.width=n+'px'; e.style.height=n+'px'; if(n>150) e.src=e.src.replace(/\/pre\//g,'/'); }
 };
@@ -78,7 +86,7 @@ treefinish=function(){ var a='',b='';
 	clean('fotoalbum');
 };
 
-treeremove=function(){ for(var i in treeselected) idd(i).style.border='2px solid transparent'; treeselected={};treepr();};
+treeremove=function(){ for(var i in treeselected) { if(idd(i)) idd(i).style.border='2px solid transparent'; } treeselected={};treepr();};
 
 setkey('E','',function(e){ var e; for(var i in treeselected) e=i; majax('foto.php',{a:'treeact',id:e}); },false);
 
@@ -157,6 +165,25 @@ helps('fotooper',\"<fieldset><legend>/\"+treeid+\"</legend>\"+t+\"</fieldset>\")
 }
 
 //=================================== editpanel ===================================================================
+if($a=='createfile') { $dir=RE('dir'); if($dir=='/') $dir='';
+$s=$GLOBALS['filehost']."<input onchange='createfile_go()' id='createfile_name' type='text' size='50' value=\"".h($dir)."\">&nbsp;<input type='button' value='Go' onclick='createfile_go()'>";
+otprav("ohelpc('createfile','Create File',\"".njs($s)."\"); idd('createfile_name').focus();
+createfile_go=function(){
+	var l=idd('createfile_name').value,d=0;
+	if(l.indexOf('.')<0 && confirm('Create folder?')) d=1;
+	majax('foto.php',{a:'createfile_do',file:l,dir:d});
+};
+");
+}
+
+if($a=='createfile_do') { $file=RE('file'); $f=rpath($GLOBALS['filehost'].$file);
+	if(is_file($f)||is_dir($f)) idie("Error! `".h($l)."` exist!");
+	$s="clean('createfile');";
+	if(RE0('dir')) { testdir($f); $s.="majax('foto.php',{a:'album'});"; }
+	else { testdir(dirname($f)); $s.="treeid='".$file."'; majax('foto.php',{a:'edit_text',file:treeid});"; }
+	otprav($s);
+}
+
 if($a=='uploadform') {
 
 $fotoset=get_fotoset();
@@ -271,7 +298,10 @@ idd('fotoset_X').focus();
 otprav($s);
 }
 //=================================== работа с нодами альбома ===================================================================
-if($a=='albumgo') { otprav(albumdir(RE('id'))." treeallimgicon(treeicon);"); }
+if($a=='albumgo') { $id=RE('id'); $s=albumdir($id)." treeallimgicon(treeicon);";
+	if(RE0('tog')) $s.="treetoggleNode(idd('$id'),1);";
+	otprav($s);
+}
 //=================================== setdir ===================================================================
 if($a=='setdir') { otprav("helps('foto_$hid',\"<fieldset><legend>выбираем папку</legend>??</fieldset>\");"); }
 
@@ -280,16 +310,52 @@ if($a=='savedir') { $dir=$_REQUEST["dir"]; $dir=h(preg_replace("/\.+/s",'.',$dir
 	otprav("clean('foto'); majax('foto.php',{a:'uploadform'});");
 }
 //=================================== album-del ===================================================================
+if($a=='filemove') { AD(); if(!sizeof($_REQUEST['sel'])) idie('Select files,<br>then select folder<br>and then press button.');
+$ndir=array(); $dir=RE('dir'); $to=rpath($filehost.$dir); foreach($_REQUEST['sel'] as $l=>$n) {
+		$f=rpath($filehost.$l); $t=rpath($to.'/'.basename($l));
+		if(is_file($f)&&!is_file($t)) { rename($f,$t); $ndir[dirname($l)]=1; }
+	}
+	$ndir[$dir]=1; $s=''; foreach($ndir as $l=>$n) $s.="treereload('".rtrim($l,'/')."/');";
+//	idie($s);
+	otprav($s."treeremove();salert('Moved!',800);");
+}
+
+// ----
+if($a=='filecopy') { AD(); if(!sizeof($_REQUEST['sel'])) idie('Select files,<br>then select folder<br>and then press button.');
+$to=rpath($filehost.RE('dir')); foreach($_REQUEST['sel'] as $l=>$n) {
+		$f=rpath($filehost.$l); $t=rpath($to.'/'.basename($l));
+		if(is_file($f)&&!is_file($t)) copy($f,$t);
+	}
+	otprav("treeremove(); treereload(); salert('Copied!',800);");
+}
+// ----
 if($a=='albumdel') { AD();
 	$s='';
-	foreach($_REQUEST['sel'] as $l=>$n) { $f=$filehost.$l;
-		if(!is_file($f)) idie('Not found: '.h($l));
-		if(!is_ras_image($l)) idie(h($l).' - is not image!<br>(under construction, sorry)');
-		$x=predir($f,'mic/'); if(is_file($x)) unlink($x);
-		$x=predir($f,'pre/'); if(is_file($x)) unlink($x);
-		unlink($f);
-		$s.="clean('".$l."');";
+
+	if(!sizeof($_REQUEST['sel'])) {
+		otprav("if(confirm('Delete '+treefolder+' ?')) {
+			treeselected={}; treeselected[treefolder]=1;
+			majax('foto.php',{a:'albumdel',sel:treeselected});
+		}");
 	}
+
+	foreach($_REQUEST['sel'] as $l=>$n) { $f=rpath($filehost.$l);
+		if(is_file($f)) {
+			$x=predir($f,'mic/'); if(is_file($x)) unlink($x);
+			$x=predir($f,'pre/'); if(is_file($x)) unlink($x);
+			unlink($f);
+		} elseif(is_dir($f)) {
+			if(!sizeof(glob($f.'/*'))) rmdir($f);
+			else idie('Folder is not empty: <br>'.h($l)."<br>$f<br>".print_r(glob($f.'/*'),1));
+		} else idie('Not found: '.h($l));
+
+		if(is_file($f) && is_ras_image($l)) $s.="clean('".$l."');";
+		else $s.="
+var e=idd('".$l."'); while(e.tagName!='LI'&&e.parentNode!=undefined) e=e.parentNode;
+clean('".$l."'); e.parentNode.removeChild(e);
+";
+	}
+	$s.="treeremove(); clean('fotooper');";
 	otprav($s);
 }
 //==================================================================================================
@@ -426,7 +492,8 @@ setkey(['E','У','у'],'',starteditor,false);
 }
 //=================================== editpanel ===================================================================
 if($a=='edit_text') {
-	$file=RE('file');
+	$file=RE('file'); $f=rpath($filehost.$file); $fs=(is_file($f)?file_get_contents($f):'');
+
 otprav("
 save_and_close=function(){save_no_close();clean('fotoset')};
 save_no_close=function(){ if(idd('edit_text').value==idd('edit_text').defaultValue) return salert('".LL('save_not_need')."',500);
@@ -434,7 +501,7 @@ majax('foto.php',{a:'save_file',file:'".h($file)."',text:idd('edit_text').value}
 idd('edit_text').defaultValue=idd('edit_text').value;
 };
 helpc('fotoset',\"<fieldset><legend>Edit: ".h($wwwhost.$file)."</legend><table><tr><td>"
-."<textarea style='width:\"+(getWinW()-100)+\"px;height:\"+(getWinH()-100)+\"px;' id='edit_text'>".h(njsn(file_get_contents($filehost.$file)))."</textarea>"
+."<textarea style='width:\"+(getWinW()-100)+\"px;height:\"+(getWinH()-100)+\"px;' id='edit_text'>".h(njsn($fs))."</textarea>"
 ."<br><input title='".LL('ctrl+Enter')."' type='button' value='".LL('Save+exit')."' onclick='save_and_close()'> <input title='".LL('shift+Enter')."' type='button' value='".LL('Save')."' onclick='save_no_close()'>"
 ."</td></tr></table></fieldset>\");
 idd('edit_text').focus();
@@ -445,7 +512,9 @@ setkey('tab','shift',function(){ti('edit_text','\\t{select}')},false);
 ");
 }
 
-if($a=='save_file'){ AD(); fileput($filehost.RE('file'),RE('text')); otprav("salert('".LL('saved')."',500)"); }
+if($a=='save_file'){ AD(); $s=RE('text'); $s=str_replace("\r",'',$s);
+$f=rpath($filehost.RE('file')); $o=''; if(!is_file($f)) $o.="treereload();";
+fileput($f,$s); otprav($o."salert('".LL('saved')."',500)"); }
 
 //=================================== editpanel ===================================================================
 if($a=='upload') {

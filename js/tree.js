@@ -25,9 +25,10 @@ function treeonLoaded(data,id) { var node=idd(id);
 
 function treeload(id) { treeshowLoading(true,id); majax('foto.php',{a:'albumgo',id:id}); }
 
-function treetoggleNode(node) { // заменить класс
+function treetoggleNode(node,r) { // заменить класс
 	treefolder=node.id;
-	var newClass=treehasClass(node,'ExpandOpen')?'ExpandClosed':'ExpandOpen';
+	if(typeof r == 'undefined') var newClass=treehasClass(node,'ExpandOpen')?'ExpandClosed':'ExpandOpen';
+	else var newClass='ExpandClosed';
 	node.className=node.className.replace(/(^|\s)(ExpandOpen|ExpandClosed)(\s|$)/,'$1'+newClass+'$3');
 //	zabil('albumdir',node.id);
 }

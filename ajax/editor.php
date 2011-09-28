@@ -227,6 +227,33 @@ otprav(	"
 ");
 
 }
+//=================================== editpanel ===================================================================
+if($a=='findreplace') { $id=RE('id');
+
+$js="
+var e=idd('$id'),ee=e.value.substring(e.selectionStart,e.selectionEnd);
+idd('findreplace_fro').value=ee; idd('findreplace_rep').value=ee; idd('findreplace_rep').focus();
+
+findreplace_view=function(i){
+	if(i!=idd('findreplace_c').checked) { zabil('findreplace_f','FIND:'); zabil('findreplace_t','REPLACE:'); }
+	else { zabil('findreplace_f','Find:'); zabil('findreplace_t','Replace:'); }
+};
+
+findreplace_go=function(){
+idd('$id').value=idd('$id').value.replace(new RegExp(idd('findreplace_fro').value,'g'+(idd('findreplace_c').checked?'i':'')),idd('findreplace_rep').value);
+clean('findreplace');
+};
+";
+
+
+	$s="<table border=0><tr><td id='findreplace_f' style='width:5em;'>Find:</td><td><input id='findreplace_fro' type='text' value='' size=50></td></tr>
+<tr><td id='findreplace_t'>Replace:</td><td><input id='findreplace_rep' type='text' value='' size=50></td></tr>
+<tr><td><input id='findreplace_c' onmouseover='findreplace_view(1)' onmouseout='findreplace_view(0)' title='Case sensitive' type='checkbox'></td>
+<td><input type='button' value='Go' onclick='findreplace_go()'></td></tr>
+</table>";
+	otprav("ohelpc('findreplace','Find/Replace',\"".njs($s)."\");".$js);
+}
+
 
 //=================================== editpanel ===================================================================
 if($a=='loadpanel') { $idhelp=$_REQUEST['idhelp'];
