@@ -105,9 +105,10 @@ function msq_table($pole) { // проверить, существует ли такая таблица
         return false;
 }
 
-function msq_index($tb,$index) { // проверить, существует ли такой индекс
+function msq_index($tb,$index) { // проверить, существует ли такой индекс (если указан еще ,0 - то первичный)
         $pp=ms("SHOW INDEX FROM $tb","_a",0); if($pp!==false) foreach($pp as $p)
-	if($p['Column_name']==$index && $p['Non_unique']=='1') return true; // [Seq_in_index] => 1
+//	if($p['Column_name']==$index && $p['Non_unique']=='1') return true; // [Seq_in_index] => 1
+	if($p['Column_name']==$index) return ($p['Key_name']=='PRIMARY'?1:true); 
 	return false;
 }
 

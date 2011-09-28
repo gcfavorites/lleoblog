@@ -118,7 +118,7 @@ i_find=function(id){
 			if(dir=='config.php:') v=v.replace(/^\\\$([^\s\=]+).*?$/g,'$1');
 		if(id==dir+v) return p[j];
 	}
-} alert('not find: `'+id+'`');
+} alert('not find: `'+id+'`'); return 0;
 };
 
 go_install=function(id){ var x,d,itit={iDEL:'del',iADD:'add new',iUPD:'update'};
@@ -359,7 +359,7 @@ if($a=='update_file') { // выбор файлов дл€ инсталл€ции
 		$s.=UPDATE_file($name,$f["tmp_name"]);
 	}
 	if($s!=1) die("ohelpc('file_install2','post',\"".njsn($s)."\");");
-	die("var s=inst_MAS_UPD.shift(); s=i_find(s); s.parentNode.removeChild(s); i_process();");
+	die("var s=inst_MAS_UPD.shift(); s=i_find(s); if(s!==0) s.parentNode.removeChild(s); i_process();");
 }
 
 
@@ -700,23 +700,23 @@ if($a=='install_update_NON') { // NON - пометить файлы отмеченные как
 	} else $s=array();
 	$s=array_merge($s,explode("\n",RE('d'))); // добавить новые
 	fileput($f,serialize($s));
-	return "for(var i in inst_MAS_NON){ var s=i_find(inst_MAS_NON[i]); s.parentNode.removeChild(s); } inst_MAS_NON=[]; i_process();";
+	return "for(var i in inst_MAS_NON){ var s=i_find(inst_MAS_NON[i]); if(s!==0) s.parentNode.removeChild(s); } inst_MAS_NON=[]; i_process();";
 }
 
 if($a=='install_update_DEL') { // DEL - удалить 1 файл
 	$file=html_entity_decode(RE('file'));
 		if(preg_match("/^(config\.php)\:([^\:\=]+)\=(.+?)$/s",$file,$m)) { config_del($m[2]);
-		return "var s=inst_MAS_DEL.shift(); s=i_find(s); s.parentNode.removeChild(s); i_process();";
+		return "var s=inst_MAS_DEL.shift(); s=i_find(s); if(s!==0) s.parentNode.removeChild(s); i_process();";
 		}
 	$f=$GLOBALS['filehost'].$file;
 	if(is_file($f)) { backupfile($f); unlink($f); } elseif(is_dir($f)) rmdir($f); else idie('Not found: '.h($f));
-	return "var s=inst_MAS_DEL.shift(); s=i_find(s); s.parentNode.removeChild(s); i_process();";
+	return "var s=inst_MAS_DEL.shift(); s=i_find(s); if(s!==0) s.parentNode.removeChild(s); i_process();";
 }
 
 if($a=='install_update_UPD') { // UPD - обновить 1 файл
 	$file=html_entity_decode(RE('file'));
 		if(preg_match("/^(config\.php)\:([^\:\=]+)\=(.+?)$/s",$file,$m)) { config_add($m[2],$m[3]);
-		return "var s=inst_MAS_UPD.shift(); s=i_find(s); s.parentNode.removeChild(s); i_process();";
+		return "var s=inst_MAS_UPD.shift(); s=i_find(s); if(s!==0) s.parentNode.removeChild(s); i_process();";
 		}
 	return "mijax('".getmatka()."/ajax/midule.php',{mod:'INSTALL',a:'install_update_far',url:'".$GLOBALS['httphost']."',key:'".createkey()."',file:'$file'})";
 }
@@ -897,7 +897,10 @@ function msq_add_pole($table,$pole,$s){ if(msq_pole($table,$pole)===false) msq("
 // удалить поле из таблицы
 function msq_del_pole($table,$pole){ if(msq_pole($table,$pole)!==false) msq("ALTER TABLE `".$table."` DROP `".$pole."`"); }
 // добавить »Ќƒ≈ — в таблицу
-function msq_add_index($table,$pole,$s){ if(msq_pole($table,$pole)!==false && !msq_index($table,$pole)) msq("ALTER TABLE `".$table."` ADD INDEX `".$pole."` ".$s); }
+function msq_add_index($table,$pole,$s){ if(msq_pole($table,$pole)!==false && !msq_index($table,$pole))
+msq("ALTER TABLE `".$table."` ADD INDEX `".$pole."` ".$s);
+// ALTER TABLE `site` ADD PRIMARY KEY(`name`)
+}
 // удалить »Ќƒ≈ — из таблицы
 function msq_del_index($table,$pole){ if(msq_index($table,$pole)) msq("ALTER TABLE `".$table."` DROP INDEX `".$pole."`"); }
 // создать таблицу

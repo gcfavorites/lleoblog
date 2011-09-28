@@ -70,7 +70,7 @@ return $t;
 
 // отправить в ответ просто файл
 
-function Exit_SendFILE($file,$s=false) {
+function Exit_SendFILE($file,$s=false,$r=1) {
 $mimetypes=array(
 	'jpg'=>'image/jpg',
 	'jpeg'=>'image/jpg',
@@ -87,7 +87,7 @@ $mimetypes=array(
 
 header('Content-Description: File Transfer');
 header('Content-Type: '.$mime);
-header('Content-Disposition: attachment; filename="'.basename($file).'"');
+if($r) header('Content-Disposition: attachment; filename="'.basename($file).'"');
 header('Content-Transfer-Encoding: binary');
 header('Expires: 0');
 header('Cache-Control: must-revalidate, post-check=0, pre-check=0');

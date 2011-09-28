@@ -60,10 +60,12 @@ $conf=array_merge(array(
 ),parse_e_conf($e));
 
 $name=e('read.ru:'.$conf['id']);
-$d=ms("SELECT `datetime`,`text` FROM `site` WHERE `name`='$name'","_1");
 
-if( $d===false && isset($GLOBALS['readru_api']) // если данных нет
-|| $GLOBALS['admin'] && (time()-strtotime($d['datetime'])>3*86400) // или не обновлялись по заходу админа 3 дня
+$p=ms("SELECT `text` FROM `site` WHERE `name`='".$name."'","_l");
+$R=array(); if($p!==false) array_merge($R,unserialize($p));
+
+if($p===false && isset($GLOBALS['readru_api']) // если данных нет
+|| (time()-$R['read_time']>3*86400) // или не обновлялись 3 дня
 || $GLOBALS['admin'] && isset($_GET['readru']) // или админ дал команду обновиться
 ) {
 	$s=file_get_contents(mpr('url',$conf));
@@ -74,8 +76,9 @@ if( $d===false && isset($GLOBALS['readru_api']) // если данных нет
 		else { $R[$l]=$m1[2]; $R[$l.'.id']=$m1[1]; }
 	}
 	if(!empty($R['supply_date'])) $R['supply_date']=date("Y-m-d",$R['supply_date']);
-	msq_add_update('site',array('name'=>$name,'text'=>e(serialize($R)),'datetime'=>date("Y-m-d h:i:s")),'name');
-} else { $R=array_merge(array(),unserialize($d['text'])); }
+	$R['read_time']=time();
+	msq_add_update('site',array('name'=>$name,'text'=>e(serialize($R))),'name');
+}
 
 if($d===false || !sizeof($R) || isset($R['errors'])) 
 return "<div class=br><s><a href='".mpr('url',$conf)."'>".$conf['id']."</a></s></div>";

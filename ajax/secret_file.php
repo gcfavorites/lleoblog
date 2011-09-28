@@ -15,6 +15,8 @@ $file=$_GET['file'];
 
 if( $_GET['o'] != md5($hashinput.$_SERVER['REMOTE_ADDR'].$_SERVER['HTTP_USER_AGENT'].$file) ) die('Error 404: ахуюшки');
 
-Exit_SendFILE(realpath($filehost.$file));
+function getras($s){ $r=explode('.',$s); if(sizeof($r)==1) return ''; return strtolower(array_pop($r)); }
+
+Exit_SendFILE(realpath($filehost.$file),false,0);
 
 ?>

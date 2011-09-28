@@ -86,7 +86,7 @@ if(preg_match("/^".$pwwwhost."(\d\d\d\d\/\d\d)$/si", $path, $m)) ARTICLE_Date($m
 
 
 //  орень => ѕоследн€€ заметка ???
-if($path."/" == $wwwhost) {
+if($path."/"==$wwwhost && empty($_SERVER['QUERY_STRING'])) {
  	// Yandex заебал индексировать титул блога! ќн же мен€етс€ все врем€! Ѕл€ть, дл€ кого robots.txt был написан?!
  	if(($rootpage=='' || strstr($rootpage,'last')) && (strstr($BRO,'Yandex') || $IP=='78.110.50.100')) {
  	logi("yandex_nah.log","\n".date("Y/m/d H:i:s")." Yandex пошел нахуй");
@@ -110,7 +110,7 @@ if($path."/" == $wwwhost) {
 
 	$last=ms("SELECT `Date` FROM `dnevnik_zapisi` ".WHERE("`DateDatetime`!=0")." ORDER BY `Date` DESC LIMIT 1","_l");
 	if($last=='') {
-	if(!msq_table('site') and !msq_table('dnevnik_zapisi')) redirect($httphost."admin",302); // в админку, если по первому разу
+	if(/*!msq_table('site') and */!msq_table('dnevnik_zapisi')) redirect($httphost."admin",302); // в админку, если по первому разу
 	redirect($httphost."editor",302); // в редактор, если записей нет
 	} redirect($httphost.$last.".html",302); // на последнюю
 	/*
@@ -126,10 +126,6 @@ if($path."/" == $wwwhost) {
 
 }
 
-// —тарый стиль именовани€
-if(preg_match("/^".$pwwwhost."(\d\d\d\d)\-(\d\d)\-(\d\d)\.shtml/", $path, $m)) redirect($httphost.$m[1]."/".$m[2]."/".$m[3].".html");
-
-
 
 
 // ===== подключение внешних модулей из директории /module/* ====
@@ -143,8 +139,8 @@ $mod_name=substr($path,strlen($wwwhost)); $mod_name=str_replace('..','.',$mod_na
 $mod=$host_module.$mod_name.".php"; if(file_exists($mod)) { include($mod); exit; }
 
 // затем в базе site
-$text=ms("SELECT `text` FROM `site` ".WHERE("`name`='".e($mod_name)."' AND `type`='page'"),"_l",$ttl);
-if($text!='') { $name=$mod_name; include("site.php"); exit; }
+//$text=ms("SELECT `text` FROM `site` ".WHERE("`name`='".e($mod_name)."' AND `type`='page'"),"_l",$ttl);
+//if($text!='') { $name=$mod_name; include("site.php"); exit; }
 
 // затем в базе дневника
 $article=ms("SELECT * FROM `dnevnik_zapisi` ".WHERE("`Date`='".e($mod_name)."'
@@ -156,10 +152,20 @@ OR `Date`='".e($mod_name)."/index.html'
 	ARTICLE();
 }
 
+// или в таблице редиректов, пример:
+// ?p=171 2011/04/21.html
+// ?page_jopa=666 2011/08/16.html
+
+if(($p=ms("SELECT `text` FROM `site` WHERE `name`='redirect'","_l",$ttl*10))!==false) {
+        if($mod_name=='') $mod_name='?'.$_SERVER['QUERY_STRING'];
+        $e=explode("\n",$p);
+        foreach($e as $p) { list($a,$b)=explode(' ',$p,2); $b=trim($b);
+                if(strstr($a,'/') && preg_match($a,$mod_name) || $a==$mod_name) redirect($httphost.($b=='/'?'':$b));
+        }
+}
 
 // и если совсем ничего не нашлось
 if(preg_match("/\.js/si",$mod_name)) die( ($admin?"alert('Admin $admin_name! Script not found:\\n".h($mypage)."')":"") ); // запрошен .js
-
 
 header("HTTP/1.1 404 Not Found");
 header("Status: 404 Not Found");

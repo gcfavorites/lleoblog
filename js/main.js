@@ -103,7 +103,7 @@ function isHelps(){ var c=0; for(var k in mHelps) c++; return c?k:false; }
 function print_r(a) { var s=''; for(var k in a) { var v=a[k]; s='\n'+k+'='+v+s; } return s; }
 function in_array(s,a){ var l; for(l in a) if(a[l]==s) return l; return false; }
 
-function clean(id) {
+function clean(id) { if(typeof id == 'object') return id.parentNode.removeChild(id);
 if(typeof mHelps[id]!='undefined'){ hotkey=cpmas(mHelps[id]); delete(mHelps[id]); }
 if(isHelps()==false) hotkey_reset();
 if(idd(id)) { zakryl(id); setTimeout("var s=idd('"+id+"'); if(s) s.parentNode.removeChild(s);", 40); }
@@ -177,12 +177,12 @@ else {
 }
 
 // создать новый <DIV class='cls' id='id'>s</div> в элементе paren (если не указан - то просто в документе)
-// есть указан relative - то следующим за relative, инае - просто последним
-function mkdiv(id,s,cls,paren,relative){ if(idd(id)) { idd(id).innerHTML=s; idd(id).className=cls; return; }
+// есть указан relative - то следующим за relative, иначе - просто последним
+function mkdiv(id,s,cls,paren,relative){ if(idd(id)) { zabil(id,s); idd(id).className=cls; return; }
         var div=document.createElement('DIV'); div.className=cls; div.id=id; div.innerHTML=s; div.style.display='none';
         if(paren==undefined) paren=document.body;
-	var r = relative==undefined ? 0 : relative.nextSibling; // paren.lastChild
-	if(r) paren.insertBefore(div,r); else paren.appendChild(div);
+	if(typeof relative=='undefined') paren.appendChild(div); // paren.lastChild
+	else paren.insertBefore(div,relative.nextSibling);
 }
 
 function posdiv(id,x,y) { // позиционирование с проверкой на вылет, если аргумент '-1' - по центру экрана
@@ -348,18 +348,18 @@ function getDocW(){ return document.compatMode!='CSS1Compat' ? document.body.scr
 
 
 // --- процедуры pins ---
-function insert_n(e) { var v = e.value;
-var t1 = v.substring(0,e.selectionStart); // текст перед
-var t2 = v.substring(e.selectionEnd,v.length); // текст после
+function insert_n(e) { var v=e.value;
+var t1=v.substring(0,e.selectionStart); // текст перед
+var t2=v.substring(e.selectionEnd,v.length); // текст после
 var pp=GetCaretPosition(e);
 e.value=t1.replace(/\s+$/,'') + "\n" + t2.replace(/^\s+/,'');
-setCaretPosition(e, pp);
+setCaretPosition(e,pp);
 }
 
 function ti(id,tmpl) {
 var e=idd(id); var v=e.value; var ss=e.selectionStart; var es=e.selectionEnd;
 var s=tmpl.replace(/\{select\}/g,v.substring(ss,es));
-GetCaretPosition(e); e.value = v.substring(0,ss)+s+v.substring(es,v.length); setCaretPosition(e,ss+s.length);
+GetCaretPosition(e); e.value=v.substring(0,ss)+s+v.substring(es,v.length); setCaretPosition(e,ss+s.length);
 e.selectionStart=ss; e.selectionEnd=ss+s.length;
 }
 
@@ -450,14 +450,27 @@ function bigfoto(i,p){ var Z=(typeof p == 'undefined');
 	ajaxoff();
 	if(Z) var tt="<div id='bigfostr' class=br>"+n+"</div>"; else {
 		var g=i; while(idd('bigfot'+p+'_'+g)) g++;
-		var tt=(g>1?"<span id='bigfotn' onclick='fotos_prev()' title='&lt;--предыдущая'>"+(i+1)+"</span> / <span onclick='fotos_next()' title='следующая-&gt;'>"+g+"</span>":'')+(idd('bigfott'+p+'_'+i)?"&nbsp; &nbsp; <div style='display:inline' title='предыдущая/следующая: стрелки клавиатуры' id='bigfottxt'>"+vzyal('bigfott'+p+'_'+i)+'</div>':'');
-		if(tt!='') tt="<div id='bigfostr' class=br"+(admin?" onclick=\"majax('editor.php',{a:'bigfotoedit',num:"+vzyal('bigfotnum'+p)+",i:"+i+",p:"+p+"})\"":"")+">"+tt+"</div>";
+		var tt=(g>1?(i+1)+" / "+g:'')+(idd('bigfott'+p+'_'+i)?"&nbsp; &nbsp; <div style='display:inline;' title='предыдущая/следующая: стрелки клавиатуры' id='bigfottxt'>"+vzyal('bigfott'+p+'_'+i)+'</div>':'');
+		if(tt!=''||admin) tt="<div id='bigfostr' class=r"+(admin?" title='Admin, click to edit!'  onclick=\"majax('editor.php',{a:'bigfotoedit',num:"+vzyal('bigfotnum'+p)+",i:"+i+",p:"+p+"})\"":"")+">"+tt+"</div>";
 	}
-	helps('bigfoto',"<img id='bigfotoimg' src='"+BigImgMas[n].src+"' onclick=\"clean('bigfoto')\">"+tt,1);
+	var navl="<div id='bigfotol' style='position:absolute;top:0px;left:0px;'"+((!i)?'>':" title='prev' onclick='bigfoto(bigtoti-1,bigtotp)' onmouseover=\"otkryl('bigfotoli')\" onmouseout=\"zakryl('bigfotoli')\"><img id='bigfotoli' style='position:absolute;top:0px;left:3px;display:none;' src='"+www_design+"img/DiKiJ_l.png'>")+"</div>";
+	var navr="<div id='bigfotor' style='position:absolute;top:0px;right:0px;'"+((g==i+1)?'>':" title='next' onclick='bigfoto(bigtoti+1,bigtotp)' onmouseover=\"otkryl('bigfotori')\" onmouseout=\"zakryl('bigfotori')\"><img id='bigfotori' style='position:absolute;right:3px;display:none;' src='"+www_design+"img/DiKiJ_r.png'>")+"</div>";
+
+	helps('bigfoto',"<div style='position: relative'>"+navl+"<img id='bigfotoimg' src='"+BigImgMas[n].src+"' onclick=\"clean('bigfoto')\">"+navr+"</div>"+tt,1);
+
+//<img src='"+www_design+"lj/btn_prev.gif'></div>
+// <img src='"+www_design+"lj/btn_prev.gif'>
+
 	var w=BigImgMas[n].width,h=BigImgMas[n].height,e=idd('bigfotoimg');
 	var H=(getWinH()-20); if(h>H && H>480) { w=w*(H/h); h=H; e.style.height=H+'px'; }
 	var W=(getWinW()-50); if(w>W && W>640) { h=h*(W/w); w=W; e.style.width=W+'px'; }
 	if(idd('bigfostr')) idd('bigfostr').style.width=w+'px';
+
+	idd('bigfotol').style.width=idd('bigfotor').style.width=w/4+'px';
+	idd('bigfotol').style.height=idd('bigfotor').style.height=h+'px'; 
+	if(idd('bigfotoli')) idd('bigfotoli').style.top=(h-16)/2+'px';
+	if(idd('bigfotori')) idd('bigfotori').style.top=(h-16)/2+'px';
+
 	posdiv('bigfoto',-1,-1);
 	if(!Z) {
 		setkey(['left','4'],'',function(){bigfoto(bigtoti-1,bigtotp)},false);
@@ -697,3 +710,9 @@ function postToIframe(ara,url,iframeID){
     phonyForm.submit();
 }
 // ----------
+function h(s){   // Convert all applicable characters to HTML entities
+        var div=document.createElement('div');
+        var text=document.createTextNode(s);
+        div.appendChild(text);
+        return div.innerHTML;
+}

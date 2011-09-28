@@ -35,13 +35,36 @@
 .rul1,.rul0,.cplu,.cmin,.kmail {float:left}
 
 .c0, .c1, .c2, .c3 { font: 80% sans-serif, Helvetica, Arial, Verdana; max-width: 80%; border: 1px solid #bbb;
--box-shadow: #888 5px 5px 5px;
+
+/* “ени */
+box-shadow: #888 5px 5px 5px;
+/* Firefox до версии 4.0 */
 -moz-box-shadow: #888 5px 5px 5px;
+/* Safari и Chrome */
 -webkit-box-shadow: #888 5px 5px 5px;
--border-radius-topleft:0.8em;-moz-border-radius-topleft:0.8em;-webkit-border-radius-topleft:0.8em;
--border-radius-topright:0.8em;-moz-border-radius-topright:0.8em;-webkit-border-radius-topright:0.8em;
--border-radius-bottomleft:0.8em;-moz-border-radius-bottomleft:0.8em;-webkit-border-radius-bottomleft:0.8em;
--border-radius-bottomright:0.8em;-moz-border-radius-bottomright:0.8em;-webkit-border-radius-bottomright:0.8em;
+/* IE */
+filter: progid:DXImageTransform.Microsoft.shadow(direction=120, color=#888888, strength=10);
+
+/* общий стандарт */
+border-top-left-radius: 0.8em;
+border-top-right-radius: 0.8em;
+border-bottom-left-radius: 0.8em;
+border-bottom-right-radius: 0.8em;
+
+/* Firefox до версии 4.0 */
+-moz-border-radius-topleft:0.8em;
+-moz-border-radius-topright:0.8em;
+-moz-border-radius-bottomleft:0.8em;
+-moz-border-radius-bottomright:0.8em;
+
+/* Safari до версии 5.0, Chrome */
+-webkit-border-bottom-left-radius:0.8em;
+-webkit-border-bottom-right-radius:0.8em;
+-webkit-border-top-right-radius:0.8em;
+-webkit-border-top-left-radius:0.8em;
+
+
+
 overflow: auto; padding: 0.4em 0.4em 0.4em 0.4em; margin: 0.4em 0 0 0.4em; }
 
 .c0 { background-color: #AAFAFA; }

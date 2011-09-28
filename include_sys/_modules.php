@@ -78,7 +78,8 @@ function module($t) { $s=$t[1]; // подцепить модули
         }
 
         // иначе - просто вынуть из базы
-        $p=ms("SELECT `id`,`text`,`type` FROM `".$GLOBALS['db_site']."` WHERE `name`='".e($s)."'","_1",$ttl);
+        $o=ms("SELECT `text` FROM `".$GLOBALS['db_site']."` WHERE `name`='".e($s)."'","_l");
+/*
         $o=$p['text'];
 
         if($p['type']=='news') { // для новостей - своя текстовая обработка
@@ -87,6 +88,7 @@ function module($t) { $s=$t[1]; // подцепить модули
                 $o=preg_replace("/([\s>]+)\-([\s<]+)/si","$1".chr(151)."$2",$o); // длинное тире
                 $o="<div id='".$p['id']."'>".$o."</div>";
         }
+*/
 
         if(preg_replace("/\{_(SCRIPT\:|STYLE\:|SCRIPT_ADD\:|STYLE_ADD\:).*?_\}/si",'',c($o))=='') return '';
         return "<!--".$p['id']."-->".$o."<!--/".$p['id']."-->";
@@ -94,6 +96,6 @@ function module($t) { $s=$t[1]; // подцепить модули
 
 function SCRIPT($s) { list($n,$s)=explode(':',$s,2); $GLOBALS['_SCRIPT'][c($n)]=addm(c($s)); return ''; }
 function STYLE($s) { list($n,$s)=explode(':',$s,2); $GLOBALS['_STYLE'][c($n)]=addm(c($s)); return ''; }
-function addm($e) { return (strstr($e,"\n")?$e:ms("SELECT `text` FROM `".$GLOBALS['db_site']."` WHERE `name`='".e($e)."'","_1",$ttl)); }
+function addm($e) { return (strstr($e,"\n")?$e:ms("SELECT `text` FROM `".$GLOBALS['db_site']."` WHERE `name`='".e($e)."'","_l")); }
 
 ?>
