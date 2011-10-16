@@ -78,9 +78,8 @@ treeiconm=function(){ if(treeicon>10) treeicon-=10; treeallimgicon(treeicon); };
 /* clickdel=function(){ var s=''; for(var i in treeselected) s='\\n'+i+' ('+treeselected[i]+')'+s; alert(s);}; */
 
 treefinish=function(){ var a='',b='';
-	for(var i in treeselected)
-		if(treeselected[i]=='img') a=a+'\\n{_FOTOM: '+wwwhost+i+' _}';
-		else b=b+'\\n'+wwwhost+i;
+	for(var i in treeselected){ if(treeselected[i]=='img') a=a+'\\n'+wwwhost+i; else b=b+'\\n'+wwwhost+i; }
+	if(a!='') a='{_FOTOS: WIDTH=120\\nmode=fotom'+a+'\\n_}';
 	var s=a+b;
 	if(s.length){ f5_save('clipboard_text',s); f5_save('clipboard_mode','plain'); }
 	clean('fotoalbum');

@@ -5,9 +5,6 @@ require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpReque
 if(isset($_REQUEST['onload'])) otprav(''); // все дальнейшие опции будут запрещены для GET-запроса
 include $include_sys."_autorize.php"; // сперва JsHttpRequest, затем autorize
 
-$autosave_com_count = 100; // через сколько нажатий кнопки автозапись
-$time_edit_sec = 15*60;
-
 // if($admin) idie('отладочная ошибка - сейчас все заработает снова!');
 
 $erorrs=array();
@@ -186,7 +183,7 @@ if($a=='edit') { // id редактировать комментарий
 
 	if(!$admin) { // разрешено ли редактировать?
 		if($unic != $p['unic']) idie('Comments:not_own');
-		if(time()-$p['Time'] > $time_edit_sec) idie("Редактировать можно только в течение 15 минут.");
+		if($comment_time_edit_sec && (time()-$p['Time'] > $comment_time_edit_sec)) idie("Редактировать можно только в течение ".floor($comment_time_edit_sec/60)." минут.");
 		if(ms("SELECT COUNT(*) FROM `dnevnik_comm` WHERE `Parent`=$id","_l",0)) idie("Редактировать нельзя - уже есть ответы.");
 	}
 
@@ -195,13 +192,14 @@ $s="<form name='sendcomment_".$comnu."' onsubmit='cmsend_edit(this,".$comnu.",".
 <div><input title='Ctrl+Enter' id='editcomsend_".$comnu."' type=submit value='send'></div>
 </form>";
 
-if(!$admin){
-	$delta=$time_edit_sec-(time()-$p['Time']); $dmin=date("i",$delta); $dsec=date("s",$delta);
+if($comment_time_edit_sec && !$admin){
+	$delta=$comment_time_edit_sec-(time()-$p['Time']); $dmin=date("i",$delta); $dsec=date("s",$delta);
 	$o.="
 var comm_red_timeout=function(id,n){ if(!idd('editcomsend_'+id)) return;
         if(!n) { idd('textarea_'+id).style.color='#AAAAAA'; return zakryl('editcomsend_'+id); }
         var N=new Date(); N.setTime(n*1000);
-        idd('editcomsend_'+id).value='Send before: '+N.getMinutes()+':'+N.getSeconds();
+	var sec=N.getSeconds(); if(sec<10) sec='0'+sec;
+        idd('editcomsend_'+id).value='Send before: '+N.getMinutes()+':'+sec;
         setTimeout('comm_red_timeout('+id+','+(--n)+')',1000);
 }; comm_red_timeout(".$comnu.",".($dmin*60+$dsec-5).");";
 } else $o='';
@@ -428,7 +426,7 @@ $s.="<div id='".$idhelp."p' style='display:inline; margin-left: 3px; vertical-al
 
 //var keydownccount=0;
 //keydowncom=function(s){ fc_save('comment',s);
-//if(++keydownccount > ".$autosave_com_count."){ keydownccount=0; majax('comment.php',{a:'autosave',text:s}); }};
+//if(++keydownccount > ".$comment_autosave_count."){ keydownccount=0; majax('comment.php',{a:'autosave',text:s}); }};
 
 otprav("
 
@@ -558,13 +556,13 @@ $s="<form name='sendcomment_".$comnu."' onsubmit='cmsend_edit(this,".$comnu.",".
 </form>";
 
 //$s="comnum++; helps('".$idhelp."',\"<fieldset id='commentform_".$comnu."'><legend>"
-//.($admin?h($p['Name']):"редактирование, осталось <span id='tiktik_".$comnu."'>".(date("i:s",$time_edit_sec-(time()-$p['Time'])))."</span> секунд")
+//.($admin?h($p['Name']):"редактирование, осталось <span id='tiktik_".$comnu."'>".(date("i:s",$comment_time_edit_sec-(time()-$p['Time'])))."</span> секунд")
 //."</legend>".$s."</fieldset>\"); idd('textarea_".$comnu."').focus();";
 
 
 //var keydownccount=0;
 //keydowncom=function(s){ fc_save('comment',s);
-//if(++keydownccount > ".$autosave_com_count."){ keydownccount=0; majax('comment.php',{a:'autosave',text:s}); }};
+//if(++keydownccount > ".$comment_autosave_count."){ keydownccount=0; majax('comment.php',{a:'autosave',text:s}); }};
 
 //otprav_sb('commentform.js',$s);
 

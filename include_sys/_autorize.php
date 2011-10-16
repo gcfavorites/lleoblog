@@ -1,8 +1,5 @@
 <?php
 
-
-
-
 // йбаный PHP
 // php_flag register_globals off
 // if(function_exists('ini_get')&&(ini_get('register_globals')==false)&&(PHP_VERSION<4.3))
@@ -43,17 +40,6 @@ function rpath($l) { // $p=array_filter(explode(DIRECTORY_SEPARATOR,$l),'strlen'
   return implode('/',$a);
 }
 
-/*
-function LL($n,$ara=0){ global $mylang,$langbasa;
-	if(!isset($langbasa)) $langbasa=file($GLOBALS['filehost'].'/module/lang/'.(isset($mylang)?$mylang:'ru').'.txt');
-	$s=$langbasa[$n];
-	if($ara!==0) foreach($ara as $n=>$l) {
-		$s=str_replace('{'.$n.'}',$l,$s);
-		if(strstr($s,'{'.$n.'?')) { $k="\\".($l?'1':'2'); $s=preg_replace("/\{".$n."\?([^|]*)\|([^}]*)\}/s",$k,$s); }
-	}
-	return $s;
-}
-*/
 //========================================================================================
 $jaajax=strstr($_SERVER['REQUEST_URI'],'/ajax/')?1:0;
 
@@ -70,7 +56,18 @@ ini_set("display_errors","1"); ini_set("display_startup_errors","1"); ini_set('e
 
 
 
-// if(!$admin) die("На ремонте, извините.");
+
+
+#if(!$admin) die("На ремонте, извините.");
+
+
+
+
+
+
+
+
+
 
 $podzamok = ($admin?true:false);
 $aharu = (strstr($_SERVER["HTTP_HOST"],'lleo.aha.ru')?true:false);
@@ -257,7 +254,7 @@ function onPostPage($buffer) { global $_PAGE,$_SCRIPT,$_SCRIPT_ADD,$_STYLE,$_HEA
 }
 
 function redirect($path='/',$code=301) {
-	if($GLOBALS['ajax']) otprav("window.location='$path';");
+	if(isset($GLOBALS['ajax'])&&$GLOBALS['ajax']) otprav("window.location='$path';");
         if(!headers_sent()) {
                 header("HTTP/1.1 301 Moved Permanently");
                 header("Location: ".$path,TRUE,$code); // навсегда: 301
@@ -425,6 +422,7 @@ function LLoad($lang) { global $langbasa;
 	}
 }
 
+// LL('tufta','123') //tufta	Привет, номер {1}!
 function LL($n,$ara=false){ global $mylang,$langbasa; if(!isset($langbasa)) LLoad(isset($mylang)?$mylang:'ru');
         $s=$langbasa[$n]; if($ara===false) return $s;
 	if(gettype($ara)!='array') $ara=array($ara);

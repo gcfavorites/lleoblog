@@ -127,7 +127,7 @@ function comment_prep($p,$mojno_comm,$level) { global $admin,$unic,$podzamok,$ge
 	$c['unic']=$p['unic'];
 
 // ---- город и страна ----
-	list($gorod,$strana)=explode("\001",$p['whois'],2);
+	list($gorod,$strana)=(strstr($p['whois'],"\001")?explode("\001",$p['whois'],2):array('',''));
 	$c['whois'] = ($strana?search_podsveti(hh($strana)):'').($gorod?($strana?", ":'').search_podsveti(hh($gorod)):'');
 
 // ---- время ----
@@ -148,7 +148,12 @@ function comment_prep($p,$mojno_comm,$level) { global $admin,$unic,$podzamok,$ge
 
 //	$c['kn'] .= "<div class=kus onclick='kus(".$p['unic'].")'></div>"; // показать личную карточку автора
 
-if($admin or ($unic==$p['unic'] and time()-$p['Time'] < 15*60)) $c['kn'] .= "<div class=ked onclick='ked(this)'></div>"; // редактировать комментарий
+if($admin // если админ
+or ($unic==$p['unic'] and ( // или это твой (посетителя) комментарий, и ...
+	!$GLOBALS['comment_time_edit_sec'] or // комментарии разрешено редактировать вечно, или ...
+	time()-$p['Time'] < $GLOBALS['comment_time_edit_sec'] // время на редактирование не кончилось
+	)
+)) $c['kn'] .= "<div class=ked onclick='ked(this)'></div>"; // то тогда вывести опцию "редактировать комментарий"
 
 if( $GLOBALS['comment_friend_scr'] && $podzamok || $admin ) {
 	$c['kn'] .= "<div class=ks".intval($p['scr'])." onclick='ksc(this)'></div>"; // скрыть/раскрыть
@@ -161,9 +166,9 @@ $c['karma'] = ($podzamok ? "<div class=kr>".zamok($p['admin']).($p['capchakarma'
 if($admin || ($GLOBALS['del_user_comments'] && $unic==$p['unic'])) $c['kn'] .= "<div class=kd onclick='kd(this)'></div>"; // удалить комментарий
 
 if($admin) {
-	$c['rul'] .= "<div class=rul".intval($p['rul'])." onclick='rul(this)'></div>"; // особая отметка
+	$c['rul'] = "<div class=rul".intval($p['rul'])." onclick='rul(this)'></div>"; // особая отметка
 } else {
-	$c['rul'] .= ''; // особая отметка
+	$c['rul'] = ''; // особая отметка
 }
 
 
@@ -324,7 +329,7 @@ function vseprint_comm($id,$level,$l) { global $comc,$comindex,$kstop; if(!isset
 }
 //====================================================================
 
-function search_podsveti($a) { if($_GET['search']=='') return $a;
+function search_podsveti($a) { if(empty($_GET['search'])) return $a;
 	$a=preg_replace_callback("/>([^<]+)</si","search_p",'>'.$a.'<');
 	$a=ltrim($a,'>'); $a=rtrim($a,'<');
 	return $a;

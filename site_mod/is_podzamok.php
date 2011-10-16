@@ -8,7 +8,7 @@
 */
 
 function is_podzamok($e) { 
-        list($a,$b)=explode('|',$e,2);
+        list($a,$b)=(strstr($e,'|')?explode('|',$e,2):array($e,''));
 	if(!$GLOBALS['podzamok']) return c($b);
 
 	$a=c($a);

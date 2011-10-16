@@ -60,4 +60,5 @@ return mper($conf['text'].(( ($GLOBALS['admin'] and $GLOBALS['YANDEXCOUNT_admint
 ));
 
 }
+
 ?>

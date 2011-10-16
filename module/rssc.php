@@ -66,6 +66,7 @@ $s .= "\n<item>
 
 $s .= "\n</channel>\n\n</rss>\n";
 
+ob_end_clean();
 die($s);
 // die($s1.date("r",$lastupdate).$s);
 

@@ -96,13 +96,24 @@ helpc('okno',\"<fieldset><legend>Edit fileld `".h($pole)."` in `".h($table)."`</
 		if(msq_table($table)) idie("Error: `$table` exist!");
 		$s=parse_msqtxt($GLOBALS['msq_txt'],$table);
 		msq($s); if($msqe!='') idie("Error:<p>$msqe");
-		otprav("salert('created',800); clean('msqmktb_$table')");
+
+		otprav("salert('created ".$table."',1000);
+zabil('msqmktb_$table',\"".njsn(parse_mytables($table))."\");
+/*zabil('_msq_nevbaze_ost_',\"".njsn(parse_mytables('_msq_nevbaze_ost_'))."\");*/
+");
+
+
 	}
 
 	if($a=='delete_table') {
 		if(!msq_table($table)) idie("Error: `$table` not exist!");
 		msq_del_table($table); if($msqe!='') idie("Error:<p>$msqe");
-		otprav("salert('deleted',1000);clean('msqmktb_$table');");
+//		otprav("salert('deleted',1000);clean('msqmktb_$table');");
+		otprav("salert('deleted ".$table."',8000);
+zabil('msqmktb_$table',\"".njsn(parse_mytables($table))."\");
+/*zabil('_msq_nevbaze_ost_',\"".njsn(parse_mytables('_msq_nevbaze_ost_'))."\");*/
+");
+
 	}
 
 	if($a=='backup_table') { $table2=$table.'_old';
@@ -206,11 +217,11 @@ function parse_mytables($ta='') { $o=''; $i="<img src='".$GLOBALS['www_design'].
 		//	if(isset($rr[$tab.'_old'])) unset($rr[$tab.'_old']);
 		}
 
-		if($ta=='_msq_nevbaze_ost_') continue;
+		if($ta=='_msq_nevbaze_ost_') { $o.='</div>'; continue; }
 
 		if(!msq_table($tab)) { $o.="<input style='color:red;text-decoration:bold:font-size:10px;padding:10px;' type='button' value='Create_Table'"
 ." onclick=\"majax('module.php',{mod:'INSTALL',a:'do',module:'".RE('module')."',act:'create_table',table:'$tab'})\""
-.">$i/expand_plus.gif' id='msqPlus_".h($tab)."'> <b><big>`$tab`</big></b>"; if($ta!='') return $o; continue; } // создать
+.">$i/expand_plus.gif' id='msqPlus_".h($tab)."'> <b><big>`$tab`</big></b>"; if($ta!='') return $o; $o.='</div>'; continue; } // создать
 
 		$g=''; $arr_ok=$arr_del=$arr_add=$arr_change=array();
 
@@ -274,7 +285,7 @@ $o.="<div>
 .(sizeof($arr_ok)?" onclick=\"tudasuda('msqtok_".h($tab)."'); var e=idd('msqplus_".h($tab)."').src;idd('msqplus_".h($tab)."').src=(e.indexOf('plus.gif')<0?e.replace(/minus\\.gif/g,'plus.gif'):e.replace(/plus\\.gif/g,'minus.gif'))\"":'').">$i/expand_plus.gif' id='msqplus_".h($tab)."'>".h($tab)
 ." (".ms("SELECT COUNT(*) FROM `".e($tab)."`","_l").")</span>" // число элементов
 ." $i/redo.png' id='msqBackup_$tab'"
-." onclick=\"if(confirm('Backup $tab to ".$tab."_old?'))majax('module.php',{mod:'INSTALL',a:'do',module:'".RE('module')."',act:'backup_table',table:'$tab',id:this.id})\""
+." onclick=\"/*if(confirm('Backup $tab to ".$tab."_old?'))*/majax('module.php',{mod:'INSTALL',a:'do',module:'".RE('module')."',act:'backup_table',table:'$tab',id:this.id})\""
 ." alt='Backup Table'>"
 ." $i/remove.png'"
 ." onclick=\"if(confirm('Delete $tab?'))if(confirm('Really delete `$tab`?!'))majax('module.php',{mod:'INSTALL',a:'do',module:'".RE('module')."',act:'delete_table',table:'$tab'})\""

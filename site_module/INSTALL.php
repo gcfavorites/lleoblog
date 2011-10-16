@@ -147,7 +147,8 @@ i_process=function(){
 ";
 
 function UPDATE_file($name,$temp) {
-	$f=realpath($GLOBALS['filehost'].$name);
+
+	$f=rpath($GLOBALS['filehost'].$name);
 	if(is_vetofile($name)) return "Disabled file: ".h($name); // veto?
 	backupfile($f); // забэкапить старый файл
 	testdir(dirname($f)); // создать папки, если надо

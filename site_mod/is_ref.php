@@ -7,7 +7,8 @@
 */
 
 function is_ref($e) { 
-	list($ref,$e)=explode(' ',$e,2); list($a,$b)=explode('|',$e,2);
+	list($ref,$e)=explode(' ',$e,2);
+        list($a,$b)=(strstr($e,'|')?explode('|',$e,2):array($e,''));
 	return ( strstr($_SERVER['HTTP_REFERER'],c($ref)) ? c($a) : c($b));
 }
 

@@ -2,14 +2,13 @@
 
 function refferer($ref,$DateID) { global $IPNUM,$unic;
 
-if(!$unic || 0!=ms("SELECT COUNT(*) FROM `dnevnik_posetil` WHERE `unic`='$unic' AND `url`='$DateID'","_l",0)) return false;
+if(!$unic || 0!=ms("SELECT COUNT(*) FROM `dnevnik_posetil` WHERE `unic`='$unic' AND `url`='$DateID'","_l")) return false;
 
 	if(striplink($ref)) return false;
 
 	$u=poiskovik($ref);
 
 if($u[0]!="") { // если поиск - дополнить базу `dnevnik_search`
-	if($GLOBALS['admin']) idie($ref);
 	$n=intval(ms("SELECT `n` FROM `dnevnik_search` WHERE `DateID`='$DateID' AND `search`='".e($u[0])."'","_l",0));
 	if($n) ms("UPDATE `dnevnik_search` SET count=count+1 WHERE `n`='$n'","_l",0); // + счетчик
 	else msq_add("dnevnik_search",array("DateID"=>$DateID,"poiskovik"=>e($u[1]),"search"=>e($u[0]),"link"=>e($ref),"count"=>1));

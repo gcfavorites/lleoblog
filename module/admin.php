@@ -31,7 +31,7 @@ if($admin) { $admin_upgrade=0; $tab=$upg=$poh='';
 	} else $log='';
 	$o.=$log.$upg.$tab.$poh;
 } else {
-	install_module_name('install','INSTALL');
+//	install_module_name('install','INSTALL');
 	$o.=$log;
 }
 
@@ -41,6 +41,7 @@ die($o."</form></center>");
 
 //======================================================================================
 // Проинсталлировать модули
+/*
 function install_module_name($page,$module) {
 
 $namepage=ms("SELECT `Body` FROM `dnevnik_zapisi` WHERE `Date`='".e($page)."'","_l");
@@ -67,6 +68,7 @@ else msq_update('dnevnik_zapisi',$ara,"WHERE `Date`='".e($page)."'");
 
 $GLOBALS['o'].='Page_added: /install';
 }
+*/
 
 // модули апгрейдов
 function admin_upgrade() { global $PEST,$host_module,$admin,$mypage,$skip,$msqe,$admin_upgrade;	$s='';

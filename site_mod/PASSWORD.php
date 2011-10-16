@@ -19,4 +19,5 @@ function PASSWORD($e) { list($pass,$e)=explode("\n",$e,2);
 ";
 
 }
+
 ?>

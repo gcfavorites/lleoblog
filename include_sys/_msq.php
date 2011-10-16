@@ -96,6 +96,7 @@ function msq($s) { global $msqe;
 }
 
 function msq_pole($tb,$pole) { // проверить, существует ли такое поле в таблице $tb
+	if(!msq_table($tb)) return false;
         $pp=ms("SHOW COLUMNS FROM ".e($tb)."","_a",0); foreach($pp as $p) if($p['Field']==$pole) return $p['Type'];
 	return false;
 }
@@ -106,6 +107,7 @@ function msq_table($pole) { // проверить, существует ли такая таблица
 }
 
 function msq_index($tb,$index) { // проверить, существует ли такой индекс (если указан еще ,0 - то первичный)
+	if(!msq_table($tb)) return false;
         $pp=ms("SHOW INDEX FROM $tb","_a",0); if($pp!==false) foreach($pp as $p)
 //	if($p['Column_name']==$index && $p['Non_unique']=='1') return true; // [Seq_in_index] => 1
 	if($p['Column_name']==$index) return ($p['Key_name']=='PRIMARY'?1:true); 
@@ -129,9 +131,13 @@ function ms($query,$mode='_a',$ttl=666) { $s = false; $magic='@'.$GLOBALS['blogd
 
 	if($sql === false) { print "SQL error: ".mysql_error(); return false; }
 
-	if ($mode == '_a') { $s = array(); while ($p = mysql_fetch_assoc($sql)) $s[]=$p; }
-	elseif ($mode == '_1') { if(mysql_num_rows($sql)>=1) $s = mysql_fetch_assoc($sql); else $s=false; }
-	elseif ($mode == '_l') { if(mysql_num_rows($sql)>=1) $s = mysql_result($sql,0,0); else $s=false; }
+	if($mode == '_a') { $s = array(); while ($p = mysql_fetch_assoc($sql)) $s[]=$p; }
+	elseif($mode == '_1') { $s=(mysql_num_rows($sql)<1?false:mysql_fetch_assoc($sql)); }
+	elseif($mode == '_l') {
+		if(gettype($sql)!='resource') $s=false;
+		else $s=(mysql_num_rows($sql)<1?false:mysql_result($sql,0,0));
+		// if($GLOBALS['admin']) idie(gettype($sql));
+	}
 	else { $s=array(); while($p=mysql_fetch_assoc($sql)) $s[$p[$mode]]=$p; }
 
 	if($ttl > 0) { cache_set($mode.$magic.$query, $s, $ttl); }

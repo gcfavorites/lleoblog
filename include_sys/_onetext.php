@@ -10,7 +10,9 @@ function onetext($p,$q=1) { global $wwwhost,$unic;
 
 	if($q&&$unic) {
 		$msqe_old=$GLOBALS['msqe']; // запомним накопленные ошибки
+		$GLOBALS['msqe']='';
 		msq_add("dnevnik_posetil",array('unic'=>$unic,'url'=>$p['num'],'date'=>time())); // если есть - не внесет, а даст ошибку, нам не важно
+		$GLOBALS['page_pervonah']=$GLOBALS['msqe'];
 		$GLOBALS['msqe']=$msqe_old; // восстановим ошибки (без учета последней)
 	}
 
