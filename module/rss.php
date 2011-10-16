@@ -3,6 +3,7 @@
 
 include_once $include_sys."_onetext.php"; // обработка заметки
 
+
 $subst1=array("{foto_www_preview}");
 $subst2=array($foto_www_preview);
 
@@ -47,7 +48,6 @@ $lastupdate=0; foreach($pp as $p) {
 
 	$Header=$p["Date"].($p["Header"]?" - ".$p["Header"]:"");
 
-
 $s .= "\n<item>
 	<guid isPermaLink='true'>".$link."</guid>
 	<author>".$httphost."</author>
@@ -59,11 +59,13 @@ $s .= "\n<item>
 </item>\n";
 }
 
+
 $s .= "\n</channel></rss>";
 
 
 check_if_modified($lastupdate,"$lastupdate"); // время последней модификации (оно же как ETag)
 
+ob_end_clean();
 die($s1.date("r",$lastupdate).$s);
 
 //=========================================================================================================

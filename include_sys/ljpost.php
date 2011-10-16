@@ -20,7 +20,7 @@ die("ok");
 
 
 // =============================================== LJ functions =========================================
-function LJ_edit($user,$pass,$item,$subj,$body,$opts) { if(gettype($opts)!='array') $opts=array();
+function LJ_edit($user,$pass,$item,$subj,$body,$opts,$flat="http://www.livejournal.com/interface/flat") { if(gettype($opts)!='array') $opts=array();
 $options = array(
         'http'=>array(
         'method'=>"POST",
@@ -38,7 +38,7 @@ $options = array(
 'ver'=>'1'
 ),$opts))
 )); $context = stream_context_create($options);
-$fp = fopen("http://www.livejournal.com/interface/flat",'r',false,$context);
+$fp = fopen($flat,'r',false,$context);
 $ans = ''; while (!feof($fp)) $ans .= fread($fp, 8192); fclose($fp);
 preg_match_all("/([^\n]+)\n([^\n]+)\n/si",$ans,$m); unset($ans); for($i=0;$i<sizeof($m[1]);$i++) $ans[$m[1][$i]]=$m[2][$i];
 //print "<hr>".print_r($ans,true);
@@ -46,7 +46,7 @@ return($ans);
 }
 
 
-function LJ_get($user,$pass,$item) {
+function LJ_get($user,$pass,$item,$flat="http://www.livejournal.com/interface/flat") {
 $options = array(
         'http'=>array(
         'method'=>"POST",
@@ -63,7 +63,7 @@ $options = array(
 'ver'=>'1'
 ))
 )); $context = stream_context_create($options);
-$fp = fopen("http://www.livejournal.com/interface/flat",'r',false,$context);
+$fp = fopen($flat,'r',false,$context);
 $ans = ''; while (!feof($fp)) $ans .= fread($fp, 8192); fclose($fp);
 preg_match_all("/([^_\n]+)([_\d]*)([^_\n]+)\n([^\n]+)\n/si",$ans,$m); unset($ans); $ans=array();
 for($i=0;$i<sizeof($m[1]);$i++) $ans[intval(str_replace("_","",$m[2][$i]))][$m[3][$i]]=urldecode($m[4][$i]);
@@ -72,7 +72,7 @@ return($ans[1]);
 }
 
 
-function LJ_getlast($user,$pass) {
+function LJ_getlast($user,$pass,$flat="http://www.livejournal.com/interface/flat") {
 $options = array(
         'http'=>array(
         'method'=>"POST",
@@ -89,7 +89,7 @@ $options = array(
 'ver'=>'1'
 ))
 )); $context = stream_context_create($options);
-$fp = fopen("http://www.livejournal.com/interface/flat",'r',false,$context);
+$fp = fopen($flat,'r',false,$context);
 $ans = ''; while (!feof($fp)) $ans .= fread($fp, 8192); fclose($fp);
 preg_match_all("/([^_\n]+)([_\d]*)([^_\n]+)\n([^\n]+)\n/si",$ans,$m); unset($ans); $ans=array();
 for($i=0;$i<sizeof($m[1]);$i++) $ans[intval(str_replace("_","",$m[2][$i]))][$m[3][$i]]=urldecode($m[4][$i]);
@@ -99,7 +99,8 @@ return($ans[1]);
 
 
 
-function LJ_post($user,$pass,$subj,$body,$opts) { if(gettype($opts)!='array') $opts=array();
+function LJ_post($user,$pass,$subj,$body,$opts,$flat="http://www.livejournal.com/interface/flat") {
+if(gettype($opts)!='array') $opts=array();
 $options = array(
         'http'=>array(
         'method'=>"POST",
@@ -121,7 +122,7 @@ $options = array(
 'min'=>date("i")
 ),$opts))
 )); $context = stream_context_create($options);
-$fp = fopen("http://www.livejournal.com/interface/flat",'r',false,$context);
+$fp = fopen($flat,'r',false,$context);
 $ans = ''; while (!feof($fp)) $ans .= fread($fp, 8192); fclose($fp);
 preg_match_all("/([^\n]+)\n([^\n]+)\n/si",$ans,$m); unset($ans); for($i=0;$i<sizeof($m[1]);$i++) $ans[$m[1][$i]]=$m[2][$i];
 //print "<hr>".print_r($ans,true);

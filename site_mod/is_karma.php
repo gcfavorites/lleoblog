@@ -7,7 +7,7 @@
 
 
 function is_karma($e) { 
-        list($a,$b)=explode('|',$e,2);
+        list($a,$b)=(strstr($e,'|')?explode('|',$e,2):array($e,''));
         return ($GLOBALS['IS']['capchakarma']>1 ? c($a) : c($b) );
 }
 

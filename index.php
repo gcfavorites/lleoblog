@@ -2,7 +2,6 @@
 
 //die('REMONT');
 
-
 include "config.php";
 include $include_sys."_autorize.php";
 $_SCRIPT=$_SCRIPT_ADD=$_STYLE=$_HEADD=array(); include $include_sys."_modules.php";
@@ -135,6 +134,7 @@ $mod_name=substr($path,strlen($wwwhost)); $mod_name=str_replace('..','.',$mod_na
 // сперва ищем в модулях-страницах (темплайтах, вызывающих модуль - это более новый прогрессивный формат)
 //if(file_exists($file_template.$mod_name.".htm")) { $article=array('template'=>$mod_name,'num'=>0,'Date'=>h($mod_name)); ARTICLE(); }
 
+
 // затем ищем в модулях
 $mod=$host_module.$mod_name.".php"; if(file_exists($mod)) { include($mod); exit; }
 
@@ -165,6 +165,19 @@ if(($p=ms("SELECT `text` FROM `site` WHERE `name`='redirect'","_l",$ttl*10))!==f
 }
 
 // и если совсем ничего не нашлось
+
+// то еще ищем в папке страниц: $site_module = $filehost."site_module/";
+
+$modp=strtoupper($mod_name); $mod=$site_module.$modp.".php"; if(file_exists($mod)) {
+	$article=array(
+		'Date'=>$modp,'Header'=>$modp,'Body'=>'{_'.$modp.':_}',
+		'Access'=>'all','DateUpdate'=>0,'num'=>0,'DateDatetime'=>0,'DateDate'=>0,
+		'opt'=>'a:3:{s:8:"template";s:5:"blank";s:10:"autoformat";s:2:"no";s:7:"autokaw";s:2:"no";}',
+		'view_counter'=>0
+        );
+	ARTICLE();
+}
+
 if(preg_match("/\.js/si",$mod_name)) die( ($admin?"alert('Admin $admin_name! Script not found:\\n".h($mypage)."')":"") ); // запрошен .js
 
 header("HTTP/1.1 404 Not Found");

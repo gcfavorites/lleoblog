@@ -211,7 +211,9 @@ function removeEvent(e,evType,fn){
 function helps_cancel(id,f) { getElementsByClass('can',idd(id))[0].onclick=f; }
 function helpc(id,s) { helps(id,s); posdiv(id,-1,-1); }
 function ohelpc(id,z,s) { helpc(id,"<fieldset><legend>"+z+"</legend>"+s+"</fieldset>"); }
-function idie(s) { var e=typeof s; if(e=='object') s='<pre>'+print_r(s)+'</pre>'; ohelpc('idie','Error type: '+e,s) }
+function ohelp(id,z,s) { helps(id,"<fieldset><legend>"+z+"</legend>"+s+"</fieldset>"); }
+function idie(s,t) { var e=typeof s; if(e=='object') s="<pre style='max-width:"+(getWinW()-200)+"px'>"+print_r(s)+'</pre>';
+if(typeof t!='undefined') s=t+'<p>'+s; ohelpc('idie','Error type: '+e,s) }
 dier=idie;
 
 function helps(id,s,pos) {

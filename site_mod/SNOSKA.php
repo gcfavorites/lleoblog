@@ -27,4 +27,5 @@ function SNOSKA($s) {
 	return "<span style='text-decoration:blink; vertical-align:text-top; font-weight:bold; font-size:60%; color:blue; cursor:pointer;' title=\"".$s."\">".(++$GLOBALS['snoska_n'])."</span>"; }
 //	return "<span style='text-decoration:blink; vertical-align:text-top; font-weight:bold; font-size:60%; color:blue; cursor:pointer;' title=\"".$s."\">".(++$GLOBALS['snoska_n'])."</span>"; }
 //helpс('snoska',\"<fieldset id='commentform'><legend>комментарий</legend>".njsn($s)."</fieldset>\");
+
 ?>

@@ -9,7 +9,7 @@
 */
 
 function UNIC_TIME_OLD($e) { list($d,$a,$b)=explode('|',$e,3);
-	return ($GLOBALS['IS']['time_reg'] > strtotime(c($d)) ? c($b) : c($a) );
+	return (!$GLOBALS['unic'] || $GLOBALS['IS']['time_reg'] > strtotime(c($d)) ? c($b) : c($a) );
 }
 
 ?>

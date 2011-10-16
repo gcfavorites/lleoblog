@@ -18,4 +18,5 @@ function TABLE($e) {
 		foreach($p as $l) { $l=c($l); $s.="<tr><td>".preg_replace("/\s*\|\s*/s","</td><td align=right>",$l)."</td></tr>"; }
 	return $s."</table></center>";
 }
+
 ?>

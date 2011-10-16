@@ -7,11 +7,9 @@
 
 */
 
-
 function is_admin($e) { 
-        list($a,$b)=explode('|',$e,2);
+        list($a,$b)=(strstr($e,'|')?explode('|',$e,2):array($e,''));
         return ($GLOBALS['admin'] ? c($a) : c($b) );
-//return ($GLOBALS['admin']?$e:''); 
 }
 
 ?>

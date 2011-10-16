@@ -5,9 +5,8 @@ require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpReque
 include $include_sys."_autorize.php"; // сперва JsHttpRequest, затем autorize
 
 $a=$_REQUEST["a"];
-$_GET['search']=c(ifu($_REQUEST["search"]));
 
-
+$_GET['search']=(isset($_REQUEST["search"])?c(ifu($_REQUEST["search"])):'');
 
 // =========== шо я не видел ============================= majax('okno.php',{a:'notseen',[day:30]})
 if($a=='notseen') {  $day=RE0('day'); if(!$day) $day=30; $o='';

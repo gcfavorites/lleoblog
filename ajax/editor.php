@@ -63,8 +63,10 @@ postToIframe({a:'ljpost',ljuser:\"".$admin_ljuser."\",ljpass:\"".$admin_ljpass."
 }
 
 	include_once $include_sys."ljpost.php"; // ето моя библиотечка ljpost
- 	$lj=LJ_post($admin_ljuser,$admin_ljpass,wu($p['Header']),wu($s),array('prop_opt_noemail'=>1));
-	if($lj['success']!='OK') dier($lj."<p><br>",LL('ljpost:error')); // Ошибка!
+ 	$lj=LJ_post($admin_ljuser,$admin_ljpass,wu($p['Header']),wu($s),array('prop_opt_noemail'=>1),
+(empty($admin_flat)?"http://www.livejournal.com/interface/flat":$admin_flat) // http://lj.rossia.org/interface/flat
+);
+	if($lj['success']!='OK') dier($lj,"<p><br>".LL('ljpost:error')."<br>Date: ".date("Y-m-d- H:i:s")); // Ошибка!
 	idie(LL('ljpost:postdone',$lj['url']),LL('ljpost:hsuccess'));
 }
 //=================================== nocomment ===================================================================
@@ -662,7 +664,7 @@ function pokaji_opt($opt,$def=1) { global $num,$zopt_a; $s=''; $i=0;
 	} else { $m=explode(' ',$l[1]);
 		if($m[0]=='s') $s.="<input type='text' maxlength='".$l[2]."' size='".min($l[2],64)."' name='".$n."' class='r' onchange='ch_edit_pole(this,$num);' value=\\\"".h(isset($opt[$n])?$opt[$n]:'')."\\\">";
 		else {
-			$a=array('default'=>'&mdash;'); foreach($m as $i) $a[$i]=LL('zopt:'.$n.':'.$i);
+			$a=array('default'=>'&mdash;'); foreach($m as $j) $a[$j]=LL('zopt:'.$n.':'.$j);
 			$s.= selecto($n,$val,$a,"class='r' onchange='ch_edit_pole(this,$num)' name");
 			$s.= " &nbsp; ".LL('zopt:default')." &laquo;".LL('zopt:'.$n.':'.$l[0])."&raquo;";
 		}
@@ -674,7 +676,7 @@ return ($s==''?'':"<br><fieldset><legend>options</legend>$s</fieldset><p>");
 
 
 //===============
-function prepare_Body($p) { global $httphost,$include_sys;
+function prepare_Body($p) { global $httphost,$httpsite,$include_sys;
 	include_once $include_sys."_modules.php";
         $s=modules($p['Body']); // процедуры site
 	// произвести автоформатирование
@@ -699,7 +701,9 @@ $s=str_ireplace(array( // заменить классы на стили
 ),$s);
 
 	$mydir=$httphost.substr($p['Date'],0,(strlen($p['Date'])-strlen(strrchr($p['Date'],"/")))+1);
-	$s=preg_replace("/(<img[^>]+src\=[\'\"]*)([^\/\:]{4,})/si","$1".$mydir."$2",$s); // картинки поставить на места
+        $s=preg_replace("/(<[^>]+src\=[\'\"]*)\//si","$1".$httpsite."/",$s); // картинки поставить на места
+        $s=preg_replace("/(<[^>]+src\=[\'\"]*)([^>\s\:]{6})/si","$1".$mydir."$2",$s); // картинки поставить на места
+
 return $s;
 }
 
