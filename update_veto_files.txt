@@ -7,9 +7,14 @@ _veto.php
 
 #binoniq
 
+design/kuku
+design/kuku/
+
 design/userpick.jpg.lleo 
 module/install/no/
 
+fido
+fido/
 fido/conf/areas
 fido/conf/config
 fido/conf/links

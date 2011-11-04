@@ -1,56 +1,127 @@
 <?php // Опенид
-
-	include "../config.php";
-	include $include_sys."_autorize.php";
-
 ini_set("display_errors","1"); ini_set("display_startup_errors","1"); ini_set('error_reporting', E_ALL); // вклю
+
+/*
+function uXXX($t) {
+return "|".iconv("utf-8","windows-1251//IGNORE",chr("0x".$t[1]))."|";
+$s=chr(base_convert(substr($t[1],0,2),16,10)).chr(base_convert(substr($t[1],2),16,10));
+return iconv("utf-8","windows-1251//IGNORE","|$s|");
+return iconv("utf-8","windows-1251//IGNORE",chr(base_convert($t[1],16,10)));
+}
+*/
+
+<?php
+ function jdecoder($json_str) {
+     $cyr_chars = array (
+         '\u0430' => 'а', '\u0410' => 'А',
+         '\u0431' => 'б', '\u0411' => 'Б',
+         '\u0432' => 'в', '\u0412' => 'В',
+         '\u0433' => 'г', '\u0413' => 'Г',
+         '\u0434' => 'д', '\u0414' => 'Д',
+         '\u0435' => 'е', '\u0415' => 'Е',
+         '\u0451' => 'ё', '\u0401' => 'Ё',
+         '\u0436' => 'ж', '\u0416' => 'Ж',
+         '\u0437' => 'з', '\u0417' => 'З',
+         '\u0438' => 'и', '\u0418' => 'И',
+         '\u0439' => 'й', '\u0419' => 'Й',
+         '\u043a' => 'к', '\u041a' => 'К',
+         '\u043b' => 'л', '\u041b' => 'Л',
+         '\u043c' => 'м', '\u041c' => 'М',
+         '\u043d' => 'н', '\u041d' => 'Н',
+         '\u043e' => 'о', '\u041e' => 'О',
+         '\u043f' => 'п', '\u041f' => 'П',
+         '\u0440' => 'р', '\u0420' => 'Р',
+         '\u0441' => 'с', '\u0421' => 'С',
+         '\u0442' => 'т', '\u0422' => 'Т',
+         '\u0443' => 'у', '\u0423' => 'У',
+         '\u0444' => 'ф', '\u0424' => 'Ф',
+         '\u0445' => 'х', '\u0425' => 'Х',
+         '\u0446' => 'ц', '\u0426' => 'Ц',
+         '\u0447' => 'ч', '\u0427' => 'Ч',
+         '\u0448' => 'ш', '\u0428' => 'Ш',
+         '\u0449' => 'щ', '\u0429' => 'Щ',
+         '\u044a' => 'ъ', '\u042a' => 'Ъ',
+         '\u044b' => 'ы', '\u042b' => 'Ы',
+         '\u044c' => 'ь', '\u042c' => 'Ь',
+         '\u044d' => 'э', '\u042d' => 'Э',
+         '\u044e' => 'ю', '\u042e' => 'Ю',
+         '\u044f' => 'я', '\u042f' => 'Я',
+  
+         '\r' => '',
+         '\n' => '<br />',
+         '\t' => ''
+     );
+  
+     foreach ($cyr_chars as $key => $value) {
+         $json_str = str_replace($key, $value, $json_str);
+     }
+     return $json_str;
+ }
+  
+ echo jdecoder("\u0412\u044b \u043d\u0435 \u043c\u043e\u0436\u0435\u0442\u0435 \u043f\u0440\u0438\u043a\u0440\u0435\u043f\u0438\u0442\u044c \u0444\u0430\u0439\u043b \u0434\u0430\u043d\u043d\u043e\u0433\u043e \u0442\u0438\u043f\u0430"); 
+?> 
+
+function jsonDecode($json) {
+	$json = str_replace('\\/','/',$json);
+
+//	$json=preg_replace_callback("/\\\\u([0-9a-f]{4})/si","uXXX",$json);
+//require_once "../include_sys/JsHttpRequest.php";
+//    $json=str_replace('\\u','%u',$json);
+//	$json=_ucs2EntitiesDecode($json);
+
+      $json = str_replace(array("\\\\", "\\\""), array("&#92;", "&#34;"), $json);
+      $parts = preg_split("@(\"[^\"]*\")|([\[\]\{\},:])|\s@is", $json, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+      foreach($parts as $index => $part) {
+          if(strlen($part) == 1) {
+              switch ($part) {
+                  case "[": case "{": $parts[$index] = "array("; break;
+                  case "]": case "}": $parts[$index] = ")"; break;
+                  case ":": $parts[$index] = "=>"; break;   
+                  case ",": break;
+                  default: return null;
+              }
+          }
+          else if((substr($part,0,1) != '"') || (substr($part,-1,1) != '"')) return null;
+      }
+      $json = str_replace(array("&#92;", "&#34;", "$"), array("\\\\", "\\\"", "\\$"), implode("", $parts));
+      return eval("return $json;");
+  }
+
+
+// error_reporting(E_ALL);
+// error_reporting = E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR
+// error_reporting = E_ALL & ~E_USER_ERROR & ~E_USER_WARNING & ~E_USER_NOTICE
+
+//die('eeeeeeeeeeeeeeeee');
+
+//$o="<pre>".print_r($_GET,1)."</pre>";
+
+
+//successArray ( [token] => 6fed69864d5575f0edf0a71d6ddc0d06 )
+
+//$xx='{"identity":"https:\/\/www.google.com\/accounts\/o8\/id?id=AItOawl-5JFpsxQqspiHpVmMdogLsfNpff8BPoo","provider":"https:\/\/www.google.com\/accounts\/o8\/ud","language":"ru","email":"lleo.kaganov@gmail.com","name":{"last_name":"Kaganov","first_name":"Leonid","full_name":"Leonid Kaganov"},"address":{"home":{"country":"RU"}},"uid":"103926980431102214659"}';
+
 
 // define("THIS_URL",$GLOBALS['httpsite'].$GLOBALS['mypage']);
 
+if(1||isset($_POST['token'])) {
 
-function dier1($a) {
-	$e=explode("\n",print_r($a,1));
-	$o=array(); foreach($e as $l) { if(str_replace(array("\r","\n","\t"," ","(",")","Array"),'',$l)!='') $o[]=h($l); }
-	return implode("\n",$o);
-}
+//-------------------------------------------------
 
-if(isset($_POST['token'])) {
-	$s=file_get_contents("http://loginza.ru/api/authinfo?token=".$_POST['token']);
-// $s='{"identity":"http:\/\/www.facebook.com\/profile.php?id=100001073866092","provider":"http:\/\/www.facebook.com\/","uid":"100001073866092","name":{"full_name":"\u041b\u0435\u043e\u043d\u0438\u0434 \u041a\u0430\u0433\u0430\u043d\u043e\u0432","first_name":"\u041b\u0435\u043e\u043d\u0438\u0434","last_name":"\u041a\u0430\u0433\u0430\u043d\u043e\u0432"},"dob":"1972-21-05","email":"lleo@aha.ru","web":{"default":"http:\/\/lleo.aha.ru"},"photo":"https:\/\/graph.facebook.com\/100001073866092\/picture"}';
-
-	include $include_sys."json.php";
-	//include_once "../include_sys/json.php";
-
+//	$s=file_get_contents("http://loginza.ru/api/authinfo?token=".$_POST['token']);
+$s='{"identity":"http:\/\/www.facebook.com\/profile.php?id=100001073866092","provider":"http:\/\/www.facebook.com\/","uid":"100001073866092","name":{"full_name":"\u041b\u0435\u043e\u043d\u0438\u0434 \u041a\u0430\u0433\u0430\u043d\u043e\u0432","first_name":"\u041b\u0435\u043e\u043d\u0438\u0434","last_name":"\u041a\u0430\u0433\u0430\u043d\u043e\u0432"},"dob":"1972-21-05","email":"lleo@aha.ru","web":{"default":"http:\/\/lleo.aha.ru"},"photo":"https:\/\/graph.facebook.com\/100001073866092\/picture"}';
 	$j=jsonDecode($s);
 
-	logi('openid_david.txt',"\n\n\n".dier1($j));
-
-
-$mail=(empty($j['email'])?'':$j['email']);
-$img=(empty($j['photo'])?'':$j['photo']);
-if(!empty($j['dob'])) {	$dob=strtotime($j['dob']); if($dob) $dob=date("Y-m-d",$dob); } else $dob='';
-$site=(empty($j['web']['default'])?'':$j['web']['default']);
-$info=trim((empty($j['identity'])?'':$j['identity']),'/');
-$dom=preg_replace("/^.*?([^\.]+\.[^\.]+)$/s","$1",preg_replace("/www\./si",'',parse_url($info,PHP_URL_HOST)));
-
-if(!empty($j['name']['full_name'])) $name=$j['name']['full_name'];
-elseif(!empty($j['nickname'])) $name=$j['nickname'];
-elseif(!empty($j['name']['first_name']) && isset($j['name']['last_name'])) $name=$j['name']['first_name'].' '.$j['name']['last_name'];
-elseif(!empty($info)) { 
-	$name=trim(parse_url($info,PHP_URL_PATH),'/');
-	if($name=='') $name=preg_replace("/^(.*)\.[^\.]+\.[^\.]+$/s","$1",preg_replace("/www\./si",'',parse_url($info,PHP_URL_HOST)));
-} else $name='###';
-
-
-	$ll=login_do();
-
-
-	die("<font color=green>success</font><p><pre>".dier1($j)."</pre>".$ll);
+	die('<font color=green>success</font>'.print_r($_POST,1)
+."<p>".$s."<hr><pre>".print_r($j,1)."</pre>
+<script>this.parent.salert('<font color=green>success</font>',500);</script>
+"
+);
 }
 
 define("THIS_URL",'http://lleo.me/blog/ajax/openid_david.php');
 
-
+function h($s) { return htmlspecialchars($s); }
 
 
 /**** РАЗНЫЕ ФУНКЦИИ **************/
@@ -220,7 +291,6 @@ if(isset($_GET["return"]) and $_SESSION["OpenID"]) {
                 isset($vals["lifetime"]) and (int)$vals["lifetime"] > 0 or
                 isset($vals["is_valid"]) and $vals["is_valid"] == "true"
             ) {
-		//openid_ok($_SESSION["OpenID"]["openidUrl"],$params);
                 $_SESSION["OpenID"]["status"] = "Поздравляем, Вы и в самом деле <b>".h($_SESSION["OpenID"]["openidUrl"])."</b>!";
                 $_SESSION["OpenID"]["parms"]=$params;
             } else {
@@ -234,80 +304,49 @@ if(isset($_GET["return"]) and $_SESSION["OpenID"]) {
 }
 
 
-$o='';
 
-if(!empty($_SESSION["OpenID"]["status"])) {
-if(empty($_SESSION["OpenID"]["parms"])) $o.="<font color=red>".$_SESSION["OpenID"]["status"]."</font><p>&nbsp;<p>";
-else {
-	$j=$_SESSION["OpenID"]["parms"];
-	$info=trim($_SESSION["OpenID"]["openidUrl"],'/');
-	logi('openid_david.txt',"\n\n\n".dier1(array_merge(array('openid'=>$info),$j)));
-
-	$s=$_SESSION["OpenID"]["status"];
+// if(isset($_GET["loginza"])) { die('###'.$_GET["loginza"]); } //else die(print_r($_GET,1));
 
 
-//	$dom=preg_replace("/^.*?([^\.]+\.[^\.]+)$/s","$1",preg_replace("/www\./si",'',parse_url($info,PHP_URL_HOST)));
-	$name=trim(parse_url($info,PHP_URL_PATH),'/');
-	if($name=='') $name=preg_replace("/^(.*)\.[^\.]+\.[^\.]+$/s","$1",preg_replace("/www\./si",'',parse_url($info,PHP_URL_HOST)));
+// $o="<blockquote>";
 
-	$ll=login_do();
+$o="<pre>".print_r($_GET,1)."</pre>";
 
-//!isset($_SESSION["OpenID"]["dontclear"])&&!$_SESSION["OpenID"]["dontclear"]) 
-	$_SESSION["OpenID"]=null;
-	//else $_SESSION["OpenID"]["dontclear"]=false;
 
-	die("<p style='color: #900'>info: <b>".h($info)."</b><br>dom: <b>".h($dom)."</b><br>name: <b>".h($name)."</b><p>".$s."</p><pre>".dier1($j)."</pre>".$ll);
-}}
+
+if($_SESSION["OpenID"]["status"]) {
+
+$k="\n\n".$_SESSION["OpenID"]["openidUrl"].": ".$_SESSION["OpenID"]["status"];
+
+	$o.="<p style='color: #900'>".$_SESSION["OpenID"]["status"]."</p>";
+$o.="<p><center><table border=1 cellspacing=0 cellpadding=0>";
+foreach($_SESSION["OpenID"]["parms"] as $n=>$l) { $o.="<tr><td>".$n."&nbsp;</td><td>&nbsp;".$l."&nbsp;</td></tr>"; $k.="\n\t\t\t".$n."=`".$l."`"; }
+$o.="</table></center><p><br>";
+
+// logi('openid_test.txt',$k);
+
+        if(!$_SESSION["OpenID"]["dontclear"]) $_SESSION["OpenID"]=null;
+	else $_SESSION["OpenID"]["dontclear"]=false;
+}
+
 
 //<script> openid_ifr_post=function(){ ohelpc('opid','OpenID <img src=\"+www_design+\"img/ajax.gif>',\"<iframe name='openid_ifr' width='\"+(getWinW()-200)+\"' height='\"+(getWinH()-200)+\"'></iframe>\"); ajaxon(); posdiv('ajaxgif',-1,-1); }; </script>
 
-
-die($o."
-Два способа залогиниться:
+$o.="
 
 <form method='POST' action='".THIS_URL."'>
-<p>&nbsp;<p>&nbsp;<p>1. OpenID: <input type='text' name='openid_url' value='lleo.me' size='40'>
-mode: <select name='mode'><option value='1'>auto</option><option value='0'>imm</option></select>
-<input type='submit' value='LOGIN' onclick='openid_ifr_post()'>
-</form>
+Ваш Openid: <input type='text' name='openid_url' value='lleo.me' size='60'><input type='submit' value='Go!' onclick='openid_ifr_post()'>
+<br>Метод: <select name='mode'>
+            <option value='1'>checkid_setup (человекопонятный)</option>
+            <option value='0'>checkid_immediate (автоматопонятный)</option>
+        </select>
+</form></blockquote>
 
-<script src='http://loginza.ru/js/widget.js' type='text/javascript'></script>
+";
 
-<p>&nbsp;<p>&nbsp;<p>2. <a href='https://loginza.ru/api/widget?token_url=".urlencode(THIS_URL)."' class='loginza'>"
-."С помощью LOGINZA (Facebook,Google,Mail.ru и т.п.)</a>
-
-");
-
-// if(!function_exists('h')) { function h($s) { return htmlspecialchars($s); } }
-
-/*
-function openid_ok($openid,$j) {
-	logi('openid_david.txt',"\n\n".dier1($j));
-	if(!$_SESSION["OpenID"]["dontclear"]) $_SESSION["OpenID"]=null;	else 
-	$_SESSION["OpenID"]["dontclear"]=false;
-	die("<p style='color: #900'>".$openid."</p><pre>".dier1($j)."</pre>");
-}
-*/
-
-function login_do() { global $img,$dom,$dob,$name,$info,$site,$mail;
-$x="\n\n<!-- $info --><table style='width: 80%; border: 1px dashed rgb(255,0,0); padding: 20px; margin-left: 50px; margin-right: 50px; background-color: rgb(255,252,223);'><tr><td>"
-.(empty($img)?'':"<img src='".h($img)."' align='right' hspace='20'>")
-."<img src='http://".h($dom)."/favicon.ico'><b>".h($name).(empty($dom)?'':" / ".h($dom))."</b>"
-."\ninfo: <a href='".h($info)."'>".h($info)."</a>"
-//.(empty($mail)?'':"\nmail: <a href='mailto:".h($mail)."'>".h($mail)."</a>")
-.(empty($mail)?'':"\nmail: <i>записан</i>")
-.(empty($site)?'':"\nsite: <a href='".h($site)."'>".h($site)."</a>")
-.(empty($dob)?'':"\nbirth: ".h($dob))
-."</td></tr></table>";
-
-$d=ms("SELECT `Body` FROM `dnevnik_zapisi` WHERE `Date`='2011/11/01'","_l",0);
-
-if(!strstr($d,"<!-- $info -->")) {
-	$d=str_replace("<a name='tut'></a>","<a name='tut'></a>".$x,$d);
-	msq_update('dnevnik_zapisi',array('Body'=>e($d)),"WHERE `Date`='2011/11/01'");
-}
-
-return "<script>this.parent.salert('<font color=green>success</font>',500);this.parent.location.href='http://lleo.me/blog/2011/11/01.html?random='+Math.random(0,20000)+'#tut';</script>";
-}
-
+die($o
+.'<script src="http://loginza.ru/js/widget.js" type="text/javascript"></script>
+<a href="https://loginza.ru/api/widget?token_url='.urlencode(THIS_URL)
+.'" class="loginza">логинимся через loginza</a>'
+);
 ?>

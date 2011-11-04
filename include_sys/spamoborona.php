@@ -9,19 +9,22 @@ if(!is_file($GLOBALS['cronfile']) or (time()-filemtime($GLOBALS['cronfile'])) > 
 if(!$GLOBALS['admin']) { // для посетителей, но не для админа
 
 	// 1. нельзя подписываться хозяином блога!
-	if(strstr($name,$GLOBALS['admin_name'])) $name="Лошарик номер #".$GLOBALS['unic'];
+	if(strstr($name,$GLOBALS['admin_name'])) $name="Looser #".$GLOBALS['unic'];
 
 	// 2. если встретилась точка между двумя латинскими буквами - это 99% ссылка! а ссылка - это 90% спам!
 	$l=preg_replace("/p\.s/si",'',$text.$name); // есть лишь одно исключение: 'P.S.'
 	if(preg_match("/[a-z]\.[a-z]/si",$l) or strstr($l,'<')) $scr=1; // скрыть его!
 
 	// послал нахуй? пиздуй туда сам!
-	if(stristr($text,'lleo.aha.ru/na')) redirect('http://lleo.aha.ru/na/');
+	if(stristr($text,'lleo.aha.ru/na')) redirect('http://natribu.org/');
 
 
 // if(stristr($text,'Бог')) idie("Слово 'Бог' нельзя упоминать всуе!"); // по крайней мере в момент тестирования скрипта
-if(stristr(strtr($text,'еуЕУиi','eyeyyy'),'jquery')) idie("<table width=500><td><div align=justify>Я запрещаю упоминать в своем дневнике jQuery! Долой чемоданы! Шучу. Это всего лишь демонстрация работы фильтров, описанных в файле <a href='".$GLOBALS['wwwhost']."install.php?load=include_sys/spamoborona.php&mode=view'>include_sys/spamoborona.php</a>, вы можете изменить их для своего блога и написать любые другие.</div></td></table>");
+//if(stristr(strtr($text,'еуЕУиi','eyeyyy'),'jquery')) idie("<table width=500><td><div align=justify>Я запрещаю упоминать в своем дневнике jQuery! Долой чемоданы! Шучу. Это всего лишь демонстрация работы фильтров, описанных в файле <a href='".$GLOBALS['wwwhost']."install.php?load=include_sys/spamoborona.php&mode=view'>include_sys/spamoborona.php</a>, вы можете изменить их для своего блога и написать любые другие.</div></td></table>");
 }
+
+	$tt=str_replace(array("\n","\t","\\"),' ',$text); $tt=explode(' ',$tt);
+	foreach($tt as $et) { if(strlen($et)>100) idie("<table width=500><td><div align=justify>Ваше сообщение имеет какие-то сложные части без пробелов.<br>Ну что это такое:<br><i>".h(substr($et,0,50))."...</i><br>Приведите пожалуйста в удобный для чтения формат.</div></td></table>"); }
 
 if(preg_match("/^http\:\/\/[^\s]+$/si",$text)) idie("<table width=500><td><div align=justify>Просьба: не пишите ссылки без пояснений, это выглядит не завлекательно. Лучше добавьте пару своих слов, чтобы было сразу понятно, о чем речь. Спасибо.</div></td></table>");
 
@@ -30,7 +33,7 @@ $esli="<p>Если вы хотите процитировать код html, зайдите в опции комментария ('ш
 if(stristr($text,'<img')) idie("<table width=500><td><div align=justify>Обрамлять картинку в тэги не нужно, напишите адрес картинки, и она вставится автоматически (после премодерации). Спасибо. $esli</div></td></table>");
 if(stristr($text,'<a ')) idie("<table width=500><td><div align=justify>Обрамлять ссылку тэгами не нужно, напишите только адрес - он сам подсветится как ссылка. Спасибо. $esli</div></td></table>");
 if(stristr($text,'<')) idie("<table width=500><td><div align=justify>Но вы в курсе, что здесь тэги html не отобразятся? Если хотите дать ссылку или вставить картинку - просто пишите url, он обработается автоматически. Хотите использовать элементы оформления - нажмите зеленую стрелочку над окном редактора комментария, а когда подгрузится панель с кнопками, выделите мышкой участок текста и нажмите нужную. Либо сами используйте тэги [i],[b],[s] и [u], но не html. $esli</div></td></table>");
-if(stristr($text,'Бог')) idie("Слово 'Бог' нельзя упоминать всуе!"); // по крайней мере в момент тестирования скрипта
+//if(stristr($text,'Бог')) idie("Слово 'Бог' нельзя упоминать всуе!"); // по крайней мере в момент тестирования скрипта
 }
 
 ?>

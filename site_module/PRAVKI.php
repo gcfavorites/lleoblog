@@ -46,22 +46,9 @@ cursor: pointer; color: blue; display: inline;
 
 SCRIPTS("
 
-
-function mykeys() { hotkey=[]; return;
-//setkey('tab','',function(e){ fidoselect(fidoblok=='fidoarea'?'echotags':'fidoarea'); },false);
-//setkey(['M','Ь','ь'],'',msg_kludge,true);
-//setkey(['R','К','к'],'',msg_reply,true);
-//setkey(['N','Т','т'],'',msg_new,true);
-//setkey(['left','4'],'',begunok_up,false);
-//setkey(['right','7'],'',begunok_down,false);
-//setkey('up','',function(){areamove(-1)},false);
-//setkey('down','',function(){areamove(1)},false);
-//setkey('del','',msg_del,false);
-}
-
+function mykeys() { hotkey=[]; return; }
 page_onstart.push('hotkey_reset=mykeys; hotkey_reset();'); // переписать хоткеи
 page_onstart.push('helper_go=function(){}; helper_napomni=1000;'); // отключить систему правки
-
 
 // function ppo(e) { alert(ecom(e).id); }
 
@@ -87,11 +74,17 @@ majax('ajax_pravka.php',{action:volya,id:e,answer:answer,hash:'".$GLOBALS['hashp
 
 
 function PRAVKI($e='') { global $mypage,$admin,$db_pravka,$pravki_npage;
+$conf=array_merge(array(
+'act'=>h($_GET['a']),
+'skip'=>intval($_GET['skip']),
+'nam'=>h($_GET['search']),
+'npage'=>50,
+'mode'=>1
+),parse_e_conf($e));
 
-$s="<center>"; $npage1=$pravki_npage+1;
-$act=h($_GET['a']);
-$nam=h($_GET['search']);
-$skip=intval($_GET['skip']);
+$s="<center>"; $npage1=$conf['npage']+1;
+$act=$conf['act']; $nam=$conf['nam']; $skip=$conf['skip'];
+
 if(!$admin) $s .= "
 <p>Здесь отображаются присланные, но ещё не рассмотренные правки. Однако, вы не админ.
 <br>Можете поиграться, будто вы админ, но <font color=red>изменения не запишутся</font>.";
@@ -142,7 +135,10 @@ if($colnewcom) {
 		foreach($sql as $i2=>$p2) if($p2['Date']==$data) { $s.=print11($p2); unset($sql[$i2]); }
 	}
 	$s .= "<p>".$prevnext;
-} else { $s .= "<center>свежих правок нет</center>"; }
+} else {
+	if($conf['mode']==0) return '';
+	$s .= "<center>свежих правок нет</center>";
+}
 
 return $s;
 }

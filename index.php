@@ -1,6 +1,6 @@
 <?php
 
-//die('REMONT');
+// die('REMONT');
 
 include "config.php";
 include $include_sys."_autorize.php";
@@ -71,7 +71,7 @@ exit;
 }
 
 
-list($path)=explode('?',$GLOBALS['MYPAGE']); $path=rtrim($path,'\/');
+list($path)=explode('?',$GLOBALS['MYPAGE']); $path=rtrim(rpath($path),'\/');
 $pwwwhost=str_replace('/','\/',$wwwhost);
 
 // ============== начали выяснять, какой модуль подцепить ==============
@@ -129,11 +129,10 @@ if($path."/"==$wwwhost && empty($_SERVER['QUERY_STRING'])) {
 
 // ===== подключение внешних модулей из директории /module/* ====
 if(preg_match("/[^0-9a-z_\-\.\/]+/si",$mod_name)) idie("Error 404: wrong name \"<b>".h($mod_name)."</b>\"");
-$mod_name=substr($path,strlen($wwwhost)); $mod_name=str_replace('..','.',$mod_name);
+$mod_name=substr($path,strlen($wwwhost)); $mod_name=rpath($mod_name);
 
 // сперва ищем в модулях-страницах (темплайтах, вызывающих модуль - это более новый прогрессивный формат)
 //if(file_exists($file_template.$mod_name.".htm")) { $article=array('template'=>$mod_name,'num'=>0,'Date'=>h($mod_name)); ARTICLE(); }
-
 
 // затем ищем в модулях
 $mod=$host_module.$mod_name.".php"; if(file_exists($mod)) { include($mod); exit; }
@@ -175,6 +174,7 @@ $modp=strtoupper($mod_name); $mod=$site_module.$modp.".php"; if(file_exists($mod
 		'opt'=>'a:3:{s:8:"template";s:5:"blank";s:10:"autoformat";s:2:"no";s:7:"autokaw";s:2:"no";}',
 		'view_counter'=>0
         );
+//	SCRIPTS("alert(7);page_onstart.push('hotkey_reset=function(){}; hotkey=[];');");
 	ARTICLE();
 }
 
