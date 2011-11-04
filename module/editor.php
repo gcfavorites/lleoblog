@@ -9,7 +9,10 @@ isset($_POST["Date"]) ? h($_POST["Date"]) : (
 ms("SELECT `Date` FROM `dnevnik_zapisi` ORDER BY `Date` DESC LIMIT 1","_l",0)
 )));
 
-SCRIPTS("запретить навигацию","page_onstart.push(\"mHelps['editor']=1\");");
+// SCRIPTS("запретить навигацию","page_onstart.push(\"mHelps['editor']=1\");");
+SCRIPTS("запретить навигацию","page_onstart.push('hotkey_reset=function(){}; hotkey=[];');");
+
+
 
 if($article["Prev"].$article["Next"]!='') { list($y,$m)=explode("-",$Date,2); $_PAGE["calendar"] = getCalendar($y,$m); }
 

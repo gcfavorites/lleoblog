@@ -30,17 +30,17 @@ keycodes={right:0x27,left:0x25,up:0x26,down:0x28,esc:0x1B,enter:0x0D,home:0x24,t
 'Э':'1069','э':'1101','Ю':'1070','ю':'1102','Я':'1071','я':'1103'};
 keykeys={ctrl:8,shift:4,alt:2,meta:1};
 
-function setkey(k,v,f,o){ if(typeof k == 'string') var k=[k]; for(var i in k) 
-if(typeof k[i] == 'string') // какой-то немыслимый йобанный патч от prototype, который навешивает говна
+function setkey(k,v,f,o){ if(typeof(k)=='string') var k=[k]; for(var i in k) 
+if(typeof(k[i])=='string') // какой-то немыслимый йобанный патч от prototype, который навешивает говна
 setkey0(k[i],v,f,o); }
 function setkey0(k,v,f,o){ // повесть функцию на нажатие клавиши
 	k=(!isNaN(k) && k.length>1) ? k : keycodes[k] ? keycodes[k] : k.toUpperCase().charCodeAt();
         var e=0; for(var i in keykeys) if(v.indexOf(i)>=0) e+=keykeys[i];
 	for(var i in hotkey)if(hotkey[i][0]==k && hotkey[i][1]==e){ // если уже есть - изменить
-		if(typeof f == 'undefined' || f=='') delete hotkey[i];
+		if(f==undefined || f=='') delete hotkey[i];
 		else hotkey[i]=[k,e,f,o]; //hotkey[i][2]=f; - А ТАК НЕ РАБОТАЕТ СУКА ЙОБАНЫЙ ГЛЮЧНЫЙ JS!!!
 		return;
-	} if(typeof f == 'undefined' || f=='') return;
+	} if(f==undefined || f=='') return;
 	if(e) hotkey.push([k,e,f,o]); else hotkey.unshift([k,e,f,o]); // иначе - задать
 }
 
@@ -95,7 +95,7 @@ function otkryl(id) { idd(id).style.display='block'; }
 function tudasuda(id) { if(idd(id).style.display=='none') otkryl(id); else zakryl(id); }
 
 function cphash(a) { var b={}; for(var k in a) b[k]=a[k]; return b; }
-function cpmas(a) { var b=[]; for(var i=0;i<a.length;i++){ if(typeof a[i] !='undefined') b[i]=a[i]; } return b; }
+function cpmas(a) { var b=[]; for(var i=0;i<a.length;i++){ if(typeof(a[i])!='undefined') b[i]=a[i]; } return b; }
 
 // var oknon=0; if(oknon) return 1; 
 function isHelps(){ var c=0; for(var k in mHelps) c++; return c?k:false; }
@@ -103,8 +103,8 @@ function isHelps(){ var c=0; for(var k in mHelps) c++; return c?k:false; }
 function print_r(a) { var s=''; for(var k in a) { var v=a[k]; s='\n'+k+'='+v+s; } return s; }
 function in_array(s,a){ var l; for(l in a) if(a[l]==s) return l; return false; }
 
-function clean(id) { if(typeof id == 'object') return id.parentNode.removeChild(id);
-if(typeof mHelps[id]!='undefined'){ hotkey=cpmas(mHelps[id]); delete(mHelps[id]); }
+function clean(id) { if(typeof(id)=='object') return id.parentNode.removeChild(id);
+if(typeof(mHelps[id])!='undefined'){ hotkey=cpmas(mHelps[id]); delete(mHelps[id]); }
 if(isHelps()==false) hotkey_reset();
 if(idd(id)) { zakryl(id); setTimeout("var s=idd('"+id+"'); if(s) s.parentNode.removeChild(s);", 40); }
 zakryl('tip');
@@ -170,7 +170,6 @@ else {
     };
 
 //page_onstart.push("alert('#');");
-//eeeeeeeeeeeeeee
 // alert(print_r(getElementsByClass('p')));
 // getElementsByClass('r');
 
@@ -179,9 +178,10 @@ else {
 // создать новый <DIV class='cls' id='id'>s</div> в элементе paren (если не указан - то просто в документе)
 // есть указан relative - то следующим за relative, иначе - просто последним
 function mkdiv(id,s,cls,paren,relative){ if(idd(id)) { zabil(id,s); idd(id).className=cls; return; }
-        var div=document.createElement('DIV'); div.className=cls; div.id=id; div.innerHTML=s; div.style.display='none';
+        var div=document.createElement('DIV');
+	div.className=cls; div.id=id; div.innerHTML=s; div.style.display='none';
         if(paren==undefined) paren=document.body;
-	if(typeof relative=='undefined') paren.appendChild(div); // paren.lastChild
+	if(relative==undefined) paren.appendChild(div); // paren.lastChild
 	else paren.insertBefore(div,relative.nextSibling);
 }
 
@@ -212,8 +212,8 @@ function helps_cancel(id,f) { getElementsByClass('can',idd(id))[0].onclick=f; }
 function helpc(id,s) { helps(id,s); posdiv(id,-1,-1); }
 function ohelpc(id,z,s) { helpc(id,"<fieldset><legend>"+z+"</legend>"+s+"</fieldset>"); }
 function ohelp(id,z,s) { helps(id,"<fieldset><legend>"+z+"</legend>"+s+"</fieldset>"); }
-function idie(s,t) { var e=typeof s; if(e=='object') s="<pre style='max-width:"+(getWinW()-200)+"px'>"+print_r(s)+'</pre>';
-if(typeof t!='undefined') s=t+'<p>'+s; ohelpc('idie','Error type: '+e,s) }
+function idie(s,t) { var e=typeof(s); if(e=='object') s="<pre style='max-width:"+(getWinW()-200)+"px'>"+print_r(s)+'</pre>';
+if(t!=undefined) s=t+'<p>'+s; ohelpc('idie','Error type: '+e,s) }
 dier=idie;
 
 function helps(id,s,pos) {
@@ -298,9 +298,10 @@ document.onmousemove = function(e){ if(!e) e=window.event;
     mouse_x = e.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft) - document.documentElement.clientLeft;
     mouse_y = e.clientY + (document.documentElement.scrollTop || document.body.scrollTop) - document.documentElement.clientTop;
   }
+ if(typeof('ajaxgif')!='undefined'){ e=idd('ajaxgif'); e.style.top=15+mouse_y+'px'; e.style.left=15+mouse_x+'px'; }
 };
 
-function ajaxon(){ var id='ajaxgif'; mkdiv(id,"<img src="+www_design+"img/ajax.gif>",'popup'); posdiv(id,mouse_x,mouse_y);}
+function ajaxon(){ var id='ajaxgif'; mkdiv(id,"<img src="+www_design+"img/ajax.gif>",'popup'); posdiv(id,15+mouse_x,15+mouse_y);}
 function ajaxoff(){ clean('ajaxgif'); }
 
 function ajax(name,value,func) { ajaxon(); if(name.indexOf('://')<0) name=www_ajax+name;
@@ -315,7 +316,7 @@ alert(er+': '+e.name+'\n\n'+js);}
 
 function majax(url,a,js) { majax_lasta=cphash(a); majax_lastu=url; a['up']=up;
 	ajax(url,a,"if(responseJS.modo){ if(majax_err) eval(responseJS.modo); else {try{eval(responseJS.modo)}catch(e){tryer('majax error',e,responseJS.modo)}}\
-"+(typeof js=='undefined'?'':"try{eval(\""+js+"\")}catch(e){tryer('majax post-js error',e,\""+js+"\")}")+"\
+"+(js==undefined?'':"try{eval(\""+js+"\")}catch(e){tryer('majax post-js error',e,\""+js+"\")}")+"\
 }");}
 
 function mijax(u,a) { a['up']=up; if(u.indexOf('://')<0) u=www_ajax+u; u+='?minj='+(new Date()).getTime();
@@ -333,9 +334,9 @@ function setOpacity(e,n) { var o=getOpacityProperty(); if(!e || !o) return;
 }
 
 function getOpacityProperty() {
-	if(typeof document.body.style.opacity == 'string') return 'opacity'; // CSS3 compliant (Moz 1.7+, Safari 1.2+, Opera 9)
-	else if(typeof document.body.style.MozOpacity == 'string') return 'MozOpacity'; // Mozilla 1.6 и младше, Firefox 0.8 
-	else if(typeof document.body.style.KhtmlOpacity == 'string') return 'KhtmlOpacity'; // Konqueror 3.1, Safari 1.1
+	if(typeof(document.body.style.opacity)=='string') return 'opacity'; // CSS3 compliant (Moz 1.7+, Safari 1.2+, Opera 9)
+	else if(typeof(document.body.style.MozOpacity)=='string') return 'MozOpacity'; // Mozilla 1.6 и младше, Firefox 0.8 
+	else if(typeof(document.body.style.KhtmlOpacity)=='string') return 'KhtmlOpacity'; // Konqueror 3.1, Safari 1.1
 	else if(document.body.filters && navigator.appVersion.match(/MSIE ([\d.]+);/)[1]>=5.5) return 'filter'; // IE 5.5+
 	return false;
 }
@@ -443,9 +444,9 @@ function ecom(e){while((e.id==''||e.id==undefined)&&e.parentNode!=undefined) e=e
 // BigLoadImg("http://lleo.aha.ru/tmp/img.php?text="+Math.random());
 
 var BigImgMas={},bigtoti=0,bigtotp=0;
-function bigfoto(i,p){ var Z=(typeof p == 'undefined');
+function bigfoto(i,p){ var Z=(p==undefined);
 	var n= Z ? i : n=i+','+p;
-	if(typeof BigImgMas[n] == 'undefined'){ if(!Z && !idd("bigfot"+p+"_"+i)) return false;
+	if(typeof(BigImgMas[n])=='undefined'){ if(!Z && !idd("bigfot"+p+"_"+i)) return false;
 	ajaxon(); BigImgMas[n]=new Image(); BigImgMas[n].src= Z ? n : idd("bigfot"+p+"_"+i).href; }
 	if(!Z) { bigtoti=i; bigtotp=p; }
 	if(BigImgMas[n].width*BigImgMas[n].height==0) { setTimeout('bigfoto('+(Z ? '"'+n+'"' : n)+')',200); return false; }
@@ -659,7 +660,7 @@ helper_napomni=0;
 
 function keydo(e,k) { var ct=e.metaKey+2*e.altKey+4*e.shiftKey+8*e.ctrlKey;
 
-	if(typeof mHelps['nonav'] !== 'undefined') return true;
+	if(typeof(mHelps['nonav'])!=='undefined') return true;
 
 	// не обрабатывать коды браузера:
 	if(k==keycodes.right && ct==keykeys.alt) return true;
@@ -679,7 +680,7 @@ function gethash_c(){ return 1*document.location.href.replace(/^.*?#(\d+)$/g,'$1
 function get_pole_ara(w) { var k=0,ara={names:''}; var el=['input','textarea','checkbox','select'];
         for(var j=0;j<el.length;j++){
                 var e=idd(w).getElementsByTagName(el[j]); for(i=0;i<e.length;i++)
-                        if(typeof e[i].name != 'undefined' && e[i].name!='')
+                        if(typeof(e[i].name)!='undefined' && e[i].name!='')
                                 { ara[e[i].name]=e[i].value; ara['names']+=' '+e[i].name; k++; }
         }
 
@@ -692,7 +693,7 @@ function nokey(){ hotkey=[]; mHelps['nokey']=1; }
 // функция постит объект-хэш content в виде формы с нужным action, target
 // напр. postToIframe({a:5,b:6}, '/count.php', 'frame1')
 function postToIframe(ara,url,iframeID){
-    if(typeof phonyForm == 'undefined'){ // временную форму создаем, если нет
+    if(typeof(phonyForm)=='undefined'){ // временную форму создаем, если нет
         phonyForm=document.createElement("form"); phonyForm.style.display="none";
         phonyForm.enctype="application/x-www-form-urlencoded"; phonyForm.method="POST";
         document.body.appendChild(phonyForm);
@@ -712,9 +713,13 @@ function postToIframe(ara,url,iframeID){
     phonyForm.submit();
 }
 // ----------
-function h(s){   // Convert all applicable characters to HTML entities
-        var div=document.createElement('div');
-        var text=document.createTextNode(s);
-        div.appendChild(text);
-        return div.innerHTML;
-}
+//function h(s){   // Convert all applicable characters to HTML entities
+//        var div=document.createElement('div');
+//        var text=document.createTextNode(s);
+//        div.appendChild(text);
+//        return div.innerHTML;
+//return s.replace(/\&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\'/g,'&#039;').replace(/\"/g,'&#034;');
+// }
+
+function h(s){ return s.replace(/\&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\'/g,'&#039;').replace(/\"/g,'&#034;'); }
+function uh(s){ return s.replace(/\&lt\;/g,'<').replace(/\&gt\;/g,'>').replace(/\&\#039\;'/g,"'").replace(/\&\#034\;"/g,'"').replace(/\&amp\;/g,'&'); }

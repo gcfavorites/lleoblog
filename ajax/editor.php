@@ -2,6 +2,8 @@
 
 include "../config.php";
 
+
+
 if(isset($_POST['a'])){ include $include_sys."_autorize.php";
 // - - -
 if($_POST['a']=='ljpost') { if(!$podzamok) idie("NE PODZAMOK!");
@@ -38,8 +40,35 @@ $autosave_count = 200; // 128; // через сколько нажатий кнопки автозапись
 
 $num=RE0('num'); $idhelp='editor'.$num; $a=RE('a');
 
+//=================================== load ===================================================================
+// <div id='buka' class='ll' onclick="majax('editor.php',{a:'load',id:this.id,Date:'2011/11/02'})">click</div>
+if($a=='load') {
+	if($num) { $x='num'; $v=$num; } else { $x='Date'; $v=e(RE('Date')); }
+	if(strstr($v,'#')) list($v,$aname)=explode('#',$v,2);
+
+if(($p=ms("SELECT `Date`,`Body`,`Header`,`opt` FROM `dnevnik_zapisi` ".WHERE("`$x`='$v'"),"_1"))===false) idie(LL('ljpost:notfound').h(" ".$num." ".RE('Date'))); // Такой заметки нет!
+	$p=mkzopt($p);
 
 
+if(!empty($aname)) {
+	$quick=RE0('quick');
+	if(!$quick) $p['Body']=prepare_Body($p); // если quick=0 (по умолчанию) - то обработать до
+
+	/// БЛЯТЬ ХУЙ ЗНАЕТ ПОЧЕМУ НЕ РАБОТАЕТ ПЕРВЫЙ ВАРИАНТ СТРОКИ:
+//	if(preg_match("/<a\s+name=[\'\"]*".preg_quote($aname)."[\'\"]*>(.*?)(<a\s+name=|$)/si",$s,$m)) $s=$m[1];
+	if(preg_match("/<a\s+name=[\'\"]*".preg_quote($aname)."[\'\"]*>(.*?)<a\s+name=/si",$p['Body'].'<a name=',$m))
+		$p['Body']=$m[1]; else idie('Error reading #'.h($aname));
+
+	if($quick) $p['Body']=prepare_Body($p); // если quick=1 - обработать после
+	
+} else $p['Body']=prepare_Body($p);
+
+//	idie(h($s));
+	otprav("
+zabil('".RE('id')."',\"".njs($p['Body'])."\");
+".(($idhead=RE('idhead'))!=''?"zabil('".RE('idhead')."',\"".$p['Header']."\");":'')."
+");
+}
 //=================================== ljpost ===================================================================
 // - - - - -
 if($a=='ljpost') { AD();
@@ -379,10 +408,21 @@ if($a=='newform') { AD();
 	);
 } 
 //=================================== запросили форму ===================================================================
+if($a=='editform_new') {
+	$loc=rpath(substr(RE('loc'),strlen($httphost)));
+	if(($p=ms("SELECT `num` FROM `dnevnik_zapisi` WHERE `Date`='".e($loc)."'","_l",0))!==false) idie("Already exist: ".h($loc));
+	if(is_file($site_module.strtoupper($loc).".php")) $Body='{_'.strtoupper($loc).':_}'; else $Body='';
+	$p=array('Access'=>'admin','DateUpdate'=>time(),'Date'=>e($loc),'Body'=>$Body);
+	msq_add('dnevnik_zapisi',$p);
+	$num=mysql_insert_id();
+	$a='editform';
+}
+
 if($a=='editform') { AD();
 	if($num) $p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0);
 	else { $p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `Date`='".e(RE('Date'))."'","_1",0); $num=$p['num']; }
-	if($p===false) idie("Отсутствует заметка #$num ".RE('Date'));
+	if($p===false) idie("Отсутствует заметка #$num ".RE('Date')
+."<p><div class='ll' onclick=\"majax('editor.php',{a:'editform_new',loc:window.location.href})\">Создать?</div>");
 	// $p=mkzopt($p);
 	// dier($p);
 	edit_textarea($p,$s);
@@ -677,6 +717,7 @@ return ($s==''?'':"<br><fieldset><legend>options</legend>$s</fieldset><p>");
 
 //===============
 function prepare_Body($p) { global $httphost,$httpsite,$include_sys;
+	$GLOBALS['article']=$p;
 	include_once $include_sys."_modules.php";
         $s=modules($p['Body']); // процедуры site
 	// произвести автоформатирование
@@ -701,7 +742,7 @@ $s=str_ireplace(array( // заменить классы на стили
 ),$s);
 
 	$mydir=$httphost.substr($p['Date'],0,(strlen($p['Date'])-strlen(strrchr($p['Date'],"/")))+1);
-        $s=preg_replace("/(<[^>]+src\=[\'\"]*)\//si","$1".$httpsite."/",$s); // картинки поставить на места
+        $s=preg_replace("/(<[^>]+src\=[\'\"]*)(\/)/si","$1".$httpsite."/",$s); // картинки поставить на места
         $s=preg_replace("/(<[^>]+src\=[\'\"]*)([^>\s\:]{6})/si","$1".$mydir."$2",$s); // картинки поставить на места
 
 return $s;

@@ -29,6 +29,7 @@ var oldhash=window.location.hash; // слушалка hash
 function hashDaemon(){ if(window.location.hash!=oldhash){ oldhash=window.location.hash;
 	if(doMessage(oldhash.substring(1))!=7) hashtime=0; // если что-то произошло, ускориться
 	}
+// salert('ping',200);
 	if(hashtime<hashtime_max) hashtime+=hashtime_step; setTimeout(hashDaemon,hashtime);
 } setTimeout(hashDaemon,hashtime);
 
@@ -42,12 +43,13 @@ function doMessage(s) { if(s==''||s==' ') return 7;
 			if(m[0]=='NO') clean(m[1]);
 		}
 
+
 	var r={}; for(var i in m) {
 		var c='=',k=m[i].split(c); if(k.length<2){ c=':'; k=m[i].split(c); } // как кому нравицо
 		if(k.length<2) r[k.shift()]='function'; else r[k.shift()]=k.join(c); //.replace(/#%tZ#/g,';').replace(/#%rZ#/g,'|'));
 	}
-
-	if(window.top !== window.self && (typeof r.MYID == 'undefined' || r.addr != IMBLOAD_MYID)) return; // не мое дело
+//	if( window.top !== window.self && (typeof r.MYID == 'undefined' || r.ADR != IMBLOAD_MYID)) return; // не мое дело
+// salert('ping:'+oldhash,200000);
 
 	var k=0; for(var i in r) { if(r[i]=='function'&& message_func[i]) { k++; if(1===message_func[i](r)) return; } }
 	if(!k) message_func['default'](r);
@@ -60,6 +62,14 @@ function sendm(s){ /*if(typeof w == 'undefined')*/ var w=window.top;
   if(''==w.location.hash.replace(/([\s\#]|\%20|\%34)+/g,'')) w.location.hash=s; else setTimeout("sendm(\""+s+"\")",500);
 }
 
-function resize_me(){ sendm("RESIZE;w="+getDocW()+";h="+getDocH()+";id="+IMBLOAD_MYID+";#"); }
+function resize_me(){ 
+
+// window.top.location.hash='RESIZE;id='+IMBLOAD_MYID+';w='+getDocW()+';h='+getDocH()+';#';
+// window.top.location.hash="RESIZE;w="+getDocW()+";h="+getDocH()+";id="+IMBLOAD_MYID+";#";
+sendm("RESIZE;w="+getDocW()+";h="+getDocH()+";id="+IMBLOAD_MYID+";#"); 
+
+}
+
+
 
 //setTimeout("sendm('WIN;head=1;text=2;id=monti')",2000);

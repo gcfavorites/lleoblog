@@ -1,5 +1,7 @@
 <?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 
+$starttime=time();
+
 if(!$admin) { $ttl=60; } else { if($jaajax) $ttl=0;
 else {
 	$MYPAGE_MD5 = md5($MYPAGE);
@@ -90,6 +92,12 @@ function msq_del($tb,$ara,$u='') {
 }
 
 function msq($s) { global $msqe;
+
+	if(time()-$GLOBALS['starttime']>5) {
+		logi('starttime.log',"\nerror: ".$GLOBALS['MYPAGE']);
+		die('starttime error');
+	}
+
 	$sql=mysql_query($s);
 	$e=mysql_error(); if($e!='') $msqe .= "<p><font color=green>mysql_query(\"$s\")</font><br><font color=red>$e</font>";
 	return($sql);

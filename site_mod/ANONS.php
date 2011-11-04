@@ -197,6 +197,7 @@ if($conf['list']) $list.=mper($conf['list_element'],array(
 'numer'=>$numer,
 'Header'=>$p["Header"],
 'link'=>get_link_($p["Date"]), // неполная ссылка на статью
+'Date'=>$p["Date"], // неполная ссылка на статью
 'num'=>$p["num"],
 'Y'=>$Y,'M'=>$M,'D'=>$D
 ));

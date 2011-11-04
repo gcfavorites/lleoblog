@@ -32,24 +32,20 @@ function filechmod($f,$p=''){ if($p=='') $p=isset($GLOBALS['fchmod'])?$GLOBALS['
 function dirchmod($d,$p=''){ if($p=='') $p=isset($GLOBALS['dchmod'])?$GLOBALS['dchmod']:0755; chmod($d,$p); }
 function fileget($f) { return file_get_contents($f); }
 
-function urlget_name($f) { return $GLOBALS['hosttmp']."GET-".rpath(parse_url($f,PHP_URL_HOST).'.flag'); }
-function urlget($f,$time=0) { if(!$time) $time=($GLOBALS['admin']?10:60);
+function urlget($f) {
 	if(!is_dir($GLOBALS['hosttmp'])) return file_get_contents($f);
-	$l=urlget_name($f);
-//	logi('urlget.txt',"\n$l");
+	$l=$GLOBALS['hosttmp'].rpath(parse_url($f,PHP_URL_HOST).'.get');
+
+	logi('urlget.txt',$l);
+
 	if(is_file($l)) {
-		if(time()-filemtime($l)<$time) {
-				logi('urlget.txt',"\n$l - false:".time()."/".filemtime($l));
-				return false; } // если меньше 5 секунд
+		if(time()-filemtime($l)<($GLOBALS['admin']?5:60)) return false; // если меньше 5 секунд
 		unlink($l); // иначе сбросить его и начать повторное
-//			logi('urlget.txt'," - clear");
 	}
 
 	touch($l);
-//			logi('urlget.txt'," - touch & get");
 	$s=file_get_contents($f);
 	unlink($l);
-//			logi('urlget.txt'," - clean & ".($s===false?'false':'OK'));
 	return $s;
 }
 

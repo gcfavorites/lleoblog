@@ -379,7 +379,10 @@ idd($newid).style.marginLeft='".($lev+25)."px';
 idd($newid).name='$newid';
 otkryl($newid);
 ".(!$id?"window.location=mypage.replace(/#[^#]+$/g,'')+'#$newid';":"")."
+
+if(typeof(playswf)!='undefined')playswf('http://lleo.me/dnevnik/design/kladez/'+((Math.floor(Math.random()*100)+1)%27));
 "
+////if(typeof(playswf)!='undefined')playswf('http://lleo.me/dnevnik/design/kladez/'+((Math.floor(Math.random()*100)+1)%27));
 // .($GLOBALS['admin']?"alert('сбросили кэш заметки #".$dat." = ".comment_cachename($dat)."'); ":'')
 );
 
