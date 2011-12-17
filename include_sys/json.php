@@ -57,22 +57,33 @@ function jdecoder($json_str){ $cyr_chars = array (
 function jsonDecode($json) {
 	$json = str_replace('\\/','/',$json);
 	$json = jdecoder($json);
+	$json = str_replace(array("\\\\", "\\\""), array("&#92;", "&#34;"), $json);
 
-      $json = str_replace(array("\\\\", "\\\""), array("&#92;", "&#34;"), $json);
+
       $parts = preg_split("@(\"[^\"]*\")|([\[\]\{\},:])|\s@is", $json, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-      foreach($parts as $index => $part) {
+
+
+//return $parts;
+      foreach($parts as $i=>$part) {
           if(strlen($part) == 1) {
               switch ($part) {
-                  case "[": case "{": $parts[$index] = "array("; break;
-                  case "]": case "}": $parts[$index] = ")"; break;
-                  case ":": $parts[$index] = "=>"; break;   
+                  case "[": case "{": $parts[$i] = "array("; break;
+                  case "]": case "}": $parts[$i] = ")"; break;
+                  case ":": $parts[$i] = "=>"; break;   
                   case ",": break;
-                  default: return null;
+                  default: return false; //array('e'=>$part);
               }
-          }
-          else if((substr($part,0,1) != '"') || (substr($part,-1,1) != '"')) return null;
+          } 
+          else {
+		if($part=="null") $parts[$i] = "\"\"";
+		else if((substr($part,0,1) != '"') || (substr($part,-1,1) != '"')) $parts[$i]='"'.trim($parts[$i]).'"';
+	}
+//return null;
       }
+
       $json = str_replace(array("&#92;", "&#34;", "$"), array("\\\\", "\\\"", "\\$"), implode("", $parts));
+
+//return array('dd'=>$json);
       return eval("return $json;");
 }
 ?>

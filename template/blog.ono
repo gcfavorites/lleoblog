@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset={wwwcharset}" />
+{_SNAPSHOT:_}{_MAIN:_}{_STYLE_ADD: {www_css}blog.css _}{_STYLE_ADD: {www_css}sys.css _}
+<title>{admin_name}: {_TITLE:_}</title>
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+<!-- link href="{www_design}styles.css" rel="stylesheet" type="text/css" / -->
+<link rel="alternate" type="application/rss+xml" title="{admin_name}" href="{httphost}rss" />
+<link rel="prev" href="{prevlink}" id="PrevLink" />
+<link rel="next" href="{nextlink}" id="NextLink" />
+<link rel="UpLink" href="{uplink}" id="UpLink" />
+<link rel="DownLink" href="{downlink}" id="DownLink" />
+</head>
+
+<body class="twoCol">
+<div id="container">
+<div id="sidebar1"><center>
+
+<a href="/"><img title='Главная страница сайта' src="/dnevnik/design/userpick.jpg" width=120 height=155 border=0></a><p class=r><b>Леонид Каганов</b>
+
+{_UNIC:
+logintxt = login&nbsp;
+template = <div id='loginobr' style='cursor:pointer; padding:2px; margin: 1px 10px 1px 10px; border:1px dotted #B0B0B0;' onclick="majax('login.php',{action:'openid_form'})"><span style='font-size:7px;'>ваш логин:</span><div id='myunic' style='font-weight: bold; color: blue; font-size: 8px;'>{name}</div></div>{kuki}
+_}
+
+{_NO:
+Номер Вашего заказа MM_165
+{_OTHERBLOGS:_}
+_}
+<p class=r><a title='Всплывает окошко со списком заметок,<br>которые ваш браузер ещё не открывал.' href="javascript:majax('okno.php',{a:'notseen',day:30})">нечитанное</a>
+<p class=r><a title='Перейти на страницу со списком всех заметок.' href=/dnevnik/contents>содержание</a>
+<p class=r><a title='Скучный документ с правилами этого дневника.' href=/dnevnik/whatis>о дневнике</a>
+<p class=r><a title='Размещение рекламы в этом блоге возможно!<br>Перейти на страницу рекламной политики.' href=/reklama>купить рекламу</a>
+<p class=r><a title='Заходы на эту страницу по ссылкам<br>и через поисковики.' href="javascript:majax('statistic.php',{a:'loadstat',data:'1802'})">статистика</a>
+<p><INPUT type='text' size='7' style="color: #777777" value="поиск" onclick="majax('okno.php',{a:'search'})">
+
+{_CALENDAR:_}
+
+<p class=r><a title='Перейти на страницу в техническом блоге /blog (вы-то находитесь в блоге /dnevnik), где рассказывается, как можно установить себе мой движок блога (он открытый).' href=/blog/lleoblog>движок</a>
+
+{_STATISTIC: template = <p class=r><a title='Заходы на эту страницу по ссылкам<br>и через поисковики.' href="javascript:{majax}">статистика</a> _}
+{_KTOPOSETIL: podzamok , short , <p class=r><span title='Кто посещал эту страницу поименно?'>посетители</span> _}
+
+<p><a href=/dnevnik/rss.xml><img src="/dnevnik/design/rss.gif" width=36 height=14 border=0 alt="RSS вход" title='Мой дневник поддерживает RSS'></a>
+
+<p class=r>посещений: {_COUNTER:_}
+<!--LiveInternet counter-->
+<p><script type="text/javascript">document.write("<a href='http://www.liveinternet.ru/click' target=_blank><img src='//counter.yadro.ru/hit?t38.6;r" + escape(document.referrer) + ((typeof(screen)=="undefined")?"":";s"+screen.width+"*"+screen.height+"*"+(screen.colorDepth?screen.colorDepth:screen.pixelDepth)) + ";u" + escape(document.URL) +";h"+escape(document.title.substring(0,80)) +  ";" + Math.random() + "' border=0 width=31 height=31 alt='' title='LiveInternet'><\/a>")</script>
+<!--/LiveInternet-->
+&nbsp;
+<!--Openstat-->
+<span id="openstat2191304"></span>
+<script type="text/javascript">
+var openstat = { counter: 2191304, image: 68, next: openstat };
+(function(d,t,p) {
+var j = d.createElement(t); j.async = true; j.type = "text/javascript";
+j.src = ("https:" == p ? "https:" : "http:") + "//openstat.net/cnt.js";
+var s = d.getElementsByTagName(t)[0]; s.parentNode.insertBefore(j, s);
+})(document,"script",document.location.protocol);
+</script>
+<!--/Openstat-->
+</center>
+
+{_NO:
+<p class=r>Поддержка:
+
+<div style="font-size:11px; margin: 0 2px 0 2px;">
+<p><a href='http://topazoff.com.ua/'>http://topazoff.com.ua</a>
+<br>Топазофф (Украина) - Android планшеты по минимальным ценам+аксессуары
+
+<p><a href='http://card-art.ru/'>http://card-art.ru</a>
+
+<br>Игральные карты на заказ. Замечательный подарок! Онлайн конструктор.
+
+<p><a href='http://idealportret.ru/'>idealPortret.ru</a>
+<br>Cервис по улучшению фотографий. Профессиональные художники улучшат ваши фото.
+</div>
+_}
+
+
+</center></div><div id="mainContent">{_PREWORD:_}{_ANOTHER_DATE:_}
+{_PREVNEXT:
+prev = <a href='{prevlink}'>&lt;&lt; предыдущая заметка</a>
+next = <a href='{nextlink}'>следующая заметка &gt;&gt;</a>
+no = &nbsp;
+template = <center><table width=98% cellspacing=0 cellpadding=0><tr valign=top><td width=50%><font size=1>{prev}</font></td><td width=50% align=right><font size=1>{next}</font></td></tr></table></center>
+_}
+
+<div id="post">{_MAY9:_}{_HEAD:_}<div id="bodyz">{_TEXT:_}</div></div>
+
+<div id="copyright">{signature}
+{_TAGS: template = <div style='font-size: 10pt; text-align:right;'><div class=ll onclick="majax('search.php',{a:'alltag'})">тэги записи:</div> {tags}</div> _}
+<div>{_YANDEXCOUNT:_}&nbsp;&nbsp;&nbsp;{_ADDTHIS:_}</div>
+</div><!--
+Navig -->{_PREVNEXT:_}<!--
+Comments --><div id="comments">
+{_REKOMENDA:_}
+{_COMENTS:_}
+</div></div><!--
+/mainContent -->
+<!-- верстку :( --><br class=q />
+
+</div>
+</body></html>

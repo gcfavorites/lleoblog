@@ -6,14 +6,9 @@
 // if(ini_get('register_globals')!=false) 
 // foreach(array_merge($_GET,$_POST,$_REQUEST,$_COOKIE) as $n=>$l) unset(${$n});
 
-// определим блог и прогоним нахуй www.
-$MYHOST=substr($httpsite,7);
-if($_SERVER["HTTP_HOST"]!=$MYHOST) { list($AC,$l,$s)=explode('.',$_SERVER["HTTP_HOST"],3);
-if($AC=='www') {
-	if(isset($redirect_www)) redirect((substr($_SERVER["HTTP_HOST"],4)==$MYHOST?$httpsite:str_replace('//','//'.$l.'.',$httpsite)).$_SERVER["REQUEST_URI"]);
-	else $AC=$l;
-}
-}
+$uc='unic5_'.str_replace('/','_',$blogdir);
+
+// die("'$acc'".($acc===false?'false':($acc===''?'#':'')).gettype($acc));
 
 //========================================================================================
 //Ќекоторые ебанутые сборки PHP не имеют элементарных функций, мне придетс€ их эмулировать
@@ -25,6 +20,10 @@ if(!function_exists('str_ireplace')){ function str_ireplace($a,$b,$s){ $t=chr(1)
  while(($pos=strpos($h,$n))!==FALSE){ $s=substr_replace($s,$t,$pos,strlen($a)); $h=substr_replace($h,$t,$pos,strlen($a)); }
  return str_replace($t,$b,$s);
 }}
+
+// некоторые настройки серверов бывают ебануты:
+if(strstr($_SERVER['HTTP_HOST'],':')) list($_SERVER["HTTP_HOST"],)=explode(':',$_SERVER["HTTP_HOST"],2);
+
 
 // “акже надо прописать пермиссионс
 
@@ -98,6 +97,8 @@ $lju=getlj(); if($lju!==false) setcoo("lju",base64_encode($lju));
 $IP=$_SERVER["REMOTE_ADDR"]; $IPN=ip2ipn($IP); $BRO=hh($_SERVER["HTTP_USER_AGENT"]);
 $REF=hh(isset($_SERVER["HTTP_REFERER"])?$_SERVER["HTTP_REFERER"]:'');
 $MYPAGE=str_replace(array('<','>',"'",'"'),array('%3C','%3E','%27','%22'),$_SERVER["REQUEST_URI"]); list($mypage) = explode('?',$MYPAGE.'?',2);
+$HMYPAGE='http://'.$_SERVER["HTTP_HOST"].$MYPAGE;
+$hmypage='http://'.$_SERVER["HTTP_HOST"].$mypage;
 include $include_sys."_msq.php"; // все процедуры работы с MySQL
 $months = explode(" ", " €нварь февраль март апрель май июнь июль август сент€брь окт€брь но€брь декабрь");
 $months_rod = explode(" ", " €нвар€ феврал€ марта апрел€ ма€ июн€ июл€ августа сент€бр€ окт€бр€ но€бр€ декабр€");
@@ -105,7 +106,7 @@ $jog_kuki="<div style='position:absolute;width:1px;height:1px;overflow:hidden;le
 $kuki6="<div style='position:absolute;width:1px;height:1px;overflow:hidden;left:-40px;top:0;opacity:0'><object id=kuki6 width=1 height=1 style='width:1px;height:1px;overflow:hidden;position:absolute;left:-400px;top:0;border:0;'><param name='movie' value='".$GLOBALS['www_design']."kuki6.swf' /><param name='allowScriptAccess' value='sameDomain' /><param name='loop' value='true' /><embed src='".$GLOBALS['www_design']."kuki6.swf' width='1' height='1' name='kuki6' allowScriptAccess='sameDomain' loop='true' type='application/x-shockwave-flash'></embed></object></div>";
 
 // ===== ј¬“ќ–»«ј÷»я =====
-if(!isset($autorizatio)) { // не работать с авторизацией при а€ксе или в€ном запрете (модуль restore_unic.php)
+if(!isset($autorizatio)) { // не работать с авторизацией при а€ксе или €вном запрете (модуль restore_unic.php)
 	$up=(isset($_REQUEST['up'])?$_REQUEST['up']:isset($_COOKIE[$uc])?$_COOKIE[$uc]:''); // вз€ть куку авторизации
 	if($up=='candidat') set_unic(); // был кандидатом, зашел второй раз? получи свой номер!
 	else { // ошибка парол€ или нет такого номера в базе - назначить кандидатом
@@ -137,22 +138,29 @@ return false;
 
 function set_unic_candidat() { global $up,$unic,$uc,$podzamok,$imgicourl; $up='candidat'; $unic=0; $IS=array(); $podzamok=0; $imgicourl=$up; setcoo($uc,$up); }
 
-function set_unic() { if($GLOBALS['jaajax']) return; global $IS,$uc,$IPN,$unic,$lju,$up,$podzamok,$imgicourl; $unic=0;
-if(msq_add($GLOBALS['db_unic'],array('ipn'=>$IPN,'lju'=>e($lju),'time_reg'=>time()))===false) { trevoga("DB ADD FALSE!!!!"); return; }
+function set_unic() { if($GLOBALS['jaajax']) return; global $IS,$uc,$IPN,$unic,$up,$podzamok,$imgicourl; $unic=0;
+if(msq_add($GLOBALS['db_unic'],array('ipn'=>$IPN,'time_reg'=>time()))===false) { trevoga("DB ADD FALSE!!!!"); return; }
 	$unic=mysql_insert_id(); if(!$unic) { trevoga("mysql_insert_id():".$unic); die('unic=0 '.$GLOBALS['msqe']); }
 		$up=upset($unic); $IS=array(); $podzamok=0; $imgicourl=$unic;
 	setcoo($uc,$up);
 }
 
 function WHERE($s='',$z='') { // какие заметки доступны?
-	$a=($GLOBALS['admin']?"":$z.($GLOBALS['podzamok']?"`Access` IN ('all','podzamok')":"`Access`='all'"));
-	if($s.$a=='') return ''; if($s=='' || $a=='') return "WHERE ".$s.$a; return "WHERE ".$s." AND ".$a;
+	if(empty($GLOBALS['acn'])) $a=
+// "`acn`=0".
+($GLOBALS['admin']?"":
+// $z.($GLOBALS['podzamok']?" AND `Access` IN ('all','podzamok')":"`Access`='all'")
+($GLOBALS['podzamok']?"`Access` IN ('all','podzamok')":"`Access`='all'")
+);
+	else $a="`acn`='".$GLOBALS['acn']."'".($GLOBALS['ADM']?"":" AND `Access`='all'");
+	if($s.$a=='') return ''; if($s=='' || $a=='') return "WHERE ".$s.$a;
+return "WHERE ".$s." AND ".$a;
 }
 
 
 function getis_global($unic) { global $IS;
 if(stristr($GLOBALS['BRO'],'blogtest')) { 
-	$GLOBALS['unic']=$unic=666;
+	$GLOBALS['unic']=$unic=1241284; //666;
 	$GLOBALS['up']=upset($unic);
 	$IS=array( // тестовый логин
 	'id'=>666,
@@ -174,22 +182,59 @@ else $IS=getis($unic); if($IS!==false) {
 	$GLOBALS['unic']=$unic;
 	$GLOBALS['podzamok']=$GLOBALS['admin']||$IS['admin']=='podzamok'?true:false;
 	$GLOBALS['imgicourl']=(!empty($IS['imgicourl'])?$IS['imgicourl']:'#'.$unic);
+// $GLOBALS['imgicourl']="<input title='Login!' value='anonymous' onclick=\"ifhelpc('".$GLOBALS['httpsite'].$GLOBALS['httphost']."/login','logz','Login')\" type='button'>";
 	}
 return $IS;
 }
 
 function getis($unic) {
-	$is=ms("SELECT * FROM ".$GLOBALS['db_unic']." WHERE `id`='$unic'","_1"); if($is!==false) {
-		$is=array_merge($is,get_ISi($is));
-		$is['imgicourl']=h($is['user']);
-		if(isset($is['url'])) $is['imgicourl']="<a href='http://".h($is['url'])."'>".$is['imgicourl']."</a>";
-		if(isset($is['ico'])) $is['imgicourl']="<img src='".h($is['ico'])."'>".$is['imgicourl'];
+	if(($is=ms("SELECT * FROM ".$GLOBALS['db_unic']." WHERE `id`='$unic'","_1",0))!==false) {
+		$is=get_ISi($is);
 		if($is['admin']=='podzamok' || $is['admin']=='admin') $is['imgicourl']=zamok('podzamok').$is['imgicourl'];
 	}
 	return $is;
 }
 
 function get_ISi($is) {
+	$is=array_merge($is,get_ISim($is));
+
+// $is['imgicourl']="<input title='Login!' value='anonymous' onclick=\"ifhelpc('".$GLOBALS['httphost']."login','logz','Login')\" type='button'>";
+
+	$is['imgicourl']=(empty($is['user'])?
+// '#'.$is['id']
+"<input title='Login!' value='anonymous' onclick=\"ifhelpc('".$GLOBALS['httphost']."login','logz','Login')\" type='button'>"
+:"<img src='".$is['port']."/favicon.ico'>").h($is['user']);
+	return $is;
+}
+
+function get_ISim($is) {
+
+	if(empty($is['openid'])) { // если не опенид-логин
+		if(empty($is['login']) and empty($is['password'])) // дл€ вообще пустых
+			return array('user'=>'anonymouse');
+		return array(
+			'user'=>(!empty($is['realname'])?$is['realname']:$is['login']),
+			'port'=>rtrim($GLOBALS['httpsite'].'/'.$GLOBALS['blogdir'],'/') // порт приписки
+		);
+	}
+
+	// если опенид
+        // порт приписки вычислим
+	preg_match("/^(.*?)([^\.]+\.[^\.]+)$/s",preg_replace("/www\./si",'',parse_url($is['openid'],PHP_URL_HOST)),$m);
+	$port=$m[2];
+	// $name=trim(basename('/'.$m[1]),'.');
+
+	if(!empty($is['realname'])) $realname=$is['realname'];
+	elseif(($realname=trim(parse_url($is['openid'],PHP_URL_PATH),'/'))!=''){}
+	else $realname=preg_replace("/^(.*)\.[^\.]+\.[^\.]+$/s","$1",preg_replace("/www\./si",'',parse_url($is['openid'],PHP_URL_HOST)));
+
+	return array(
+		'user'=>$realname,
+		'port'=>'http://'.$port // порт приписки
+	);
+	
+
+/*
 	if($is['obr']=='realname' and $is['realname']!='') return array('user'=>$is['realname']);
 	if($is['obr']=='login' and $is['login']!='') return array(
 		'url'=>$GLOBALS['blog_name']."/user/".$is['login'],
@@ -207,9 +252,12 @@ function get_ISi($is) {
 //		'DOMAIN'=>$dom,
 		'ico'=>get_IS_IMGi($dom,$root)
 	);
+*/
 }
 
-function get_IS_IMGi($dom,$root) { global $www_ico;
+function get_IS_IMGi($dom,$root) { die('Err8');
+/*
+	global $www_ico;
 	if($dom=='lleo.aha.ru') return; // $www_ico."fav.ico";
 //	if($log=='lleo.aha.ru' || $log=='lleo') return $www_ico."favicon.ico";
 	if($dom=='livejournal.com' || $dom=="users.livejournal.com") return; // $www_ico."lj.gif";
@@ -219,6 +267,7 @@ function get_IS_IMGi($dom,$root) { global $www_ico;
 	if($dom=='ya.ru') return; // $www_ico."ya.ico";
 	if($dom=='moikrug.ru') return; // $www_ico."moikrug.ico";
 	return "http://google.com/s2/favicons?domain=".$root;
+*/
 }
 
 function broident2($add) { return sha1($add); }
@@ -315,9 +364,18 @@ function ispravkawa($s) {
 function nekawa($s) { return strtr($s,"\xBB"."\xAB".chr(151),'""-'); }
 
 
-function setcoo($n,$v,$t=0) { if(!$GLOBALS['jaajax']) setcookie($n,$v,($t?$t:time()+86400*365),"/","",0); }
+function setcoo($n,$v,$t=0) { 
+//SCRIPTS "c_save('$n','$v',1)";
 
-/*
+if(!$GLOBALS['jaajax']) {
+	$s="page_onstart.push(\"c_save('$n','$v',1)\");";
+	$GLOBALS['_SCRIPT']['cookie']=(empty($GLOBALS['_SCRIPT']['cookie'])?'':$GLOBALS['_SCRIPT']['cookie']).$s;
+}
+
+//set_cookie($n,$v,($t?$t:time()+86400*365),"/",".".$GLOBALS['MYHOST'],0); 
+
+}
+
 function set_cookie($Name,$Value='',$MaxAge=0,$Path='',$Domain='',$Secure=false,$HTTPOnly=false) {
 	if(isset($GLOBALS['cookie_method_old'])) { setcookie($Name, $Value, $MaxAge, $Path, $Domain, 0); return; }
 	header('Set-Cookie: ' . rawurlencode($Name) . '=' . rawurlencode($Value)
@@ -327,7 +385,7 @@ function set_cookie($Name,$Value='',$MaxAge=0,$Path='',$Domain='',$Secure=false,
 		.(!$Secure       ? '' : '; secure')
 		.(!$HTTPOnly     ? '' : '; HttpOnly'), false);
 }
-*/
+
 
 function file_get($f,$c=true) {	if(!$GLOBALS['cache_get'] or !is_dir($GLOBALS['fileget_tmp'])) return file_get_contents($f);
 	$n=preg_replace("/[^0-9a-zA-Z_\-\.\~]+/si","#", str_replace("http://","",$f) );
@@ -345,7 +403,9 @@ function zamok($d) {
 	return '';
 }
 
-function h($s) { return htmlspecialchars($s); }
+function h($s) { return str_replace(array('&','<','>',"'",'"'),array('&amp;','&lt;','&gt;','&#39;','&#34;'),$s);
+//htmlspecialchars($s);
+}
 function hh($s) {
 	if(stristr(substr($s,0,10),'javascript')) $s="jаvаsсriрt".substr($s,10);
 	return str_replace(
@@ -368,7 +428,20 @@ function mail_validate($s) {
 	return (preg_match("/^[0-9a-z_\-\.]+\@[0-9a-z\-\.]+\.[0-9a-z]{2,10}$/si", $s) ? $s : false);
 }
 function site_validate($s) { return (preg_match("/^([a-z]+:\/\/|(www\.))[a-z][a-z0-9_\.\-]*\.[a-z]{2,6}[\[a-zA-Z0-9!#\$\%\&\(\)\*\+,\-\.\/:;=\?\@]*$/i",$s)? $s : false); }
-function get_link($Date) { list($y,$m,$d)=explode("/",substr($Date,0,10),3); if($y*$m*$d) return $GLOBALS['httphost'].$Date.".html";	return $GLOBALS['httphost'].$Date; }
+
+function acc_link($acc='',$s='') { return (empty($acc)?$GLOBALS['httpsite']:
+str_replace('http://','http://'.$acc.'.',$GLOBALS['httpsite']))
+.(empty($s)?$GLOBALS['wwwhost']:$s);
+}
+
+function get_link($Date) { global $acn,$acc,$httphost;
+if(empty($acn)) $x=$httphost; else {
+	if(empty($acc)) $acc=ms("SELECT `acc` FROM `jur` WHERE `acn`='".e($acn)."' LIMIT 1","_l");
+	$x=acc_link($acc);
+}
+
+list($y,$m,$d)=explode("/",substr($Date,0,10),3); if($y*$m*$d) return $x.$Date.".html"; return $x.$Date;
+}
 function get_link_($Date) { list($y,$m,$d)=explode("/",substr($Date,0,10),3); if($y*$m*$d) return $GLOBALS['wwwhost'].$Date.".html";	return $GLOBALS['wwwhost'].$Date; }
 
 function getmaketime($d) {
@@ -434,10 +507,17 @@ function ifu($s){ $l=uw($s); return ($s==wu($l)?$l:$s); }
 function RE($s) { return isset($_REQUEST[$s])?$_REQUEST[$s]:false; }
 function RE0($s) { return isset($_REQUEST[$s])?intval($_REQUEST[$s]):false; }
 function AD() { if(!$GLOBALS['admin']) idie('“олько дл€ админа.'); }
-
+function ADMA() { // проверка на админа акаунта
+	global $acn,$ADM; $acn=RE0('acn');
+	if(!$acn&&$GLOBALS['admin']) return 0;
+	if(ms("SELECT COUNT(*) FROM `jur` WHERE `acn`='".$acn."' AND `unic`='".e($GLOBALS['unic'])."'","_l",0))
+	{ $ADM=1; return $acn; }
+	idie('You are not admin!');
+	
+}
 
 function LLoad($lang) { global $langbasa;
-	$a=file($GLOBALS['filehost'].'/module/lang/'.$lang.'.txt');
+	$a=file($GLOBALS['filehost'].'/module/lang/'.$lang.'.lang');
 	if(!isset($langbasa)) $langbasa=array();
 	foreach($a as $l) { if(!strstr($l,"\t")) continue;
 		list($c,$s)=explode("\t",$l,2);
@@ -514,10 +594,10 @@ foreach($zopt_a as $n=>$l) if(isset(${'zopt_'.$n})) $zopt_a[$n][0]=${'zopt_'.$n}
 $admincolors=array(array('admin','ledred.png'),array('podzamok','ledyellow.png'),array('all','ledgreen.png'));
 // ======================= zopt ==========================
 
-function ADMINSET($p='') { if(!$GLOBALS['admin']) return '';
+function ADMINSET($p='') { if(!$GLOBALS['admin']&&!$GLOBALS['ADM']) return '';
 	if(gettype($p)!='array') $p=$GLOBALS['article'];
         foreach($GLOBALS['admincolors'] as $l) if($l[0]==$p['Access']) break;
-        return "<img alt='".LL('Editor:dostup')."' onclick=\"majax('editor.php',{a:'ch_dostup',d:this.src,num:".$p['num']."})\" class='".$p['num']."_adostup' src='".$GLOBALS['www_design']."e3/".$l[1]."'>";
+        return "<img alt='".LL('Editor:dostup')."' onclick=\"majax('editor.php',{acn:'".$GLOBALS['acn']."',a:'ch_dostup',d:this.src,num:".$p['num']."})\" class='".$p['num']."_adostup' src='".$GLOBALS['www_design']."e3/".$l[1]."'>";
 }
 
 function mkzopt($p) { $o=unser($p['opt']); // сделать из $p массив опций и вернуть его
@@ -535,5 +615,8 @@ function unser($p){ return empty($p)?array():unserialize($p); }
 function ser($p){ return sizeof($p)?serialize($p):''; }
 
 // function getsite($s) { return ($s=ms("SELECT `text` FROM `site` WHERE `name`='".e($s)."'","_l"))!==false?$s:'{text}'; }
+
+function iphash(){ return sha1($GLOBALS['hashinput'].$GLOBALS['IP'].$GLOBALS['BRO']); }
+function if_iphash($h){ if($h!=sha1($GLOBALS['hashinput'].$GLOBALS['IP'].$GLOBALS['BRO'])) idie("IPhash error!"); }
 
 ?>

@@ -2,12 +2,11 @@
 
 include_once $GLOBALS['include_sys']."getlastcom.php"; getlastcom();
 
-function COMM() { global $lim,$admin,$mode,$lastcom,$ncom;
+function COMM() { global $lim,$admin,$mode,$lastcom,$ncom,$acn;
 // $GLOBALS['opt']=mkzopt(array('opt'=>$GLOBALS['article']['opt']));
 
 $mytime=time();
 $er=$ok=array(); // сюда пишутся ошибки и системные сообщения
-
 
 if($GLOBALS['admin']) {
 	$a=glob($GLOBALS['antibot_file']."*.jpg"); $abot=sizeof($a); unset($a); // сколько антиботовых картинок?
@@ -33,11 +32,12 @@ if($GLOBALS['admin']) {
 $sqlref="SELECT c.`id`,c.`unic`,c.`group`,c.`Name`,c.`Text`,c.`Parent`,c.`Time`,c.`whois`,c.`rul`,c.`ans`,
 c.`golos_plu`,c.`golos_min`,c.`scr`,c.`DateID`,c.`BRO`,
 u.`capchakarma`,u.`mail`,u.`admin`,
+u.`realname`,u.`login`,u.`openid`,u.`img`,
 ".($GLOBALS['admin']?"z.Access,z.num,":'')."
 z.`opt`,z.Access,z.`Date`,z.`DateDate`,z.`Header`,z.`view_counter`
 FROM
 `dnevnik_comm` AS c
-JOIN `dnevnik_zapisi` AS z ON c.`DateID`=z.`num`
+JOIN `dnevnik_zapisi` AS z ON c.`DateID`=z.`num` ".(empty($acn)?'':" AND z.`acn`='$acn'")."
 LEFT JOIN ".$GLOBALS['db_unic']." AS u ON c.`unic`=u.`id`
 
 WHERE "
@@ -108,7 +108,7 @@ return $s.$GLOBALS['msqe'];
 
 function makeGET($ar) { $r=''; $m=$_GET;
 	foreach($ar as $a=>$b) $m[$a]=$b;
-	foreach($m as $a=>$b) if($b!='') $r.="$a=$b&";
+	foreach($m as $a=>$b) if($b!='') $r.=urlencode($a)."=".urlencode($b)."&";
 	return trim($r,'&');
 }
 
@@ -123,6 +123,6 @@ function print_headerp($p) {
 }
 
 
-function print1($p) { $level=($p['Parent']!=0?'-4':'0'); return comment_one($p,0,$level); }
+function print1($p) { $level=($p['Parent']!=0?'-4':'0'); return comment_one(get_ISi($p),0,$level); }
 
 ?>

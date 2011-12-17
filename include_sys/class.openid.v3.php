@@ -1,4 +1,7 @@
 <?
+
+die('sdfdsvfdfs');
+
 /*
 	FREE TO USE
         Under License: GPLv3

@@ -13,80 +13,60 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 -- База данных: `lleoblog`
 --
 
-
-
 -- --------------------------------------------------------
 --
--- Структура таблицы `uni`
+-- Структура таблицы `unic`
 --
-CREATE TABLE IF NOT EXISTS `uni` (
-  `uni` bigint(20) unsigned NOT NULL auto_increment COMMENT 'Личный номер из куки',
-  `login` varchar(64) NOT NULL COMMENT 'vasya либо vasya@openid.site',
+CREATE TABLE IF NOT EXISTS `unic` (
+  `id` int(10) unsigned NOT NULL auto_increment COMMENT 'Личный номер из куки',
+  `realname` varchar(64) NOT NULL COMMENT 'имя/ник (предпочтительно имя-фамилия)',
+  `openid` varchar(128) NOT NULL COMMENT 'inf-url',
+  `login` varchar(32) NOT NULL,
   `password` varchar(32) NOT NULL,
-  `mail1` varchar(64) NOT NULL COMMENT 'mail при регистрации - нельзя сменить никогда',
-  `mail` varchar(64) NOT NULL COMMENT 'действующий mail (изначально совпадает)',
-  `gsm1` varchar(16) NOT NULL COMMENT 'мобильник при регистрации - нельзя сменить никогда',
-  `gsm` varchar(16) NOT NULL COMMENT 'действующий мобильник (изначально совпадает)',
-  `realname` varchar(128) NOT NULL COMMENT 'личное: имя',
-  `birth` date NOT NULL COMMENT 'личное: дата рождения',
+  `mail` varchar(64) NOT NULL COMMENT 'mail при регистрации - нельзя сменить никогда',
+  `mailw` varchar(64) NOT NULL COMMENT 'действующий mail (изначально совпадает)',
+  `tel` varchar(16) NOT NULL COMMENT 'мобильник при регистрации - нельзя сменить никогда',
+  `telw` varchar(16) NOT NULL COMMENT 'действующий мобильник (изначально совпадает)',
+  `img` varchar(180) NOT NULL COMMENT 'ссылка на фотку.jpg',
+  `mail_checked` enum('1','0') NOT NULL default '0',
   `mail_comment` enum('1','0') NOT NULL default '1' COMMENT 'личное: отправлять ли комментарии на email?',
-  `aboutme` varchar(2048) NOT NULL COMMENT 'личное: О себе',
-  `time_reg` int(11) NOT NULL default '0' COMMENT 'время регистрации',
+  `site` varchar(128) NOT NULL,
+  `birth` date NOT NULL COMMENT 'личное: дата рождения',
+  `admin` enum('user','podzamok') NOT NULL,
   `ipn` int(10) unsigned NOT NULL COMMENT 'ip при последнем редактировании личной карточки',
+  `time_reg` int(11) NOT NULL default '0' COMMENT 'время регистрации',
   `timelast` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP COMMENT 'время последнего обновления личной карточки',
-   PRIMARY KEY (`uni`)
-) ENGINE=MyISAM DEFAULT CHARSET=cp1251 COMMENT='База регистраций' AUTO_INCREMENT=0 ;
+  `capcha` enum('yes','no') NOT NULL default 'no',
+  `capchakarma` tinyint(3) unsigned NOT NULL default '0' COMMENT 'Капча-карма нового формата',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Логины посетителей' AUTO_INCREMENT=7528 ;
+--   `login` varchar(64) NOT NULL COMMENT 'vasya либо vasya@openid.site',
+--   `password` varchar(32) NOT NULL,
+--   `realname` varchar(128) NOT NULL COMMENT 'личное: имя',
+--   `aboutme` varchar(2048) NOT NULL COMMENT 'личное: О себе',
 
 --
--- Структура таблицы `jurs`
+-- Структура таблицы `jur`
 --
-CREATE TABLE IF NOT EXISTS `jurs` (
-  `jur` int(10) unsigned NOT NULL auto_increment COMMENT 'Номер журнала',
-  `jurname` varchar(32) NOT NULL COMMENT 'Имя журнала',
-  `admin` int(10) unsigned NOT NULL COMMENT 'Главный владелец',
-   PRIMARY KEY (`jur`),
-   KEY `jurname` (`jurname`(32))
+CREATE TABLE IF NOT EXISTS `jur` (
+  `acn` int(10) unsigned NOT NULL auto_increment COMMENT 'Номер журнала',
+  `acc` varchar(32) NOT NULL COMMENT 'Имя журнала',
+  `unic` int(10) unsigned NOT NULL COMMENT 'Владелец',
+   PRIMARY KEY (`acn`),
+   KEY `acc` (`acc`(32))
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1251 COMMENT='База журналов' AUTO_INCREMENT=0 ;
 
 --
 -- Структура таблицы `unijur`
 --
-CREATE TABLE IF NOT EXISTS `unijur` (
-  `jur` int(10) unsigned NOT NULL COMMENT 'Номер журнала',
-  `uni` bigint(20) unsigned NOT NULL COMMENT 'Номер unic пользователя',
-  `capchakarma` tinyint(3) unsigned NOT NULL default '0' COMMENT 'Капча-карма',
-  `dostup` enum('user','podzamok','mudak','writer','admin') NOT NULL,
-  `abouthim` varchar(2048) NOT NULL COMMENT 'О нем',
-   PRIMARY KEY (`jur`,`uni`)
-) ENGINE=MyISAM DEFAULT CHARSET=cp1251 COMMENT='Настройки посетителей для своего журнала' AUTO_INCREMENT=0 ;
-
-
--- --------------------------------------------------------
---
--- Структура таблицы `unic`
---
-
-CREATE TABLE IF NOT EXISTS `unic` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `login` varchar(32) NOT NULL,
-  `openid` varchar(64) NOT NULL COMMENT 'openid',
-  `obr` enum('realname','login','openid') NOT NULL default 'realname',
-  `lju` varchar(32) NOT NULL,
-  `password` varchar(32) NOT NULL,
-  `realname` varchar(128) NOT NULL,
-  `mail` varchar(64) NOT NULL,
-  `mail_checked` enum('1','0') NOT NULL default '0',
-  `mail_comment` enum('1','0') NOT NULL default '1',
-  `site` varchar(128) NOT NULL,
-  `birth` date NOT NULL,
-  `admin` enum('user','podzamok','admin','mudak') NOT NULL,
-  `ipn` int(10) unsigned NOT NULL,
-  `time_reg` int(11) NOT NULL default '0',
-  `timelast` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  `capcha` enum('yes','no') NOT NULL default 'no',
-  `capchakarma` tinyint(3) unsigned NOT NULL default '0' COMMENT 'Капча-карма нового формата',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=cp1251 COMMENT='Логины посетителей' AUTO_INCREMENT=7528 ;
+-- CREATE TABLE IF NOT EXISTS `unijur` (
+--   `jur` int(10) unsigned NOT NULL COMMENT 'Номер журнала',
+--   `uni` int(10) unsigned NOT NULL COMMENT 'Номер unic пользователя',
+--   `capchakarma` tinyint(3) unsigned NOT NULL default '0' COMMENT 'Капча-карма',
+--   `dostup` enum('user','podzamok','mudak','writer','admin') NOT NULL,
+--   `abouthim` varchar(2048) NOT NULL COMMENT 'О нем',
+--    PRIMARY KEY (`jur`,`uni`)
+-- ) ENGINE=MyISAM DEFAULT CHARSET=cp1251 COMMENT='Настройки посетителей для своего журнала' AUTO_INCREMENT=0 ;
 
 
 -- --------------------------------------------------------
@@ -97,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `unic` (
 
 CREATE TABLE IF NOT EXISTS `dnevnik_comm` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `unic` bigint(20) unsigned NOT NULL COMMENT 'id автора',
+  `unic` int(10) unsigned NOT NULL COMMENT 'id автора',
   `DateID` int(10) NOT NULL COMMENT 'К какой заметке относится',
   `Name` varchar(128) NOT NULL COMMENT 'Автор',
   `Mail` varchar(128) NOT NULL COMMENT 'email',
@@ -123,8 +103,8 @@ CREATE TABLE IF NOT EXISTS `dnevnik_comm` (
 --
 
 CREATE TABLE IF NOT EXISTS `yablogs_count` (
-  `num` bigint(20) NOT NULL,
-  `count` bigint(20) NOT NULL,
+  `num` int(10) NOT NULL,
+  `count` int(10) NOT NULL,
   `time` int(11) unsigned NOT NULL default '0' COMMENT 'Время последнего обновления',
   PRIMARY KEY (`num`),
   KEY `timeupdate` (`time`)
@@ -137,7 +117,7 @@ CREATE TABLE IF NOT EXISTS `yablogs_count` (
 CREATE TABLE IF NOT EXISTS `dnevnik_link` (
   `n` bigint(20) NOT NULL auto_increment,
   `link` varchar(2048) NOT NULL,
-  `count` bigint(20) NOT NULL,
+  `count` int(10) NOT NULL,
   `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `DateID` int(10) unsigned NOT NULL,
   PRIMARY KEY  (`n`),
@@ -151,7 +131,7 @@ CREATE TABLE IF NOT EXISTS `dnevnik_link` (
 --
 
 CREATE TABLE IF NOT EXISTS `dnevnik_plusiki` (
-  `unic` bigint(20) unsigned NOT NULL,
+  `unic` int(10) unsigned NOT NULL,
   `commentID` int(10) unsigned NOT NULL,
   `var` enum('plus','minus') NOT NULL,
   PRIMARY KEY  (`unic`,`commentID`),
@@ -165,7 +145,7 @@ CREATE TABLE IF NOT EXISTS `dnevnik_plusiki` (
 --
 
 CREATE TABLE IF NOT EXISTS `dnevnik_posetil` (
-  `unic` bigint(20) unsigned NOT NULL,
+  `unic` int(10) unsigned NOT NULL,
   `url` int(10) unsigned NOT NULL,
   `date` int(11) unsigned NOT NULL,
   PRIMARY KEY  (`unic`,`url`),
@@ -183,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `dnevnik_search` (
   `poiskovik` varchar(32) NOT NULL,
   `link` varchar(2048) NOT NULL,
   `search` varchar(2048) NOT NULL,
-  `count` bigint(20) NOT NULL,
+  `count` int(10) NOT NULL,
   `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `DateID` int(10) unsigned NOT NULL,
   PRIMARY KEY  (`n`),
@@ -205,7 +185,9 @@ CREATE TABLE IF NOT EXISTS `dnevnik_zapisi` (
   `DateDatetime` int(11) NOT NULL default '0',
   `DateDate` int(11) NOT NULL default '0',
   `opt` text NOT NULL,
+  `acn` int(10) unsigned NOT NULL default '0' COMMENT 'Номер журнала',
   UNIQUE KEY `num` (`num`),
+  KEY `acn` (`acn`),
   KEY `Date` (`Date`(128)),
   KEY `Access` (`Access`),
   KEY `DateDatetime` (`DateDatetime`),
@@ -264,7 +246,7 @@ CREATE TABLE IF NOT EXISTS `pravki` (
 --
 
 CREATE TABLE IF NOT EXISTS `rekomenda` (
-  `n` bigint(20) NOT NULL auto_increment,
+  `n` int(10) NOT NULL auto_increment,
   `datetime` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `link` varchar(2048) NOT NULL,
   `text` text NOT NULL,
@@ -295,7 +277,7 @@ CREATE TABLE IF NOT EXISTS `site` (
 --
 
 CREATE TABLE IF NOT EXISTS `unictemp` (
-  `unic` bigint(20) unsigned NOT NULL,
+  `unic` int(10) unsigned NOT NULL,
   `text` text NOT NULL,
   `timelast` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`unic`)
@@ -308,7 +290,7 @@ CREATE TABLE IF NOT EXISTS `unictemp` (
 --
 CREATE TABLE IF NOT EXISTS `golosovanie_golosa` (
   `golosid` int(10) unsigned NOT NULL COMMENT 'id голосования',
-  `unic` bigint(20) unsigned NOT NULL COMMENT 'id голосующего',
+  `unic` int(10) unsigned NOT NULL COMMENT 'id голосующего',
   `time` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `value` text NOT NULL,
   PRIMARY KEY  (`golosid`,`unic`)
@@ -321,7 +303,7 @@ CREATE TABLE IF NOT EXISTS `golosovanie_golosa` (
 CREATE TABLE IF NOT EXISTS `golosovanie_result` (
   `golosid` int(10) unsigned NOT NULL auto_increment COMMENT 'id голосования',
   `golosname` varchar(32) NOT NULL COMMENT 'имя голосования',
-  `n` bigint(20) NOT NULL,
+  `n` int(10) NOT NULL,
   `text` text NOT NULL,
   PRIMARY KEY (`golosid`),
   KEY `golosname` (`golosname`(32))

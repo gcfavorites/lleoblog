@@ -2,7 +2,7 @@
 
 $starttime=time();
 
-if(!$admin) { $ttl=60; } else { if($jaajax) $ttl=0;
+if(!$admin) { /*$ttl=$GLOBALS['ttl'];*/ } else { if($jaajax) $ttl=0;
 else {
 	$MYPAGE_MD5 = md5($MYPAGE);
 	$ttl=(isset($_COOKIE['MYPAGE']) and $MYPAGE_MD5==$_COOKIE['MYPAGE']?0:60); 
@@ -93,9 +93,9 @@ function msq_del($tb,$ara,$u='') {
 
 function msq($s) { global $msqe;
 
-	if(time()-$GLOBALS['starttime']>5) {
+	if(time()-$GLOBALS['starttime']>15) {
 		logi('starttime.log',"\nerror: ".$GLOBALS['MYPAGE']);
-		die('starttime error');
+		if($GLOBALS['ajax']) idie('Timeout error'); die('Timeout error');
 	}
 
 	$sql=mysql_query($s);

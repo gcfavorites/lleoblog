@@ -8,7 +8,9 @@ function onetext($p,$q=1) { global $wwwhost,$unic;
 
 //	// Посчитать юзера
 
-	if($q&&$unic) {
+	if($q&&$unic
+&& !$GLOBALS['ahtung'] // если нагрузка большая - ничего не делать
+) {
 		$msqe_old=$GLOBALS['msqe']; // запомним накопленные ошибки
 		$GLOBALS['msqe']='';
 		msq_add("dnevnik_posetil",array('unic'=>$unic,'url'=>$p['num'],'date'=>time())); // если есть - не внесет, а даст ошибку, нам не важно

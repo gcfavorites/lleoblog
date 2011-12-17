@@ -2,7 +2,7 @@
 
 include "../config.php";
 
-
+function ANDC() { return ($GLOBALS['acn']?" AND `acn`='".$GLOBALS['acn']."'":''); }
 
 if(isset($_POST['a'])){ include $include_sys."_autorize.php";
 // - - -
@@ -169,9 +169,7 @@ if($a=='loadhelp') {
 }
 //=================================== loadhelp ===================================================================
 
-AD();
-
-if($a=='bigfotoedit') { $i=RE0('i'); $p=RE0('p'); otprav("
+if($a=='bigfotoedit') { AD(); $i=RE0('i'); $p=RE0('p'); otprav("
 send_bigfotoedit=function(){majax('editor.php',{a:'bigfotoedit_send',img:idd('bigfot".$p.'_'.$i."').href,num:".RE0('num').",i:$i,p:$p,txt:idd('message').value})};
 
 helps('opechatku',\"<table border='0' cellspacing='0' cellpadding='0'><tr valign=top><td rowspan=2>"
@@ -190,7 +188,7 @@ setkey('enter','ctrl',send_bigfotoedit,false);
 ");
 }
 
-if($a=='bigfotoedit_send') { $img=RE('img'); $num=RE0('num');
+if($a=='bigfotoedit_send') { AD(); $img=RE('img'); $num=RE0('num');
 	$txt=str_replace(array("\n",'"'),array('<br>','&quot;'),h(RE('txt')));
 	$body=ms("SELECT `Body` FROM `dnevnik_zapisi` WHERE `num`='$num'","_l",0);
 		if(substr_count($body,$img)!=1) { $img=substr($img,strlen($httpsite));
@@ -215,7 +213,7 @@ clean('opechatku');"; otprav($s);
 
 
 // === test ===
-if($a=='test') {
+if($a=='test') { AD(); 
 
 /*
 $s='';
@@ -234,7 +232,7 @@ $s='';
 
 
 //=================================== editpanel ===================================================================
-if($a=='foto') {
+if($a=='foto') { AD(); 
 
 // <script>onload = function() { tree("root") }</script>
 // <p>My photo <span onclick='tree(\"root\")'>albums</span>:
@@ -259,7 +257,7 @@ otprav(	"
 
 }
 //=================================== editpanel ===================================================================
-if($a=='findreplace') { $id=RE('id');
+if($a=='findreplace') { AD(); $id=RE('id');
 
 $js="
 var e=idd('$id'),ee=e.value.substring(e.selectionStart,e.selectionEnd);
@@ -287,30 +285,30 @@ clean('findreplace');
 
 
 //=================================== editpanel ===================================================================
-if($a=='loadpanel') { $idhelp=$_REQUEST['idhelp'];
+if($a=='loadpanel') { AD(); $idhelp=$_REQUEST['idhelp'];
 	$id=$idhelp."_Body"; include($file_template."panel_editor.php");
 	otprav("zabil('".h($idhelp."p")."','".njs($panel)."'); idd('".$id."').focus();");
 }
 //=================================== move ===================================================================
-if($a=='savemove') { // $Date=$_REQUEST['DateOld']; $idhelp='move';
+if($a=='savemove') { ADMA(); // $Date=$_REQUEST['DateOld']; $idhelp='move';
 
-	$New=$_REQUEST['DateNew'];
-	$Old=$_REQUEST['DateOld'];
+	$New=RE('DateNew');
+	$Old=RE('DateOld');
 	if($New=='' or $Old=='') idie("Ќеверна€ дата!");
+	if(preg_match("/[^a-z0-9_-\/]+/si",$New)) idie("Ќеверное им€: '".h($New)."'");
 	if($New==$Old) idie("ќдинаковые?");
 
-	if(intval("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date`='".e($_REQUEST['DateNew'])."'","_l",0))
+	if(intval("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date`='".e($_REQUEST['DateNew'])."'".ANDC(),"_l",0))
 		idie("«аметка с датой ".h($New)." уже существует!");
 
 	$t=getmaketime($New);
-	if($admin) msq_update('dnevnik_zapisi',array('Date'=>e($New),'DateUpdate'=>time(),'DateDate'=>$t[0],'DateDatetime'=>$t[1] ),"WHERE `Date`='".e($Old)."'");
+	if($admin) msq_update('dnevnik_zapisi',array('Date'=>e($New),'DateUpdate'=>time(),'DateDate'=>$t[0],'DateDatetime'=>$t[1] ),"WHERE `Date`='".e($Old)."'".ANDC());
 
 	redirect(get_link($Date)); // на нее и перейти
 }
 
 // ===================
-
-if($a=='move') { $Date=$_REQUEST['Date'];
+if($a=='move') { ADMA(); $Date=RE('Date');
 
 $s="<input type='hidden' id='move_DateOld' name='DateOld' value='".h($Date)."'><span style='border: 1px dotted #ccc'>".h($Date)."</span>
 &mdash; <input class=t type='text' id='move_DateNew' name='DateNew' value='".h($Date)."' maxlength='128' size='20'>
@@ -323,12 +321,6 @@ $s="
 
 otprav($s);
 }
-
-
-
-
-
-
 //=================================== fileimport ===================================================================
 
 if($a=='fileimport') { AD(); $file=RE('id');$Date=$file;
@@ -373,6 +365,7 @@ if($a=='fileimport') { AD(); $file=RE('id');$Date=$file;
 	if(($c=ms("SELECT `count` FROM `lleo`.`site_count` WHERE `lang`='".e($wwwhost.$file)."'",'_l',0))===false) $c=0;
 
 	$p=array(
+//		'acn'=>$acn,
 		'view_counter'=>$c,
 		'Date'=>$Date,
 		'Header'=>$Header,
@@ -398,29 +391,29 @@ if($a=='fileimport') { AD(); $file=RE('id');$Date=$file;
 #	);
 #} 
 //=================================== новую заметку ===================================================================
-if($a=='newform') { AD();
-	$i=0; while(ms("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date`='".e($Date)."'","_l",0)!=0) { $Date=date("Y/m/d").'_'.sprintf("%02d", ++$i); }
+if($a=='newform') { $acn=ADMA();
+	$i=0; while(ms("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date`='".e($Date)."'".ANDC(),"_l",0)!=0) { $Date=date("Y/m/d").'_'.sprintf("%02d", ++$i); }
 	// $hid=RE('hid');
 	$num=0; $idhelp='editor0';
 	edit_textarea(
-		array('Header'=>'','Body'=>'','num'=>0),
+		array('Header'=>'','Body'=>'','num'=>0,'acn'=>RE0('acn')),
 		RE("clo")===false?'':"clean('".e(RE("clo"))."');"
 	);
 } 
 //=================================== запросили форму ===================================================================
-if($a=='editform_new') {
+if($a=='editform_new') { $acn=ADMA();
 	$loc=rpath(substr(RE('loc'),strlen($httphost)));
-	if(($p=ms("SELECT `num` FROM `dnevnik_zapisi` WHERE `Date`='".e($loc)."'","_l",0))!==false) idie("Already exist: ".h($loc));
+	if(($p=ms("SELECT `num` FROM `dnevnik_zapisi` WHERE `Date`='".e($loc)."'".ANDC(),"_l",0))!==false) idie("Already exist: ".h($loc));
 	if(is_file($site_module.strtoupper($loc).".php")) $Body='{_'.strtoupper($loc).':_}'; else $Body='';
-	$p=array('Access'=>'admin','DateUpdate'=>time(),'Date'=>e($loc),'Body'=>$Body);
+	$p=array('Access'=>'admin','DateUpdate'=>time(),'Date'=>e($loc),'Body'=>$Body,'acn'=>$acn);
 	msq_add('dnevnik_zapisi',$p);
 	$num=mysql_insert_id();
 	$a='editform';
 }
 
-if($a=='editform') { AD();
-	if($num) $p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0);
-	else { $p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `Date`='".e(RE('Date'))."'","_1",0); $num=$p['num']; }
+if($a=='editform') { $acn=ADMA();
+	if($num) $p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'".ANDC(),"_1",0);
+	else { $p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `Date`='".e(RE('Date'))."'".ANDC(),"_1",0); $num=$p['num']; }
 	if($p===false) idie("ќтсутствует заметка #$num ".RE('Date')
 ."<p><div class='ll' onclick=\"majax('editor.php',{a:'editform_new',loc:window.location.href})\">—оздать?</div>");
 	// $p=mkzopt($p);
@@ -431,16 +424,18 @@ if($a=='editform') { AD();
 
 function edit_textarea($p,$majax='') { global $Date, $www_design,$idhelp,$filehost,$autosave_count,$num,$zopt_a,$editor_width,$editor_height; $s='';
 
+$acn=$p['acn'];
+
 if(!$num) {
 	if(empty($Date)) { $Date=RE('Date'); if(empty($Date)) $Date=date("Y/m/d"); }
 	$s.="<input class='t' type='text' name='Date' id='".$idhelp."_Date' value='".h($Date)."' maxlength='128' size='20'><br>";
 }
 
 $s.=njsn("
-<img alt='".LL('Editor:newz')."' class=l onclick=\"majax('editor.php',{a:'newform',hid:hid,clo:'".$idhelp."'})\" src='".$www_design."e3/filenew.png' alt='new'>
-<img alt='".LL('Editor:change_data')."' class=l onclick=\"majax('editor.php',{a:'move',Date:'".h($p['Date'])."'})\" src='".$www_design."e3/redo.png' alt='move'>
-<img alt='".LL('Editor:delz')."' class=l onclick=\"if(confirm('".LL('confirm_del')."')) majax('editor.php',{a:'delete',num:$num});\" src='".$www_design."e3/remove.png' alt='delete'>
-<div id='".$idhelp."p' style='display:inline'><img alt='".LL('Editor:show_panel')."' class=l onclick=\"majax('editor.php',{a:'loadpanel',idhelp:'".$idhelp."'})\" src='".$www_design."e3/finish.png' alt='panel'></div>
+<img alt='".LL('Editor:newz')."' class=l onclick=\"majax('editor.php',{acn:'$acn',a:'newform',hid:hid,clo:'".$idhelp."'})\" src='".$www_design."e3/filenew.png' alt='new'>
+<img alt='".LL('Editor:change_data')."' class=l onclick=\"majax('editor.php',{acn:'$acn',a:'move',Date:'".h($p['Date'])."'})\" src='".$www_design."e3/redo.png' alt='move'>
+<img alt='".LL('Editor:delz')."' class=l onclick=\"if(confirm('".LL('confirm_del')."')) majax('editor.php',{acn:'$acn',a:'delete',num:$num});\" src='".$www_design."e3/remove.png' alt='delete'>
+<div id='".$idhelp."p' style='display:inline'><img alt='".LL('Editor:show_panel')."' class=l onclick=\"majax('editor.php',{acn:'$acn',a:'loadpanel',idhelp:'".$idhelp."'})\" src='".$www_design."e3/finish.png' alt='panel'></div>
 
 <div>
 <input id='".$idhelp."_head' onchange='ch_edit_pole(this,$num)' class='t' type='text' name='Header' value='".h($p['Header'])."' maxlength='255'")
@@ -457,18 +452,19 @@ $s.=njsn("
 
 $s.=njsn(ADMINSET($p));
 
+
 $opt=unser($p['opt']); ksort($opt);
 if(sizeof($opt)<sizeof($zopt_a)) $s.="<div id='".$idhelp."_extopt' style='margin-left:16px;display:inline;margin-right:16px'><img src='".$www_design."e3/system.png' alt='".LL('Editor:settings')."'"
-." onclick=\\\"majax('editor.php',{a:'settings_panel',num:$num})\\\"></div>";
+." onclick=\\\"majax('editor.php',{acn:$acn,a:'settings_panel',num:$num})\\\"></div>";
 
 $s.="<div id='".$idhelp."_extautopost' style='display:inline;margin-right:16px'><img src='".$www_design."e3/mail_forward.png' alt='".LL('Editor:autopost')."'"
-." onclick=\\\"majax('editor.php',{a:'autopost_panel',num:$num})\\\"></div>"
+." onclick=\\\"majax('editor.php',{acn:$acn,a:'autopost_panel',num:$num})\\\"></div>"
 
 ."<div style='display:inline;vertical-align:top;' class='br'>".LL('Editor:sym',"<span id='".$idhelp."_nsym'>".strlen($p['Body'])."</span>")."</div>";
 
 if(!empty($GLOBALS['admin_ljuser'])&&!empty($GLOBALS['admin_ljpass'])) $s.=
 "<div style='display:inline;margin-right:16px;margin-left:16px'><img src='".$www_design."e3/post-entry.gif' alt='".LL('Editor:ljpost')."'"
-." onclick=\\\"if(confirm('".LL('ljpost:confirm')."')) majax('editor.php',{a:'ljpost',num:$num})\\\"></div>";
+." onclick=\\\"if(confirm('".LL('ljpost:confirm')."')) majax('editor.php',{acn:$acn,a:'ljpost',num:$num})\\\"></div>";
 
 $s.=pokaji_opt($opt,0);
 
@@ -477,12 +473,13 @@ $tt=ms("SELECT `tag` FROM `dnevnik_tags` WHERE `num`='$num' ORDER BY `tag`","_a"
 $t=''; foreach($tt as $l) $t.=$l['tag'].', '; $t=trim($t,', ');
 $s.=njsn("<div class=r>"
 ."<span alt='".LL('Editor:tags_alt')."'"
-." class=l onclick=\"majax('editor.php',{a:'tags',num:$num,mytags:idd('tags_".$idhelp."').value})\">".LL('Editor:tags')."</span>&nbsp;"
+." class=l onclick=\"majax('editor.php',{acn:$acn,a:'tags',num:$num,mytags:idd('tags_".$idhelp."').value})\">".LL('Editor:tags')."</span>&nbsp;"
 ."<input onchange='ch_edit_pole(this,$num)' class='t' type='text' name='tags' id='tags_".$idhelp."' value='".h($t)."' ")
 ."style='width:\"+get_edit_width()+\"px'></div>";
 //-----------------------
 
 $s.=njsn("<div><input title='".LL('shift+Enter')."' type='button' value='".LL('Save')."' onclick='save_and_close()'></div>");
+
 
 // спасибо iland_slc за советы
 $s="
@@ -515,6 +512,7 @@ interval_clipboard=function(e){
 save_and_close=function(){
 	var ara=get_pole_ara('".$idhelp."'); if(ara===false) return ara;
 	ara['a']='polesend_all'; ara['num']=".$num.";
+	ara['acn']='".$p['acn']."';
 	majax('editor.php',ara);
 	if(idd('alltags_".$idhelp."')) clean('alltags_".$idhelp."');
 	return false;
@@ -523,7 +521,7 @@ save_and_close=function(){
 var keydowncount=0;
 
 ch_edit_pole=function(e,num){ if(typeof e.defaultValue=='undefined' || e.value!=e.defaultValue){ edit_polesend(e.name,e.value,num,0); e.defaultValue=e.value;}};
-edit_polesend=function(n,v,num,clo){ majax('editor.php',{a:'polesend',name:n,val:v,num:num,clo:clo}); };
+edit_polesend=function(n,v,num,clo){ majax('editor.php',{a:'polesend',name:n,val:v,num:num,clo:clo,acn:'$acn'}); };
 
 keydownc=function(e,num){
 keydowncount++; if(keydowncount>".$autosave_count."){ 
@@ -555,42 +553,43 @@ if($a=='autopost_panel') { AD();
 
 
 //----------- setting panel --------------
-if($a=='settings_panel') { AD();
-	$opt=unser(ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='$num'","_l",0));
+if($a=='settings_panel') { $acn=ADMA();
+	$opt=unser(ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='$num'".ANDC(),"_l",0));
 	$opt2=mkzopt($opt); ksort($opt2);
 	foreach($opt as $n=>$l) unset($opt2[$n]);
 	otprav("zabil('".$idhelp."_extopt',\"".pokaji_opt($opt2)."\");");
 }
 //----------- setting panel --------------
 
-if($a=='ch_dostup') { global $admincolors; AD(); // смена доступа к заметке
+if($a=='ch_dostup') { $acn=ADMA(); /*global $admincolors;*/ // смена доступа к заметке
 	$d=array_pop(explode('/',RE('d')));
-	foreach($admincolors as $n=>$l) if($l[1]==$d) { $k=$admincolors[(++$n)%3];
-		msq_update('dnevnik_zapisi',array('Access'=>$k[0]),"WHERE `num`='$num'");
+	foreach($admincolors as $n=>$l) { if($l[1]==$d) { $k=$admincolors[(++$n)%3];
+		msq_update('dnevnik_zapisi',array('Access'=>$k[0]),"WHERE `num`='$num'".ANDC());
 		if($k[0]=='all') { $pad=0; $col='transparent'; } else { $pad=10; $col=$GLOBALS['podzamcolor']; }
 		otprav("
 doclass('".$num."_adostup',function(e){e.src='".$GLOBALS['www_design']."e3/".$k[1]."'});
 var e=idd('Body_".$num."'); if(e){ e.style.padding='".$pad."pt'; e.style.backgroundColor='".$col."'; }
 		");
+		}
 	}
 	idie("error");
 }
 //=================================== удаление заметки ===================================================================
 
-if($a=='delete') {
-	if($admin) {
-		msq("DELETE FROM `dnevnik_zapisi` WHERE `num`='$num'"); // удалить запись
-		msq("DELETE FROM `dnevnik_comm` WHERE `DateID`='$num'"); // удалить к ней все комментарии
-		msq("DELETE FROM `dnevnik_posetil` WHERE `url`='$num'"); // удалить статистику ее посетителей
-		msq("DELETE FROM `dnevnik_link` WHERE `DateID`='$num'"); // удалить статистику заходов по ссылкам
-		msq("DELETE FROM `dnevnik_search` WHERE `DateID`='$num'"); // удалить статистику заходов с поисковиков
-	}
+if($a=='delete') { $acn=ADMA();
+	// а его ли это num?
+	if(!msq("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `num`='$num'".ANDC(),'_l',0)) idie('Fuxk!');
+	msq("DELETE FROM `dnevnik_zapisi` WHERE `num`='$num'".ANDC()); // удалить запись
+	msq("DELETE FROM `dnevnik_comm` WHERE `DateID`='$num'"); // удалить к ней все комментарии
+	msq("DELETE FROM `dnevnik_posetil` WHERE `url`='$num'"); // удалить статистику ее посетителей
+	msq("DELETE FROM `dnevnik_link` WHERE `DateID`='$num'"); // удалить статистику заходов по ссылкам
+	msq("DELETE FROM `dnevnik_search` WHERE `DateID`='$num'"); // удалить статистику заходов с поисковиков
 	redirect($httphost);
 }
 //=================================== запросили форму ===================================================================
-if($a=='polesend_all') { AD(); $e=explode(' ',trim(RE('names')));
+if($a=='polesend_all') { $acn=ADMA(); $e=explode(' ',trim(RE('names')));
 
-	if($num) $p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0); else $p=array('opt'=>'');
+	if($num) $p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'".ANDC(),"_1",0); else $p=array('opt'=>'');
 	$opt=unser($p['opt']);
 	foreach($opt as $n=>$l) if(!isset($zopt_a[$n])) unset($opt[$n]); // удалить некондиционные метки
 
@@ -613,7 +612,7 @@ if($a=='polesend_all') { AD(); $e=explode(' ',trim(RE('names')));
 	$p['Body']=$l;
 
 	// save
-	if($num) msq_update('dnevnik_zapisi',arae($p),"WHERE `num`='$num'");
+	if($num) msq_update('dnevnik_zapisi',arae($p),"WHERE `num`='$num'".ANDC());
 	else { //== новую заметку =====
 		$d=c($p['Date']);
 		if(preg_match("/[^0-9a-z\-\_\.\/]+/si",$d) or empty($d) ) {
@@ -624,13 +623,13 @@ salert(\"".njs(LL('Editor:wrong_data',$httphost))."\")"
 );
 		}
 		$t=getmaketime($d);
-		if(0!=ms("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date`='".e($d)."'","_l",0)) {
-			$r=0; while(0!=ms("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date`='".e($d.'_'.(++$r))."'","_l",0)){}
+		if(0!=ms("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date`='".e($d)."'".ANDC(),"_l",0)) {
+			$r=0; while(0!=ms("SELECT COUNT(*) FROM `dnevnik_zapisi` WHERE `Date`='".e($d.'_'.(++$r))."'".ANDC(),"_l",0)){}
 otprav("idd('".$idhelp."_Date').value=\"".h($d.'_'.$r)."\";
 salert(\"".LL('Editor:new_exist',get_link($d))."\");
 ");
 		}
-		$p=array_merge($p,array('Access'=>'admin','DateUpdate'=>time(),'DateDate'=>$t[0],'DateDatetime'=>$t[1]));
+		$p=array_merge($p,array('acn'=>$acn,'Access'=>'admin','DateUpdate'=>time(),'DateDate'=>$t[0],'DateDatetime'=>$t[1]));
 		msq_add('dnevnik_zapisi',arae($p));
 		redirect(get_link($d)); // перейти
 	}
@@ -644,16 +643,16 @@ salert(\"".LL('Editor:new_exist',get_link($d))."\");
 	otprav($s);
 }
 // -------------------
-if($a=='polesend') { AD(); $val=RE('val'); $name=RE('name');
+if($a=='polesend') { $acn=ADMA(); $val=RE('val'); $name=RE('name');
 	$val=str_replace("\r",'',$val);
 
 	if($name=='tags') { save_tags($val); otprav(''); }
 
 	if($name=='Body') {
 		if($num==0) { put_last_tmp($val); otprav(''); } else { del_last_tmp(); } // сохран€ть в tmp текст дл€ новых
-		$p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'","_1",0); $p=mkzopt($p);
+		$p=ms("SELECT * FROM `dnevnik_zapisi` WHERE `num`='$num'".ANDC(),"_1",0); $p=mkzopt($p);
 		if($p["autokaw"]!="no") $val=ispravkawa($val); // если разрешено обработать кавычки и тире
-		msq_update('dnevnik_zapisi',array('Body'=>e($val),'DateUpdate'=>time()),"WHERE `num`='$num'");
+		msq_update('dnevnik_zapisi',array('Body'=>e($val),'DateUpdate'=>time()),"WHERE `num`='$num'".ANDC());
 		include_once $include_sys."_onetext.php";
 		include_once $include_sys."_modules.php";
 		$p['Body']=$val; $s=onetext($p);
@@ -666,7 +665,7 @@ idd('Body".$num."_Body').focus();";
 	if($name=='' or $num==0) otprav(''); //idie('Ќеверные данные!');
 
 	if(isset($zopt_a[$name])) { // это опци€?
-		$opt=unser(ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='$num'","_l",0));
+		$opt=unser(ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='$num'".ANDC(),"_l",0));
 		if($val=='default'
 or $zopt_a[$name][1]=='s' && ( c($val)=='' or $val==$zopt_a[$name][0]) // дефолтна€ строка
 ) { // по дефолту
@@ -677,7 +676,7 @@ or $zopt_a[$name][1]=='s' && ( c($val)=='' or $val==$zopt_a[$name][0]) // дефолт
 	} else { $ara=array(e($name)=>e($val));	}
 
 	$ara['DateUpdate']=time();
-	msq_update('dnevnik_zapisi',$ara,"WHERE `num`='$num'");
+	msq_update('dnevnik_zapisi',$ara,"WHERE `num`='$num'".ANDC());
 
 	if($name=='Header') otprav("idd('Header_".$num."').innerHTML=\"".njs($val)."\"");
 	if($name=='Body') otprav('');

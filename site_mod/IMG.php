@@ -13,14 +13,12 @@ right -  дальнейший текст будет обтекать фотку справа
 */
 
 
-function IMG($e) { list($e,$o)=explode(',',$e,2);
+function IMG($e) { if(strstr($e,',')) list($e,$o)=explode(',',$e,2); else $o='';
 	$e=(strstr($e,'/')?$e:$GLOBALS['foto_www_small'].$e);
-
-	if($o=='') return "<img src='$e' hspace=5 vspace=5 border=0>";
+	if($o=='') return "<img src='".h($e)."' hspace='5' vspace='5' border='0'>";
 	$e=c($e); $o=c($o);
-	if($o=='center') return "<center><img src='$e' hspace=5 vspace=5 border=1></center>";
-	return "<img src='$e' hspace=5 vspace=5 border=1 align=$o>";
+	if($o=='center') return "<center><img src='".h($e)."' hspace='5' vspace='5' border='1'></center>";
+	return "<img src='".h($e)."' hspace='5' vspace='5' border='1' align='".h($o)."'>";
 }
-
 
 ?>

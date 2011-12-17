@@ -6,18 +6,23 @@ if(isset($_REQUEST['onload'])) otprav(''); // все дальнейшие опции будут запреще
 $autorizatio=false;
 include $include_sys."_autorize.php"; // сперва JsHttpRequest, затем autorize
 
+if(!empty($mnogouser)) otprav('');
+
 // $_COOKIE[$uc]=$_REQUEST["up"];
-$up=$_REQUEST["up"];
-$upo=$_REQUEST["upo"];
-$num=intval($_REQUEST["num"]);
+$up=RE('up');
+$upo=RE('upo');
+$num=RE0('num');
 // $i=intval($_REQUEST["i"]);
-$i=($_REQUEST["i"]==1?'fc':'f5');
+$i=(RE0('i')==1?'fc':'f5');
 /*
 idie(nl2br("up: $up
 upo: $upo
 num: $num
 i: $i"));
 */
+
+if(strstr($BRO,'blogtest')) otprav('');
+
 
 $un=intval(substr($upo,0,strpos($upo,'-')));
 
@@ -37,12 +42,14 @@ if($num){ $e=$msqe; msq_add("dnevnik_posetil",array('unic'=>$unic,'url'=>$num));
 
 logi('restore_unic.txt',"\n $unic $num $i $up $upo");
 
+// otprav("salert('test',1000)");
+
 otprav("
 up='$upo'; realname=\"".$imgicourl."\";
 fc_save('up',up); f5_save('up',up);
 clean('loginobr_unic11');
-helps('work',\"<fieldset>Восстановлен $imgicourl ($i)</fieldset>\"); posdiv('work',-1,-1);
-setTimeout(\"c_save(uc,up);clean('work');zabil('myunic',realname);\", 1000);
+helpc('work',\"<fieldset>Восстановлен $imgicourl ($i)</fieldset>\");
+setTimeout(\"c_save(uc,up,1);clean('work');zabilc('myunic',realname);\", 1000);
 ");
 
 

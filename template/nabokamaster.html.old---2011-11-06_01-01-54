@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset={wwwcharset}" />
+<title>{admin_name}: {_TITLE:_}</title>
+{_MAIN:_}{_STYLE_ADD: {www_css}nabokamaster.css _}
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="alternate" type="application/rss+xml" title="{admin_name}" href="{httphost}rss" />
+<link rel="prev" href="{prevlink}" id="PrevLink" />
+<link rel="next" href="{nextlink}" id="NextLink" />
+<link rel="UpLink" href="{uplink}" id="UpLink" />
+<link rel="DownLink" href="{downlink}" id="DownLink" />
+</head>
+
+<body onLoad="clockon()">
+
+<table width=100% height=800 border=0 cellspacing=0 cellpadding=0><tr valign=top>
+<td width=30%><div class=t style='color:white'>
+{_PRAVKA:_}{_UNIC:_}{_COUNTER:_}{_STATISTIC:_}
+{_KTOPOSETIL: podzamok , short , <small>посетители</small>_}
+<p><a href={wwwhost}rss><img src="{www_design}rss.gif" width=36 height=14 border=0 alt="RSS вход" title='Мой дневник поддерживает RSS'></a>
+<p class=r><a href={wwwhost}contents>содержание</a>
+<p class=r><a href={wwwhost}lleoblog>ДВИЖОК БЛОГА</a>
+<p><FORM METHOD=get ACTION={httphost}contents/><INPUT class=t TYPE="text" NAME="search" SIZE=6 VALUE="" MAXLENGTH=160><INPUT TYPE=SUBMIT VALUE=">"></FORM>
+
+
+
+<p class=n>статьи
+
+</div></td>
+
+
+<td width=743><div style="width:743px;height: 747px;">
+
+{_PREVNEXT:_}<div id="post"><table><tr><td>{_HEAD_D: 1 _}</td><td> </td><td>{_HEAD_N: 1 _}</td></tr></table><div id="bodyz">{_TEXT:_}</div></div>
+
+</div>
+<div id="copyright">{signature}</div>
+{_PREVNEXT:_}<div id="comments">{_REKOMENDA:_}{_COMENTS:_}</div>
+</td>
+
+
+<td width=30%>
+
+<p class=n>новости
+
+<p class=z>15.04.2009
+<p class=t>В продажу поступили швейцарские часовые механизмы...
+
+<p class=z>05.03.2009
+<p class=t>В Харькове проводится выставка антикварных часов...
+
+<p class=z>25.02.2009
+<p class=t>Отреставрировал напольные часы для юридической академии...
+
+<p class=z>08.02.2009
+<p class=t>Появилось новое оборудование для чистки часов. Теперь я могу чистить часы даже...
+
+<p class=z>19.01.2009
+<p class=t>Вышел новый номер журнала &laquo;Часовой бизнес&raquo;, в котором...
+
+<p class=z>01.01.2009
+<p class=t>Открылся мой сайт. Помимо описания моих работ и услуг, здесь вы можете получить...
+
+
+<p class=n><a href=view.php?mode=news&type=all>все новости</a>
+
+</td>
+</tr>
+</table>
+
+
+
+<script type='text/javascript' language='JavaScript' src='{www_design}nabokamaster/clock.js'></script>
+
+
+<!--  bgcolor=#10480B-->
+<!-- 
+{ _SNAPSHOT:_ }
+{ _CALENDAR:_ }
+{ _PREWORD:_ }
+
+
+-->
+
+
+</body>
+</html>

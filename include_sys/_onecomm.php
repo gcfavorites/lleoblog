@@ -1,13 +1,20 @@
 <?php if(!function_exists('h')) die("Error 404"); // неправильно запрошенный скрипт - нахуй
 
+include_once $GLOBALS['include_sys']."_modules.php";
+
+//if(!$GLOBALS['admin']) die("REMONT<br>сейчас работает только /dnevnik");
+
+
 if(!isset($GLOBALS['comments_on_page'])) $GLOBALS['comments_on_page']=0;
 
 // if(!$GLOBALS['admin']) idie('переделываю, зайдите чуть позже');
 
-$GLOBALS['comment_tmpl']=file_get_contents($GLOBALS['file_template'].(empty($template)?"comment_tmpl.htm":$template));
+$GLOBALS['comment_tmpl']=file_get_contents($GLOBALS['file_template']."comm/".(empty($template)?"comment_tmpl.htm":$template));
 $GLOBALS['browsers']=array('Linux'=>'Linux','Windows'=>'Windows','NokiaE90'=>'Nokia-E90','Mac OS X'=>'Mac','FreeBSD'=>'FreeBSD','Ubuntu'=>'Ubuntu','Debian'=>'Debian','Firefox'=>'Firefox','Opera'=>'Opera','Safari'=>'Safari','MSIE'=>'IE','Konqueror'=>'Konqueror','Chrome'=>'Chrome');
 
 function comment_one($p,$mojno_comm,$level=false) {
+
+
 	if($level<0) { $level=-$level; $par=1; } else $par=0;
 
 	$lev=$level*$GLOBALS['comment_otstup'];
@@ -15,23 +22,26 @@ function comment_one($p,$mojno_comm,$level=false) {
 	if($p['Time']==0 && $level!==false) // удаленный комментарий
 		return "<div id=".$p['id']." name=".$p['id']." class='cdel' style='margin-left:".$lev."px'></div>";
 
-	if(($c=comment_prep($p,$mojno_comm,$level))===false) return ''; // подготовить данные
-	
+	if(($p=comment_prep($p,$mojno_comm,$level))===false) return ''; // подготовить данные
+
 	$tmpl=$GLOBALS['comment_tmpl'];
 
-$c['paren']=($par?
+$p['paren']=($par?
 "<img onmouseout=\"clean('show_parent')\" onmouseover=\"majax('comment.php',{a:'paren',id:".$p['Parent']."})\" style='float:left;display:inline;margin-right:10pt;' src='".$GLOBALS['www_design']."e3/kontact_journal.png'>"
 :'');
 
-if($level!==false) $tmpl="<div id={id} name={id} class={commclass} style='margin-left:".$lev."px'>".$tmpl."</div>";
+if($level!==false) $tmpl="<div id={id} name={id} class={commclass} style='margin-left:".$lev."px'>
+".$tmpl."</div>";
 
-	foreach($c as $n=>$l) $tmpl=str_replace('{'.$n.'}',$l,$tmpl);
-	return str_replace("\n",'',$tmpl);
+//	foreach($c as $n=>$l) $tmpl=str_replace('{'.$n.'}',$l,$tmpl);
+	$tmpl=preg_replace("/\n\s*\#[^\n]*/s",'',"\n".$tmpl."\n"); // ubrat commentarii #
+
+	return str_replace("\n",'',mper($tmpl,$p));
 }
 
 // =========================================================================================================
 
-include_once $include_sys."_obracom.php";
+include_once $GLOBALS['include_sys']."_obracom.php";
 //include_once $include_sys."_geoip_all.php";
 //$lcol=array('rus'=>'green','world'=>'brown','whois'=>'red');
 //        $a="<font color=".$l[$a['basa']].">".$a['country'].", ".$a['city']."</font>";
@@ -115,73 +125,31 @@ $comm_zapret = ($p['capchakarma']<2 && (($IS['login']!='' and $IS['password']!='
 function commclass($p) { if($p['scr']==1) return 'c0'; else return 'c'.($p['group']+1); }
 
 function comment_prep($p,$mojno_comm,$level) { global $admin,$unic,$podzamok,$geoip_color; 
-	$c=array();
-
-	$c['id']=$p['id'];
-	$c['commclass']=commclass($p);
-
-// ---- особые отметки, голосования, unic ----
-	
-	$c['golos_plu']=$p['golos_plu']; // +
-	$c['golos_min']=$p['golos_min']; // -
-	$c['unic']=$p['unic'];
-
-// ---- город и страна ----
-	list($gorod,$strana)=(strstr($p['whois'],"\001")?explode("\001",$p['whois'],2):array('',''));
-	$c['whois'] = ($strana?search_podsveti(hh($strana)):'').($gorod?($strana?", ":'').search_podsveti(hh($gorod)):'');
-
-// ---- время ----
-
-	$c['Time']=date('Y-m-d H:i', $p["Time"]);
-
-// ---- Mail ----
-
-	$c['Mail']=($p['mail']==''?'':"<div class=kmail></div>");
-
-
-// ---- кнопки ----
-	$c['kn']=''; // "'$mojno_comm'";
-
-	if($p['ans']!='0' and ($admin or $mojno_comm=="1" or $p['ans']=='1') )
-		$c['kn'] .= "<div class=ka onclick='ka(this)'></div>"; // ответить
-	if($admin) $c['kn'] .= "<div class=ko".$p['ans']." onclick='ko(this)'></div>"; // ответить
-
-//	$c['kn'] .= "<div class=kus onclick='kus(".$p['unic'].")'></div>"; // показать личную карточку автора
-
-if($admin // если админ
+	$p['commclass']=commclass($p);
+	// ---- город и страна ----
+	list($p['gorod'],$p['strana'])=(strstr($p['whois'],"\001")?explode("\001",$p['whois'],2):array('',''));
+	$p['whois_small'] = ($p['strana']?search_podsveti(hh($p['strana'])):'').($p['gorod']?($p['strana']?", ":'').search_podsveti(hh($p['gorod'])):'');
+	// ---- время ----
+	$p['date']=date('Y-m-d',$p["Time"]);
+	$p['datetime']=date('H:i',$p["Time"]);
+	// ---- Mail ----
+	$p['kn_answer']=intval($p['ans']!='0' and ($admin or $mojno_comm=="1" or $p['ans']=='1'));
+	$p['ifadmin']=intval($admin); 
+	$p['ifpodzamok']=intval($podzamok); 
+$p['kn_edit']=intval($admin // если админ
 or ($unic==$p['unic'] and ( // или это твой (посетителя) комментарий, и ...
 	!$GLOBALS['comment_time_edit_sec'] or // комментарии разрешено редактировать вечно, или ...
 	time()-$p['Time'] < $GLOBALS['comment_time_edit_sec'] // время на редактирование не кончилось
 	)
-)) $c['kn'] .= "<div class=ked onclick='ked(this)'></div>"; // то тогда вывести опцию "редактировать комментарий"
-
-if( $GLOBALS['comment_friend_scr'] && $podzamok || $admin ) {
-	$c['kn'] .= "<div class=ks".intval($p['scr'])." onclick='ksc(this)'></div>"; // скрыть/раскрыть
-}
-
-
-$c['karma'] = ($podzamok ? "<div class=kr>".zamok($p['admin']).($p['capchakarma']>1?$p['capchakarma']:'')."</div>" : '');
-
-
-if($admin || ($GLOBALS['del_user_comments'] && $unic==$p['unic'])) $c['kn'] .= "<div class=kd onclick='kd(this)'></div>"; // удалить комментарий
-
-if($admin) {
-	$c['rul'] = "<div class=rul".intval($p['rul'])." onclick='rul(this)'></div>"; // особая отметка
-} else {
-	$c['rul'] = ''; // особая отметка
-}
-
-
-// ---- браузер ----
-
+));
+$p['kn_screen']=intval($GLOBALS['comment_friend_scr'] && $podzamok || $admin);
+$p['kn_del']=intval($admin || ($GLOBALS['del_user_comments'] && $unic==$p['unic']));
+	// ---- браузер ----
 	$x=''; foreach($GLOBALS['browsers'] as $a=>$b) if(stristr($p['BRO'],$a)) $x.=($x?' ':'').$b;
-	$c['BRO']=search_podsveti(hh($x));
-
-// ---- имя автора ----
-
-	$c['Name']=search_podsveti(hh($p['Name']));
-	if($c['unic']==0) $c['Name']="<i>".$c['Name']."</i>";
-//	$is=();
+	$p['BRO']=search_podsveti(hh($x));
+	// ---- имя автора ----
+	$p['name']=search_podsveti(substr($p['imgicourl'],0,4)=='<inp'?hh($p['Name']):$p['imgicourl']);
+	if($p['unic']==0) $p['name']="<i>".$p['name']."</i>";
 
 /*
 <noindex>
@@ -200,7 +168,7 @@ if(stristr($text,'{screen:') or stristr($text,'{scr:')) {
 			: preg_replace("/\{screen:.*?\}/si",'',$text)
 	);
 
-	$text=(($podzamok||$unic==$p['unic'])?
+	$text=($podzamok||$unic==$p['unic']?
 			preg_replace("/\{scr:\s*(.+?)\s*\}/si","<div style='border: 1px dotted blue; background: #eeeeee'>$1</div>",$text)
 			: preg_replace("/\{scr:.*?\}/si",'',$text)
 	);
@@ -213,14 +181,11 @@ if(stristr($text,'{screen:') or stristr($text,'{scr:')) {
 		$text="\n$text\n";
 		$text=hyperlink($text);
 		$text=c($text);
-
 		$text=preg_replace("/\{(\_.*?\_)\}/s","&#123;$1&#125;",$text); // удалить подстыковки нахуй из пользовательского текста!
-
 		$text=preg_replace("/&amp;(#[\d]+;)/si","&$1",$text); // отображать спецсимволы и национальыне кодировки
-
-	$c['Text']=search_podsveti($text);
-
-return $c;
+        $text=str_replace('{','&#123;',$text); // чтоб модули не срабатывали
+	$p['text']=search_podsveti($text);
+return $p;
 }
 
 //====================================================================
@@ -239,13 +204,14 @@ function load_mas($num) { global $kstop,$comc,$comindex,$db_unic,$admin,$load_ma
 $sql=ms("SELECT c.`id`,c.`unic`,c.`group`,c.`Name`,c.`Text`,c.`Parent`,c.`Time`,c.`whois`,c.`rul`,c.`ans`,
 c.`golos_plu`,c.`golos_min`,c.`scr`,c.`DateID`,c.`BRO`,
 u.`capchakarma`,u.`mail`,u.`admin`
+,u.`openid`,u.`realname`,u.`login`,u.`img`
 FROM `dnevnik_comm` AS c LEFT JOIN $db_unic AS u ON c.`unic`=u.`id` WHERE `DateID`='".e($num)."'
 ORDER BY `Time`","_a",0);
 
 	if(!sizeof($sql)) return false;
 
 	$kstop=10000; $comc=array(); $comindex=array();
-	foreach($sql as $p) {
+	foreach($sql as $p) { $p=get_ISi($p);
 		$comc[$p['id']]=$p;
 		if($p['rul']==1) $comindex[$p['Parent']][$p['id']]='rul';
 		elseif($p['scr']==0) $comindex[$p['Parent']][$p['id']]='open';

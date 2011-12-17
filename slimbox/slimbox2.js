@@ -12,6 +12,7 @@ delete mHelps['slimbox'];
 if(F>=0){q();F=x=D=-1;w(a).hide();w(H).stop().fadeOut(u.overlayFadeDuration,j)}return false}})(jQuery);
 
 // AUTOLOAD CODE BLOCK (MAY BE CHANGED OR REMOVED)
+function slimbox_init(){
 if (!/android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent)) {
 	jQuery(function($) {
 		$("a[rel^='lightbox']").slimbox({/* Put custom options here */}, null, function(el) {
@@ -19,3 +20,5 @@ if (!/android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigato
 		});
 	});
 }
+}
+slimbox_init();

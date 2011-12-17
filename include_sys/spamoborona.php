@@ -24,7 +24,7 @@ if(!$GLOBALS['admin']) { // для посетителей, но не для админа
 }
 
 	$tt=str_replace(array("\n","\t","\\"),' ',$text); $tt=explode(' ',$tt);
-	foreach($tt as $et) { if(strlen($et)>100) idie("<table width=500><td><div align=justify>Ваше сообщение имеет какие-то сложные части без пробелов.<br>Ну что это такое:<br><i>".h(substr($et,0,50))."...</i><br>Приведите пожалуйста в удобный для чтения формат.</div></td></table>"); }
+	foreach($tt as $et) { if(strlen($et)>100 && !strstr($et,'://')) idie("<table width=500><td><div align=justify>Ваше сообщение имеет какие-то сложные части без пробелов.<br>Ну что это такое:<br><i>".h(substr($et,0,50))."...</i><br>Приведите пожалуйста в удобный для чтения формат.</div></td></table>"); }
 
 if(preg_match("/^http\:\/\/[^\s]+$/si",$text)) idie("<table width=500><td><div align=justify>Просьба: не пишите ссылки без пояснений, это выглядит не завлекательно. Лучше добавьте пару своих слов, чтобы было сразу понятно, о чем речь. Спасибо.</div></td></table>");
 

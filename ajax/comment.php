@@ -116,7 +116,7 @@ $mojnocom=getmojno_comm($dat);
 $r=''; $rr="clean('$oid');";
 
 function otdalcomm($p,$id,$mojnocom){ return "
-mkdiv(".$p['id'].",\"".njs(comment_one($p['p'],$mojnocom))."\",'".commclass($p['p'])."',idd(0),idd($id));
+mkdiv(".$p['id'].",\"".njs(comment_one(ppu($p['p']),$mojnocom))."\",'".commclass($p['p'])."',idd(0),idd($id));
 idd(".$p['id'].").style.marginLeft='".($p['level']*$GLOBALS['comment_otstup'])."px';
 otkryl(".$p['id'].");
 ";
@@ -134,7 +134,7 @@ if($a=='paren') { // показать коммент
         $p=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$id'","_1",0);
         $opt=ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='".$p['DateID']."'","_1"); $GLOBALS['opt']=mkzopt($opt);
 otprav("
-mkdiv('show_parent',\"".njs(comment_one($p,getmojno_comm($p['DateID']),0 ))."\",'popup');
+mkdiv('show_parent',\"".njs(comment_one(ppu($p),getmojno_comm($p['DateID']),0 ))."\",'popup');
 posdiv('show_parent',mouse_x+10,mouse_y);
 ");
 }
@@ -361,7 +361,7 @@ if(isset($imgs)) { // если были приложены фотки
 //	$ara=ms("SELECT * FROM `dnevnik_comm` WHERE `id`='$newid'","_1",0);
 //	$c=njs(comment_one($ara,getmojno_comm($ara['DateID'])));
 	$ara['whois']=''; $ara['rul']=$ara['golos_plu']=$ara['golos_min']=0; $ara['ans']='u';
-	$c=njs(comment_one($ara,getmojno_comm($ara['DateID'])));
+	$c=njs(comment_one(ppu($ara),getmojno_comm($ara['DateID'])));
 
 // ================= сохран€ем данные в карточку =================
 	if($IS['realname']=='') $ara_kartochka['realname']=e($name);
@@ -378,7 +378,7 @@ otprav("f_save('comment',''); clean('$idhelp');
 idd($newid).style.marginLeft='".($lev+25)."px';
 idd($newid).name='$newid';
 otkryl($newid);
-".(!$id?"window.location=mypage.replace(/#[^#]+$/g,'')+'#$newid';":"")."
+".($id?'':"window.location=mypage.replace(/#[^#]+$/g,'')+'#$newid';")."
 
 if(typeof(playswf)!='undefined')playswf('http://lleo.me/dnevnik/design/kladez/'+((Math.floor(Math.random()*100)+1)%27));
 "
@@ -401,7 +401,9 @@ if($dat==0) $dat=ms("SELECT `DateID` FROM `dnevnik_comm` WHERE `id`='$id'","_l",
 $s="<form enctype='multipart/form-data' name='sendcomment' onsubmit='cmsend(this,".$comnu.",".$id.",".$dat.",".$lev."); return false;'><div id='co_$comnu'></div>";
 
 $s.= "<div><div class=l1>"
-.($IS['user']!=''&&$IS['user_noname']!='noname'?$imgicourl:"им€: <input name='name' class='in' type='text'>")."
+.($IS['user']!=''&&$IS['user_noname']!='noname'?$imgicourl:
+"<div style='display:inline' class='myunic'>ввести им€: <input name='name' class='in' type='text'> <input tiptitle='«алогинитьс€ по-быстренькому,<br>не покида€ страницы' value='или залогинитьс€' onclick=\"ifhelpc('".$GLOBALS['httphost']."login','logz','Login')\" type='button'></div>"
+)."
 </div><div class=l2>"
 .($IS['mail']!=''?"<img alt='≈сли вам кто-то ответит,<br>ответы придут на ".h($IS['mail'])."<br>Ќо чтобы они приходили,<br>зайдите в свою учетную карточку<br>и поставьте там галочки `присылать ответы`<br>и `подтвердить email`' src='".$www_design."e2/mail.png' align=right>"
 :"mail: <input name='mail' class=in type=text onkeyup='this.value=cm_mail_validate(this)'>"
@@ -498,7 +500,12 @@ function otprav_comment($p,$r='') {
 	cache_rm(comment_cachename($p['DateID'])); // сбросить кэш коментов этой записи
 	$opt=ms("SELECT `opt` FROM `dnevnik_zapisi` WHERE `num`='".$p['DateID']."'","_1");
 	$GLOBALS['opt']=mkzopt($opt);
-	otprav("idd(".$p['id'].").innerHTML=\"".njs(comment_one($p,getmojno_comm($p['DateID']) ))."\"; ".$r);
+	otprav("idd(".$p['id'].").innerHTML=\"".njs(comment_one(ppu($p),getmojno_comm($p['DateID']) ))."\"; ".$r);
+}
+
+function ppu($p) {
+$pu=ms("SELECT `capchakarma`,`mail`,`admin`,`openid`,`realname`,`login`,`img` FROM ".$GLOBALS['db_unic']." WHERE `id`='".$p['unic']."'","_1",0);
+return get_ISi(array_merge($pu,$p));
 }
 
 function getmojno_comm($num) {

@@ -2,11 +2,14 @@
 
 function refferer($ref,$DateID) { global $IPNUM,$unic;
 
+if($GLOBALS['ahtung']) return false; // если нагрузка большая - ничего не делать
+
 if(!$unic || 0!=ms("SELECT COUNT(*) FROM `dnevnik_posetil` WHERE `unic`='$unic' AND `url`='$DateID'","_l")) return false;
 
 	if(striplink($ref)) return false;
 
 	$u=poiskovik($ref);
+
 
 if($u[0]!="") { // если поиск - дополнить базу `dnevnik_search`
 	$n=intval(ms("SELECT `n` FROM `dnevnik_search` WHERE `DateID`='$DateID' AND `search`='".e($u[0])."'","_l",0));

@@ -1,20 +1,21 @@
 <?php // Отображение статьи с каментами - дата передана в $Date
 
 SCRIPTS_mine();
-
+/*
 if($_SERVER['QUERY_STRING']=='logout') {
 
 SCRIPTS("logout","function logout2() {
 	if(!confirm(realname+' действительно хочет разлогиниться?')) return;
 	helps('work',\"<fieldset>Сброшена авторизация: \"+realname+\"</fieldset>\"); posdiv('work',-1,-1);
-	up='logout'; fc_save('up',up); f5_save('up',up); c_save(uc,up);
+	up='logout'; setTimeout(\"fc_save('up',up)\",2000); f5_save('up',up); c_save(uc,up,1);
 	realname='logout';
-	zabil('myunic',realname);
+	zabilc('myunic',realname);
 	setTimeout(\"clean('work')\", 3000);
 }
 	page_onstart.push('logout2()');
 ");
 }
+*/
 
 /*
 
@@ -37,7 +38,7 @@ function restore_lleoaharu() {
         realname=\"".$GLOBALS['imgicourl']."\";
         helpc('work',\"<fieldset>Поздравляю!<p>Удалось восстановить вашу авторизацию: <b>".$GLOBALS['imgicourl']
 ."</b><br>(она слетела в момент переезда сайта).<p>Теперь сайт снова будет вас узнавать.</fieldset>\");
-        zabil('myunic',realname);
+        zabilc('myunic',realname);
         setTimeout(\"clean('work'); up=\"+upz+\"; fc_save('up',up); window.location='".$GLOBALS['mypage']."';\", 5000);
 } page_onstart.push('restore_lleoaharu()');
 ");
@@ -76,7 +77,7 @@ var ctrloff=".($_COOKIE['ctrloff']=='off'?1:0).";
 //==============================================================================================
 
 
-function PREVNEXT($e='') { global $article,$wwwhost,$httphost,$mypage,$_PAGE;
+function PREVNEXT($e='') { global $article,$wwwhost,$httphost,$hmypage,$_PAGE,$acc,$blogdir;
 
 $conf=array_merge(array(
 	'prev'=>"<a href='{prevlink}'>&lt;&lt; предыдущая заметка</a>",
@@ -88,12 +89,11 @@ $conf=array_merge(array(
 </tr></table></center>"
 ),parse_e_conf($e));
 
-	$_PAGE["prevlink"] = ($article["Prev"]!=''?$httphost.$article["Prev"].".html":$mypage);
-	$_PAGE["nextlink"] = ($article["Next"]!=''?$httphost.$article["Next"].".html":$mypage);
+	$_PAGE["prevlink"] = ($article["Prev"]!=''?get_link($article["Prev"]):$hmypage);
+	$_PAGE["nextlink"] = ($article["Next"]!=''?get_link($article["Next"]):$hmypage);
 
-	$conf['prevlink']=($article["Prev"]==''?$conf['no']:mper($conf['prev'],array('prevlink'=>$wwwhost.$article["Prev"].".html")));
-	$conf['nextlink']=($article["Next"]==''?$conf['no']:mper($conf['next'],array('nextlink'=>$wwwhost.$article["Next"].".html")));
-
+	$conf['prevlink']=($article["Prev"]==''?$conf['no']:mper($conf['prev'],array('prevlink'=>get_link($article["Prev"]))));
+	$conf['nextlink']=($article["Next"]==''?$conf['no']:mper($conf['next'],array('nextlink'=>get_link($article["Next"]))));
 	return mper($conf['template'],array('prev'=>$conf['prevlink'],'next'=>$conf['nextlink']));
 }
 
@@ -159,15 +159,22 @@ function UNIC($e) { global $IS;
 $conf=array_merge(array(
 	'kuki'=>$GLOBALS['jog_kuki'],
 	'logintxt'=>'login&nbsp;',
-	'template'=>"<div id='loginobr' style='cursor:pointer; padding:2px; margin: 1px 10px 1px 10px; border:1px dotted #B0B0B0;' onclick=\"majax('login.php',{action:'openid_form'})\"><span style='font-size:7px;'>ваш логин:</span><div id='myunic' style='font-weight: bold; color: blue; font-size: 8px;'>{name}</div></div>{kuki}"
+	'anonymous'=>"<input type='button' value='anonymous' title='Login!' onclick=\"ifhelpc('".$GLOBALS['httphost']."login','logz','Login')\">",
+	'template'=>"<div id='loginobr' style='cursor:pointer; padding:2px; margin: 1px 10px 1px 10px; border:1px dotted #B0B0B0;'"
+//." onclick='logincard'"
+."><script>
+idd('loginobr').onclick=function(e){ e=e.target.tagName; if(e!='INPUT') majax('login.php',{action:'openid_form'}); };
+</script><span style='font-size:7px;'>логин:</span>"
+."<div class='myunic' style='font-weight: bold; color: blue; font-size: 8px;'>{name}</div></div>{kuki}"
 ),parse_e_conf($e));
 
-	$conf['name']=((isset($IS['user']) and isset($IS['obr']))?$GLOBALS['imgicourl']:'{logintxt}'.$GLOBALS['unic']);
+	$conf['name']=(isset($IS['user'])?$GLOBALS['imgicourl']:$conf['anonymous']); //{logintxt}'.$GLOBALS['unic']
+
 	$conf['name']=preg_replace("/<a\s[^>]+>/s","",str_replace('</a>','',$conf['name']));
 
 	return mper($conf['template'],$conf);
 
-//	$s="<div id='loginobr' style='cursor: pointer; padding: 2px; margin: 1px 10px 1px 10px; border: 1px dotted #B0B0B0;' onclick=\"majax('login.php',{action:'openid_form'})\"><span style='font-size:7px;'>ваш логин:</span><div id=myunic style='font-weight: bold; color: blue; font-size: 8px;'>".$s."</div></div>".$GLOBALS['jog_kuki'];
+//	$s="<div id='loginobr' style='cursor: pointer; padding: 2px; margin: 1px 10px 1px 10px; border: 1px dotted #B0B0B0;' onclick=\"majax('login.php',{action:'openid_form'})\"><span style='font-size:7px;'>ваш логин:</span><div class=myunic style='font-weight: bold; color: blue; font-size: 8px;'>".$s."</div></div>".$GLOBALS['jog_kuki'];
 	
 
 //====================== restore unic 11 ================
@@ -235,7 +242,7 @@ return "<div class='header'"
 :">")
 .$article["Day"]." ".$GLOBALS['months_rod'][intval($article["Mon"])]." ".$article["Year"]
 .(empty($e)?ADMINSET():$e)
-."<div id=Header_".$article['num'].($GLOBALS['admin']?" class=l onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\"":'').">"
+."<div id=Header_".$article['num'].($GLOBALS['admin']||$GLOBALS['ADM']?" class=l onclick=\"majax('editor.php',{acn:'".$GLOBALS['acn']."',a:'editform',num:'".$article['num']."'})\"":'').">"
 .($article["Header"]!=''?$article["Header"]:'(...)')
 ."</div></div>";
 }
@@ -262,21 +269,21 @@ $conf['MONTH']=$GLOBALS['months_rod'][intval($conf['M'])];
 $conf['zamok']=mper($conf['zamok_template'],array('zamok'=>zamok($article['Access'])));
 if(empty($conf['Header'])) $conf['Header']=$conf['empty_Header'];
 $conf['podzamstyle']=($article['Access']!='all'?str_replace('{podzamcolor}',$GLOBALS['podzamcolor'],$conf['podzamstyle']):'');
-if($admin) $conf['onclick_editor']=" onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\"";
+if($admin||$GLOBALS['ADM']) $conf['onclick_editor']=" onclick=\"majax('editor.php',{acn:'".$GLOBALS['acn']."',a:'editform',num:'".$article['num']."'})\"";
 return mper($conf['template'],$conf);
 }
 
 
 function HEAD_D($e) { global $article;
 	$s="<div class='header'>".zamok($article['Access']).$article["Day"]." ".$GLOBALS['months_rod'][intval($article["Mon"])]." ".$article["Year"]."</div>";
-	if(!$GLOBALS['admin'] or $e!='1') return $s;
-	else return "<div class=l onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\">$s</div>";
+	if(!$GLOBALS['admin']&&$GLOBALS['ADM'] or $e!='1') return $s;
+	else return "<div class=l onclick=\"majax('editor.php',{acn:'".$GLOBALS['acn']."',a:'editform',num:'".$article['num']."'})\">$s</div>";
 }
 
 function HEAD_N($e) { global $article;
 	$s="<div class='header' id='Header_".$article['num']."'>".($article["Header"]!=''?$article["Header"]:'(...)')."</div>";
-	if(!$GLOBALS['admin'] or $e!='1') return $s;
-	else return "<div class=l onclick=\"majax('editor.php',{a:'editform',num:'".$article['num']."'})\">$s</div>";
+	if(!$GLOBALS['admin']&&$GLOBALS['ADM'] or $e!='1') return $s;
+	else return "<div class=l onclick=\"majax('editor.php',{acn:'".$GLOBALS['acn']."',a:'editform',num:'".$article['num']."'})\">$s</div>";
 }
 
 function HEAD_TXT($e) { return $GLOBALS["article"]["Header"]; }

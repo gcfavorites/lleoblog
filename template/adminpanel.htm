@@ -3,7 +3,7 @@ function ipadfinger4(){	if(idd('adminpanel').style.display=='none') { otkryl('ad
 
 function admin_go_redir(){
 	var RHR=document.location.href,RDat=RHR.replace(/.*?\?redir\=([^&]+?)/,"$1");
-	if(RHR!=RDat) zabil('adminpanel',vzyal('adminpanel')+"<p>заметка редиректа:<br><a href=\"javascript:majax('editor.php',{a:'editform',Date:'"+RDat+"',comments:(idd('commpresent')?1:0)})\">редактировать</a> <a href='{wwwhost}editor?Date="+RDat+"'>#</a>");
+	if(RHR!=RDat) zabil('adminpanel',vzyal('adminpanel')+"<p>заметка редиректа:<br><a href=\"javascript:majax('editor.php',{acn:acn,a:'editform',Date:'"+RDat+"',comments:(idd('commpresent')?1:0)})\">редактировать</a> <a href='{wwwhost}editor?Date="+RDat+"'>#</a>");
 } page_onstart.push("admin_go_redir()");
 
 </script>
@@ -26,8 +26,8 @@ padding: 16px; background-color: rgb(255,252,223); font-size:16px;'>
 <a href="{wwwhost}">в блог</a>
 <p><INPUT type='text' style="color: #777777" size='7' value="поиск" onclick="majax('okno.php',{a:'search'})">
 <br><a href="javascript:majax('statistic.php',{a:'ktoposetil',data:'{num}',mode:'short'})">посещений</a>
-<br><a href="javascript:majax('editor.php',{a:'editform',num:'{num}',comments:(idd('commpresent')?1:0)})">редактировать</a> <a href='{wwwhost}editor?Date={Date}'>#</a>
-<br><a href="javascript:majax('editor.php',{a:'newform',hid:hid})">новая заметка</a>
+<br><a href="javascript:majax('editor.php',{acn:acn,a:'editform',num:'{num}',comments:(idd('commpresent')?1:0)})">редактировать</a> <a href='{wwwhost}editor?Date={Date}'>#</a>
+<br><a href="javascript:majax('editor.php',{acn:acn,a:'newform',hid:hid})">новая заметка</a>
 <br><a href="{wwwhost}contents">содержание</a>
 <br><a href="javascript:majax('foto.php',{a:'uploadform',hid:hid,num:'{num}'})">закачать картинку</a>
 <br><a href="javascript:majax('foto.php',{a:'album'})">фотоальбом</a>

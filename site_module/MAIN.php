@@ -9,7 +9,7 @@ SCRIPTS("logout","function logout2() {
 	helps('work',\"<fieldset>—брошена авторизаци€: \"+realname+\"</fieldset>\"); posdiv('work',-1,-1);
 	up='logout'; fc_save('up',up); f5_save('up',up); c_save(uc,up);
 	realname='logout';
-	zabil('myunic',realname);
+	zabilc('myunic',realname);
 	setTimeout(\"clean('work')\", 3000);
 }
 	page_onstart.push('logout2()');
@@ -37,7 +37,7 @@ function restore_lleoaharu() {
         realname=\"".$GLOBALS['imgicourl']."\";
         helpc('work',\"<fieldset>ѕоздравл€ю!<p>”далось восстановить вашу авторизацию: <b>".$GLOBALS['imgicourl']
 ."</b><br>(она слетела в момент переезда сайта).<p>“еперь сайт снова будет вас узнавать.</fieldset>\");
-        zabil('myunic',realname);
+        zabilc('myunic',realname);
         setTimeout(\"clean('work'); up=\"+upz+\"; fc_save('up',up); window.location='".$GLOBALS['mypage']."';\", 5000);
 } page_onstart.push('restore_lleoaharu()');
 ");
@@ -76,7 +76,7 @@ var ctrloff=".($_COOKIE['ctrloff']=='off'?1:0).";
 //==============================================================================================
 
 
-function PREVNEXT($e) { global $article,$wwwhost,$httphost,$mypage,$_PAGE;
+function PREVNEXT($e='') { global $article,$wwwhost,$httphost,$mypage,$_PAGE;
 
 $conf=array_merge(array(
 	'prev'=>"<a href='{prevlink}'>&lt;&lt; предыдуща€ заметка</a>",
@@ -159,15 +159,20 @@ function UNIC($e) { global $IS;
 $conf=array_merge(array(
 	'kuki'=>$GLOBALS['jog_kuki'],
 	'logintxt'=>'login&nbsp;',
-	'template'=>"<div id='loginobr' style='cursor:pointer; padding:2px; margin: 1px 10px 1px 10px; border:1px dotted #B0B0B0;' onclick=\"majax('login.php',{action:'openid_form'})\"><span style='font-size:7px;'>ваш логин:</span><div id='myunic' style='font-weight: bold; color: blue; font-size: 8px;'>{name}</div></div>{kuki}"
+	'anonymous'=>"<input type='button' value='anonymous' title='Login!' onclick=\"ifhelpc('".$GLOBALS['httphost']."login','logz','Login')\">",
+	'template'=>"<div id='loginobr' style='cursor:pointer; padding:2px; margin: 1px 10px 1px 10px; border:1px dotted #B0B0B0;'"
+//." onclick=\"majax('login.php',{action:'openid_form'})\""
+."><span style='font-size:7px;'>логин:</span>"
+."<div class='myunic' style='font-weight: bold; color: blue; font-size: 8px;'>{name}</div></div>{kuki}"
 ),parse_e_conf($e));
 
-	$conf['name']=((isset($IS['user']) and isset($IS['obr']))?$GLOBALS['imgicourl']:'{logintxt}'.$GLOBALS['unic']);
+	$conf['name']=(isset($IS['user'])?$GLOBALS['imgicourl']:$conf['anonymous']); //{logintxt}'.$GLOBALS['unic']
+
 	$conf['name']=preg_replace("/<a\s[^>]+>/s","",str_replace('</a>','',$conf['name']));
 
 	return mper($conf['template'],$conf);
 
-//	$s="<div id='loginobr' style='cursor: pointer; padding: 2px; margin: 1px 10px 1px 10px; border: 1px dotted #B0B0B0;' onclick=\"majax('login.php',{action:'openid_form'})\"><span style='font-size:7px;'>ваш логин:</span><div id=myunic style='font-weight: bold; color: blue; font-size: 8px;'>".$s."</div></div>".$GLOBALS['jog_kuki'];
+//	$s="<div id='loginobr' style='cursor: pointer; padding: 2px; margin: 1px 10px 1px 10px; border: 1px dotted #B0B0B0;' onclick=\"majax('login.php',{action:'openid_form'})\"><span style='font-size:7px;'>ваш логин:</span><div class=myunic style='font-weight: bold; color: blue; font-size: 8px;'>".$s."</div></div>".$GLOBALS['jog_kuki'];
 	
 
 //====================== restore unic 11 ================

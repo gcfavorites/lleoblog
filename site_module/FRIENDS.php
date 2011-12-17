@@ -18,7 +18,7 @@ STYLES("friends","
 ");
 
 $e=explode("\n",($conf['body']));
-$roo=trim($GLOBALS['blog_name']);
+$roo=$_SERVER["HTTP_HOST"]; // trim($GLOBALS['blog_name']);
 
 $f=array(); foreach($e as $l) { $l=trim($l,"/\n\r\t\'\" "); if($l=='') continue;
 		if(strstr($l,'http://')) $l=substr($l,7);

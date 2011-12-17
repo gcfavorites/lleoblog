@@ -9,7 +9,10 @@
 
 function IFADMIN($e) {
 	list($a,$b)=explode('|',$e,2);
-	return ($GLOBALS['admin'] ? c($a) : c($b) );
+	return (
+($GLOBALS['acn']?$GLOBALS['ADM']:$GLOBALS['admin'])
+? c($a) : c($b)
+);
 }
 
 ?>

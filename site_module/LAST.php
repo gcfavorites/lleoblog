@@ -1,6 +1,5 @@
 <?php
 
-
 $GLOBALS['LAST_started']=0;
 
 function LAST($e) {
