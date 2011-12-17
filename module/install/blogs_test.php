@@ -3,7 +3,7 @@
 // Эта функция возвращает 0, если выполнять этот модуль не требуется (напр. работа уже сделана)
 // Либо - строку для отображения кнопки запуска работы.
 function installmod_init() { if(is_file($GLOBALS['filehost']."log/blogs.txt")) return "Проверить иные блоги";
-return 0;
+return false;
 }
 
 function filegett($url,$t=10) { $url=array_merge(array('scheme'=>'http','port'=>'80'),parse_url($url));

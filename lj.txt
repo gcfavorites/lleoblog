@@ -1,0 +1,625 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+    
+  <head>
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>samposebem - User Profile</title>
+    <link rel="home" title="Home" href="http://www.livejournal.com/" />
+    <link rel="contents" title="Site Map" href="http://www.livejournal.com/site/" />
+    <link rel="help" title="Technical Support" href="http://www.livejournal.com/support/" />
+    <link rel="apple-touch-icon" href="http://l-stat.livejournal.com/img/apple-touch-icon.png?v=6037" />
+
+    
+
+    
+    
+
+    
+
+    <script>
+        
+    </script>
+
+    
+            <script type="text/javascript">
+                Site = window.Site || {};
+                Site.ml_text = {};
+                (function(){
+                    var p = {"remote_is_maintainer":0,"remoteUser":null,"remoteJournalBase":null,"statprefix":"http://l-stat.livejournal.com","ctx_popup":1,"siteroot":"http://www.livejournal.com","media_embed_enabled":1,"inbox_update_poll":0,"has_remote":0,"currentEntryRecommendations":0,"server_time":1320482594,"remote_is_suspended":0,"imgprefix":"http://l-stat.livejournal.com/img","esn_async":1,"remote_can_track_threads":null,"currentJournal":"samposebem","currentEntry":"","currentJournalBase":"http://samposebem.livejournal.com"}, i;
+                    for (i in p) Site[i] = p[i];
+                })();
+                Site.current_journal = {"url_profile":"http://samposebem.livejournal.com/profile","userid":"12535173","is_comm":"","is_syndicated":"","userpic_h":100,"is_person":"1","display_username":"samposebem","url_journal":"http://samposebem.livejournal.com","is_identity":"","is_shared":"","display_name":"samposebem","username":"samposebem","userpic_w":95,"can_receive_vgifts":1,"url_allpics":"http://www.livejournal.com/allpics.bml?user=samposebem","ljuser_tag":"<span class='ljuser ljuser-name_' lj:user='samposebem' style='white-space:nowrap'><a href='http://samposebem.livejournal.com/profile'><img src='http://l-stat.livejournal.com/img/userinfo.gif?v=3' alt='[info]' width='17' height='17' style='vertical-align: bottom; border: 0; padding-right: 1px;'/></a><a href='http://samposebem.livejournal.com/'><b>samposebem</b></a></span>","url_message":"http://www.livejournal.com/inbox/compose.bml?user=samposebem","url_userpic":"http://l-userpic.livejournal.com/59684785/12535173"};
+           </script>
+        <link rel="stylesheet" type="text/css" href="http://l-stat.livejournal.com/??lj_base.css,esn.css,contextualhover.css,widgets/settingprod.css,profile.css,widgets/applicationsviewslayout.css,lj_base-app.css,horizon/screen.css,horizon/layout.css,widget.css,horizon/un_rblocks.css,ad_base.css,statistics/un_stats.css,horizon/loggedout.css?v=1319520919" />
+<!--[if lt IE 7]><link rel="stylesheet" type="text/css" href="http://l-stat.livejournal.com/??lj_base-ie.css,horizon/ie.css?v=1319520919" /><![endif]-->
+<!--[if lte IE 8]><link rel="stylesheet" type="text/css" href="http://l-stat.livejournal.com/??ie.css?v=1319520919" /><![endif]-->
+<script type="text/javascript" src="http://l-stat.livejournal.com/js/??jquery.js,jquery_fn.js,basic.js,livejournal.js,esn.js,ippu.js,lj_ippu.js,ljwidget.js,ljwidget_ippu.js,journal.js,hourglass.js,livejournal-local.js,thread_expander.js,thread_expander.ex.js,quickreply.js,md5.js,pagescroller.js?v=1319520919"></script>
+<script type="text/javascript" src="http://l-stat.livejournal.com/js/??jquery/jquery.ui.core.min.js,jquery/jquery.ui.widget.min.js,jquery/jquery.tmpl.min.js,jquery/jquery.lj.bubble.js,contextualhover.js,jquery/jquery.lj.itemlist.js,apps.js,apps/appcontainer.js,jquery.tmpl.js,jquery/jquery.vkloader.js,ie9pinned.js,settingwindow.js,widget_ippu/settingwindow.js,profile.js,httpreq.js,widget_ippu/vgiftsmspay.js,inputcomplete.js,horizon.js?v=1319663094"></script>
+<script type="text/javascript">if (jQuery.VK) { jQuery.VK.init({apiId: 2244371, onlyWidgets: true})} </script> 
+    <link rel='alternate' type='application/rss+xml' title='RSS' href='http://samposebem.livejournal.com/data/rss' />
+<link rel='alternate' type='application/atom+xml' title='Atom' href='http://samposebem.livejournal.com/data/atom' />
+<link rel='alternate' type='application/rdf+xml' title='FOAF' href='http://samposebem.livejournal.com/data/foaf' />
+
+
+
+    
+
+  </head>
+
+    <body class="s-horizon logged-out"  >
+    <script type="text/javascript">LiveJournal.injectScript('http://apis.google.com/js/plusone.js',{text:"{lang: 'en'}"});</script><div id="fb-root"></div>
+        <script type="text/javascript">
+          window.fbAsyncInit = function() {
+            FB.init({appId: '214181831945836', xfbml: true});
+          };
+
+          LiveJournal.injectScript(document.location.protocol + '//connect.facebook.net/en_US/all.js', null, document.getElementById('fb-root'))
+        </script>
+    <script type="text/javascript">LiveJournal.injectScript('http://platform.twitter.com/widgets.js');</script>
+
+    
+
+    
+
+    <div id="big-content-wrapper">
+
+	
+
+    <div id="content">
+
+    
+
+    <div id="content-inner">
+        
+
+      
+
+
+      
+	
+	  
+    
+	  
+
+      
+
+      
+
+      
+        <h1 class='logged-out'>User Profile</h1>
+      
+
+      <div id='content-wrapper' class='' style='margin-right: px; height: 1%'>
+        
+
+        
+
+        <!-- Content -->
+        <script>Aliases.authToken = "ajax:1320480000:0::/_widget::4e6334be821b7a381a80503fa27adbcc0948640d";</script><!-- 
+********************************************************************************
+********************************************************************************
+**
+**
+**
+**
+**
+**
+**
+**
+**
+**
+** If you are running a bot please visit this policy page outlining rules you must respect. http://www.livejournal.com/bots/ 
+**
+**
+**
+**
+**
+**
+**
+**
+**
+**
+********************************************************************************
+********************************************************************************
+ --><div id='profile_page'><div id='profile_top'><div class='profile_right_ad'><div class="ljad ljadmedrect" id="">
+
+<div style='clear: both; height: 0; overflow:hidden; font-size:0; line-height:0;'></div>                <SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">
+                <!-- Hide from old browsers
+                // Cache-busting and pageid values
+                if (!pageNum) var pageNum = Math.round(Math.random() * 10000000000);
+                document.write('<SCR');
+                document.write('IPT LANGUAGE="JavaScript" SRC="http://ad.doubleclick.net/adj/lj.profiles/;'
+                    + 'a=1;r=0;w=1;wg=0;wa=33;ra=33;jid=12535173;c=jo;pt=jo;scn=yes;vert=_code;' + 'sz=300x250;pos=r;tile=1;ord=' + pageNum + '?" TYPE="text/javascript">');
+                document.write('</SCR');
+                document.write('IPT>');
+                // End Hide -->
+                </SCRIPT>
+                <NOSCRIPT>
+                    <A rel="nofollow" HREF="http://ad.doubleclick.net/jump/lj.profiles/;sz=300x250;tile=1;ord=3997026487?" target="_blank">
+                    <img src="http://ad.doubleclick.net/ad/lj.profiles/;sz=300x250;tile=1;ord=3997026487?"
+                      width="300" height="250" border="0" alt=""></A>
+                </NOSCRIPT>
+</div></div><div class='username' style='margin-right: 320px;'><span class='ljuser with-alias-value ljuser-name_' lj:user='samposebem' style='white-space:nowrap'><a href='http://samposebem.livejournal.com/profile'><img src='http://l-stat.livejournal.com/img/userinfo.gif?v=3' alt='[info]' width='17' height='17' style='vertical-align: bottom; border: 0; padding-right: 1px;'/></a><a href='http://samposebem.livejournal.com/'><b>samposebem</b></a></span></div><div class='actions'><ul><li class='profile_addfriend_disabled' title="Log in to add this user as a Friend."><img src='http://l-stat.livejournal.com/img/profile_icons/add-friend-disabled.gif' alt='' />Add Friend</li><li class='profile_addalias_disabled' title="Sorry, you don't have rights to add or edit a note to this user. Please, upgrade your account to paid"><img src='http://l-stat.livejournal.com/img/profile_icons/alias_disabled.gif' alt='' /><span>Add Note</span></li><li class='profile_trackuser_disabled' title="Log in to manage notifications."><img src='http://l-stat.livejournal.com/img/profile_icons/track-disabled.gif' alt='' />Track User</li><li class='profile_sendmessage_disabled' title="Log in to send this user a private message."><img src='http://l-stat.livejournal.com/img/profile_icons/send-message-disabled.gif' alt='' />Send Message</li><li class='profile_sendvgift' title="Send a virtual gift to this user"><a href='http://www.livejournal.com/shop/vgift.bml?to=samposebem'><img src='http://l-stat.livejournal.com/img/profile_icons/send-gift.gif' />Send V-Gift</a></li></ul></div><div class='user_details' style='width: 45%;'><div class='userpicdiv'><a href='http://www.livejournal.com/allpics.bml?user=samposebem'><img src='http://l-userpic.livejournal.com/59684785/12535173' width='95' height='100' border='0' class='user_pic' alt="Userpic" /></a></div><div class='user_details_inner'><div class='details_journal'><p class='journal_title'>samposebem's Journal</p></div><div class='details_stats'><p>Created on 2007-03-19 21:29:43 (#12535173), last updated <span class='tooltip' title="241 weeks ago">2007-03-19</span> </p><p>18 comments received, 223 comments posted</p><p class='account_level'><strong>Basic Account</strong> [<a href='http://www.livejournal.com/shop/view.bml?item=paidaccount&gift=1&for=samposebem'>Gift</a>]</p></div><div class='details_links'><p>2 <a href='http://samposebem.livejournal.com'>Journal Entries</a>, 2 <a href='http://samposebem.livejournal.com/tag/'>Tags</a>, 0 <a href='http://www.livejournal.com/tools/memories.bml?user=samposebem'>Memories</a>, 0 <a href='http://www.livejournal.com/manage/vgift.bml?u=samposebem'>Virtual Gifts</a>, 1 <a href='http://www.livejournal.com/allpics.bml?user=samposebem'>Userpic</a></p></div></div></div></div><div class='ljclear'></div><div class='section'><span class='expandcollapse on' id='basics_header'><img id='basics_arrow' src='http://l-stat.livejournal.com/img/profile_icons/arrow-down.gif' align='absmiddle' alt='' /> Basic Info</span></div><div class='section_body' id='basics_body'>
+<div class='userinfo'><table cellpadding='0' cellspacing='3'><tr><th>Name:</th><td>samposebem</td></tr>
+<tr><th>Birthdate:</th><td>1978-02-02</td></tr>
+</table></div></div><div class='ljclear'></div><div class='section'><span class='expandcollapse on' id='bio_header'><img id='bio_arrow' src='http://l-stat.livejournal.com/img/profile_icons/arrow-down.gif' align='absmiddle' alt='' /> Bio</span></div>
+<div class='section_body' id='bio_body'>Я использую журнал только чтобы читать своих френдов.</div>
+<div class='ljclear'></div><div class='section'><span class='expandcollapse on' id='interests_header'><img id='interests_arrow' src='http://l-stat.livejournal.com/img/profile_icons/arrow-down.gif' align='absmiddle' alt='' /> Connect</span></div><div class='section_body' id='interests_body'><p class='inner_section_header first'>Interests (7):</p><div class='inner_section_body'><a href='http://www.livejournal.com/interests.bml?int=%D0%B0%D0%BD%D0%B8%D0%BC%D1%8D'>анимэ</a>, боевой шаолинь, <a href='http://www.livejournal.com/interests.bml?int=%D0%BF%D0%B5%D1%81%D0%BD%D0%B8'>песни</a>, <a href='http://www.livejournal.com/interests.bml?int=%D1%80%D0%BE%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D0%BA%D0%B0'>романтика</a>, <a href='http://www.livejournal.com/interests.bml?int=%D1%81%D1%83%D0%B7%D0%B4%D0%B0%D0%BB%D1%8C'>суздаль</a>, <a href='http://www.livejournal.com/interests.bml?int=%D1%81%D1%83%D1%88%D0%B8'>суши</a>, <a href='http://www.livejournal.com/interests.bml?int=%D1%84%D0%B0%D0%BD%D1%82%D0%B0%D1%81%D1%82%D0%B8%D0%BA%D0%B0'>фантастика</a></div><div class='external_services'><p class='inner_section_header'>External Services:</p><table cellpadding='0' cellspacing='3'><tr class='im_lj'><td class='im_icon'><a href='http://www.livejournal.com/chat/'><img src='http://l-stat.livejournal.com/img/profile_icons/ljtalk.gif' alt='LJ Talk' title='LJ Talk' /></a></td><td><span>samposebem</span><span><i>&#64;</i></span>livejournal.com</td><td class='im_status'></td></tr>
+</table></div></div><div class='ljclear'></div><div class='section'><img src='http://l-stat.livejournal.com/img/userinfo.gif' alt='' /> Friends <span class='section_link'>[<a href='http://samposebem.livejournal.com/friends?show=P'>View Entries</a>]</span></div><div class='section_body'><p class='inner_section_header first'><span class='expandcollapse on' id='friends_header'><img id='friends_arrow' src='http://l-stat.livejournal.com/img/profile_icons/arrow-down.gif' align='absmiddle' alt='' /> Friends (123):</span></p><div class='inner_section_body' id='friends_body'><strike><a href='http://users.livejournal.com/_basilisk_/profile' rel='friend'>_basilisk_</a></strike>, <a href='http://users.livejournal.com/_boxa_/profile' rel='friend'>_boxa_</a>, <a href='http://users.livejournal.com/_las/profile' rel='friend'>_las</a>, <a href='http://users.livejournal.com/_nessy_/profile' rel='friend'>_nessy_</a>, <a href='http://users.livejournal.com/_runcis/profile' rel='friend'>_runcis</a>, <a href='http://a-young.livejournal.com/profile' rel='friend'>a_young</a>, <a href='http://alan-kubatiev.livejournal.com/profile' rel='friend'>alan_kubatiev</a>, <a href='http://amnuel.livejournal.com/profile' rel='friend'>amnuel</a>, <a href='http://bachilo.livejournal.com/profile' rel='friend'>bachilo</a>, <a href='http://bakluzhino.livejournal.com/profile' rel='friend'>bakluzhino</a>, <a href='http://barros.livejournal.com/profile' rel='friend'>barros</a>, <a href='http://bastian-b-books.livejournal.com/profile' rel='friend'>bastian_b_books</a>, <a href='http://baxussss.livejournal.com/profile' rel='friend'>baxussss</a>, <a href='http://berezin.livejournal.com/profile' rel='friend'>berezin</a>, <a href='http://burkin.livejournal.com/profile' rel='friend'>burkin</a>, <a href='http://bvi.livejournal.com/profile' rel='friend'>bvi</a>, <a href='http://captain-urthang.livejournal.com/profile' rel='friend'>captain_urthang</a>, <a href='http://chert999.livejournal.com/profile' rel='friend'>chert999</a>, <a href='http://cialis-viagrych.livejournal.com/profile' rel='friend'>cialis_viagrych</a>, <a href='http://cmpelok-u.livejournal.com/profile' rel='friend'>cmpelok_u</a>, <a href='http://computer-mage.livejournal.com/profile' rel='friend'>computer_mage</a>, <a href='http://coolwind.livejournal.com/profile' rel='friend'>coolwind</a>, <a href='http://daddycat.livejournal.com/profile' rel='friend'>daddycat</a>, <a href='http://dalaukar.livejournal.com/profile' rel='friend'>dalaukar</a>, <a href='http://danger-l.livejournal.com/profile' rel='friend'>danger_l</a>, <a href='http://darkmoor.livejournal.com/profile' rel='friend'>darkmoor</a>, <a href='http://daughter-of-sin.livejournal.com/profile' rel='friend'>daughter_of_sin</a>, <a href='http://dinozaver.livejournal.com/profile' rel='friend'>dinozaver</a>, <a href='http://divov.livejournal.com/profile' rel='friend'>divov</a>, <a href='http://dkluger.livejournal.com/profile' rel='friend'>dkluger</a>, <a href='http://doctor-livsy.livejournal.com/profile' rel='friend'>doctor_livsy</a>, <a href='http://doroti-danini.livejournal.com/profile' rel='friend'>doroti_danini</a>, <a href='http://dryutsky.livejournal.com/profile' rel='friend'>dryutsky</a>, <a href='http://evkharitonov.livejournal.com/profile' rel='friend'>evkharitonov</a>, <strike><a href='http://ex-ex-lleo6.livejournal.com/profile' rel='friend'>ex_ex_lleo6</a></strike>, <a href='http://exler.livejournal.com/profile' rel='friend'>exler</a>, <a href='http://fat-nigga.livejournal.com/profile' rel='friend'>fat_nigga</a>, <a href='http://genriette.livejournal.com/profile' rel='friend'>genriette</a>, <a href='http://gevorkyan.livejournal.com/profile' rel='friend'>gevorkyan</a>, <a href='http://green-ezik.livejournal.com/profile' rel='friend'>green_ezik</a>, <a href='http://haritonov.livejournal.com/profile' rel='friend'>haritonov</a>, <a href='http://hawl.livejournal.com/profile' rel='friend'>hawl</a>, <a href='http://hazbr.livejournal.com/profile' rel='friend'>hazbr</a>, <a href='http://hroft-shade.livejournal.com/profile' rel='friend'>hroft_shade</a>, <a href='http://igor-tkachenko.livejournal.com/profile' rel='friend'>igor_tkachenko</a>, <a href='http://inga-kirkizh.livejournal.com/profile' rel='friend'>inga_kirkizh</a>, <a href='http://julia-ostapenko.livejournal.com/profile' rel='friend'>julia_ostapenko</a>, <a href='http://juljul-tm.livejournal.com/profile' rel='friend'>juljul_tm</a>, <a href='http://katuxaru.livejournal.com/profile' rel='friend'>katuxaru</a>, <a href='http://kleo.livejournal.com/profile' rel='friend'>kleo</a>, <a href='http://kosenkov.livejournal.com/profile' rel='friend'>kosenkov</a>, <a href='http://krylov.livejournal.com/profile' rel='friend'>krylov</a>, <a href='http://lartis.livejournal.com/profile' rel='friend'>lartis</a>, <a href='http://lashin.livejournal.com/profile' rel='friend'>lashin</a>, <a href='http://lekud.livejournal.com/profile' rel='friend'>lekud</a>, <a href='http://lemming-drover.livejournal.com/profile' rel='friend'>lemming_drover</a>, <a href='http://lexyara.livejournal.com/profile' rel='friend'>lexyara</a>, <a href='http://losh.livejournal.com/profile' rel='friend'>losh</a>, <a href='http://m61.livejournal.com/profile' rel='friend'>m61</a>, <a href='http://maccolit.livejournal.com/profile' rel='friend'>maccolit</a>, <a href='http://users.livejournal.com/magister_/profile' rel='friend'>magister_</a>, <strike><a href='http://malum-universum.livejournal.com/profile' rel='friend'>malum_universum</a></strike>, <a href='http://maniaizodessy.livejournal.com/profile' rel='friend'>maniaizodessy</a>, <a href='http://max-art.livejournal.com/profile' rel='friend'>max_art</a>, <a href='http://max-quercus.livejournal.com/profile' rel='friend'>max_quercus</a>, <a href='http://midianin.livejournal.com/profile' rel='friend'>midianin</a>, <a href='http://mikhail-sudakov.livejournal.com/profile' rel='friend'>mikhail_sudakov</a>, <a href='http://mitrich-n.livejournal.com/profile' rel='friend'>mitrich_n</a>, <a href='http://mobilis-m.livejournal.com/profile' rel='friend'>mobilis_m</a>, <a href='http://mode-st.livejournal.com/profile' rel='friend'>mode_st</a>, <a href='http://moshkow.livejournal.com/profile' rel='friend'>moshkow</a>, <a href='http://mozhay-d.livejournal.com/profile' rel='friend'>mozhay_d</a>, <a href='http://nagvar.livejournal.com/profile' rel='friend'>nagvar</a>, <a href='http://naservere.livejournal.com/profile' rel='friend'>naservere</a>, <a href='http://netelo.livejournal.com/profile' rel='friend'>netelo</a>, <a href='http://nika474.livejournal.com/profile' rel='friend'>nika474</a>, <a href='http://ohtori.livejournal.com/profile' rel='friend'>ohtori</a>, <a href='http://oleg-kulagin.livejournal.com/profile' rel='friend'>oleg_kulagin</a>, <a href='http://olegmedvedev.livejournal.com/profile' rel='friend'>olegmedvedev</a>, <a href='http://oort.livejournal.com/profile' rel='friend'>oort</a>, <a href='http://peacemaker4u.livejournal.com/profile' rel='friend'>peacemaker4u</a>, <a href='http://pegasoff.livejournal.com/profile' rel='friend'>pegasoff</a>, <a href='http://phd-paul-lector.livejournal.com/profile' rel='friend'>phd_paul_lector</a>, <a href='http://pirat77.livejournal.com/profile' rel='friend'>pirat77</a>, <a href='http://polittechno.livejournal.com/profile' rel='friend'>polittechno</a>, <a href='http://postum-main.livejournal.com/profile' rel='friend'>postum_main</a>, <a href='http://pronin.livejournal.com/profile' rel='friend'>pronin</a>, <a href='http://ptitsarukh.livejournal.com/profile' rel='friend'>ptitsarukh</a>, <a href='http://pushnoy-ru.livejournal.com/profile' rel='friend'>pushnoy_ru</a>, <a href='http://rafale.livejournal.com/profile' rel='friend'>rafale</a>, <a href='http://rechka.livejournal.com/profile' rel='friend'>rechka</a>, <a href='http://red-viper.livejournal.com/profile' rel='friend'>red_viper</a>, <a href='http://rezov.livejournal.com/profile' rel='friend'>rezov</a>, <a href='http://rpynnep.livejournal.com/profile' rel='friend'>rpynnep</a>, <a href='http://samposebem.livejournal.com/profile' rel='friend'>samposebem</a>, <a href='http://semecky.livejournal.com/profile' rel='friend'>semecky</a>, <a href='http://shainyan.livejournal.com/profile' rel='friend'>shainyan</a>, <a href='http://shura-o.livejournal.com/profile' rel='friend'>shura_o</a>, <a href='http://sidorcon.livejournal.com/profile' rel='friend'>sidorcon</a>, <a href='http://sj-aquaria.livejournal.com/profile' rel='friend'>sj_aquaria</a>, <a href='http://solar-kitten.livejournal.com/profile' rel='friend'>solar_kitten</a>, <a href='http://stalic.livejournal.com/profile' rel='friend'>stalic</a>, <a href='http://starayavredina.livejournal.com/profile' rel='friend'>starayavredina</a>, <a href='http://svet-smoroda.livejournal.com/profile' rel='friend'>svet_smoroda</a>, <a href='http://tamargochi.livejournal.com/profile' rel='friend'>tamargochi</a>, <a href='http://toogo-doom.livejournal.com/profile' rel='friend'>toogo_doom</a>, <a href='http://twincat.livejournal.com/profile' rel='friend'>twincat</a>, <a href='http://uglydog.livejournal.com/profile' rel='friend'>uglydog</a>, <a href='http://urus-hay.livejournal.com/profile' rel='friend'>urus_hay</a>, <a href='http://vad-nes.livejournal.com/profile' rel='friend'>vad_nes</a>, <a href='http://vadim-panov.livejournal.com/profile' rel='friend'>vadim_panov</a>, <a href='http://vitaly-kaplan.livejournal.com/profile' rel='friend'>vitaly_kaplan</a>, <a href='http://vladimir-bondar.livejournal.com/profile' rel='friend'>vladimir_bondar</a>, <a href='http://vladlend.livejournal.com/profile' rel='friend'>vladlend</a>, <a href='http://volha.livejournal.com/profile' rel='friend'>volha</a>, <a href='http://vorath.livejournal.com/profile' rel='friend'>vorath</a>, <a href='http://vvladimirsky.livejournal.com/profile' rel='friend'>vvladimirsky</a>, <a href='http://warbird88.livejournal.com/profile' rel='friend'>warbird88</a>, <a href='http://worder.livejournal.com/profile' rel='friend'>worder</a>, <a href='http://yasviridov.livejournal.com/profile' rel='friend'>yasviridov</a>, <a href='http://zhuckoff.livejournal.com/profile' rel='friend'>zhuckoff</a>, <a href='http://zorich.livejournal.com/profile' rel='friend'>zorich</a>, <a href='http://zurzmansor.livejournal.com/profile' rel='friend'>zurzmansor</a></div><p class='inner_section_header'><span class='expandcollapse on' id='fofs_header'><img id='fofs_arrow' src='http://l-stat.livejournal.com/img/profile_icons/arrow-down.gif' align='absmiddle' alt='' /> Friend of (20):</span></p><div class='inner_section_body' id='fofs_body'><a rel='nofollow' href='http://users.livejournal.com/_dime_/profile'>_dime_</a>, <a rel='nofollow' href='http://alya-pyzhikava.livejournal.com/profile'>alya_pyzhikava</a>, <a rel='nofollow' href='http://bachilo.livejournal.com/profile'>bachilo</a>, <a rel='nofollow' href='http://bardanas.livejournal.com/profile'>bardanas</a>, <a rel='nofollow' href='http://coolwind.livejournal.com/profile'>coolwind</a>, <a rel='nofollow' href='http://evkharitonov.livejournal.com/profile'>evkharitonov</a>, <a rel='nofollow' href='http://haritonov.livejournal.com/profile'>haritonov</a>, <a rel='nofollow' href='http://kiddy79.livejournal.com/profile'>kiddy79</a>, <a rel='nofollow' href='http://lexyara.livejournal.com/profile'>lexyara</a>, <a rel='nofollow' href='http://literaturko.livejournal.com/profile'>literaturko</a>, <a rel='nofollow' href='http://maajjaa-jaanezh.livejournal.com/profile'>maajjaa_jaanezh</a>, <a rel='nofollow' href='http://melaamory02.livejournal.com/profile'>melaamory02</a>, <a rel='nofollow' href='http://ptitsarukh.livejournal.com/profile'>ptitsarukh</a>, <a rel='nofollow' href='http://redlabelz.livejournal.com/profile'>redlabelz</a>, <a rel='nofollow' href='http://rezov.livejournal.com/profile'>rezov</a>, <a rel='nofollow' href='http://samposebem.livejournal.com/profile'>samposebem</a>, <a rel='nofollow' href='http://shura-o.livejournal.com/profile'>shura_o</a>, <a rel='nofollow' href='http://toogo-doom.livejournal.com/profile'>toogo_doom</a>, <a rel='nofollow' href='http://wg-muravleva.livejournal.com/profile'>wg_muravleva</a>, <a rel='nofollow' href='http://y-tupiks.livejournal.com/profile'>y_tupiks</a></div>
+</div><div class='ljclear'></div><div class='section'><img src='http://l-stat.livejournal.com/img/community.gif' alt='' /> Communities <span class='section_link'>[<a href='http://samposebem.livejournal.com/friends?show=C'>View Entries</a>]</span></div><div class='section_body'><p class='inner_section_header first'><span class='expandcollapse on' id='watching_header'><img id='watching_arrow' src='http://l-stat.livejournal.com/img/profile_icons/arrow-down.gif' align='absmiddle' alt='' /> Watching (4):</span></p><div class='inner_section_body' id='watching_body'><a href='http://lj-maintenance.livejournal.com/profile' rel='group'>lj_maintenance</a>, <a href='http://lj-spotlight.livejournal.com/profile' rel='group'>lj_spotlight</a>, <a href='http://news.livejournal.com/profile' rel='group'>news</a>, <a href='http://roscon.livejournal.com/profile' rel='group'>roscon</a></div><p class='inner_section_header'><span class='expandcollapse on' id='mofs_header'><img id='mofs_arrow' src='http://l-stat.livejournal.com/img/profile_icons/arrow-down.gif' align='absmiddle' alt='' /> Member of (1):</span></p><div class='inner_section_body' id='mofs_body'><a href='http://roscon.livejournal.com/profile' rel='group'>roscon</a>
+</div></div><div class='ljclear'></div><div class='section'><img src='http://l-stat.livejournal.com/img/syndicated.gif' alt='' /> Feeds <span class='section_link'>[<a href='http://samposebem.livejournal.com/friends?show=Y'>View Entries</a>]</span></div><div class='section_body'><p class='inner_section_header first'><span class='expandcollapse on' id='watchingfeeds_header'><img id='watchingfeeds_arrow' src='http://l-stat.livejournal.com/img/profile_icons/arrow-down.gif' align='absmiddle' alt='' /> Watching (0)</span></p></div><div class='ljclear'></div><div class='section' id='apps'><img src='http://l-stat.livejournal.com/img/application.gif' alt='' /> Games <span class='section_link'>[<a href='http://www.livejournal.com/games/info.bml?user=samposebem'>View All</a>]</span></div><div class='section_body'><p class='inner_section_header first'><span class='expandcollapse on' id='apps_header'><img id='apps_arrow' src='http://l-stat.livejournal.com/img/profile_icons/arrow-down.gif' align='absmiddle' alt='' /> Installed Games (0)</span></p><div id="apps_body" class="inner_section_body"><ul class="b-app-user-list"></ul><div class='appwidget appwidget-applicationsviewslayout' id='LJWidget_1'>
+
+
+</div><!-- end .appwidget-applicationsviewslayout -->
+</div></div><div class="ljad ljadleaderboard-bottom" id="">
+
+<div style='clear: both; height: 0; overflow:hidden; font-size:0; line-height:0;'></div>                <SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">
+                <!-- Hide from old browsers
+                // Cache-busting and pageid values
+                if (!pageNum) var pageNum = Math.round(Math.random() * 10000000000);
+                document.write('<SCR');
+                document.write('IPT LANGUAGE="JavaScript" SRC="http://ad.doubleclick.net/adj/lj.profiles/;'
+                    + 'a=1;r=0;w=1;wg=0;wa=33;ra=33;jid=12535173;c=jo;pt=jo;scn=yes;vert=_code;' + 'sz=728x90;pos=b;tile=2;ord=' + pageNum + '?" TYPE="text/javascript">');
+                document.write('</SCR');
+                document.write('IPT>');
+                // End Hide -->
+                </SCRIPT>
+                <NOSCRIPT>
+                    <A rel="nofollow" HREF="http://ad.doubleclick.net/jump/lj.profiles/;sz=728x90;tile=2;ord=3997026487?" target="_blank">
+                    <img src="http://ad.doubleclick.net/ad/lj.profiles/;sz=728x90;tile=2;ord=3997026487?"
+                      width="728" height="90" border="0" alt=""></A>
+                </NOSCRIPT>
+</div></div>
+        <div class='clear'></div>
+
+      
+      </div>
+
+      
+
+    </div>
+    </div>
+    <div class="push"></div>
+    </div>
+    <!-- End \#content -->
+
+    
+
+    <div id="footer">
+        <div id="footer-links">
+            <table><tr>
+                <td>
+                    <h3>About</h3>
+                    <ul id="footer-links-col1">
+                        <li><a href="http://www.livejournal.com/contact/">Contact</a></li>
+                        <li><a href="http://livejournalinc.com/sales.php">Advertise</a></li>
+                        <li><a href="http://www.livejournalinc.com/jobs/">Jobs</a></li>
+                        <li><a href="http://news.livejournal.com/">Site News</a></li>
+                        <li><a href="http://www.livejournalinc.com/">More...</a></li>
+                    </ul>
+                </td>
+                <td>
+                    <h3>Help</h3>
+                    <ul id="footer-links-col2">
+                        <li><a href="http://www.livejournal.com/support/">Support</a> /
+                        <a href="http://www.livejournal.com/support/faq.bml">FAQs</a></li>
+                        <li><a href="http://www.livejournal.com/site/safetytips.bml">Safety Tips</a></li>
+                    </ul>
+                    <h3>Get Involved</h3>
+                    <ul>
+                        <li><a href="http://www.livejournal.com/support/faqbrowse.bml?faqid=57">Volunteer</a></li>
+                        <li><a href="">Developers</a></li>
+                    </ul>
+                </td>
+                <td>
+                    <h3>Legal</h3>
+                    <ul id="footer-links-col3">
+                        <li><a href="http://www.livejournal.com/legal/tos.bml">Terms of Service</a></li>
+                        <li><a href="http://www.livejournal.com/legal/privacy.bml">Privacy Policy</a></li>
+                        <li><a href="http://www.livejournal.com/legal/dmca.bml">Copyright</a></li>
+                        <li><a href="http://www.livejournal.com/abuse/policy.bml">Abuse Policy</a></li>
+                    </ul>
+                    <h3>LJ Labs</h3>
+                    <ul class="footer-links-col" id="footer-links-col5">
+                        <li><a href="http://aqua.livejournal.ru/">LJ Aqua</a></li>
+                        <li><a href="http://www.livejournal.com/labs.bml">More...</a></li>
+                    </ul>
+                </td>
+                <td>
+                    <h3>Store</h3>
+                    <ul id="footer-links-col4">
+                        <li><a href="http://www.livejournal.com/manage/account/">Upgrade Account</a></li>
+                        <li><a href="http://www.livejournal.com/shop/vgift.bml">Virtual Gifts</a></li>
+                        <li><a href="https://www.zazzle.com/livejournal*">Merchandise</a></li>
+                        <li><a href="http://www.livejournal.com/shop/">More...</a></li>
+                    </ul>
+                </td>
+                 <td class="last">
+                    <ul id="footer-links-col6">
+                        <li>Change language:</li>
+                        <li><select name="lang" id="footer_lang_list">
+<option value="en_LJ" selected='selected'>English</option>
+<option value="en_GB">English (UK)</option>
+<option value="de">Deutsch</option>
+<option value="da">Dansk</option>
+<option value="es">español</option>
+<option value="fr">Français</option>
+<option value="it">Italiano</option>
+<option value="ru">Русский</option>
+<option value="uk">Українська</option>
+<option value="be">Беларуская</option>
+<option value="ja">日本語</option>
+<option value="pt">Português</option>
+<option value="eo">Esperanto</option>
+<option value="he">עברית</option>
+<option value="nl">Nederlands</option>
+<option value="hu">Magyar</option>
+<option value="ga">Gaeilge</option>
+<option value="is">íslenska</option>
+<option value="fi">suomi</option>
+<option value="gr">Ελληνικά</option>
+<option value="nb">Norsk bokmål</option>
+<option value="sv">Svenska</option>
+<option value="pl">polski</option>
+<option value="zh">简体中文</option>
+<option value="lv">Latviešu</option>
+<option value="tr">Türkçe</option>
+<option value="ms">Bahasa Melayu</option>
+<option value="hi">हिन्दी</option>
+<option value="pt_BR">Português Brasileiro</option>
+<option value="zh_TR">繁體中文</option>
+<option value="lt">Lietuvių</option>
+<option value="nn">Norsk nynorsk</option>
+</select></li>
+                    </ul>
+                    <dl class="current-version"><dt><a href="http://lj-releases.livejournal.com">Current version</a>:</dt><dd>v.86</dd></dl>
+                </td>
+            </tr><tr>
+                <td colspan="5">
+                    <p class="more_lj"><a href="http://www.livejournal.com/site/">&raquo; View Full Sitemap</a></p>
+                </td>
+            </tr></table>
+        </div>
+        <div id="footer-copyright">Copyright &copy; 1999 LiveJournal, Inc.  All rights reserved.</div>
+    </div>
+    <!-- end footer -->
+
+    <div id="navigation">
+      <div id='Userpic'>
+          
+              <div id='NoUserpic'>
+                  <a href='http://www.livejournal.com/editpics.bml'>
+                      <img src='http://l-stat.livejournal.com/horizon/nouserpic.png?v=2621' alt='' />
+                      <span>Upload a Userpic</span>
+                  </a>
+              </div>
+          
+      </div><!-- end #Userpic -->
+      <div id="NavigationWelcomeLogo">
+        
+
+      </div>
+      <!-- End Navigation and Welcome -->
+
+      <div id='NavBar'>
+      <ul id='NavMenu'>
+        
+            <li class='NavMenuItem' id='NavMenuItem1'>
+                <a href='http://www.livejournal.com/' id='horizon-menu-home'>Home</a>
+                
+            </li>
+        
+            <li class='NavMenuItem' id='NavMenuItem2'>
+                <a href='http://www.livejournal.com/create.bml' id='horizon-menu-home'>Create an account</a>
+                
+            </li>
+        
+            <li class='NavMenuItem' id='NavMenuItem3'>
+                <a href='http://www.livejournal.com/search/' id='horizon-menu-explore'>Explore</a>
+                
+                    <ul class='NavMenuSubNav' id='NavMenu3'>
+                        <li class='NavMenuSubNavBack'><iframe src='about:blank' frameborder='0' class='NavMenuSubNavBack'></iframe></li>
+                        
+                            <li class=''><a href='http://www.livejournal.com/interests.bml'>Search by Interest</a></li>
+                        
+                            <li class=''><a href='http://www.livejournal.com/schools/'>Search by School</a></li>
+                        
+                            <li class=''><a href='http://www.livejournal.com/browse/'>Community Directory</a></li>
+                        
+                            <li class=''><a href='http://www.livejournal.com/syn/'>Feeds</a></li>
+                        
+                            <li class=''><a href='http://www.livejournal.com/misc/qotdarchive.bml'>Question of the Day</a></li>
+                        
+                            <li class=''><a href='http://www.livejournal.com/radio/'>FRNK Radio</a></li>
+                        
+                    </ul>
+                
+            </li>
+        
+            <li class='NavMenuItem' id='NavMenuItem4'>
+                <a href='http://www.livejournal.com/shop/' id='horizon-menu-shop'>Shop</a>
+                
+                    <ul class='NavMenuSubNav' id='NavMenu4'>
+                        <li class='NavMenuSubNavBack'><iframe src='about:blank' frameborder='0' class='NavMenuSubNavBack'></iframe></li>
+                        
+                            <li class=''><a href='http://www.livejournal.com/shop/paidaccount.bml?form=3'>Gift Paid Account</a></li>
+                        
+                            <li class=''><a href='http://www.livejournal.com/shop/vgift.bml'>Virtual Gifts</a></li>
+                        
+                            <li class=''><a href='http://www.zazzle.com/livejournal'>Merchandise</a></li>
+                        
+                    </ul>
+                
+            </li>
+        
+            <li class='NavMenuItem' id='NavMenuItem5'>
+                <a href='http://www.livejournal.com/extra/' id='horizon-menu-apps'>LJ Extras</a>
+                
+                    <ul class='NavMenuSubNav' id='NavMenu5'>
+                        <li class='NavMenuSubNavBack'><iframe src='about:blank' frameborder='0' class='NavMenuSubNavBack'></iframe></li>
+                        
+                            <li class=''><a href='http://www.livejournal.com/devices'>Mobile</a></li>
+                        
+                            <li class=''><a href='http://www.livejournal.com/chat/'>LJ Talk</a></li>
+                        
+                            <li class=''><a href='http://www.livejournal.com/download/'>Downloads</a></li>
+                        
+                            <li class=''><a href='http://www.livejournal.com/classifieds'>Classifieds</a></li>
+                        
+                    </ul>
+                
+            </li>
+        
+            <li class='NavMenuItem' id='NavMenuItem6'>
+                <a href='http://www.livejournal.com/games/' id='games-menu'>Games</a>
+                
+            </li>
+        
+        <li id="NavMenuSearch">
+          
+            <form action="http://www.livejournal.com/search/" method="get">
+                <input type="text" value="Find"
+                    size="12" name="q" id='SearchText'
+                    onfocus="if(this.value=='Find')this.value='';"
+                    onblur="if(this.value=='')this.value='Find';" />
+
+                <select name="area">
+                    <option value='default'>All</option>
+                    <option value='posts'>Entries</option>
+                    <option value='comments'>Comments</option>
+                    <option value='journals'>Journals</option>
+                    <option value='faq'>FAQ</option>
+                </select>
+
+                <input type="submit" value="Search" />
+            </form>
+          
+        </li>
+      </ul>
+      </div>
+      <!-- End navbar -->
+
+    </div>
+    <!-- End #navigation -->
+    
+
+    <!-- Login -->
+    
+        <div class="lj_loginform" id="Login">
+          <form style='margin: 0; padding: 0;' method="post" action="https://www.livejournal.com/login.bml?ret=1" id="login" class="lj_login_form">
+            
+            <input type='hidden' name='mode' value='login' />
+            
+            <table cellspacing="2" cellpadding="0">
+              <tr>
+                <th class="desc"><label for='login_user'>Username:</label></th>
+                <td><input type="text" name="user" size="24" id='login_user' tabindex="1" /></td>
+                <td rowspan="3" style="padding-left: 10px; vertical-align: top;">
+                  <a href="http://www.livejournal.com/create.bml">Create an Account</a><br />
+                  <a href="http://www.livejournal.com/lostinfo.bml">Forgot your login or password?</a><br/>
+                  <a href="http://www.livejournal.com/identity/login.bml?type=facebook" title="Facebook" class="i-auth"><img src="http://l-stat.livejournal.com/img/icons/facebook-16.gif?v=17127" width="16" height="16" alt="Facebook" /></a>
+                  <a href="http://www.livejournal.com/identity/login.bml?type=twitter" title="Twitter" class="i-auth"><img src="http://l-stat.livejournal.com/img/icons/twitter-16.gif?v=18540" width="16" height="16" alt="Twitter" /></a>
+                  <a href="#login-more" class="i-auth i-loginpopup-show"><img src="http://l-stat.livejournal.com/img/icons/showmore.gif?v=11430" width="16" height="16" alt="More login options" /></a>
+                  <div class="b-loginpopup" id="login-more">
+                    <ul class="b-loginpopup-items">
+                        <li class="b-loginpopup-item">
+                            <a href="http://www.livejournal.com/identity/login.bml?type=openid" title="OpenID"><img src="http://l-stat.livejournal.com/img/icons/openid-16.gif?v=17127" width="16" height="16" alt="OpenID" />OpenID</a>
+                        </li>
+                        <li class="b-loginpopup-item">
+                            <a href="http://www.livejournal.com/identity/login.bml?type=google" title="Google"><img src="http://l-stat.livejournal.com/img/icons/google-16.png?v=12457" width="16" height="16" alt="Google" />Google</a>
+                        </li>
+                        <li class="b-loginpopup-item">
+                            <a href="http://www.livejournal.com/identity/login.bml?type=mailru" title="Mail.Ru"><img src="http://l-stat.livejournal.com/img/icons/mailru-16.gif?v=11910" width="16" height="16" alt="Mail.Ru" />Mail.Ru</a>
+                        </li>
+                        <li class="b-loginpopup-item">
+                            <a href="http://www.livejournal.com/identity/login.bml?type=vkontakte" title="Vkontakte"><img src="http://l-stat.livejournal.com/img/icons/vkontakte-16.gif?v=10284" width="16" height="16" alt="Vkontakte" />Vkontakte</a>
+                        </li>
+                    </ul>
+                  </div>
+                  <script type="text/javascript">
+                      jQuery('div.b-loginpopup').bubble({ target: jQuery('a.i-loginpopup-show'), closeControl: false, showOn: 'click' });
+                  </script>
+                </td>
+              </tr>
+              <tr>
+                <th class="desc"><label for='login_password'>Password:</label></th>
+                <td style='white-space: nowrap;'><input type="password" name="password" size="15" class="lj_login_password" tabindex="2" />
+                <input type='submit' value="Log in" tabindex='3' />
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td><label><input type="checkbox" name="remember_me" value="1" tabindex="4"  /> Remember Me</label></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td colspan="2" style='font-size: .8em; white-space: nowrap'>
+                    <a href="http://www.livejournal.com/manage/settings/?cat=display">English &bull; Español &bull; Deutsch &bull; Русский&hellip;</a>
+                </td>
+              </tr>
+            </table>
+          </form>
+        </div>
+    
+    <!-- End Login -->
+
+    <!-- Logo -->
+    <div id="Logo">
+        
+            <a href='http://www.livejournal.com' style='border: 0'>
+                <img src="http://l-stat.livejournal.com/horizon/logo.png?v=2747" style="width: 83px; height: 86px;" alt="" class="transparentpng" />
+            </a>
+            <div id="SiteName">
+                <a href='http://www.livejournal.com' style='border: 0'>
+                    <img src="http://l-stat.livejournal.com/horizon/livejournal.png?v=2747" style="width: 189px; height: 27px;" alt="" class="transparentpng" />
+                </a>
+            </div>
+        
+    </div>
+    <!-- End Logo -->
+
+
+    <!-- Extra block to read style from and call to initialize Horizon which reads style -->
+    <div id='Alpha' style='display: none !important'>&nbsp;</div>
+    <!--[if lt IE 7]><script>Horizon.scheme_init();</script><![endif]-->
+
+    <div id='hello-world' style='text-align: left; font-size:0; line-height:0; height:0; overflow:hidden;'>
+<!-- SiteCatalyst Code
+    Copyright 1997-2006 Omniture, Inc.  More info available at http://www.omniture.com 
+-->
+<script type="text/javascript">
+var s_account = 'sixapartlivejournal';
+var shouldShowOmniture = false;
+LiveJournal.checkLjUniq();
+if (Cookie("ljuniq") && /pgstats1/.test(Cookie("ljuniq"))) {
+    // load Omniture script and run code for 5% of all users
+    document.write('<scr' + 'ipt type="text/javascript" src="http://www.livejournal.com/js/pagestats/s_code.js"></scr' + 'ipt>');
+    shouldShowOmniture = true;
+}
+</script>
+
+<script type="text/javascript">
+if (window.s && shouldShowOmniture) {
+s.products=';bml.userinfo-dblclick-300x250,;bml.userinfo.bottom-dblclick-728x90;;;event6=2';
+s.eVar15="samposebem.livejournal.com";
+s.events=s.apl(s.events,'event1',',',2);
+s.events="event6";
+s.pageName="bml.userinfo";
+s.prop11="en_LJ";
+s.prop12="personal";
+s.eVar24="personal";
+s.prop13="basic";
+s.prop14="Cyr";
+s.prop16="1";
+s.prop17="";
+s.prop19="lastn";
+s.prop2="0";
+s.eVar17="0";
+s.prop3="2";
+s.prop4="http://samposebem.livejournal.com";
+s.prop41="";
+s.prop42="";
+s.prop43="";
+s.prop6="Scheme.horizon";
+s.prop7="zero";
+s.prop9="";
+    /* Copy props to eVars */
+    if(s.prop3&&!s.eVar3) s.eVar3=s.prop3;
+    if(s.prop4&&!s.eVar4) s.eVar4=s.prop4;
+    if(s.prop6&&!s.eVar6) s.eVar6=s.prop6;
+    if(s.prop7&&!s.eVar7) s.eVar7=s.prop7;
+    if(s.prop11&&!s.eVar11) s.eVar11=s.prop11;
+    if(s.prop12&&!s.eVar12) s.eVar12=s.prop12;
+    if(s.prop13&&!s.eVar13) s.eVar13=s.prop13;
+    if(s.prop16&&!s.eVar16) s.eVar16=s.prop16;
+    if(s.prop17&&!s.eVar17) s.eVar17=s.prop17;
+    if(s.prop18&&!s.eVar18) s.eVar18=s.prop18;
+/************* DO NOT ALTER ANYTHING BELOW THIS LINE ! **************/
+var s_code=s.t();if(s_code)document.write(s_code);
+}
+</script>
+<!-- End SiteCatalyst Code -->
+
+<!-- tns-counter.ru -->
+<script type="text/javascript">
+var img = new Image();
+img.src = 'http://www.tns-counter.ru/V13a***' + document.referrer.replace(/\*/g,'%2a') + '*sup_ru/ru/UTF-8/tmsec=lj_blogs-vis-ad/';
+</script>
+<noscript>
+<img src="http://www.tns-counter.ru/V13a****sup_ru/ru/UTF-8/tmsec=lj_blogs-vis-ad/" alt="" />
+</noscript>
+<!--/ tns-counter.ru -->
+<!-- Rambler -->
+<img src="http://scnt.rambler.ru/top100.cnt?1" alt="" width="1" height="1" border="0" />
+<!--/ Rambler -->
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-24823174-1']);
+  _gaq.push(['_setDomainName', '.livejournal.com']);
+  _gaq.push(['_trackPageview']);
+  _gaq.push(['_trackPageLoadTime']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+<!-- Begin comScore Tag -->
+<script>
+    document.write(unescape("%3Cscript src='" + (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js' %3E%3C/script%3E"));
+</script>
+
+<script>
+  COMSCORE.beacon({
+    c1:2,
+    c2:7602110,
+    c3:"",
+    c4:"",
+    c5:"",
+    c6:"",
+    c15:""
+  });
+</script>
+<noscript>
+  <img src="http://b.scorecardresearch.com/p?c1=2&c2=7602110&c3=&c4=&c5=&c6=&c15=&cj=1" />
+</noscript>
+<!-- End comScore Tag -->
+<!-- Quantcast Tag -->
+<script type="text/javascript">
+var _qevents = _qevents || [];
+
+(function() {
+var elem = document.createElement('script');
+elem.src = (document.location.protocol == "https:" ? "https://secure" : "http://edge") + ".quantserve.com/quant.js";
+elem.async = true;
+elem.type = "text/javascript";
+var scpt = document.getElementsByTagName('script')[0];
+scpt.parentNode.insertBefore(elem, scpt);
+})();
+
+_qevents.push({
+qacct:"p-2945K0QbJw0BA"
+});
+</script>
+
+<noscript>
+<div style="display:none;">
+<img src="//pixel.quantserve.com/pixel/p-2945K0QbJw0BA.gif" border="0" height="1" width="1" alt="Quantcast"/>
+</div>
+</noscript>
+<!-- End Quantcast tag -->
+</div>
+    
+    
+  </body>
+</html>
+
+

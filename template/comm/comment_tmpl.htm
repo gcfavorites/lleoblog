@@ -1,0 +1,70 @@
+
+#$p['paren']=($par?
+#"<img onmouseout=\"clean('show_parent')\" onmouseover=\"majax('comment.php',{a:'paren',id:".$p['Parent']."})\" style='float:left;display:inline;margin-right:10pt;' src='".$GLOBALS['www_design']."e3/kontact_journal.png'>"
+#:'');
+#if($level!==false) $tmpl="<div id={id} name={id} class={commclass} style='margin-left:".$lev."px'>".$tmpl."</div>";
+#
+#	$c['img']=(empty($p['img'])?'':"<img src='".h($p['img'])."' align=right>");
+#	$c['id']=$p['id'];
+#	$p['commclass']=commclass($p);
+#	$c['golos_plu']=$p['golos_plu']; // +
+#	$c['golos_min']=$p['golos_min']; // -
+#	$c['unic']=$p['unic'];
+#	list($p['gorod'],$p['strana'])=(strstr($p['whois'],"\001")?explode("\001",$p['whois'],2):array('',''));
+#	$p['whois_small'] = ($p['strana']?search_podsveti(hh($p['strana'])):'').($p['gorod']?($p['strana']?", ":'').search_podsveti(hh($p['gorod'])):'');
+#	$p['date']=date('Y-m-d',$p["Time"]);
+#	$p['datetime']=date('H:i',$p["Time"]);
+#	$c['Mail']=($p['mail']==''?'':"<div class=kmail></div>");
+#	$p['kn_answer']=intval($p['ans']!='0' and ($admin or $mojno_comm=="1" or $p['ans']=='1'));
+#//		"<div class=ka onclick='ka(this)'></div>"; // ответить
+#	$p['admin']=intval($admin); 
+#// $c['kn'] .= "<div class=ko".$p['ans']." onclick='ko(this)'></div>"; // ответить
+#//	$c['kn'] .= "<div class=kus onclick='kus(".$p['unic'].")'></div>"; // показать личную карточку автора
+#$p['kn_edit']=intval($admin // если админ
+#// $c['kn'] .= "<div class=ked onclick='ked(this)'></div>"; // то тогда вывести опцию "редактировать комментарий"
+#$p['kn_screen']=($GLOBALS['comment_friend_scr'] && $podzamok || $admin ? $p['scr'] : 'not');
+#//c['kn'] .= "<div class=ks".intval($p['scr'])." onclick='ksc(this)'></div>"; // скрыть/раскрыть
+#//$c['karma'] = ($podzamok ? "<div class=kr>".zamok($p['admin']).($p['capchakarma']>1?$p['capchakarma']:'')."</div>" : '');
+#$p['kn_del']=intval($admin || ($GLOBALS['del_user_comments'] && $unic==$p['unic']));
+#// $c['kn'] .= "<div class=kd onclick='kd(this)'></div>"; // удалить комментарий
+#//	$c['rul'] = "<div class=rul".intval($p['rul'])." onclick='rul(this)'></div>"; // особая отметка
+#	$p['BRO']=search_podsveti(hh($x));
+#//	$c['Name']=search_podsveti(substr($p['imgicourl'],0,1)=='#'?hh($p['Name']):$p['imgicourl']);
+#<noindex>
+#<img src='".$is['IMG']."' alt=' (".$is['ROOT'].") '><b><a href='http://".($is['DOMAIN']=='lleo.aha.ru'?'lleo.aha.ru/user/':'').$logn."' rel='nofollow'>".search_podsveti($is['USER0'])."</a></b>
+#</noindex>
+#	$text=h($p["Text"]);
+#	$p['text']=search_podsveti($text);
+
+<div class=il>{paren}
+<div class=ctim><a class='noa' href='#{id}' onclick='kl(this)' title='link'>{date} {datetime}</a></div>
+<div class=cbro>{#BRO}</div><div class=cwho>{#whois}</div>
+
+<div class='rul{rul}' onclick='rul(this);'></div>
+
+<div class=cplu onclick='kpl(this)'>{#golos_plu}</div>
+<div class=cmin onclick='kmi(this)'>{#golos_min}</div>
+
+{?mail:|:|yes:<div class=kmail></div>?}
+
+<div class=cnam onclick='kus({unic})'>
+
+{?ifpodzamok:|1:{?capchakarma:|0:|1:|*:<div class=kr>{capchakarma}</div>?}|:?}
+{?ifpodzamok:|1:{?admin:|user:|:<img src='http://lleo.me/blog/design/e/podzamok.gif'>?}|:?}
+
+ {name}</div>
+</div>
+
+<table width=100%><tr valign=top><td width=100%><div class=ctxt>{text}</div></td>
+<td>{?img:|:|*:<img src='{#img}' align='right'>?}</td></tr></table>
+
+<div class=kn>
+{?kn_answer:1:<div class=ka onclick='ka(this)'></div>|0:?}
+{?admin:1:<div class='ko{ans}' onclick='ko(this)'></div>|0:?}
+{?kn_del:1:<div class=kd onclick='kd(this)'></div>|0:?}
+{?kn_edit:1:<div class=ked onclick='ked(this)'></div>|0:?}
+{?kn_screen:1:<div class='ks{scr}' onclick='ksc(this)'></div>|0:?}
+
+#//	$c['kn'] .= "<div class=kus onclick='kus(".$p['unic'].")'></div>"; // показать личную карточку автора
+#//$c['karma'] = ($podzamok ? "<div class=kr>".zamok($p['admin']).($p['capchakarma']>1?$p['capchakarma']:'')."</div>" : '');
+</div>

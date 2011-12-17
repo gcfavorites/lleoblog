@@ -2,66 +2,7 @@
 
 include "../config.php";
 
-//================================= OPENID вернулся  =========================================================================
-if(isset($_GET['openid_mode'])) { /*1*/
-	include $include_sys."_autorize.php";
-	require($GLOBALS['include_sys'].'class.openid.v3.php'); // библиотечка openid
-
-	if($_GET['openid_mode'] == 'id_res'){ // Perform HTTP Request to OpenID server to validate key
-        $openid = new SimpleOpenID;
-        $openid->SetIdentity($_GET['openid_identity']);
-        $openid_validation_result = $openid->ValidateWithServer();
-        if($openid_validation_result == true){ // OK HERE KEY IS VALID
-
-	// Итак, запрошенный опенид подтвержден. Что дальше?
-	// Пока что наш unic=$unic
-	// Получим сохраненную ранее досточерную информацию о странице возврата и запрошенном openid:
-	$dat=ms("SELECT `text` FROM `unictemp` WHERE `unic`='$unic'","_l",0); if($dat===false) die('error');
-	msq("DELETE FROM `unictemp` WHERE `unic`='$unic'"); $dat=unserialize($dat);
-	$returnpage=h($dat['rpage']);
-	$openid=h($dat['openid']);
-		$openid=preg_replace("/^http\:\/\//i","",$openid); // нахер нам эта путаница
-		$openid=preg_replace("/^www./i","",$openid); // нахер нам эта путаница
-
-	// Итак, запрошенный openid = $openid
-
-//logi('_delme.txt',"\n".$openid);
-
-	// Пробуем найти в базе unic - регистрировался ли такой ранее?
-	$f=ms("SELECT * FROM ".$GLOBALS['db_unic']." WHERE `openid`='".e($openid)."'","_1",0);
-	if($f===false) { // НЕТ - его в базе нет.
-		//Тогда нам надо оставить unic прежним, но вписать/заменить в нем поле `openid`
-		$ara=array('openid'=>e($openid));
-		// Заодно поищем, какие данные пришли, и допишем недостающие:
-		if($IS['mail']='' and $_GET['openid_sreg_email']!='') $ara['mail']=e($_GET['openid_sreg_email']);
-		if($IS['realname']='' and $_GET['openid_sreg_fullname']!='') $ara['realname']=e($_GET['openid_sreg_fullname']);
-		if($IS['birth']='' and $_GET['openid_sreg_dob']!='') $ara['birth']=e($_GET['openid_sreg_dob']);
-		msq_update($GLOBALS['db_unic'],$ara,"WHERE `id`='$unic'");
-		if($msqe) { logi('login_msqe.txt',"\n\n".$msqe); die($msqe); }
-		redirect($returnpagedat['rpage']);
-		// Процедура закончена, openid установили, unic не меняем.
-
-	} else { // ДА - этот openid уже был ранее в базе!
-		$unic_tot=$f['id']; // По-любому меняем unic на старый, вот на этот.
-		// Вопрос в том, слить ли нам нынешний unic в старый, а нынешний удалить,
-		// Либо - просто переключиться на старый, не удаляя этот (может, он тоже имел свой openid или login?)
-		// Проверим:
-		if($IS['password']=='' and $IS['openid']=='') { // Нет, ни логина, ни openid у нынешнего unic не было.
-		// Тогда можно смело все дела нынешнего (комменты? голоса?) слить в старый, а этот удалить.
-//logi('_delme.txt'," - yes222 unic=$unic retpage=$retpage unic_tot=$unic_tot");
-		loginslil($unic,$unic_tot);
-
-		}
-
-		// Ну а теперь просто переключимся на старый!
-
-		// Вот это все не нужно делать, это от лукавого:
-		//$ara=array();
-		//if($f['mail']='' and $_GET['openid_sreg_email']!='') $ara['mail']=e($_GET['openid_sreg_email']);
-		//if($f['realname']='' and $_GET['openid_sreg_fullname']!='') $ara['realname']=e($_GET['openid_sreg_fullname']);
-		//if($f['birth']='' and $_GET['openid_sreg_dob']!='') $ara['birth']=e($_GET['openid_sreg_dob']);
-		//if(sizeof($ara)) msq_update($GLOBALS['db_unic'],$ara,"WHERE `openid`='".e($openid)."'"); // дополнили данными, если новые
-
+/*
 if($msqe) { logi('login_msqe.txt',"\n\n".$msqe); die($msqe); }
 $up=$unic_tot.'-'.md5($unic_tot.$newhash_user);
 unset($jaajax); setcoo($uc,$up);
@@ -85,24 +26,10 @@ setTimeout(\"window.location='$returnpage';\", 5000);
 </script></head><meta http-equiv=refresh content=\"6;url='$returnpage'\"><body>
 <img src='".$www_design."img/ajax.gif'> $returnpage wait...
 ".$jog_kuki."</body></html>");
-	} /* для Openid, который был уже ранее в базе */
-
-
-        } /* openid_validation_result == true */ // АВТОРИЗАЦИЯ НЕ УСПЕШНА!
-	else {
-	if($openid->IsError() == true) { // ON THE WAY, WE GOT SOME ERROR
-                $error = $openid->GetError();
-                $otvet="<font color=red>ERROR CODE: ".$error['code']."<br>ERROR DESCRIPTION: ".$error['description']."</font>";
-        } else { $otvet="<font color=red>INVALID AUTHORIZATION</font>"; } // Signature Verification Failed
-
 	}
-} /*['openid_mode'] == 'id_res'*/
-elseif($_GET['openid_mode'] == 'cancel'){ $otvet="<h1><font color=red>USER CANCELED REQUEST</font></h1>"; } // User Canceled your Request
+*/
 
-die($otvet);
-}/*1*/
 //================================= OPENID вернулся  =========================================================================
-
 // подтверждение email
 if(isset($_GET['action'])&&$_GET['action']=='mailconfirm') { include_once $include_sys."_autorize.php";
 $s="<p>Необходимо зайти тем самым брайзером, которым регистрировались.";
@@ -120,9 +47,7 @@ die("<html><head><script language='JavaScript'>setTimeout(\"window.location='$ht
 
 require_once $include_sys."JsHttpRequest.php"; $JsHttpRequest =& new JsHttpRequest($wwwcharset);
 include_once $include_sys."_autorize.php"; // сперва JsHttpRequest, затем autorize
-$a=$_REQUEST["action"];
-
-
+$a=RE('action');
 
 if($a=='getinfo') { // unic личная карточка автора
 	$un=intval($_REQUEST['unic']);
@@ -148,9 +73,10 @@ $karmi=array('0'=>'нет','1'=>'юзер','2'=>2,'3'=>3,'4'=>4,'5'=>5,'6'=>6,'7'=>7,'8
 if($is['password']) $s.=dva_pole("пароль:",'*****'); //$lpass
 }
 
+if($is['img']) $s.="<img src='".$is['img']."' align='right'>";
 if($is['lju']) $s.=dva_pole("livejournal:","<a href='http://".h($is['lju']).".livejournal.com'>".h($is['lju'])."</a>");
 if($is['login']) $s.=dva_pole("login:",h($is['login']) );
-if($is['openid']) $s.=dva_pole("openid:","<a href='http://".h($is['openid'])."'>".h($is['openid'])."</a>");
+if($is['openid']) $s.=dva_pole("openid:","<a href='".h($is['openid'])."'>".h($is['openid'])."</a>");
 if($is['mail']) $s.=dva_pole("mail:",($admin?" <a href='mailto:".h($is['mail'])."'>".h($is['mail'])."</a>":"записан") );
 if($is['site']) $s.=dva_pole("site:","<a href='".h($is['site'])."'>".h($is['site'])."</a>");
 if($is['realname']) $s.=dva_pole("имя:",h($is['realname']) );
@@ -162,7 +88,6 @@ $s.=dva_pole("комментариев:",($nko?"<span class=l onclick=\"majax('okno.php',{a:
 
 otprav("helps('userinfo',\"<fieldset><legend>личная карточка ".$is['id']."</legend>".njs($s)."</fieldset>\");
 posdiv('userinfo',-1,-1);");
-
 }
 
 // ======= запроса на подтверждение email ============================================================================================
@@ -170,19 +95,25 @@ if($a=='mail_check'){
 	include_once $include_sys."_sendmail.php"; send_mail_confirm($IS['mail'],$IS['realname']);
 	idie("Запрос на ".h($IS['mail'])." отправлен.<br>Проверьте почту.");
 }
+
 // ======= запросил форму openid ============================================================================================
 if($a=='openid_form') { $s="<div id=openidotvet></div>";
 
 $numlo='';
 
-if($IS['user']) {
+// idie('###'.$IS['id']."@@@".$unic);
+//  $IS['user']
+
+if(intval($unic)) {
+
+
 
 $numlo=" ".$unic;
 
 $s.="<form name='openiddelo' onsubmit='return polesend_all();'>
 <div class=l0>";
 $s.="Логин: ".$imgicourl;
-$s.="<p>уже был аккаунт или openid? <span onclick=\\\"majax('login.php',{action:'oldlogin_form'})\\\" class=l>тогда жми сюда!</span>";
+//$s.="<p>уже был аккаунт или openid? <span onclick=\\\"majax('login.php',{action:'oldlogin_form'})\\\" class=l>тогда жми сюда!</span>";
 $s.="<p>зарегистрирован: <b>".date("Y-m-d H:i:s",$IS['time_reg'])."</b><br>";
 if($IS['lju']!='') $s.="<a href='http://".h($IS['lju']).".livejournal.com'>".h($IS['lju'])."</a> &nbsp; ";
 if($IS['ipn']!=0) $s.=ipn2ip($IS['ipn']);
@@ -196,6 +127,8 @@ maxlength=".$GLOBALS['antibot_C']." class='capcha' type=text name='capcha-"
 .antibot_make()."'></td><td>".antibot_img()."</td></tr></table></div>
 <br class=q /></div>";
 }
+
+
 
 $s.="
 <div class=l0>
@@ -212,8 +145,8 @@ $s.="
 <br class=q /></div>
 
 <div class=l0>
-<div class=l1>".($IS['openid']==''?"задать":"сменить")." openid:</div>
-<div class=l2 id='d1'><input name='openid' class=in type=text onkeyup='this.value=login_validate(this,0)' onchange='openid_go(this.value)' value='".h($IS['openid'])."'></div>
+<div class=l1>openid:</div>
+<div class=l2>".h($IS['openid'])."</div>
 <br class=q /></div>
 
 <div class=l0>
@@ -239,28 +172,10 @@ $s.="
 <br class=q /></div>
 
 <div class=l0>
-<div class=l1>site:</div>
-<div class=l2><input name='site' class=in type=text onkeyup='this.value=site_validate(this)' onchange='polesend(this)' value='".site_validate($IS['site'])."'></div>
-<br class=q /></div>
-
-<div class=l0>
 <div class=l1>имя или ник:</div>
 <div class=l2><input name='realname' class=in type=text onkeyup='this.value=realname_validate(this)' onchange='polesend(this)' value='".h($IS['realname'])."'></div>
 <br class=q /></div>
-
-<div class=l0>
-<div class=l1>подписываться</div>
-<div class=l2>
-<select class='in' onchange='polesend(this)' name='obr'>
-".($IS['openid']!=''?"<option value='openid'".($IS['obr']=='openid'?' selected=\"selected\"':'').">openid</option>":'')."
-".(($IS['password']!='' and $IS['login']!='')?"<option value='login'".($IS['obr']=='login'?' selected=\"selected\"':'').">login</option>)":'')."
-".($IS['realname']!=''?"<option value='realname'".($IS['obr']=='realname'?' selected=\"selected\"':'').">realname</option>)":'')."
-</select>"
-// .selecto('obr',h($IS['obr']),array('openid'=>'openid','login'=>'login','realname'=>'realname'),"class='in' onchange='polesend(this)' name")
-."</div>
-<br class=q /></div>
 ";
-
 
 if($admin) $s.= "<div class=l0>
 <div class=l1>доступ:</div>
@@ -271,7 +186,6 @@ elseif($IS['admin']!='user') $s.="<div class=l0>
 <div class=l1>доступ:</div>
 <div class=l2>".$IS['admin']."</div>
 <br class=q /></div>";
-
 
 $s.="<div class=l0>
 <div class=l1>дата рождения:</div><div class=l2 id='ozbirth'>";
@@ -287,14 +201,16 @@ $s.="</div><br class=q /></div>";
 
 $s.="<input type=submit value='go'></form>";
 
-}
+} else $s.="unic: ".$unic." r: <pre>".h(print_r($IS,1))."</pre>";
 
-$s="helps('loginopenid',\"<fieldset id='openid'><legend>логин".$numlo."</legend>".$s."</fieldset>\");";
+$s="helpc('loginopenid',\"<fieldset id='openid'><legend>логин".h($numlo)."</legend>".njsn($s)."</fieldset>\");";
+
+// otprav($s);
+
+// idie('#1##'.$IS['id']."@@@".$unic);
 
 otprav_sb('openid_editform.js',$s);
 }
-
-
 
 
 // ======= запросил форму openid ============================================================================================
@@ -325,18 +241,7 @@ otprav_sb('openid_editform.js',$s);
 }
 
 
-
-
-
-
-
-
-
-
-
-
 if(isset($_REQUEST['onload'])) otprav(''); // все дальнейшие опции будут запрещены для GET-запроса
-
 
 
 // ======= изменения данных ====================================================
@@ -414,97 +319,53 @@ if($a=='dostup') { // смена доступа
 	otprav("zabil('openidotvet','<font size=1 color=green>изменен доступ: ".h($_REQUEST['value'])."</font>')");
 }
 
+if($a=='karma_delmud') { AD(); // удалить комменты мудака
+	$u=RE0('unic');
+	$a=ms("SELECT COUNT(*) FROM `dnevnik_comm` WHERE `unic`='$u'","_l",0);
+	ms("DELETE FROM `dnevnik_comm` WHERE `unic`='$u'","_l",0);
+	otprav("salert('$a comments deleted',500)");
+}
+
 if($a=='karma') { // смена кармы
 	if(!$admin) idie("Ты не админ.");
-	$karma=intval($_REQUEST['value']);
-	ms("UPDATE ".$GLOBALS['db_unic']." SET `capchakarma`='$karma' WHERE `id`='".intval($_REQUEST['unic'])."'","_l",0);
-	otprav("idd('openidotvet').innerHTML='<font size=1 color=green>изменена карма: $karma</font>'");
+	$karma=RE0('value'); $u=RE0('unic');
+	ms("UPDATE ".$GLOBALS['db_unic']." SET `capchakarma`='$karma' WHERE `id`='$u'","_l",0);
+
+	$s="zabil('openidotvet','<font size=1 color=green>изменена карма: $karma</font>');";
+	if($karma>=50) {
+		$nkom=ms("SELECT COUNT(*) FROM `dnevnik_comm` WHERE `unic`='$u'","_l",0);
+		$s.="if(confirm('".LL('login:delmud',$nkom)."')) majax('login.php',{action:'karma_delmud',unic:$u});";
+	}
+	otprav($s);
 }
-
-
 
 // ======== вводит данные логина ===================
+
 if($a=='openid_logpas') {
-	$mylog=$_REQUEST["mylog"]; $mypas=$_REQUEST["mypas"];
+	$mylog=RE('mylog'); $mypas=RE('mypas');
 	if(preg_match("/[^0-9a-z\-\_\.\/\~\=\@]/si",$mylog)) otprav("zabil('openidotvet','<div class=e>неверные символы в логине</div>');");
 
-//================================= OPENID ================================================================================
-if(preg_match("/[A-Z\.\/\~\=\@]/s",$mylog)) {
+	if(($p=ms("SELECT `id`,`password` FROM ".$GLOBALS['db_unic']." WHERE `login`='".e($mylog)."'","_1",0))===false
+	) idie('User `'.h($mylog).'` not found!');
 
-	require($GLOBALS['include_sys'].'class.openid.v3.php'); // библиотечка openid
-
-	// запомнить, что мы проверяли и куда нам вернуться
-	msq_add_update('unictemp',array('unic'=>$unic,'text'=>e(serialize(array(
-'openid'=>e($mylog),
-'rpage'=>e($_REQUEST['rpage']),
-'text'=>e($_REQUEST['text'])
-))) ),'unic');
-
-        $openid = new SimpleOpenID;
-        $openid->SetIdentity($mylog);
-        $openid->SetTrustRoot('http://'.$_SERVER["HTTP_HOST"]);
-        $openid->SetRequiredFields(array('email','fullname'));
-	$openid->SetOptionalFields(array('dob')); // 'dob','gender','postcode','country','language','timezone'
-        if ($openid->GetOpenIDServer()){
-                $openid->SetApprovedURL($httpsite.$mypage); // Send Response from OpenID server to this script
-                $redirect_to = $openid->GetRedirectURL();
-		otprav("window.location='".trim($redirect_to," \t\n\r&")."';");
-        }else{
-                $error = $openid->GetError();
-
-		if($error['code']=='OPENID_NOSERVERSFOUND') $otvet="неверный адрес!";
-		else $otvet="ERROR CODE: ".$error['code']; // "<br>ERROR DESCRIPTION: ".$error['description'];
-		otprav("zabil('openidotvet','<div class=e>$otvet</div>');");
-        }
-
-}
-//================================= ЛОГИН ================================================================================
-// Если это был простой логин сайта
-	$p=ms("SELECT `id`,`password` FROM ".$GLOBALS['db_unic']." WHERE `login`='".e($mylog)."'","_1");
-
-	if(md5($mypas.$hashlogin) != $p['password']) {
-		llog("error_LOGIN.PHP: log: `$mylog`, pas: `$mypas` (`".substr($p['password'],0,5)."[...]`) ");
+	if(md5($mypas.$GLOBALS['hashlogin']) != $p['password']) {
+		llog("error_LOGIN.PHP: log: `".h($mylog)."`, pas: `".h($mypas)."` (`".substr($p['password'],0,5)."[...]`) ");
 		sleep(5); otprav("zabil('openidotvet','<div class=e>пароль неверный</div>');");
 	}
 
 	if(getis_global($p['id'])===false) idie('Error #118');
-	$up=$p['id'].'-'.md5($p['id'].$newhash_user);
+	$up=upset($p['id']);
 
-	llog("LOGIN.PHP: LOGIN unic:$unic loginobr:$loginobr ");
+	llog("LOGIN.PHP: LOGIN unic:".h($unic)." loginobr:".h($loginobr)."");
 
         otprav("
-		clean('loginobr_unic11');
-		up='$up'; c_save(uc,up); fc_save('up',up); f5_save('up',up);
+		up='$up'; c_save(uc,up,1); fc_save('up',up); f5_save('up',up);
 		realname=\"".$imgicourl."\";
 		helps('work',\"<fieldset>Восстановлен ".$imgicourl."</fieldset>\"); posdiv('work',-1,-1);
 		zabil('openidotvet',\"<div class=o>".$imgicourl."!</div>\");
-		zabil('myunic',realname);
-		setTimeout(\"clean('work'); clean('loginopenid');\",1000);
+		zabilc('myunic',realname);
+		setTimeout(\"clean('work'); clean('loginopenid'); clean('loginobr_unic11');\",1000);
 	");
-//=================== вспомогательные процедуры ==========================================================================
-}
-
-//================================================
-
-function loginslil($unic,$unic_tot) { if($unic==$unic_tot) return; // если один и тот же
-	$e=$GLOBALS['msqe'];
-	$ara=array('unic'=>e($unic_tot)); $a="WHERE `unic`='".e($unic)."'";
-	msq_update('dnevnik_comm',$ara,$a);
-	msq_update('dnevnik_plusiki',$ara,$a);
-	msq_update('dnevnik_posetil',$ara,$a);
-	msq_update('golosovanie_golosa',$ara,$a);
-	ms("DELETE FROM ".$GLOBALS['db_unic']." WHERE `id`='$unic'","_1",0); // и удаляем
-	$GLOBALS['msqe']=$e;
-/*
-	$po=ms("SELECT * FROM ".$GLOBALS['db_unic']." WHERE `id`='".e($unic)."'","_1",0);
-	$ara=array(); // сохраним все старое добро
-	if($p['mail']=='' and $po['mail']!='') $ara['mail']=$po['mail'];
-	if($p['site']=='' and $po['site']!='') $ara['site']=$po['site'];
-	if($p['realname']=='' and $po['realname']!='') $ara['realname']=$po['realname'];
-	if($p['birth']=='' and $po['birth']!='') $ara['birth']=$po['birth'];
-	if($p['lju']=='' and $po['lju']!='') $ara['lju']=$po['lju'];
-	if(sizeof($ara)) msq_update($GLOBALS['db_unic'],$ara,"WHERE `id`='$new'");
-*/
 }
 
 ?>

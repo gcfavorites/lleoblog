@@ -1,0 +1,18 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru">
+<head>
+<title>Silkway: {_article_get:Header_}</title>
+<meta http-equiv="Content-Type" content="text/html; charset={wwwcharset}" />
+<meta http-equiv="Content-Language" content="ru-ru" />
+<meta name="author" content="Silkway" />
+{_MAIN:_}{_STYLE_ADD: {www_css}silkway.css _}
+</head><body><center>
+
+{_shapka_}
+
+<div class=okno>{_menu2_}
+
+<div id="bodyz" style="margin: 20pt 10% 20pt 10%">{_TEXT:_}</div>
+
+<br class=q /></div>
+
+{_html_end_}

@@ -3,6 +3,33 @@
 // function testdir($s) { $a=explode('/',rtrim($s,'/')); $s=''; for($i=0;$i<sizeof($a);$i++) { $s.='/'.$a[$i]; if(!is_dir($s)) dirput($s); } }
 // function getras($s){ $r=explode('.',$s); if(sizeof($r)==1) return ''; return strtolower(array_pop($r)); }
 
+// простой постинг, без файлов
+function POST_data($urla,$ara,$uagent="Windows NT",$port=80,$scheme='http') {
+        $url=array_merge(array('scheme'=>$scheme,'port'=>$port),parse_url($urla));
+
+	$a=array(); if(is_array($ara)){ foreach($ara as $n=>$v) $a[]=$n.'='.urlencode($v); } $a=implode('&',$a);
+
+        if(!$fp=fsockopen($url['host'],$url['port'])) return "ERROR: can't open url ".$url['host'].":".$url['port'];
+        // запихнуть заголовок и POST-массив
+        if(fputs($fp,"POST ".$url['path']." HTTP/1.1\r\nHost: ".$url['host']."\r\n".
+		"User-Agent: $uagent\r\n".
+		"Content-Type: application/x-www-form-urlencoded\r\n".
+		"Content-Length: ".strlen($a)."\r\n".
+		"Connection: close\r\n\r\n".$a)===false) return "ERROR: can't send #1";
+
+        // и получить ответ
+        $s=''; while(!feof($fp)) $s.=fgets($fp,4096); fclose($fp);
+        if($s=='') return "ERROR: NO RESPONSE";
+        list($h,$t)=explode("\r\n\r\n",$s,2);
+
+        // обработка переноса
+        if(stristr($h,'301 Moved Permanently')) {
+                return POST_data(preg_replace("/^.+Location: ([^\s]+).*$/si","$1",$h),$ara,$uagent);
+        }
+	return $t;
+}
+
+
 //==================================================================================================
 // процедура передачи данных и файлов через POST-запрос по старинке без всяких там уебищных CURL-библиотек
 // $filePath - полное имя (с путем) файла для передачи или массив имен файлов для передачи (если файлов нет - '')
@@ -16,7 +43,10 @@ function POST_file($filePath,$urla,$ara,$port=80,$scheme='http',$charset='Window
 
         // данные
         $dat=''; if(count($ara)) foreach($ara as $n=>$v) $dat.='--'.$bu.$r.'Content-Disposition: form-data; name="'.$n
-.'"'.$r.$r.urlencode($v).$r;
+.'"'.$r.$r
+//.$v
+.urlencode($v)
+.$r;
 
         $len=strlen($dat); // общая длина
 

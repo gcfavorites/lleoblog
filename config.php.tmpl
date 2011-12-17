@@ -1,5 +1,8 @@
 <?php
 
+$mnogouser=0; // многопользовтаельский режим
+$mnogouser_html=0; // разрешить html юзерам
+
 $a="1"; if(ini_get('register_globals')!=false) foreach(array_merge($_GET,$_POST,$_REQUEST,$_COOKIE) as $n=>$l) unset(${$n});
 
 # Первоочередные параметры

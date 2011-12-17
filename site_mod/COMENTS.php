@@ -57,7 +57,7 @@ break;
 $s.=LL('comm:friends_only'); // "оставить комментарий могут друзья";
 break;
 	case 'login-only': $comments_form=((($GLOBALS['IS']['login']!=''&&$GLOBALS['IS']['password']!='')||$GLOBALS['IS']['openid']!='')?true:false);
-$s.=LL('comm:login_only',array('majax'=>"onclick=\"majax('login.php',{action:'openid_form'})\""));
+$s.=LL('comm:login_only',array('majax'=>"onclick=\"ifhelpc('".$GLOBALS['httphost']."login','logz','Login')\""));
 // "<p>К этой заметке оставить коментарий могут только залогиненные. Залогиниться можно здесь";
 break;
 	case 'timeoff': $comments_form=!$comments_timed; if(!$comments_form)

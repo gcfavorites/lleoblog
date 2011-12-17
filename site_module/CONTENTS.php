@@ -1,8 +1,8 @@
 <?php // Отображение статьи с каментами - дата передана в $Date
 
 function CONTENTS($e) { global $admin,$podzamok;
-
-$SIZEDEFAULT=60;
+$conf=array_merge(array('n'=>'60'),parse_e_conf($e));
+$GLOBALS['contents_n']=$conf['n'];
 
 $opt=array(
 	''=>"по дате",
@@ -33,7 +33,7 @@ left join `dnevnik_posetil` as r on z.`num`=r.`url`
 {whe}
 group by z.`num` "); }
 
-if($g=='') $o.=pr_zapisi(swhe(WHERE())."ORDER BY z.`Date` DESC LIMIT ".$SIZEDEFAULT,true);
+if($g=='') $o.=pr_zapisi(swhe(WHERE())."ORDER BY z.`Date` DESC LIMIT ".$GLOBALS['contents_n'],true);
 if($g=='more') $o.=pr_zapisi(swhe(WHERE())."ORDER BY z.`Date` DESC");
 if($g=='rating') $o.=pr_zapisi_rating(swhe(WHERE())."ORDER BY z.`count` DESC");
 if($admin && $g=='invis_adm') $o.=pr_zapisi(swhe("WHERE `Access`='admin'")."ORDER BY z.`Date` DESC");
@@ -46,9 +46,9 @@ if($g=='nemudoslov_rating') $o.=pr_zapisi_rating(swhe(WHERE(mudos('NOT LIKE','AN
 return $o;
 }
 
-function pr_zapisi($sq,$more=false) { global $colnewcom,$SIZEDEFAULT;
+function pr_zapisi($sq,$more=false) { global $colnewcom,$contents_n;
 	return pr_zapisi_($sq)
-	.($more && ($colnewcom >= $SIZEDEFAULT)?"<p><a href='?mode=more'>показать больше &gt;&gt;</a>":'');
+	.($more && ($colnewcom >= $contents_n)?"<p><a href='?mode=more'>показать больше &gt;&gt;</a>":'');
 }
 
 function mudos($like,$or) {

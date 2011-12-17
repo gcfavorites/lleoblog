@@ -390,7 +390,7 @@ function INSTALL_ajax() { $a=RE('a');
 //=========================================================================
 if($a=='login') { // залогиниться
 	if($GLOBALS['admin_hash1']==broident2(c(RE('v')).$GLOBALS['koldunstvo1'])) return "
-c_save('adm2','".$GLOBALS['admin_hash1']."');
+c_save('adm2','".$GLOBALS['admin_hash1']."',1);
 window.location='".$GLOBALS['$mypage']."?reboot='+Math.random();";
 	sleep(5); return "salert('Wrong password',2000)";
 }
@@ -466,7 +466,7 @@ if($a=='testmod') { // проверка модуля
 		";
 		else {
 			$s='';
-			if($r!==false) $s.= "zabil('module__$m',\"<input type=button style='font-size:8px;' value='$r' onclick=\\\"dodo('$m',0,0,0)\\\">\");";
+			if($r!==false) $s.= "zabil('module__$m',\"<p><input type=button style='font-size:8px;' value='$r' onclick=\\\"dodo('$m',0,0,0)\\\">\");";
 			else $s.="clean('module__$m');";
 		}
 	$s.="check_mod_do();";
@@ -488,9 +488,10 @@ if($a=='do') { // запуск модуля
                 if(intval($r)==0) return $script."clean('percent');".$o.$delknopka;
                 return $script.$o."
 var z=(idd('percent')?0:1);
-helps('percent',\"<fieldset><legend>$m &nbsp; &nbsp; \"+parseInt((100/$allwork)*$skip)+\"% <span class='timet'>
+helps('percent',\"<fieldset><legend>$m &nbsp; &nbsp; \"+parseInt((100/$allwork)*$skip)+\"% <span class='timet'></span></legend><div style='width:\"+(getWinW()/2)+\"px;'><div style='width:\"+(((getWinW()/2)/$allwork)*$skip)+\"px;height:16px;background:red;'></div></div></fieldset>\");
 if(z) posdiv('percent',-1,-1);
-dodo('$m',$allwork,$time,$r);";
+dodo('$m',$allwork,$time,$r);
+";
 }
 
 
@@ -518,7 +519,7 @@ if($a=='save_file'){ fileput(RE('file'),RE('text')); return "salert('saved',500)
 
 //------------ login ------------------
 if($a=='logout') { // разлогиниться
-	return "c_save('adm2',''); c_save('adm',''); window.location='".$GLOBALS['$mypage']."?reboot='+Math.random();";
+	return "c_save('adm2','',1); c_save('adm','',1); window.location='".$GLOBALS['$mypage']."?reboot='+Math.random();";
 }
 
 if($a=='passchange') { // поменять пароль (спросить старый сперва)

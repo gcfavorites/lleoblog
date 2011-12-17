@@ -2,42 +2,51 @@
 
 include_once $GLOBALS['include_sys']."getlastcom.php"; getlastcom();
 
-function riss($l) {
-if(($o=trim(parse_url($l,PHP_URL_PATH),'/'))=='')
-	$o=substr((preg_match("/^(.*)\.[^\.]+\.[^\.]+$/s",$l,$m)?$m[1]:$l),7);
-$f="http://".preg_replace("/^.*\.([^\.]+\.[^\.]+)$/s","$1",parse_url($l,PHP_URL_HOST))."/favicon.ico";
-return "<img src='$f'><b>$o</b>";
-}
+function LOGINS($e) { global $lim,$admin,$mode,$lastcom,$ncom;
+$conf=array_merge(array(
+'mode'=>'time_reg', // 'timelast'
+'template'=>"<p><table width=100% border=1 cellspacing=0 cellpadding=10><tr><td><img src='{img}' align=left>
+<b>{zamok}&nbsp; <span onclick=\"majax('login.php',{action:'getinfo',unic:{unic}})\">{imgicourl}</span></b>
+<br>[{unic}] {lju} <b>{capchakarma}</b> {time_reg} / {timelast}
+<br>login: {login} password: {password}
+<br>{openid}
+<br>{realname} mail: {mail} site: {site}
+</td></tr></table>"
+),parse_e_conf($e));
 
-function LOGINS() { global $lim,$admin,$mode,$lastcom,$ncom;
-
-//$lastcom=strtotime("2011-01-01");
-
+// $lastcom=strtotime("2011-01-01");
+// $conf['mode']='time_reg';
 $mytime=time();
 
-$pp=ms("SELECT `id`,`login`,`openid`,`lju`,`realname`,`mail`,`site`,`admin`,`time_reg`,`capchakarma`
+$pp=ms("SELECT `img`,`timelast`,`id`,`login`,`password`,`openid`,`lju`,`realname`,`mail`,`site`,`admin`,`time_reg`,`capchakarma`
 FROM ".$GLOBALS['db_unic']."
-WHERE `time_reg`>=".e($lastcom)." AND (`login`!='' OR `openid`!='') ORDER BY `time_reg`","_a");
+WHERE `".e($conf['mode'])."`>='".
+e($conf['mode']=='timelast'?date("c",$lastcom):$lastcom)."' AND (`password`!='' OR `openid`!='') ORDER BY `".e($conf['mode'])."`
+","_a");
 
-$s='';
-foreach($pp as $p) {
-if($p['openid']=='') continue;
+$s=''; foreach($pp as $p) { $p=get_ISi($p);
 
-$l=$p['openid']; if($l=='') continue; $l="http://".h(rtrim($l,'/'));
+	$s.=mper($conf['template'],array(
+		'zamok'=>($GLOBALS['podzamok']?zamok($p['admin']):''),
+		'imgicourl'=>$p['imgicourl'],
+		'img'=>h($p['img']),
+		'unic'=>$p['id'],
+		'login'=>h($p['login']),
+		'password'=>substr('password',7,10),
+		'openid'=>h($p['openid']),
+		'lju'=>h($p['lju']),
+		'realname'=>h($p['realname']),
+		'mail'=>h($GLOBALS['podzamok']?$p['mail']:'yes'),
+		'site'=>h($p['site']),
+		'admin'=>$p['admin'],
+		'capchakarma'=>h($p['capchakarma']),
+		'timelast'=>h(date('Y-m-d H:i:s',$p['timelast'])),
+		'time_reg'=>h(date('Y-m-d H:i:s',$p['time_reg']))
+	));
 
-$s.="<div>"
-//.$p['login']." "
-.riss($l)." <a href='$l'>$l</a></div>";
 }
 
 return $s;
-
-//: enum('user','podzamok','admin','mudak') NOT NULL
-//: int(11) NOT NULL default '0'
-//capcha: enum('yes','no') NOT NULL default 'no'
-//capchakarma: tinyint(3) unsigned NOT NULL default '0'
-
-
 }
 
 ?>
